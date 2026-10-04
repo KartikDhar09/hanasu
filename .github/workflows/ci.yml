@@ -1,0 +1,99 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_CLI: vercel@62.2.0
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+jobs:
+  check:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm test
+
+  preview:
+    name: Preview deploy
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Vercel token
+        if: env.VERCEL_TOKEN == ''
+        run: echo "::warning::VERCEL_TOKEN secret is not set, so the deploy is skipped. Add it under Settings → Secrets and variables → Actions."
+      - uses: actions/checkout@v5
+        if: env.VERCEL_TOKEN != ''
+      - uses: actions/setup-node@v5
+        if: env.VERCEL_TOKEN != ''
+        with:
+          node-version: 22
+      - name: Pull Vercel settings
+        if: env.VERCEL_TOKEN != ''
+        run: npx --yes $VERCEL_CLI pull --yes --environment=preview --token="$VERCEL_TOKEN"
+      - name: Build
+        if: env.VERCEL_TOKEN != ''
+        run: npx --yes $VERCEL_CLI build --token="$VERCEL_TOKEN"
+      - name: Deploy preview
+        if: env.VERCEL_TOKEN != ''
+        id: deploy
+        run: |
+          url=$(npx --yes $VERCEL_CLI deploy --prebuilt --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Preview deployed: $url" >> "$GITHUB_STEP_SUMMARY"
+
+  production:
+    name: Production deploy
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hanasu-two.vercel.app
+    steps:
+      - name: Check Vercel token
+        if: env.VERCEL_TOKEN == ''
+        run: echo "::warning::VERCEL_TOKEN secret is not set, so the deploy is skipped. Add it under Settings → Secrets and variables → Actions."
+      - uses: actions/checkout@v5
+        if: env.VERCEL_TOKEN != ''
+      - uses: actions/setup-node@v5
+        if: env.VERCEL_TOKEN != ''
+        with:
+          node-version: 22
+      - name: Pull Vercel settings
+        if: env.VERCEL_TOKEN != ''
+        run: npx --yes $VERCEL_CLI pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Build
+        if: env.VERCEL_TOKEN != ''
+        run: npx --yes $VERCEL_CLI build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy to production
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          url=$(npx --yes $VERCEL_CLI deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "### Production deployed: $url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Smoke test live site
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          for path in / /js/app.js /js/core.js /js/data.js /js/speech.js /css/app.css /sw.js /manifest.webmanifest; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://hanasu-two.vercel.app$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || { echo "::error::$path returned $code"; exit 1; }
+          done
+          curl -s https://hanasu-two.vercel.app/ | grep -q "<title>Hanasu</title>"

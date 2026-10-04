@@ -28,12 +28,23 @@ export function initStudy(ctx) {
     </li>`;
   }
 
+  // ================= Grammar hub =================
+  function grammarHub() {
+    ctx.clearSess(); st = null;
+    render(`
+      <h1 class="page">Grammar <span lang="ja">文法</span></h1>
+      <div class="intro">${esc(PARTICLES_INTRO.en)}${hg(PARTICLES_INTRO.hg, 'hi intro-hg')}</div>
+      <div class="speak-grid">
+        <button class="scard" data-act="particles"><span lang="ja" class="pch">は</span><b>Particles</b><small>${PARTICLES.length} little words that glue sentences together: は, を, に, で…</small></button>
+        <button class="scard" data-act="verbs"><span>🏃</span><b>Verbs</b><small>${VERBS.length} verbs with every form: ます, て, ない, た…</small></button>
+      </div>`);
+  }
+
   // ================= Particles =================
   function particles() {
     ctx.clearSess(); st = null;
     render(`
-      <h1 class="page">Particles <span lang="ja">助詞</span></h1>
-      <div class="intro">${esc(PARTICLES_INTRO.en)}${hg(PARTICLES_INTRO.hg, 'hi intro-hg')}</div>
+      <div class="head">${back('grammar')}<h1>Particles <span lang="ja" class="accent">助詞</span></h1></div>
       <button class="btn primary big" data-act="pquiz" data-arg="">🎯 Mixed particle quiz</button>
       <div class="pgrid">
         ${PARTICLES.map(p => `<button class="pcard" data-act="particle" data-arg="${p.id}">
@@ -116,7 +127,7 @@ export function initStudy(ctx) {
   function verbs() {
     ctx.clearSess(); st = null;
     render(`
-      <h1 class="page">Verbs <span lang="ja">動詞</span></h1>
+      <div class="head">${back('grammar')}<h1>Verbs <span lang="ja" class="accent">動詞</span></h1></div>
       <div class="groups">${GROUPS.map(g => `<div class="card left group g${g.id}">
         <b>${esc(g.name)}</b> <span class="muted" lang="ja">${g.jp}</span>
         <p>${esc(g.how)}</p>${hg(g.hg)}</div>`).join('')}</div>
@@ -363,6 +374,7 @@ export function initStudy(ctx) {
   }
 
   const actions = {
+    grammar: () => ctx.go('grammar'),
     particles: () => ctx.go('particles'),
     particle: id => ctx.go('particle/' + id),
     pquiz: id => pquiz(id),
@@ -386,6 +398,7 @@ export function initStudy(ctx) {
 
   // Returns true when the hash belongs to this module.
   function route(h) {
+    if (h === 'grammar') return grammarHub(), true;
     if (h === 'particles') return particles(), true;
     if (h.startsWith('particle/') && PARTICLES.some(p => p.id === h.slice(9))) return particle(h.slice(9)), true;
     if (h === 'verbs') return verbs(), true;

@@ -145,6 +145,22 @@ for (const w of V.WORDS) {
 for (const lv of ['n5', 'n4']) if (V.WORDS.filter(w => w.level === lv).length < 50) fail(`${lv}: needs at least 50 words`);
 for (const k of KANJI_LIST) if (!k.pic || !k.hint) fail(`kanji ${k.ch}: missing picture hint`);
 
+// 5f. Reading and listening.
+const E = await import('../js/exam-data.js');
+const EX = await import('../js/exam.js');
+for (const r of E.READING) {
+  if (!r.text || !r.en || !r.words.length || !r.qs.length) fail(`reading ${r.id}: incomplete`);
+  for (const q of r.qs) if (!(q.answer >= 0 && q.answer < q.options.length) || new Set(q.options).size !== q.options.length) fail(`reading ${r.id}: bad question ${q.q}`);
+}
+for (const l of E.LISTENING) {
+  if (!l.lines.length || !(l.answer >= 0 && l.answer < l.options.length)) fail(`listening ${l.id}: bad item`);
+  for (const [who] of l.lines) if (!['m', 'f', 'n'].includes(who)) fail(`listening ${l.id}: speaker must be m/f/n`);
+  for (const o of l.options) if (!o.jp || !o.en) fail(`listening ${l.id}: option needs jp + en`);
+}
+for (const lv of ['n5', 'n4']) {
+  if (E.READING.filter(r => r.level === lv).length < 3 || E.LISTENING.filter(l => l.level === lv).length < 4) fail(`${lv}: needs 3+ readings and 4+ listening items`);
+}
+
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
@@ -233,6 +249,17 @@ test('sentence chunks split at particles but keep words whole', () => {
   assert.deepEqual(chunk('日本で働く[ために]、日本語を勉強しています。'), ['日本で', '働くために、', '日本語を', '勉強しています。']);
   assert.deepEqual(chunk('はい、もう食べました。'), ['はい、', 'もう食べました。']);
   assert.ok(ALL_KANA.includes('きゃ') && ALL_KANA.includes('ん') && !ALL_KANA.includes('・'));
+});
+
+test('mock scoring matches JLPT pass rules', () => {
+  const mk = (sec, n, ok) => Array.from({ length: n }, (_, i) => ({ section: sec, ok: i < ok }));
+  const all = [...mk('vocab', 10, 10), ...mk('grammar', 10, 10), ...mk('reading', 4, 4), ...mk('listening', 4, 4)];
+  const perfect = EX.scoreMock(all, 'n5');
+  assert.deepEqual([perfect.langReading, perfect.listening, perfect.total, perfect.passed], [120, 60, 180, true]);
+  const lowListening = EX.scoreMock([...mk('vocab', 10, 10), ...mk('grammar', 10, 10), ...mk('reading', 4, 4), ...mk('listening', 4, 1)], 'n5');
+  assert.equal(lowListening.listening, 15); assert.equal(lowListening.passed, false); // 135 total but listening under 19
+  const n4 = EX.scoreMock([...mk('vocab', 10, 5), ...mk('grammar', 10, 5), ...mk('reading', 4, 2), ...mk('listening', 4, 2)], 'n4');
+  assert.deepEqual([n4.total, n4.passed], [90, true]);
 });
 
 if (errors.length) {

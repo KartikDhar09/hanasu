@@ -18,13 +18,14 @@ function pickVoice(name) {
     || voices[0] || null;
 }
 
-export function say(text, { rate = 0.9, voice = '' } = {}) {
+export function say(text, { rate = 0.9, voice = '', pitch = 1 } = {}) {
   if (!synth) return Promise.resolve();
   synth.cancel();
   return new Promise(resolve => {
     const u = new SpeechSynthesisUtterance(text.replace(/[{}]/g, ''));
     u.lang = 'ja-JP';
     u.rate = rate;
+    u.pitch = pitch;
     const v = pickVoice(voice);
     if (v) u.voice = v;
     // Some browsers (notably iOS Safari) occasionally never fire onend; don't let callers hang.

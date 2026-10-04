@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hanasu</title>
+  <meta name="description" content="Speak Japanese fast: N5 everyday conversation and office Japanese with audio, speaking checks and role-play.">
+  <meta name="theme-color" content="#FBF7F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16130F" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hanasu">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="#"><span lang="ja">話す</span> Hanasu</a>
+    <span class="chip" title="Day streak">🔥 <b id="streak">0</b></span>
+    <button class="gear" data-act="settings" aria-label="Settings">⚙︎</button>
+  </header>
+  <main id="app"></main>
+  <div id="sheet" class="sheet" hidden></div>
+  <div id="toast" class="toast" role="status"></div>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

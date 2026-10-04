@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#C8402F"/>
+  <path d="M120 150h272a40 40 0 0 1 40 40v130a40 40 0 0 1-40 40H250l-80 62v-62h-50a40 40 0 0 1-40-40V190a40 40 0 0 1 40-40z" fill="#FBF7F0"/>
+  <text x="256" y="300" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-weight="700" font-size="150" fill="#C8402F">話</text>
+</svg>

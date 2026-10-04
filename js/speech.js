@@ -27,7 +27,9 @@ export function say(text, { rate = 0.9, voice = '' } = {}) {
     u.rate = rate;
     const v = pickVoice(voice);
     if (v) u.voice = v;
-    u.onend = u.onerror = () => resolve();
+    // Some browsers (notably iOS Safari) occasionally never fire onend; don't let callers hang.
+    const fallback = setTimeout(resolve, 1500 + text.length * 250 / rate);
+    u.onend = u.onerror = () => { clearTimeout(fallback); resolve(); };
     synth.speak(u);
   });
 }

@@ -5,7 +5,7 @@
 export const TRACKS = [
   { id: 'n5', title: 'Everyday N5', jp: '日常会話', desc: 'Basic conversation for daily life in Japan' },
   { id: 'office', title: 'Office Japanese', jp: 'ビジネス会話', desc: 'Polite phrases for work, calls and meetings' },
-  { id: 'corp', title: 'Corporate conversation', jp: 'しごとのやりとり', desc: 'Reporting, scheduling, clients, opinions, email and after-work drinks' },
+  { id: 'corp', title: 'Corporate conversation', jp: 'しごとのやりとり', desc: 'Asking coworkers, reporting, scheduling, clients, opinions, email and after-work drinks' },
 ];
 
 export const UNITS = [
@@ -355,6 +355,52 @@ export const UNITS = [
     ],
   },
   // ---------- Corporate conversation ----------
+  {
+    id: 'c-ask', track: 'corp', icon: '💁', title: 'Asking a coworker', jp: 'どうりょうにきく',
+    phrases: [
+      ['ちょっと聞いてもいいですか。', 'ちょっときいてもいいですか。', 'chotto kiite mo ii desu ka?', 'Can I ask you something quickly?', 'Friendly opener for coworkers at your level. For your boss, use 少しよろしいですか.'],
+      ['このシステムの使い方、わかりますか。', 'このシステムのつかいかた、わかりますか。', 'kono shisutemu no tsukaikata, wakarimasu ka?', 'Do you know how to use this system?', 'Verb stem + 方 = "how to": 書き方 how to write, 送り方 how to send.'],
+      ['担当者はどなたですか。', 'たんとうしゃはどなたですか。', 'tantōsha wa donata desu ka?', 'Who is in charge of this?'],
+      ['この書類はどこに出せばいいですか。', 'このしょるいはどこにだせばいいですか。', 'kono shorui wa doko ni daseba ii desu ka?', 'Where should I hand in this document?', '〜ばいいですか = "what should I…?" Try 誰に聞けば (who should I ask), 何を書けば (what should I write).'],
+      ['「経費精算」って何ですか。', '「けいひせいさん」ってなんですか。', '“keihi seisan” tte nan desu ka?', 'What does “keihi seisan” (expense claim) mean?', 'Put any word you don’t know before って何ですか.'],
+      ['これで合っていますか。', 'これであっていますか。', 'kore de atte imasu ka?', 'Is this right?'],
+      ['ホチキスを借りてもいいですか。', 'ホチキスをかりてもいいですか。', 'hochikisu o karite mo ii desu ka?', 'May I borrow the stapler?', '〜てもいいですか asks permission for anything.'],
+      ['今日の会議、何時からでしたっけ。', 'きょうのかいぎ、なんじからでしたっけ。', 'kyō no kaigi, nanji kara deshita kke?', 'What time was today’s meeting again?', 'でしたっけ = “…again?” when you’ve forgotten. Casual, for coworkers.'],
+      ['田中さんがどこにいるか知っていますか。', 'たなかさんがどこにいるかしっていますか。', 'Tanaka-san ga doko ni iru ka shitte imasu ka?', 'Do you know where Tanaka-san is?'],
+      ['教えてくれてありがとうございます。', 'おしえてくれてありがとうございます。', 'oshiete kurete arigatō gozaimasu.', 'Thanks for telling me.'],
+    ],
+    dialogue: [
+      ['you', '佐藤さん、ちょっと聞いてもいいですか。', 'さとうさん、ちょっときいてもいいですか。', 'Satō-san, chotto kiite mo ii desu ka?', 'Sato-san, can I ask you something quickly?'],
+      ['them', 'うん、いいですよ。', 'うん、いいですよ。', 'un, ii desu yo.', 'Sure.'],
+      ['you', '「経費精算」って何ですか。', '「けいひせいさん」ってなんですか。', '“keihi seisan” tte nan desu ka?', 'What does “keihi seisan” mean?'],
+      ['them', '会社のために買った物のお金を申請することですよ。', 'かいしゃのためにかったもののおかねをしんせいすることですよ。', 'kaisha no tame ni katta mono no okane o shinsei suru koto desu yo.', 'It’s claiming back money for things you bought for the company.'],
+      ['you', 'この書類はどこに出せばいいですか。', 'このしょるいはどこにだせばいいですか。', 'kono shorui wa doko ni daseba ii desu ka?', 'Where should I hand in this form?'],
+      ['them', '総務部に出してください。', 'そうむぶにだしてください。', 'sōmu-bu ni dashite kudasai.', 'Hand it in to General Affairs.'],
+      ['you', 'わかりました。教えてくれてありがとうございます。', 'わかりました。おしえてくれてありがとうございます。', 'wakarimashita. oshiete kurete arigatō gozaimasu.', 'Got it. Thanks for telling me.'],
+    ],
+  },
+  {
+    id: 'c-check', track: 'corp', icon: '🔍', title: 'Checking you understood', jp: 'かくにんする',
+    phrases: [
+      ['すみません、もう一度言っていただけますか。', 'すみません、もういちどいっていただけますか。', 'sumimasen, mō ichido itte itadakemasu ka?', 'Sorry, could you say that again?'],
+      ['つまり、明日までということですか。', 'つまり、あしたまでということですか。', 'tsumari, ashita made to iu koto desu ka?', 'So you mean by tomorrow?', 'Repeat what you heard + ということですか to check you got it right.'],
+      ['具体的には、何をすればいいですか。', 'ぐたいてきには、なにをすればいいですか。', 'gutaiteki ni wa, nani o sureba ii desu ka?', 'Specifically, what should I do?'],
+      ['例えば、どんな感じですか。', 'たとえば、どんなかんじですか。', 'tatoeba, donna kanji desu ka?', 'Could you give me an example?'],
+      ['メモしてもいいですか。', 'メモしてもいいですか。', 'memo shite mo ii desu ka?', 'Mind if I take notes?'],
+      ['その言葉、漢字でどう書きますか。', 'そのことば、かんじでどうかきますか。', 'sono kotoba, kanji de dō kakimasu ka?', 'How do you write that word in kanji?'],
+      ['どちらを先にやればいいですか。', 'どちらをさきにやればいいですか。', 'dochira o saki ni yareba ii desu ka?', 'Which one should I do first?'],
+      ['わからないことがあったら、また聞いてもいいですか。', 'わからないことがあったら、またきいてもいいですか。', 'wakaranai koto ga attara, mata kiite mo ii desu ka?', 'If I have questions, may I ask you again?'],
+    ],
+    dialogue: [
+      ['them', 'この資料、明日の朝までに直してください。', 'このしりょう、あしたのあさまでになおしてください。', 'kono shiryō, ashita no asa made ni naoshite kudasai.', 'Please revise this document by tomorrow morning.'],
+      ['you', 'すみません、もう一度言っていただけますか。', 'すみません、もういちどいっていただけますか。', 'sumimasen, mō ichido itte itadakemasu ka?', 'Sorry, could you say that again?'],
+      ['them', '明日の朝までに、直してください。', 'あしたのあさまでに、なおしてください。', 'ashita no asa made ni, naoshite kudasai.', 'Revise it by tomorrow morning, please.'],
+      ['you', '具体的には、何をすればいいですか。', 'ぐたいてきには、なにをすればいいですか。', 'gutaiteki ni wa, nani o sureba ii desu ka?', 'Specifically, what should I do?'],
+      ['them', 'グラフを新しいデータにしてください。', 'グラフをあたらしいデータにしてください。', 'gurafu o atarashii dēta ni shite kudasai.', 'Update the graphs with the new data.'],
+      ['you', 'わかりました。わからないことがあったら、また聞いてもいいですか。', 'わかりました。わからないことがあったら、またきいてもいいですか。', 'wakarimashita. wakaranai koto ga attara, mata kiite mo ii desu ka?', 'Understood. If I have questions, may I ask you again?'],
+      ['them', 'もちろんです。', 'もちろんです。', 'mochiron desu.', 'Of course.'],
+    ],
+  },
   {
     id: 'c-report', track: 'corp', icon: '📊', title: 'Reporting progress', jp: 'ほうれんそう',
     phrases: [

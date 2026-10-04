@@ -1,6 +1,6 @@
 // Offline support: network-first for the app (so updates show immediately), cache fallback offline.
 // Fonts are cache-first. Bump CACHE on each release.
-const CACHE = 'hanasu-v1.1';
+const CACHE = 'hanasu-v1.2';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/core.js', '/js/data.js', '/js/speech.js',
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
 

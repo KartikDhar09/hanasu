@@ -1,6 +1,7 @@
 import { TRACKS, UNITS, CARDS, COUNTRIES, CONTENT_VERSION } from './data.js';
 import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession, bumpStreak, liveStreak, fill, matchScore, PASS } from './core.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, jaVoices } from './speech.js';
+import { initStudy } from './study.js';
 
 // ---------- State ----------
 const KEY = 'hanasu-v1';
@@ -11,6 +12,8 @@ const DEFAULTS = {
   progress: {},   // cardId -> { box, due, seen }
   streak: null,   // { last, count }
   spoken: {},     // cardId -> best speaking score (0..1)
+  kanjiProgress: {}, // kanji -> { box, due, seen }
+  pbest: {},      // particle id -> best quiz %
 };
 let S = load();
 
@@ -524,7 +527,8 @@ function saveSettings() {
 
 // Re-draw the current screen after settings change.
 function rerender() {
-  if (!sess) return location.hash.startsWith('#unit/') ? unit(location.hash.slice(6)) : home();
+  if (study.rerender()) return;
+  if (!sess) return route();
   if (sess.kind === 'learn') learnCard();
   else if (sess.kind === 'speak') speakCard();
   else if (sess.kind === 'quiz') quizQ();
@@ -568,19 +572,23 @@ const actions = {
   },
   reset: () => {
     if (!confirm('Delete all progress and streak?')) return;
-    S.progress = {}; S.spoken = {}; S.streak = null; save();
+    S.progress = {}; S.spoken = {}; S.kanjiProgress = {}; S.pbest = {}; S.streak = null; save();
     document.getElementById('sheet').hidden = true; home();
   },
 };
 
 document.addEventListener('click', e => {
+  // Tabs: re-route even when the hash is unchanged (e.g. tapping Kanji mid-quiz goes back to the Kanji page).
+  const tab = e.target.closest('#tabs a');
+  if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
   const el = e.target.closest('[data-act]');
   if (el) { actions[el.dataset.act]?.(el.dataset.arg); return; }
   if (e.target.id === 'sheet' && S.setup) e.target.hidden = true;
 });
 
 document.addEventListener('keydown', e => {
-  if (!sess || e.target.matches('input, select')) return;
+  if (e.target.matches('input, select') || study.keydown(e)) return;
+  if (!sess) return;
   if (sess.kind === 'learn') {
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); sess.queue[sess.i]?.intro ? actions['next-intro']() : sess.revealed ? null : reveal(); }
     else if (sess.revealed && !sess.queue[sess.i]?.intro && !sess.queue[sess.i]?.drill && '123'.includes(e.key)) gradeCard([AGAIN, GOOD, EASY][+e.key - 1]);
@@ -591,10 +599,22 @@ document.addEventListener('keydown', e => {
 function go(h) { if (location.hash.slice(1) === h) route(); else location.hash = h; }
 function route() {
   const h = location.hash.slice(1);
+  study.clear();
+  const tab = /^(particle|verb|kanji)/.exec(h)?.[1] || 'phrases';
+  document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
+  if (study.route(h)) return;
   if (h.startsWith('unit/') && unitById(h.slice(5))) unit(h.slice(5));
   else home();
 }
 window.addEventListener('hashchange', route);
+
+// Particles, Verbs and Kanji live in study.js and share these helpers.
+const study = initStudy({
+  S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go,
+  clearSess: () => { sess = null; stopSpeaking(); },
+  setSess: () => { sess = null; },
+});
+Object.assign(actions, study.actions);
 
 route();
 if (!S.setup) openSettings(true);

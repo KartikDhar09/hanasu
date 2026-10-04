@@ -135,6 +135,16 @@ for (const g of J.GRAMMAR) {
 }
 for (const lv of ['n5', 'n4']) if (J.GRAMMAR.filter(g => g.level === lv).length < 20) fail(`${lv}: needs at least 20 grammar points`);
 
+// 5e. Vocabulary and kanji pictures.
+const V = await import('../js/vocab-data.js');
+if (new Set(V.WORDS.map(w => w.id)).size !== V.WORDS.length) fail('duplicate vocabulary ids');
+for (const w of V.WORDS) {
+  if (!w.pic || !w.en || !LATIN.test(w.hg) || /[\u4e00-\u9faf]/.test(w.kana)) fail(`word ${w.jp}: needs picture, meaning, Hinglish, kana`);
+  romajiOk(w.ro, `word ${w.jp}`);
+}
+for (const lv of ['n5', 'n4']) if (V.WORDS.filter(w => w.level === lv).length < 50) fail(`${lv}: needs at least 50 words`);
+for (const k of KANJI_LIST) if (!k.pic || !k.hint) fail(`kanji ${k.ch}: missing picture hint`);
+
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };

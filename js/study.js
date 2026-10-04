@@ -1,7 +1,7 @@
 // Particles, Verbs and Kanji sections. Shared helpers come from app.js via ctx.
 import { PARTICLES, PARTICLES_INTRO, CONFUSABLE } from './particles-data.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
-import { KANJI, KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
+import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
 import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession } from './core.js';
 
@@ -226,20 +226,25 @@ export function initStudy(ctx) {
   // ================= Kanji =================
   const kprog = () => (S().kanjiProgress = S().kanjiProgress || {});
 
+  const klevel = () => S().kanjiLevel || 'n5';
+  const levelKanji = () => KANJI.filter(k => k.level === klevel());
+
   function kanji() {
     ctx.clearSess(); st = null;
     const now = Date.now();
-    const due = KANJI.filter(k => isDue(kprog()[k.ch], now)).length;
-    const learned = KANJI.filter(k => isLearned(kprog()[k.ch])).length;
+    const pool = levelKanji();
+    const due = pool.filter(k => isDue(kprog()[k.ch], now)).length;
+    const learned = pool.filter(k => isLearned(kprog()[k.ch])).length;
     render(`
-      <h1 class="page">N5 Kanji <span lang="ja">漢字</span></h1>
+      <h1 class="page">Kanji <span lang="ja">漢字</span></h1>
       <div class="intro">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div>
-      <div class="stats small-stats"><div><b>${learned}</b><span>of ${KANJI.length} learned</span></div><div><b>${due}</b><span>due now</span></div></div>
+      <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === klevel() ? 'on' : ''}" data-act="kanji-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
+      <div class="stats small-stats"><div><b>${learned}</b><span>of ${pool.length} learned</span></div><div><b>${due}</b><span>due now</span></div></div>
       <div class="row">
         <button class="btn primary" data-act="klearn" data-arg="">🃏 ${due ? `Review ${due}` : 'Learn new'}</button>
         <button class="btn" data-act="kquiz" data-arg="">🎯 Quiz</button>
       </div>
-      ${KANJI_GROUPS.map(g => `
+      ${ALL_KANJI_GROUPS.filter(g => g.level === klevel()).map(g => `
         <h3>${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h3>
         <div class="kgrid">${g.kanji.map(k => `<button class="ktile ${isLearned(kprog()[k[0]]) ? 'known' : ''}" data-act="kanji-one" data-arg="${k[0]}">
           <span lang="ja">${k[0]}</span><small>${esc(k[3].split(' /')[0])}</small></button>`).join('')}</div>
@@ -250,6 +255,7 @@ export function initStudy(ctx) {
     return `<div class="kdetail ${cls}">
       <div class="kbig" lang="ja">${k.ch}</div>
       <div class="kmean">${esc(k.en)}${hg(k.hg)}</div>
+      ${k.pic ? `<div class="khint"><span>${k.pic}</span>${esc(k.hint)}</div>` : ''}
       <div class="kread">
         ${k.on ? `<div><span class="pill">On</span> <span lang="ja">${k.on}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(k.on.replace(/[()]/g, '').replace(/・/g, ' · '))}</small>` : ''}</div>` : ''}
         ${k.kun ? `<div><span class="pill">Kun</span> <span lang="ja">${k.kun}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(k.kun.replace(/[()]/g, '').replace(/・/g, ' · '))}</small>` : ''}</div>` : ''}
@@ -266,7 +272,7 @@ export function initStudy(ctx) {
     if (!k) return kanji();
     const list = KANJI.filter(x => x.group === k.group), i = list.indexOf(k);
     render(`
-      <div class="head">${back('kanji')}<h1>${esc(KANJI_GROUPS.find(g => g.id === k.group).title)}</h1></div>
+      <div class="head">${back('kanji')}<h1>${esc(ALL_KANJI_GROUPS.find(g => g.id === k.group).title)}</h1><span class="pill">${k.level.toUpperCase()}</span></div>
       <div class="card">${kanjiDetail(k)}</div>
       <div class="row">
         <button class="btn" data-act="kanji-one" data-arg="${list[i - 1]?.ch || ''}" ${i ? '' : 'disabled'}>‹ ${list[i - 1]?.ch || ''}</button>
@@ -275,7 +281,7 @@ export function initStudy(ctx) {
   }
 
   function klearn(groupId) {
-    const items = KANJI.filter(k => !groupId || k.group === groupId).map(k => ({ ...k, id: k.ch }));
+    const items = (groupId ? KANJI.filter(k => k.group === groupId) : levelKanji()).map(k => ({ ...k, id: k.ch }));
     let queue = pickSession(items, kprog(), { newLimit: 6, max: 15 });
     if (!queue.length) queue = shuffle(items).slice(0, 10); // all caught up: free practice
     st = { kind: 'klearn', groupId, queue, i: 0, done: 0 };
@@ -292,6 +298,7 @@ export function initStudy(ctx) {
       <div class="card">
         <span class="tag ${kprog()[k.ch] ? 'alt' : ''}">${kprog()[k.ch] ? 'What does it mean?' : 'New kanji'}</span>
         <div id="kfront" class="kbig" lang="ja">${k.ch}</div>
+        ${kprog()[k.ch] ? '' : `<div class="khint"><span>${k.pic}</span>${esc(k.hint)}</div>`}
         <div id="answer" hidden>${kanjiDetail(k, 'no-big')}</div>
       </div>
       <div class="actions" id="actions"><button class="btn primary big" data-act="kreveal">Show answer</button></div>`);
@@ -317,13 +324,14 @@ export function initStudy(ctx) {
   }
 
   function kquiz() {
-    const qs = shuffle(KANJI).slice(0, 10).map((k, n) => {
+    const pool = levelKanji();
+    const qs = shuffle(pool).slice(0, 10).map((k, n) => {
       if (n % 2 === 0) {
-        const others = shuffle(KANJI.filter(o => o.ch !== k.ch && o.en !== k.en)).slice(0, 3);
+        const others = shuffle(pool.filter(o => o.ch !== k.ch && o.en !== k.en)).slice(0, 3);
         return { type: 'meaning', k, right: k.en, options: shuffle([k, ...others]).map(o => ({ v: o.en, hg: o.hg })) };
       }
       const word = k.ex[Math.floor(Math.random() * k.ex.length)];
-      const others = shuffle(KANJI.flatMap(o => o.ex).filter(e => e[1] !== word[1])).slice(0, 3);
+      const others = shuffle(pool.flatMap(o => o.ex).filter(e => e[1] !== word[1])).slice(0, 3);
       return { type: 'reading', k, word, right: word[1], options: shuffle([word, ...others]).map(e => ({ v: e[1], ro: e[2] })) };
     });
     st = { kind: 'kquiz', qs, i: 0, right: 0 };
@@ -333,7 +341,10 @@ export function initStudy(ctx) {
 
   function kquizQ() {
     const q = st.qs[st.i];
-    if (!q) return quizDone(`Kanji quiz: ${st.right}/${st.qs.length}`, 'kanji', '');
+    if (!q) return quizDone(`Kanji quiz: ${st.right}/${st.qs.length}`, 'kanji', '', () => {
+      const b = (S().quizBest = S().quizBest || {}), key = 'kanji-' + klevel();
+      b[key] = Math.max(b[key] || 0, Math.round(100 * st.right / st.qs.length));
+    });
     st.answered = false;
     render(`
       <div class="head">${back('kanji')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
@@ -390,6 +401,7 @@ export function initStudy(ctx) {
     vnext: () => { st.i++; vquizQ(); },
     kanji: () => ctx.go('kanji'),
     'kanji-one': ch => ch && ctx.go('kanji/' + encodeURIComponent(ch)),
+    'kanji-level': l => { S().kanjiLevel = l; save(); kanji(); },
     klearn: g => klearn(g),
     kreveal: () => kreveal(),
     kgrade: g => kgrade(g),

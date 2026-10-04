@@ -4,6 +4,7 @@ import { UNITS, CARDS } from './data.js';
 import { PARTICLES } from './particles-data.js';
 import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
 import { VOCAB, WORDS } from './vocab-data.js';
+import { READING, LISTENING } from './exam-data.js';
 import { toRomaji } from './conjugate.js';
 import { isLearned, isDue, grade, pickSession, AGAIN, GOOD, EASY } from './core.js';
 
@@ -49,6 +50,15 @@ export function initJlpt(ctx) {
   const vocabLearned = lv => () => { const ws = WORDS.filter(w => w.level === lv); return ws.filter(w => isLearned(vprog()[w.id])).length / ws.length; };
   const particleAvg = () => PARTICLES.reduce((n, p) => n + ((S().pbest || {})[p.id] || 0), 0) / PARTICLES.length / 100;
 
+  const readAvg = lv => () => { const rs = READING.filter(r => r.level === lv); return rs.reduce((t, r) => t + ((S().readBest || {})[r.id] || 0), 0) / rs.length / 100; };
+  const listenPart = lv => () => { const ls = LISTENING.filter(l => l.level === lv); return ls.filter(l => (S().listenDone || {})[l.id]).length / ls.length; };
+  const mockReady = lv => () => Math.min(1, (best()['mock-' + lv] || 0) / (100 * EXAMS[lv].pass.total / 180));
+  const examSteps = lv => [
+    ['📖', 'Reading practice', 'Notes, emails and notices.', readAvg(lv), 'ex-reading'],
+    ['🎧', 'Listening practice', 'Conversations with picture answers.', listenPart(lv), 'ex-listening'],
+    ['🏁', 'Pass a mock test', `Score ${EXAMS[lv].pass.total}+/180 with every section above the minimum.`, mockReady(lv), 'ex-mock'],
+  ];
+
   function path(lv) {
     const n5 = [
       ['あ', 'Hiragana & katakana', 'Read every kana. Quiz score 80%+.', () => pct('kana'), 'kana'],
@@ -59,6 +69,7 @@ export function initJlpt(ctx) {
       ['🍙', 'N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words. Learn them with flashcards.`, vocabLearned('n5'), 'jlpt-vocab'],
       ['📘', 'N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns. Grammar quiz score.`, () => pct('gram-n5'), 'jlpt-grammar'],
       ['★', 'Sentence order', 'Build sentences in the right order.', () => pct('order-n5'), 'order'],
+      ...examSteps('n5'),
     ];
     if (lv === 'n5') return n5;
     const n5avg = () => n5.reduce((t, s) => t + Math.min(1, s[3]()), 0) / n5.length;
@@ -69,6 +80,7 @@ export function initJlpt(ctx) {
       ['💼', 'N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, vocabLearned('n4'), 'jlpt-vocab'],
       ['📗', 'N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns. Grammar quiz score.`, () => pct('gram-n4'), 'jlpt-grammar'],
       ['★', 'Sentence order (N4)', 'Build N4 sentences in the right order.', () => pct('order-n4'), 'order'],
+      ...examSteps('n4'),
     ];
   }
 
@@ -90,13 +102,16 @@ export function initJlpt(ctx) {
       ${bar(overall, 1)}
       <ol class="path">${steps.map(s => {
         const p = Math.min(1, s[3]());
-        return `<li class="${p >= 0.8 ? 'done' : ''}"><button data-act="${s[4]}" data-arg="${['jlpt-grammar', 'order', 'jlpt-vocab'].includes(s[4]) ? lv : ''}">
+        return `<li class="${p >= 0.8 ? 'done' : ''}"><button data-act="${s[4]}" data-arg="${['jlpt-grammar', 'order', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[4]) ? lv : ''}">
           <span class="pico" lang="ja">${p >= 0.8 ? '✓' : s[0]}</span>
           <span class="ptext"><b>${esc(s[1])}</b><small>${esc(s[2])}</small>${bar(p, 1)}</span>
           <span class="count">${Math.round(p * 100)}%</span></button></li>`;
       }).join('')}</ol>
+      <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">🏁 Take a ${ex.title} mock test${best()['mock-' + lv] ? ` <small>(best ${Math.round(best()['mock-' + lv] * 1.8)}/180)</small>` : ''}</button>
       <h3>Practise like the exam</h3>
       <div class="speak-grid">
+        <button class="scard" data-act="ex-reading" data-arg="${lv}"><span>📖</span><b>Reading</b><small>${READING.filter(r => r.level === lv).length} real-life passages with questions</small></button>
+        <button class="scard" data-act="ex-listening" data-arg="${lv}"><span>🎧</span><b>Listening</b><small>${LISTENING.filter(l => l.level === lv).length} conversations, some with picture answers</small></button>
         <button class="scard" data-act="jlpt-grammar" data-arg="${lv}"><span>📘</span><b>Grammar points</b><small>${GRAMMAR.filter(g => g.level === lv).length} ${lv.toUpperCase()} patterns with pictures and examples</small></button>
         <button class="scard" data-act="gquiz" data-arg="${lv}"><span>✏️</span><b>Grammar quiz</b><small>Fill in the blank, like 文法形式</small></button>
         <button class="scard" data-act="order" data-arg="${lv}"><span>★</span><b>Sentence order</b><small>Put the pieces in order, like 文の組み立て</small></button>

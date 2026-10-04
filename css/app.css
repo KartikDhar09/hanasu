@@ -354,6 +354,14 @@ details.answers .phrases { margin-top: 8px; }
 .khint { display: flex; gap: 10px; align-items: center; justify-content: center; background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 10px 0; font-size: .95rem; text-align: left; }
 .khint span { font-size: 1.8rem; }
 
+/* ---------- Exam practice ---------- */
+.passage { font-size: 1.1rem; line-height: 1.9; background: var(--bg); border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+.glossary { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+.qblock { margin-top: 10px; }
+.qblock .choices { margin-top: 8px; }
+.passbar.fail i { background: var(--bad-soft); border-color: var(--bad); }
+.mock-btn { margin: 14px 0 4px; }
+
 @media (min-width: 560px) {
   .units { grid-template-columns: 1fr 1fr; }
   .modes { grid-template-columns: repeat(4, 1fr); }

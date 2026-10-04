@@ -342,6 +342,18 @@ details.answers .phrases { margin-top: 8px; }
 .piece { font-size: 1.15rem; padding: 10px 14px; background: var(--surface); border: 1.5px solid var(--accent); border-radius: 10px; color: var(--ink); }
 .piece:disabled { opacity: .25; }
 
+/* ---------- Vocabulary & kanji pictures ---------- */
+.wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; margin-bottom: 6px; }
+.wcard { display: grid; justify-items: center; gap: 1px; padding: 10px 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+.wcard b { font-size: 1.1rem; font-weight: 600; }
+.wcard small { color: var(--muted); font-size: .72rem; }
+.wcard.known { border-color: var(--ok); background: var(--ok-soft); }
+.wpic { font-size: 2rem; line-height: 1.2; }
+.wpic.huge { font-size: 4.5rem; text-align: center; margin: 6px 0; }
+.kbig.small-k { font-size: 2.6rem; }
+.khint { display: flex; gap: 10px; align-items: center; justify-content: center; background: var(--accent-soft); border-radius: 12px; padding: 8px 12px; margin: 10px 0; font-size: .95rem; text-align: left; }
+.khint span { font-size: 1.8rem; }
+
 @media (min-width: 560px) {
   .units { grid-template-columns: 1fr 1fr; }
   .modes { grid-template-columns: repeat(4, 1fr); }

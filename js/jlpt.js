@@ -2,9 +2,10 @@
 import { EXAMS, EXAM_TIPS, QUESTION_TYPES, GRAMMAR } from './jlpt-data.js';
 import { UNITS, CARDS } from './data.js';
 import { PARTICLES } from './particles-data.js';
-import { KANJI } from './kanji-data.js';
+import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
+import { VOCAB, WORDS } from './vocab-data.js';
 import { toRomaji } from './conjugate.js';
-import { isLearned } from './core.js';
+import { isLearned, isDue, grade, pickSession, AGAIN, GOOD, EASY } from './core.js';
 
 // Gojūon chart; ・ is an empty cell.
 export const KANA_ROWS = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や・ゆ・よ', 'らりるれろ', 'わ・・・を', 'ん・・・・'];
@@ -43,7 +44,9 @@ export function initJlpt(ctx) {
   // ---- Study path: each step reports progress 0..1 from what you’ve done in the app ----
   const pct = key => (best()[key] || 0) / 100;
   const trackLearned = ids => { const cs = CARDS.filter(c => ids.includes(UNITS.find(u => u.id === c.unit).track)); return cs.filter(c => isLearned(S().progress[c.id])).length / cs.length; };
-  const kanjiLearned = () => KANJI.filter(k => isLearned((S().kanjiProgress || {})[k.ch])).length / KANJI.length;
+  const kanjiLearned = list => () => list.filter(k => isLearned((S().kanjiProgress || {})[k.ch])).length / list.length;
+  const vprog = () => (S().vocabProgress = S().vocabProgress || {});
+  const vocabLearned = lv => () => { const ws = WORDS.filter(w => w.level === lv); return ws.filter(w => isLearned(vprog()[w.id])).length / ws.length; };
   const particleAvg = () => PARTICLES.reduce((n, p) => n + ((S().pbest || {})[p.id] || 0), 0) / PARTICLES.length / 100;
 
   function path(lv) {
@@ -52,7 +55,8 @@ export function initJlpt(ctx) {
       ['💬', 'Everyday N5 phrases', 'Learn the Everyday N5 track.', () => trackLearned(['n5']), 'home'],
       ['の', 'Particles', 'Practise each particle quiz.', particleAvg, 'particles'],
       ['🏃', 'Verbs & forms', 'Conjugation quiz score.', () => pct('vquiz'), 'verbs'],
-      ['漢', 'N5 kanji', 'Learn all 99 kanji with flashcards.', kanjiLearned, 'kanji'],
+      ['漢', 'N5 kanji', `Learn all ${KANJI_N5.length} kanji with flashcards.`, kanjiLearned(KANJI_N5), 'kanji'],
+      ['🍙', 'N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words. Learn them with flashcards.`, vocabLearned('n5'), 'jlpt-vocab'],
       ['📘', 'N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns. Grammar quiz score.`, () => pct('gram-n5'), 'jlpt-grammar'],
       ['★', 'Sentence order', 'Build sentences in the right order.', () => pct('order-n5'), 'order'],
     ];
@@ -61,6 +65,8 @@ export function initJlpt(ctx) {
     return [
       ['5', 'Finish N5 first', 'N4 includes everything in N5.', n5avg, 'jlpt-n5'],
       ['🏢', 'Office & corporate phrases', 'Learn the Office and Corporate tracks.', () => trackLearned(['office', 'corp']), 'home'],
+      ['漢', 'N4 kanji', `${KANJI_N4.length} more kanji.`, kanjiLearned(KANJI_N4), 'kanji-n4'],
+      ['💼', 'N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, vocabLearned('n4'), 'jlpt-vocab'],
       ['📗', 'N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns. Grammar quiz score.`, () => pct('gram-n4'), 'jlpt-grammar'],
       ['★', 'Sentence order (N4)', 'Build N4 sentences in the right order.', () => pct('order-n4'), 'order'],
     ];
@@ -84,7 +90,7 @@ export function initJlpt(ctx) {
       ${bar(overall, 1)}
       <ol class="path">${steps.map(s => {
         const p = Math.min(1, s[3]());
-        return `<li class="${p >= 0.8 ? 'done' : ''}"><button data-act="${s[4]}" data-arg="${s[4] === 'jlpt-grammar' || s[4] === 'order' ? lv : ''}">
+        return `<li class="${p >= 0.8 ? 'done' : ''}"><button data-act="${s[4]}" data-arg="${['jlpt-grammar', 'order', 'jlpt-vocab'].includes(s[4]) ? lv : ''}">
           <span class="pico" lang="ja">${p >= 0.8 ? '✓' : s[0]}</span>
           <span class="ptext"><b>${esc(s[1])}</b><small>${esc(s[2])}</small>${bar(p, 1)}</span>
           <span class="count">${Math.round(p * 100)}%</span></button></li>`;
@@ -94,6 +100,7 @@ export function initJlpt(ctx) {
         <button class="scard" data-act="jlpt-grammar" data-arg="${lv}"><span>📘</span><b>Grammar points</b><small>${GRAMMAR.filter(g => g.level === lv).length} ${lv.toUpperCase()} patterns with pictures and examples</small></button>
         <button class="scard" data-act="gquiz" data-arg="${lv}"><span>✏️</span><b>Grammar quiz</b><small>Fill in the blank, like 文法形式</small></button>
         <button class="scard" data-act="order" data-arg="${lv}"><span>★</span><b>Sentence order</b><small>Put the pieces in order, like 文の組み立て</small></button>
+        <button class="scard" data-act="jlpt-vocab" data-arg="${lv}"><span>🖼️</span><b>Vocabulary</b><small>${WORDS.filter(w => w.level === lv).length} ${lv.toUpperCase()} words with pictures</small></button>
         <button class="scard" data-act="kana"><span lang="ja">あア</span><b>Kana charts</b><small>Hiragana & katakana with sound + quiz</small></button>
       </div>
       <h3>The exam</h3>
@@ -243,6 +250,87 @@ export function initJlpt(ctx) {
     document.querySelectorAll('.piece').forEach(b => { b.disabled = q.picked.includes(+b.dataset.arg); });
   }
 
+  // ================= Vocabulary =================
+  function vocab(lv) {
+    ctx.clearSess(); st = null;
+    const ws = WORDS.filter(w => w.level === lv);
+    const due = ws.filter(w => isDue(vprog()[w.id])).length;
+    render(`
+      <div class="head">${back('jlpt')}<h1>${lv.toUpperCase()} vocabulary</h1></div>
+      <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-vocab" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
+      <div class="stats small-stats"><div><b>${ws.filter(w => isLearned(vprog()[w.id])).length}</b><span>of ${ws.length} learned</span></div><div><b>${due}</b><span>due now</span></div></div>
+      <div class="row"><button class="btn primary" data-act="vlearn" data-arg="${lv}">🃏 ${due ? `Review ${due}` : 'Learn new'}</button><button class="btn" data-act="vocab-quiz" data-arg="${lv}">🎯 Picture quiz</button></div>
+      ${VOCAB.filter(t => t.level === lv).map(t => `
+        <h3>${t.icon} ${esc(t.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(t.hg)}</small>` : ''}</h3>
+        <div class="wgrid">${WORDS.filter(w => w.topic === t.id).map(w => `<button class="wcard ${isLearned(vprog()[w.id]) ? 'known' : ''}" data-act="say-text" data-arg="${esc(w.jp)}">
+          <span class="wpic">${w.pic}</span><b lang="ja">${esc(w.jp)}</b>
+          ${S().settings.kana && w.kana !== w.jp ? `<small lang="ja">${esc(w.kana)}</small>` : ''}
+          <small>${esc(w.en)}${S().settings.hindi ? ` · ${esc(w.hg)}` : ''}</small></button>`).join('')}</div>
+        <button class="btn small ghost" data-act="vlearn" data-arg="${t.id}">🃏 Learn this topic</button>`).join('')}`);
+  }
+
+  function vlearn(arg) {
+    const items = arg === 'n5' || arg === 'n4' ? WORDS.filter(w => w.level === arg) : WORDS.filter(w => w.topic === arg);
+    let queue = pickSession(items, vprog(), { newLimit: 8, max: 16 });
+    if (!queue.length) queue = shuffle(items).slice(0, 10);
+    st = { kind: 'vlearn', queue, i: 0, done: 0, lv: items[0].level };
+    vcard();
+  }
+
+  function vcard() {
+    const w = st.queue[st.i];
+    if (!w) {
+      practised();
+      const lv = st.lv; st = null;
+      return render(`<div class="done"><div class="big-emoji">🖼️</div><h1>Words practised</h1><button class="btn primary big" data-act="jlpt-vocab" data-arg="${lv}">Back</button></div>`);
+    }
+    st.revealed = false;
+    render(`
+      <div class="head">${back('jlpt-vocab', st.lv)}<div class="grow">${bar(st.i, st.queue.length)}</div><span class="muted">${st.i + 1}/${st.queue.length}</span></div>
+      <div class="card">
+        <span class="tag alt">What’s this in Japanese?</span>
+        <div class="wpic huge">${w.pic}</div>
+        <div class="prompt">${esc(w.en)}</div>${hg(w.hg, 'prompt-hi')}
+        <div id="answer" hidden>
+          <div class="jpblock big"><div class="jp" lang="ja">${esc(w.jp)}</div>
+          ${S().settings.kana && w.kana !== w.jp ? `<div class="kana" lang="ja">${esc(w.kana)}</div>` : ''}
+          ${S().settings.romaji ? `<div class="ro">${esc(w.ro)}</div>` : ''}</div>
+        </div>
+      </div>
+      <div class="actions" id="actions"><button class="btn primary big" data-act="vreveal">Show answer</button></div>`);
+  }
+
+  function vreveal() {
+    if (st.revealed) return;
+    st.revealed = true;
+    document.getElementById('answer').hidden = false;
+    document.getElementById('actions').innerHTML = `<div class="grades">
+      <button class="btn again" data-act="vgrade" data-arg="${AGAIN}">Forgot</button>
+      <button class="btn good" data-act="vgrade" data-arg="${GOOD}">Got it</button>
+      <button class="btn easy" data-act="vgrade" data-arg="${EASY}">Easy</button></div>`;
+    speak(st.queue[st.i].jp);
+  }
+
+  function vgrade(g) {
+    const w = st.queue[st.i];
+    vprog()[w.id] = grade(vprog()[w.id], +g);
+    if (+g === AGAIN) st.queue.push(w); else st.done++;
+    save(); st.i++; vcard();
+  }
+
+  // Picture → word, and word → meaning (like 文脈規定 / meaning questions).
+  function vocabQuiz(lv) {
+    const ws = WORDS.filter(w => w.level === lv);
+    const qs = shuffle(ws).slice(0, 12).map((w, n) => {
+      const others = shuffle(ws.filter(o => o.en !== w.en && o.jp !== w.jp)).slice(0, 3);
+      return n % 2
+        ? { type: 'pic', w, right: w.jp, options: shuffle([w, ...others]).map(o => o.jp) }
+        : { type: 'mean', w, right: w.en, options: shuffle([w, ...others]).map(o => o.en) };
+    });
+    st = { kind: 'vquizj', qs, i: 0, right: 0, key: 'vocab-' + lv, back: 'jlpt-vocab', backArg: lv };
+    quizQ();
+  }
+
   // ================= Shared multiple-choice quiz =================
   function quizQ() {
     const q = st.qs[st.i];
@@ -251,6 +339,8 @@ export function initJlpt(ctx) {
     let prompt = '';
     if (q.type === 'read') prompt = `<span class="tag alt">How do you read this?</span><div class="kbig" lang="ja">${q.k}</div>`;
     if (q.type === 'listen') prompt = `<span class="tag alt">Which kana did you hear?</span><button class="btn listen" data-act="say-text" data-arg="${q.k}">🔊 Play again</button>`;
+    if (q.type === 'pic') prompt = `<span class="tag alt">Which word is this?</span><div class="wpic huge">${q.w.pic}</div>${hg(q.w.hg)}`;
+    if (q.type === 'mean') prompt = `<span class="tag alt">What does it mean?</span><div class="kbig small-k" lang="ja">${esc(q.w.jp)}</div>${S().settings.kana && q.w.kana !== q.w.jp ? `<div class="kana" lang="ja">${esc(q.w.kana)}</div>` : ''}`;
     if (q.type === 'gram') prompt = `<span class="tag alt">Fill in the grammar</span>
       <div class="jp big-jp" lang="ja">${mark(q.e[0], true)}</div>
       ${S().settings.kana ? `<div class="kana" lang="ja">${mark(q.e[1], true)}</div>` : ''}
@@ -258,7 +348,10 @@ export function initJlpt(ctx) {
     render(`
       <div class="head">${back(st.back, st.backArg || '')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
       <div class="card">${prompt}</div>
-      <div class="choices ${q.type === 'gram' ? '' : 'four'}">${q.options.map(o => `<button class="choice center" data-act="answer-j" data-arg="${esc(o)}"><span lang="ja">${esc(o)}</span></button>`).join('')}</div>
+      <div class="choices ${['gram', 'mean'].includes(q.type) ? '' : 'four'}">${q.options.map(o => {
+        const kana = q.type === 'pic' && S().settings.kana ? WORDS.find(w => w.jp === o && w.level === q.w.level)?.kana : '';
+        return `<button class="choice center" data-act="answer-j" data-arg="${esc(o)}"><span lang="ja">${esc(o)}</span>${kana && kana !== o ? `<small lang="ja">${esc(kana)}</small>` : ''}</button>`;
+      }).join('')}</div>
       <div class="actions" id="actions"></div>`);
     if (q.type === 'listen') speak(q.k);
   }
@@ -278,6 +371,9 @@ export function initJlpt(ctx) {
       extra = `<div class="card compact left"><div class="jp" lang="ja">${mark(q.e[0])}</div>${S().settings.romaji ? `<div class="ro">${esc(plain(q.e[2]))}</div>` : ''}
         ${ok ? '' : `<div class="note">${q.g.pic} <b lang="ja">${esc(q.g.pattern)}</b> = ${esc(q.g.en)}${S().settings.hindi ? ` · ${esc(q.g.hg)}` : ''}</div>`}</div>`;
       speak(plain(q.e[0]));
+    } else if (q.w) {
+      extra = `<div class="card compact"><span class="wpic">${q.w.pic}</span> <b lang="ja">${esc(q.w.jp)}</b> ${esc(q.w.kana !== q.w.jp ? q.w.kana : '')} = ${esc(q.w.en)}${S().settings.hindi ? ` · ${esc(q.w.hg)}` : ''}</div>`;
+      speak(q.w.jp);
     } else {
       if (!ok) extra = `<div class="center"><b lang="ja" class="big-jp">${q.k}</b> = ${toRomaji(q.k)}</div>`;
       speak(q.k);
@@ -314,6 +410,12 @@ export function initJlpt(ctx) {
     'order-pick': n => orderPick(n),
     'order-undo': () => { const q = st?.qs?.[st.i]; if (q && !st.answered) { q.picked.pop(); renderBuilt(q); } },
     'answer-j': o => answer(o),
+    'jlpt-vocab': lv => ctx.go('jlpt/vocab/' + (lv || level())),
+    vlearn: a => vlearn(a),
+    vreveal: () => vreveal(),
+    vgrade: g => vgrade(g),
+    'vocab-quiz': lv => vocabQuiz(lv),
+    'kanji-n4': () => { S().kanjiLevel = 'n4'; save(); ctx.go('kanji'); },
     'quiz-next-j': () => { st.i++; st.kind === 'order' ? orderQ() : quizQ(); },
   };
 
@@ -321,6 +423,7 @@ export function initJlpt(ctx) {
     if (h === 'jlpt') return hub(), true;
     if (h === 'jlpt/kana') return kana('hira'), true;
     if (h.startsWith('jlpt/grammar/')) return grammarList(h.slice(13) === 'n4' ? 'n4' : 'n5'), true;
+    if (h.startsWith('jlpt/vocab/')) return vocab(h.slice(11) === 'n4' ? 'n4' : 'n5'), true;
     if (h.startsWith('jlpt/g/') && GRAMMAR.some(g => g.id === h.slice(7))) return gpoint(h.slice(7)), true;
     return false;
   }
@@ -328,6 +431,7 @@ export function initJlpt(ctx) {
   function rerender() {
     if (!st) return false;
     if (st.kind === 'kana') kana(st.script);
+    else if (st.kind === 'vlearn') vcard();
     else if (st.kind === 'order') orderQ();
     else quizQ();
     return true;

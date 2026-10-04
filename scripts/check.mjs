@@ -69,6 +69,46 @@ for (const c of COUNTRIES) {
 }
 if (new Set(CARDS.map(c => c.id)).size !== CARDS.length) fail('duplicate card ids');
 
+// 5b. Particles, verbs and kanji content.
+const { PARTICLES, CONFUSABLE } = await import('../js/particles-data.js');
+const { VERBS } = await import('../js/verbs-data.js');
+const { KANJI: KANJI_LIST } = await import('../js/kanji-data.js');
+const { conjugate, toRomaji, FORMS } = await import('../js/conjugate.js');
+const romajiOk = (r, where) => { if (/[\u3040-\u30ff\u4e00-\u9faf\u0900-\u097f]/.test(r)) fail(`${where}: romaji contains non-Latin: ${r}`); };
+const exOk = (e, where) => {
+  if (e.length !== 5 || !e.every(x => typeof x === 'string' && x.trim())) return fail(`${where}: example needs [jp, kana, romaji, en, hinglish]`);
+  if (/[\u4e00-\u9faf]/.test(e[1])) fail(`${where}: kana contains kanji: ${e[1]}`);
+  romajiOk(e[2], where);
+  if (!LATIN.test(e[4])) fail(`${where}: Hinglish must be Roman letters: ${e[4]}`);
+};
+for (const p of PARTICLES) {
+  if (!(p.p in CONFUSABLE)) fail(`particle ${p.p} missing from CONFUSABLE`);
+  if (p.examples.length < 2) fail(`particle ${p.p}: needs at least 2 examples`);
+  for (const [i, e] of p.examples.entries()) {
+    exOk(e, `particle ${p.p} ex ${i}`);
+    for (const k of [0, 1, 2]) {
+      const m = [...e[k].matchAll(/\[(.+?)\]/g)];
+      if (m.length !== 1) fail(`particle ${p.p} ex ${i}: field ${k} must mark the particle exactly once`);
+    }
+    if (e[0].match(/\[(.+?)\]/)?.[1] !== p.p || e[1].match(/\[(.+?)\]/)?.[1] !== p.p) fail(`particle ${p.p} ex ${i}: marked particle is not ${p.p}`);
+  }
+}
+for (const v of VERBS) {
+  exOk(v.ex, `verb ${v.jp}`);
+  try {
+    const c = conjugate(v);
+    for (const f of FORMS) if (!c[f.id]?.[0] || /[\u4e00-\u9faf]/.test(c[f.id][1])) fail(`verb ${v.jp}: bad ${f.id} form`);
+  } catch (e) { fail(`verb ${v.jp}: ${e.message}`); }
+}
+if (new Set(VERBS.map(v => v.jp)).size !== VERBS.length) fail('duplicate verbs');
+for (const k of KANJI_LIST) {
+  if (!k.en || !LATIN.test(k.hg) || k.ex.length < 2) fail(`kanji ${k.ch}: needs meaning, Hinglish and 2 examples`);
+  if (k.on && /[\u3040-\u309f]/.test(k.on)) fail(`kanji ${k.ch}: on’yomi should be katakana`);
+  if (k.kun && /[\u30a1-\u30f6]/.test(k.kun)) fail(`kanji ${k.ch}: kun’yomi should be hiragana`);
+  for (const [i, e] of k.ex.entries()) { exOk(e, `kanji ${k.ch} ex ${i}`); if (!e[0].includes(k.ch)) fail(`kanji ${k.ch} ex ${i}: word ${e[0]} doesn’t use it`); }
+}
+if (new Set(KANJI_LIST.map(k => k.ch)).size !== KANJI_LIST.length) fail('duplicate kanji');
+
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
@@ -117,8 +157,43 @@ test('speech matching accepts kanji, kana, katakana and digits', () => {
   assert.equal(core.matchScore(['ありがとう'], 'ありがとうございます。', 'ありがとうございます。', ['ありがとう。']), 1);
 });
 
+test('conjugates group 1 verbs', () => {
+  const c = conjugate({ jp: '飲む', kana: 'のむ', group: 1 });
+  assert.deepEqual([c.masu[0], c.te[0], c.nai[0], c.ta[0], c.tai[0], c.mashou[1]], ['飲みます', '飲んで', '飲まない', '飲んだ', '飲みたいです', 'のみましょう']);
+  const k = conjugate({ jp: '書く', kana: 'かく', group: 1 });
+  assert.deepEqual([k.te[0], k.ta[0]], ['書いて', '書いた']);
+  assert.deepEqual([conjugate({ jp: '急ぐ', kana: 'いそぐ', group: 1 }).te[0], conjugate({ jp: '話す', kana: 'はなす', group: 1 }).te[0]], ['急いで', '話して']);
+  assert.deepEqual([conjugate({ jp: '会う', kana: 'あう', group: 1 }).nai[0], conjugate({ jp: '待つ', kana: 'まつ', group: 1 }).te[0]], ['会わない', '待って']);
+  assert.deepEqual([conjugate({ jp: '帰る', kana: 'かえる', group: 1 }).masu[0], conjugate({ jp: '遊ぶ', kana: 'あそぶ', group: 1 }).te[0]], ['帰ります', '遊んで']);
+});
+test('conjugates the exceptions: 行く, ある, する, 来る', () => {
+  const iku = conjugate({ jp: '行く', kana: 'いく', group: 1 });
+  assert.deepEqual([iku.te[0], iku.ta[0], iku.masu[0]], ['行って', '行った', '行きます']);
+  assert.equal(conjugate({ jp: 'ある', kana: 'ある', group: 1 }).nai[0], 'ない');
+  const kuru = conjugate({ jp: '来る', kana: 'くる', group: 3 });
+  assert.deepEqual([kuru.masu, kuru.nai, kuru.te], [['来ます', 'きます'], ['来ない', 'こない'], ['来て', 'きて']]);
+  const benkyo = conjugate({ jp: '勉強する', kana: 'べんきょうする', group: 3 });
+  assert.deepEqual([benkyo.masu[0], benkyo.te[1], benkyo.nai[0]], ['勉強します', 'べんきょうして', '勉強しない']);
+});
+test('conjugates group 2 verbs', () => {
+  const c = conjugate({ jp: '食べる', kana: 'たべる', group: 2 });
+  assert.deepEqual([c.masu[0], c.te[0], c.nai[0], c.ta[0], c.masen[0]], ['食べます', '食べて', '食べない', '食べた', '食べません']);
+});
+test('kana to romaji', () => {
+  assert.equal(toRomaji('べんきょうします'), 'benkyōshimasu');
+  assert.equal(toRomaji('のみましょう'), 'nomimashō');
+  assert.equal(toRomaji('いって'), 'itte');
+  assert.equal(toRomaji('まって'), 'matte');
+  assert.equal(toRomaji('しゅうまつ'), 'shūmatsu');
+  assert.equal(toRomaji('おおきい'), 'ōkii');
+  assert.equal(toRomaji('こんいん'), "kon'in");
+  assert.equal(toRomaji('おもう', { keepFinalU: true }), 'omou');
+  assert.equal(toRomaji('コーヒー'), 'kōhī');
+  assert.equal(toRomaji('ちゃ'), 'cha');
+});
+
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));
   process.exit(1);
 }
-console.log(`✓ All checks passed (${UNITS.length} units, ${CARDS.length} phrases, ${UNITS.reduce((n, u) => n + u.dialogue.length, 0)} dialogue lines)`);
+console.log(`✓ All checks passed (${UNITS.length} units, ${CARDS.length} phrases, ${UNITS.reduce((n, u) => n + u.dialogue.length, 0)} dialogue lines, ${PARTICLES.length} particles, ${VERBS.length} verbs, ${KANJI_LIST.length} kanji)`);

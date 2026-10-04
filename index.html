@@ -25,6 +25,12 @@
     <button class="gear" data-act="settings" aria-label="Settings">⚙︎</button>
   </header>
   <main id="app"></main>
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <a href="#" data-tab="phrases"><span>💬</span>Phrases</a>
+    <a href="#particles" data-tab="particle"><span lang="ja">の</span>Particles</a>
+    <a href="#verbs" data-tab="verb"><span>🏃</span>Verbs</a>
+    <a href="#kanji" data-tab="kanji"><span lang="ja">漢</span>Kanji</a>
+  </nav>
   <div id="sheet" class="sheet" hidden></div>
   <div id="toast" class="toast" role="status"></div>
   <script type="module" src="/js/app.js"></script>

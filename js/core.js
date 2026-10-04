@@ -46,7 +46,7 @@ export function fill(text, p) {
   return text
     .replaceAll('{nameRo}', p.nameRo).replaceAll('{name}', p.name)
     .replaceAll('{countryKana}', p.countryKana).replaceAll('{countryRo}', p.countryRo)
-    .replaceAll('{countryEn}', p.countryEn).replaceAll('{country}', p.country);
+    .replaceAll('{countryEn}', p.countryEn).replaceAll('{countryHi}', p.countryHi).replaceAll('{country}', p.country);
 }
 
 // ---- Speech matching ----
@@ -80,8 +80,9 @@ export function similarity(a, b) {
 
 // Best score (0..1) of anything the recogniser heard against the target phrase.
 // Recognisers return kanji, kana or digits, so compare against each form.
-export function matchScore(heard, jp, kana) {
-  const targets = [jp, kana, jp.replace(/[一二三四五六七八九十千百]/g, k => KANJI_DIGITS[k])];
+// `extra` holds other acceptable sayings (e.g. the casual version).
+export function matchScore(heard, jp, kana, extra = []) {
+  const targets = [jp, kana, jp.replace(/[一二三四五六七八九十千百]/g, k => KANJI_DIGITS[k]), ...extra];
   let best = 0;
   for (const h of heard) for (const t of targets) best = Math.max(best, similarity(h, t));
   return best;

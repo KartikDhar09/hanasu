@@ -18,13 +18,16 @@
   --shadow: 0 1px 2px rgba(34, 28, 22, .06), 0 4px 16px rgba(34, 28, 22, .06);
   --radius: 16px;
   --jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --hi: 'Noto Sans Devanagari', 'Kohinoor Devanagari', 'Nirmala UI', sans-serif;
+  --casual: #7A4FB5;
+  --casual-soft: #F0E9F8;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #16130F; --surface: #211D18; --surface-2: #2A251F; --ink: #F2EBE1; --muted: #A89C8E; --line: #3A332B;
     --accent: #E5604C; --accent-soft: #3D2420; --you: #7FA7E8; --you-soft: #1E2A3D;
-    --ok: #6BCB8F; --ok-soft: #1C3326; --warn: #E6A84A; --bad: #F08A80; --bad-soft: #3D2120;
+    --ok: #6BCB8F; --ok-soft: #1C3326; --casual: #B89AE6; --casual-soft: #2A2238; --warn: #E6A84A; --bad: #F08A80; --bad-soft: #3D2120;
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
     color-scheme: dark;
   }
@@ -38,6 +41,7 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 [lang="ja"] { font-family: var(--jp); }
+[lang="hi"] { font-family: var(--hi); }
 [hidden] { display: none !important; }
 button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3 { line-height: 1.25; margin: 0; }
@@ -106,6 +110,7 @@ main { max-width: 640px; margin: 0 auto; padding: 16px; }
 /* ---------- Unit ---------- */
 .head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .head .grow { flex: 1; }
+.sub { margin: -8px 0 16px 52px; }
 .back { border: 0; background: var(--surface-2); width: 40px; height: 40px; border-radius: 50%; font-size: 1.6rem; line-height: 1; flex: none; }
 .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .mode {
@@ -130,6 +135,15 @@ main { max-width: 640px; margin: 0 auto; padding: 16px; }
 .jpblock.big .kana { font-size: 1.05rem; }
 .jpblock.big .ro { font-size: 1rem; }
 .en { margin-top: 2px; }
+.hi { color: var(--muted); font-size: .92rem; }
+.prompt-hi { color: var(--muted); font-size: 1.05rem; margin-top: -4px; }
+.casual {
+  display: block; width: 100%; text-align: left; margin-top: 8px; padding: 6px 10px; border-radius: 8px;
+  border: 1px dashed color-mix(in srgb, var(--casual) 50%, transparent); background: var(--casual-soft); color: var(--ink); font-size: .95rem;
+}
+.casual small { color: var(--muted); font-style: italic; }
+.tag-mini { display: block; font-size: .72rem; font-weight: 700; color: var(--casual); letter-spacing: .02em; }
+.card .casual { text-align: center; }
 .note { margin-top: 8px; font-size: .88rem; background: var(--surface-2); border-radius: 8px; padding: 6px 10px; }
 
 /* ---------- Study card ---------- */
@@ -160,7 +174,7 @@ main { max-width: 640px; margin: 0 auto; padding: 16px; }
 .choice {
   text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 1.05rem; min-height: 52px;
 }
-.choice small { display: block; color: var(--muted); font-size: .8rem; }
+.choice small { display: block; color: var(--muted); font-size: .85rem; }
 .choice.right { border-color: var(--ok); background: var(--ok-soft); }
 .choice.wrong { border-color: var(--bad); background: var(--bad-soft); }
 

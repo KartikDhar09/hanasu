@@ -188,7 +188,10 @@ export function initStudy(ctx) {
 
   function vquizQ() {
     const q = st.qs[st.i];
-    if (!q) return quizDone(`Conjugation quiz: ${st.right}/${st.qs.length}`, 'verbs', '');
+    if (!q) return quizDone(`Conjugation quiz: ${st.right}/${st.qs.length}`, 'verbs', '', () => {
+      const b = (S().quizBest = S().quizBest || {});
+      b.vquiz = Math.max(b.vquiz || 0, Math.round(100 * st.right / st.qs.length));
+    });
     st.answered = false;
     render(`
       <div class="head">${back('verbs')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>

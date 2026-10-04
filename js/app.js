@@ -3,6 +3,7 @@ import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession, bumpStreak, li
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, jaVoices } from './speech.js';
 import { initStudy } from './study.js';
 import { initSpeaking } from './speaking.js';
+import { initJlpt } from './jlpt.js';
 
 // ---------- State ----------
 const KEY = 'hanasu-v1';
@@ -531,7 +532,7 @@ function saveSettings() {
 
 // Re-draw the current screen after settings change.
 function rerender() {
-  if (study.rerender() || speaking.rerender()) return;
+  if (study.rerender() || speaking.rerender() || jlpt.rerender()) return;
   if (!sess) return route();
   if (sess.kind === 'learn') learnCard();
   else if (sess.kind === 'speak') speakCard();
@@ -604,11 +605,11 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 function route() {
   const h = location.hash.slice(1);
   study.clear();
-  speaking.clear();
-  const m = /^(speak|particle|verb|grammar|kanji)/.exec(h)?.[1];
+  speaking.clear(); jlpt.clear();
+  const m = /^(speak|particle|verb|grammar|kanji|jlpt)/.exec(h)?.[1];
   const tab = m === 'particle' || m === 'verb' ? 'grammar' : m || 'phrases';
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
-  if (study.route(h) || speaking.route(h)) return;
+  if (study.route(h) || speaking.route(h) || jlpt.route(h)) return;
   if (h.startsWith('unit/') && unitById(h.slice(5))) unit(h.slice(5));
   else home();
 }
@@ -628,6 +629,12 @@ const speaking = initSpeaking({
   clearSess: () => { sess = null; stopSpeaking(); },
 });
 Object.assign(actions, speaking.actions);
+
+const jlpt = initJlpt({
+  S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go,
+  clearSess: () => { sess = null; stopSpeaking(); },
+});
+Object.assign(actions, jlpt.actions);
 
 // Form controls (selects) name their action in data-change.
 document.addEventListener('change', e => {

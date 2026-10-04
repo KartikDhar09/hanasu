@@ -73,16 +73,16 @@ function jpBlock(c, cls = '') {
   </div>`;
 }
 
-// Meaning in English, with Hindi underneath when enabled.
+// Meaning in English, with Hinglish underneath when enabled.
 function meaning(c, cls = 'en') {
-  return `<div class="${cls}">${esc(c.en)}</div>${S.settings.hindi && c.hi ? `<div class="hi" lang="hi">${esc(c.hi)}</div>` : ''}`;
+  return `<div class="${cls}">${esc(c.en)}</div>${S.settings.hindi && c.hi ? `<div class="hi" lang="hi-Latn">${esc(c.hi)}</div>` : ''}`;
 }
 
 // How you'd say it to friends or close coworkers.
 function casualBlock(c) {
   if (!c.casual || !S.settings.casual) return '';
   return `<button class="casual" data-act="say-casual" data-arg="${c.id}">
-    <span class="tag-mini">😎 Casual · दोस्तों से</span>
+    <span class="tag-mini">😎 Casual · doston se</span>
     <span lang="ja">${esc(c.casual.jp)}</span>${S.settings.romaji ? ` <small>${esc(c.casual.ro)}</small>` : ''}
   </button>`;
 }
@@ -120,14 +120,14 @@ function home() {
     </section>
     ${TRACKS.map(t => `
       <h2 class="track"><span lang="ja">${t.jp}</span> ${t.title}</h2>
-      <p class="muted">${t.desc}${S.settings.hindi ? ` · <span lang="hi">${t.hi}</span>` : ''}</p>
+      <p class="muted">${t.desc}${S.settings.hindi ? ` · <span lang="hi-Latn">${t.hi}</span>` : ''}</p>
       <div class="units">
         ${UNITS.filter(u => u.track === t.id).map(u => {
           const cs = cardsOf(u.id);
           const n = cs.filter(c => isLearned(S.progress[c.id])).length;
           return `<button class="unit" data-act="unit" data-arg="${u.id}">
             <span class="icon">${u.icon}</span>
-            <span class="ut"><b>${esc(u.title)}</b><small><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi">${u.hi}</span>` : ''}</small></span>
+            <span class="ut"><b>${esc(u.title)}</b><small><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</small></span>
             <span class="count">${n}/${cs.length}</span>
             ${bar(n, cs.length)}
           </button>`;
@@ -143,12 +143,12 @@ function unit(id) {
   const cs = cardsOf(id).map(view);
   render(`
     <div class="head">${back()}<h1>${u.icon} ${esc(u.title)}</h1></div>
-    <p class="muted sub"><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi">${u.hi}</span>` : ''}</p>
+    <p class="muted sub"><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</p>
     <div class="modes">
-      <button class="mode" data-act="learn" data-arg="${id}"><span>🃏</span><b>Learn</b><small>Flashcards · सीखें</small></button>
-      <button class="mode" data-act="speak" data-arg="${id}"><span>🎤</span><b>Speak</b><small>Say it, get checked · बोलें</small></button>
-      <button class="mode" data-act="quiz" data-arg="${id}"><span>✅</span><b>Quiz</b><small>Listen &amp; choose · क्विज़</small></button>
-      <button class="mode" data-act="talk" data-arg="${id}"><span>💬</span><b>Role-play</b><small>Real conversation · बातचीत</small></button>
+      <button class="mode" data-act="learn" data-arg="${id}"><span>🃏</span><b>Learn</b><small>Flashcards · seekho</small></button>
+      <button class="mode" data-act="speak" data-arg="${id}"><span>🎤</span><b>Speak</b><small>Say it, get checked · bolo</small></button>
+      <button class="mode" data-act="quiz" data-arg="${id}"><span>✅</span><b>Quiz</b><small>Listen &amp; choose · quiz</small></button>
+      <button class="mode" data-act="talk" data-arg="${id}"><span>💬</span><b>Role-play</b><small>Real conversation · baatcheet</small></button>
     </div>
     <h3>Phrases <small class="muted">tap to hear</small></h3>
     <ul class="phrases">
@@ -200,7 +200,7 @@ function learnCard() {
     <div class="card ${intro ? 'intro' : ''}">
       ${intro ? '<span class="tag">New phrase</span>' : '<span class="tag alt">Say it in Japanese</span>'}
       <div class="prompt">${esc(c.en)}</div>
-      ${S.settings.hindi ? `<div class="prompt-hi" lang="hi">${esc(c.hi)}</div>` : ''}
+      ${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(c.hi)}</div>` : ''}
       <div id="answer" ${intro ? '' : 'hidden'}>
         ${jpBlock(c, 'big')}
         <div class="row center">
@@ -263,7 +263,7 @@ function speakCard() {
     <div class="card">
       <span class="tag alt">Listen, then say it</span>
       <div class="prompt small">${esc(c.en)}</div>
-      ${S.settings.hindi ? `<div class="prompt-hi" lang="hi">${esc(c.hi)}</div>` : ''}
+      ${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(c.hi)}</div>` : ''}
       ${jpBlock(c, 'big')}
       <div class="row center">
         <button class="btn icon" data-act="say" data-arg="${raw.id}">🔊</button>
@@ -345,13 +345,13 @@ function quizQ() {
         ? `<span class="tag alt">What does this mean?</span>
            <button class="btn listen" data-act="say" data-arg="${q.c.id}">🔊 Play again</button>
            <button class="btn ghost small" data-act="sayslow" data-arg="${q.c.id}">🐢 Slow</button>`
-        : `<span class="tag alt">How do you say…</span><div class="prompt">${esc(c.en)}</div>${S.settings.hindi ? `<div class="prompt-hi" lang="hi">${esc(c.hi)}</div>` : ''}`}
+        : `<span class="tag alt">How do you say…</span><div class="prompt">${esc(c.en)}</div>${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(c.hi)}</div>` : ''}`}
     </div>
     <div class="choices">
       ${q.options.map(o => {
         const v = view(o);
         return `<button class="choice" data-act="answer" data-arg="${o.id}">${q.type === 'audio'
-          ? `${esc(v.en)}${S.settings.hindi ? `<small lang="hi">${esc(v.hi)}</small>` : ''}` : `<span lang="ja">${esc(v.jp)}</span>${S.settings.romaji ? `<small>${esc(v.ro)}</small>` : ''}`}</button>`;
+          ? `${esc(v.en)}${S.settings.hindi ? `<small lang="hi-Latn">${esc(v.hi)}</small>` : ''}` : `<span lang="ja">${esc(v.jp)}</span>${S.settings.romaji ? `<small>${esc(v.ro)}</small>` : ''}`}</button>`;
       }).join('')}
     </div>
     <div class="actions" id="actions"></div>
@@ -425,7 +425,7 @@ async function talkStep() {
     <div class="yourturn">
       <span class="tag alt">Your turn — say:</span>
       <div class="prompt small">${esc(l.en)}</div>
-      ${S.settings.hindi ? `<div class="prompt-hi" lang="hi">${esc(l.hi)}</div>` : ''}
+      ${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(l.hi)}</div>` : ''}
       <div id="hint" class="hint" hidden>${jpBlock(l)}</div>
       <div id="result" class="result"></div>
     </div>
@@ -491,7 +491,7 @@ function openSettings(first = false) {
       </label>
       <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
       <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show kana reading under kanji</label>
-      <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hindi meanings · हिंदी अर्थ दिखाएँ</label>
+      <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
       <label class="check"><input type="checkbox" id="s-casual" ${S.settings.casual ? 'checked' : ''}> Show casual versions (with friends)</label>
       <label>Voice speed <input type="range" id="s-rate" min="0.5" max="1.2" step="0.1" value="${S.settings.rate}"></label>
       ${voices.length > 1 ? `<label>Voice <select id="s-voice"><option value="">Auto</option>${voices.map(v => `<option ${v.name === S.settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>` : ''}

@@ -2,6 +2,7 @@ import { TRACKS, UNITS, CARDS, COUNTRIES, CONTENT_VERSION } from './data.js';
 import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession, bumpStreak, liveStreak, fill, matchScore, PASS } from './core.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, jaVoices } from './speech.js';
 import { initStudy } from './study.js';
+import { initSpeaking } from './speaking.js';
 
 // ---------- State ----------
 const KEY = 'hanasu-v1';
@@ -251,8 +252,9 @@ function gradeCard(g) {
 }
 
 // ---------- Speak (pronunciation check) ----------
-function speakMode(unitId, i = 0) {
-  sess = { kind: 'speak', unitId, cards: cardsOf(unitId), i };
+// cards/backAct let the Speak tab reuse this drill with any set of phrases.
+function speakMode(unitId, i = 0, cards = null, backAct = 'unit') {
+  sess = { kind: 'speak', unitId, cards: cards || cardsOf(unitId), i, backAct };
   speakCard();
 }
 
@@ -262,7 +264,7 @@ function speakCard() {
   const c = view(raw);
   const best = S.spoken[raw.id];
   render(`
-    <div class="head">${back('unit', s.unitId)}<div class="grow">${bar(s.i, s.cards.length)}</div><span class="muted">${s.i + 1}/${s.cards.length}</span></div>
+    <div class="head">${back(s.backAct, s.unitId || '')}<div class="grow">${bar(s.i, s.cards.length)}</div><span class="muted">${s.i + 1}/${s.cards.length}</span></div>
     <div class="card">
       <span class="tag alt">Listen, then say it</span>
       <div class="prompt small">${esc(c.en)}</div>
@@ -289,12 +291,14 @@ function speakCard() {
 }
 
 // Records speech and scores it against the target line. Returns the score or null.
+// c.alts: extra acceptable sayings as [jp, kana] pairs.
 async function recordAgainst(c, resultEl, micEl) {
+  const act = micEl?.dataset.act; // restored afterwards, so each screen keeps its own mic handler
   if (micEl) { micEl.classList.add('on'); micEl.textContent = '● Listening… tap to stop'; micEl.dataset.act = 'mic-stop'; }
   try {
     const heard = await listen();
     if (!heard.length) { resultEl.innerHTML = `<span class="muted">Didn’t catch that. Try again, a little louder.</span>`; return null; }
-    const score = matchScore(heard, c.jp, c.kana, c.casual ? [c.casual.jp, c.casual.kana] : []);
+    const score = matchScore(heard, c.jp, c.kana, [...(c.casual ? [c.casual.jp, c.casual.kana] : []), ...(c.alts || []).flat()]);
     const ok = score >= PASS;
     resultEl.innerHTML = `
       <div class="score ${ok ? 'ok' : 'retry'}">${ok ? '🎉 Great!' : '🔁 Almost'} <b>${Math.round(score * 100)}%</b></div>
@@ -306,7 +310,7 @@ async function recordAgainst(c, resultEl, micEl) {
       : 'Couldn’t listen (' + esc(e.message) + '). Try again.'}</span>`;
     return null;
   } finally {
-    if (micEl) { micEl.classList.remove('on'); micEl.textContent = '🎤 Try again'; micEl.dataset.act = 'mic'; }
+    if (micEl) { micEl.classList.remove('on'); micEl.textContent = '🎤 Try again'; micEl.dataset.act = act; }
   }
 }
 
@@ -459,7 +463,7 @@ async function talkAdvance(scoreHtml = '') {
 }
 
 // ---------- Finish screen ----------
-function finish(title, unitId, extra = '') {
+function finish(title, unitId, extra = '', backAct = 'home') {
   sess = null;
   render(`
     <div class="done">
@@ -473,7 +477,7 @@ function finish(title, unitId, extra = '') {
           <button class="mode" data-act="quiz" data-arg="${unitId}"><span>✅</span><b>Quiz</b></button>
           <button class="mode" data-act="talk" data-arg="${unitId}"><span>💬</span><b>Role-play</b></button>
           <button class="mode" data-act="home"><span>🏠</span><b>Home</b></button>
-        </div>` : `<button class="btn primary big" data-act="home">Home</button>`}
+        </div>` : `<button class="btn primary big" data-act="${backAct}">Back</button>`}
     </div>
   `);
 }
@@ -527,7 +531,7 @@ function saveSettings() {
 
 // Re-draw the current screen after settings change.
 function rerender() {
-  if (study.rerender()) return;
+  if (study.rerender() || speaking.rerender()) return;
   if (!sess) return route();
   if (sess.kind === 'learn') learnCard();
   else if (sess.kind === 'speak') speakCard();
@@ -556,7 +560,7 @@ const actions = {
   'mic-stop': () => stopListening(),
   'speak-move': d => {
     sess.i += +d;
-    if (sess.i >= sess.cards.length) { practised(); return finish('Speaking practice done', sess.unitId); }
+    if (sess.i >= sess.cards.length) { practised(); return finish('Speaking practice done', sess.unitId, '', sess.backAct); }
     speakCard();
   },
   answer: id => answer(id),
@@ -600,9 +604,11 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 function route() {
   const h = location.hash.slice(1);
   study.clear();
-  const tab = /^(particle|verb|kanji)/.exec(h)?.[1] || 'phrases';
+  speaking.clear();
+  const m = /^(speak|particle|verb|grammar|kanji)/.exec(h)?.[1];
+  const tab = m === 'particle' || m === 'verb' ? 'grammar' : m || 'phrases';
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
-  if (study.route(h)) return;
+  if (study.route(h) || speaking.route(h)) return;
   if (h.startsWith('unit/') && unitById(h.slice(5))) unit(h.slice(5));
   else home();
 }
@@ -615,6 +621,19 @@ const study = initStudy({
   setSess: () => { sess = null; },
 });
 Object.assign(actions, study.actions);
+
+const speaking = initSpeaking({
+  S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go, profile, canListen,
+  fill: t => fill(t, profile()), record: recordAgainst, speakMode,
+  clearSess: () => { sess = null; stopSpeaking(); },
+});
+Object.assign(actions, speaking.actions);
+
+// Form controls (selects) name their action in data-change.
+document.addEventListener('change', e => {
+  const el = e.target.closest('[data-change]');
+  if (el) actions[el.dataset.change]?.(el.value);
+});
 
 route();
 if (!S.setup) openSettings(true);

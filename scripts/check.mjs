@@ -109,6 +109,18 @@ for (const k of KANJI_LIST) {
 }
 if (new Set(KANJI_LIST.map(k => k.ch)).size !== KANJI_LIST.length) fail('duplicate kanji');
 
+// 5c. Speaking content.
+const SP = await import('../js/speaking-data.js');
+for (const [i, item] of SP.QA.entries()) {
+  if (!item.pic || item.a.length < 2) fail(`QA ${i}: needs a picture and 2 answers`);
+  for (const l of [item.q, ...item.a]) {
+    if (l.length !== 5 || !l.every(x => typeof x === 'string' && x.trim())) fail(`QA ${i}: line needs 5 fields`);
+    else { if (/[\u4e00-\u9faf]/.test(l[1].replace(/\{\w+\}/g, ''))) fail(`QA ${i}: kana has kanji: ${l[1]}`); romajiOk(l[2], `QA ${i}`); if (!LATIN.test(l[4])) fail(`QA ${i}: Hinglish: ${l[4]}`); }
+  }
+}
+for (const g of SP.PRONUNCIATION) for (const pair of g.pairs) for (const w of pair) if (w.length !== 5 || !/^[\u3040-\u309f]+$/.test(w[0])) fail(`pronunciation word ${w[0]}: needs [kana, romaji, en, hinglish, emoji]`);
+for (const j of SP.JOBS) if (j.length !== 6) fail(`job ${j[0]}: needs 6 fields`);
+
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };

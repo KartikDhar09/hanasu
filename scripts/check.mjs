@@ -31,11 +31,12 @@ try {
   for (const i of m.icons) if (!existsSync(i.src.slice(1))) fail(`manifest icon missing: ${i.src}`);
 } catch (e) { fail('manifest.webmanifest: ' + e.message); }
 
-// 5. Lesson content is well-formed.
+// 5. Lesson content is well-formed, and no Devanagari is left anywhere (the app uses Hinglish).
+for (const f of readdirSync('js')) if (/[\u0900-\u097f]/.test(read('js/' + f))) fail(`js/${f} still contains Devanagari`);
 const { UNITS, CARDS, TRACKS, COUNTRIES } = await import('../js/data.js');
 const KANJI = /[一-龯]/;
 const KEYS = new Set(['name', 'nameRo', 'country', 'countryKana', 'countryRo', 'countryEn', 'countryHi']);
-const DEVANAGARI = /[\u0900-\u097f]/;
+const LATIN = /^[^\u0900-\u097f\u3040-\u30ff]*[a-z][^\u0900-\u097f\u3040-\u30ff]*$/i; // Hinglish: Roman letters, no Devanagari or kana
 const ids = new Set();
 for (const u of UNITS) {
   if (ids.has(u.id)) fail(`duplicate unit id ${u.id}`); ids.add(u.id);
@@ -47,7 +48,7 @@ for (const u of UNITS) {
     if (![jp, kana, ro, en, hi].every(s => typeof s === 'string' && s.trim())) return fail(`${where}: empty field`);
     if (KANJI.test(kana.replace(/\{\w+\}/g, ''))) fail(`${where}: kana reading contains kanji: ${kana}`);
     if (/[\u3040-\u30ff\u4e00-\u9faf]/.test(ro)) fail(`${where}: romaji contains Japanese: ${ro}`);
-    if (!DEVANAGARI.test(hi)) fail(`${where}: Hindi meaning is not in Devanagari: ${hi}`);
+    if (!LATIN.test(hi)) fail(`${where}: Hinglish meaning must be Roman letters: ${hi}`);
     for (const s of [jp, kana, ro, en, hi]) for (const [, p] of s.matchAll(/\{(\w+)\}/g)) if (!KEYS.has(p)) fail(`${where}: unknown placeholder {${p}}`);
   };
   u.phrases.forEach((p, i) => {
@@ -56,7 +57,7 @@ for (const u of UNITS) {
     const c = p[6];
     if (c && (c.length !== 3 || !c.every(x => typeof x === 'string' && x.trim()) || KANJI.test(c[1]))) fail(`${u.id} phrase ${i}: bad casual version`);
   });
-  if (!TRACKS.find(t => t.id === u.track)?.hi || !u.hi) fail(`${u.id}: missing Hindi title`);
+  if (!TRACKS.find(t => t.id === u.track)?.hi || !u.hi) fail(`${u.id}: missing Hinglish title`);
   u.dialogue.forEach((l, i) => {
     if (!['you', 'them'].includes(l[0])) fail(`${u.id} line ${i}: who must be you/them`);
     check(l, `${u.id} line ${i}`, 1);
@@ -64,7 +65,7 @@ for (const u of UNITS) {
 }
 for (const c of COUNTRIES) {
   if (c.length !== 5 || KANJI.test(c[1])) fail(`country ${c[3]} needs [jp, kana, romaji, english, hindi]`);
-  if (!DEVANAGARI.test(c[4])) fail(`country ${c[3]}: Hindi name missing`);
+  if (!LATIN.test(c[4])) fail(`country ${c[3]}: Hinglish name missing`);
 }
 if (new Set(CARDS.map(c => c.id)).size !== CARDS.length) fail('duplicate card ids');
 
@@ -101,8 +102,8 @@ test('streak counts consecutive days and resets after a gap', () => {
   st = core.bumpStreak(st, d(4)); assert.equal(st.count, 1);
 });
 test('fill replaces placeholders', () => {
-  const p = { name: 'スミス', nameRo: 'Sumisu', country: '中国', countryKana: 'ちゅうごく', countryRo: 'Chūgoku', countryEn: 'China', countryHi: 'चीन' };
-  assert.equal(core.fill('मैं {countryHi} से हूँ', p), 'मैं चीन से हूँ');
+  const p = { name: 'スミス', nameRo: 'Sumisu', country: '中国', countryKana: 'ちゅうごく', countryRo: 'Chūgoku', countryEn: 'China', countryHi: 'China' };
+  assert.equal(core.fill('Main {countryHi} se hoon', p), 'Main China se hoon');
   assert.equal(core.fill('{name}です。{country}から', p), 'スミスです。中国から');
   assert.equal(core.fill('{countryKana}から {nameRo}', p), 'ちゅうごくから Sumisu');
 });

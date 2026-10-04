@@ -18,7 +18,6 @@
   --shadow: 0 1px 2px rgba(34, 28, 22, .06), 0 4px 16px rgba(34, 28, 22, .06);
   --radius: 16px;
   --jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
-  --hi: 'Noto Sans Devanagari', 'Kohinoor Devanagari', 'Nirmala UI', sans-serif;
   --casual: #7A4FB5;
   --casual-soft: #F0E9F8;
   color-scheme: light;
@@ -41,7 +40,6 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 [lang="ja"] { font-family: var(--jp); }
-[lang="hi"] { font-family: var(--hi); }
 [hidden] { display: none !important; }
 button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3 { line-height: 1.25; margin: 0; }

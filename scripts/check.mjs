@@ -121,6 +121,20 @@ for (const [i, item] of SP.QA.entries()) {
 for (const g of SP.PRONUNCIATION) for (const pair of g.pairs) for (const w of pair) if (w.length !== 5 || !/^[\u3040-\u309f]+$/.test(w[0])) fail(`pronunciation word ${w[0]}: needs [kana, romaji, en, hinglish, emoji]`);
 for (const j of SP.JOBS) if (j.length !== 6) fail(`job ${j[0]}: needs 6 fields`);
 
+// 5d. JLPT content.
+const J = await import('../js/jlpt-data.js');
+const JL = await import('../js/jlpt.js').catch(e => ({ err: e }));
+if (new Set(J.GRAMMAR.map(g => g.id)).size !== J.GRAMMAR.length) fail('duplicate grammar ids');
+for (const g of J.GRAMMAR) {
+  if (!['n5', 'n4'].includes(g.level) || !g.pic || !g.how || !g.explain || !LATIN.test(g.hg)) fail(`grammar ${g.id}: missing fields`);
+  if (g.ex.length < 2) fail(`grammar ${g.id}: needs 2 examples`);
+  for (const [i, e] of g.ex.entries()) {
+    exOk(e, `grammar ${g.id} ex ${i}`);
+    for (const k of [0, 1, 2]) if ((e[k].match(/\[/g) || []).length !== 1) fail(`grammar ${g.id} ex ${i}: field ${k} must mark the grammar once`);
+  }
+}
+for (const lv of ['n5', 'n4']) if (J.GRAMMAR.filter(g => g.level === lv).length < 20) fail(`${lv}: needs at least 20 grammar points`);
+
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
@@ -202,6 +216,13 @@ test('kana to romaji', () => {
   assert.equal(toRomaji('おもう', { keepFinalU: true }), 'omou');
   assert.equal(toRomaji('コーヒー'), 'kōhī');
   assert.equal(toRomaji('ちゃ'), 'cha');
+});
+
+test('sentence chunks split at particles but keep words whole', () => {
+  const { chunk, ALL_KANA } = JL;
+  assert.deepEqual(chunk('日本で働く[ために]、日本語を勉強しています。'), ['日本で', '働くために、', '日本語を', '勉強しています。']);
+  assert.deepEqual(chunk('はい、もう食べました。'), ['はい、', 'もう食べました。']);
+  assert.ok(ALL_KANA.includes('きゃ') && ALL_KANA.includes('ん') && !ALL_KANA.includes('・'));
 });
 
 if (errors.length) {

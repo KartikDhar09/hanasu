@@ -1,6 +1,6 @@
 // Speak tab: shadowing, answering questions, self-introduction builder and pronunciation drills.
 import { QA, JOBS, HOBBIES, YEARS, PRONUNCIATION, SOUND_TIPS } from './speaking-data.js';
-import { UNITS, CARDS } from './data.js';
+import { UNITS, CARDS, TRACKS } from './data.js';
 import { listen } from './speech.js';
 import { matchScore, PASS, isLearned } from './core.js';
 
@@ -35,12 +35,14 @@ export function initSpeaking(ctx) {
         <button class="scard" data-act="intro-builder"><span>🙋</span><b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
         <button class="scard" data-act="sounds"><span>👄</span><b>Pronunciation</b><small>Sounds that change meaning: おばさん vs おばあさん.</small></button>
       </div>
-      <h3>Shadow a unit</h3>
-      <div class="vlist">${UNITS.map(u => `<button class="vrow" data-act="shadow-unit" data-arg="${u.id}">
-        <span class="vjp">${u.icon}</span><span class="vmeta">${esc(u.title)}${S().settings.hindi ? ` · <span class="muted" lang="hi-Latn">${esc(u.hi)}</span>` : ''}</span><span>🎤</span></button>`).join('')}</div>
-      <h3>Role-play a conversation</h3>
-      <div class="vlist">${UNITS.map(u => `<button class="vrow" data-act="talk" data-arg="${u.id}">
-        <span class="vjp">${u.icon}</span><span class="vmeta">${esc(u.title)}</span><span>💬</span></button>`).join('')}</div>`);
+      <h3>Practise a unit <small class="muted">🎤 shadow · 💬 role-play</small></h3>
+      ${TRACKS.map(t => `<details class="fold" ${t.id === 'n5' ? 'open' : ''}><summary><span class="sum-title">${esc(t.title)}<small lang="ja" class="accent">${t.jp}</small></span></summary>
+        <div class="ulist">${UNITS.filter(u => u.track === t.id).map(u => `<div class="urow">
+          <span class="uicon">${u.icon}</span>
+          <span class="vmeta">${esc(u.title)}${S().settings.hindi ? `<small class="muted" lang="hi-Latn">${esc(u.hi)}</small>` : ''}</span>
+          <button class="ubtn" data-act="shadow-unit" data-arg="${u.id}" aria-label="Shadow ${esc(u.title)}">🎤</button>
+          <button class="ubtn" data-act="talk" data-arg="${u.id}" aria-label="Role-play ${esc(u.title)}">💬</button>
+        </div>`).join('')}</div></details>`).join('')}`);
   }
 
   function shadowRandom() {

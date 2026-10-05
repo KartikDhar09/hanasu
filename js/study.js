@@ -237,7 +237,7 @@ export function initStudy(ctx) {
     const learned = pool.filter(k => isLearned(kprog()[k.ch])).length;
     render(`
       <h1 class="page">Kanji <span lang="ja">漢字</span></h1>
-      <div class="intro">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div>
+      <details class="fold"><summary>💡 How kanji work</summary><div class="fold-body">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div></details>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === klevel() ? 'on' : ''}" data-act="kanji-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
       <div class="stats small-stats"><div><b>${learned}</b><span>of ${pool.length} learned</span></div><div><b>${due}</b><span>due now</span></div></div>
       <div class="row">

@@ -367,3 +367,130 @@ details.answers .phrases { margin-top: 8px; }
   .modes { grid-template-columns: repeat(4, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* =====================================================================
+   Layout system (v2.5). One vertical rhythm for every screen:
+   blocks are 12px apart, section headings get 28px above them.
+   Uses #app so it wins over the per-component margins above.
+   ===================================================================== */
+:root { --gap: 12px; --section: 28px; }
+#app > * { margin-top: 0; margin-bottom: 0; }
+#app > * + * { margin-top: var(--gap); }
+#app > h2, #app > h3, #app > .fold + h3 { margin-top: var(--section); }
+#app > h2 + *, #app > h3 + * { margin-top: 10px; }
+#app > .head + * { margin-top: 16px; }
+#app > .head + .sub { margin-top: 4px; }
+#app > .sub { margin-left: 52px; margin-bottom: 0; }
+#app > .actions { margin-top: 16px; }
+#app > .track + .muted { margin-top: 4px; font-size: .9rem; }
+#app > .page + * { margin-top: 12px; }
+h1.page { margin: 0; font-size: 1.5rem; }
+h3 { font-size: 1.02rem; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+h3 small { font-weight: 500; }
+
+/* Headers: back button, title and badge stay on one aligned line */
+.head { min-height: 40px; }
+.head h1 { flex: 1; min-width: 0; font-size: 1.3rem; }
+.head .pill { flex: none; }
+
+/* Cards: consistent inner spacing */
+.card { padding: 18px 16px; gap: 6px; }
+.card.left > * + * { margin-top: 8px; }
+.card .tag { margin-bottom: 6px; }
+.card .row.center { margin-top: 10px; }
+.intro { margin: 0; line-height: 1.55; }
+
+/* Home */
+.hero { gap: 12px; padding: 18px 16px; }
+.quick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qlink { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 12px;
+  background: var(--surface-2); color: var(--ink); text-decoration: none; font-weight: 600; font-size: .92rem; }
+.qlink span { font-size: 1.1rem; }
+.units { gap: 8px; }
+.unit { padding: 12px 14px; box-shadow: none; }
+.unit .ut small { display: block; margin-top: 1px; }
+.unit .bar { margin-top: 6px; }
+
+/* Unit page: compact mode row */
+.modes.compact { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.modes.compact .mode { justify-items: center; text-align: center; padding: 10px 4px; gap: 2px; box-shadow: none; }
+.modes.compact .mode span { font-size: 1.4rem; }
+.modes.compact .mode b { font-size: .85rem; }
+.modes.compact .mode small { display: none; }
+@media (min-width: 560px) { .modes.compact .mode small { display: block; font-size: .72rem; } }
+
+/* Lists of phrases/examples */
+.phrases li { padding: 12px 40px 12px 14px; }
+.phrases li > * + * { margin-top: 2px; }
+.phrases .casual, .phrases .note { margin-top: 8px; }
+.phrases .ex { padding-right: 14px; }
+
+/* Particles: the particle column never wraps (から, まで, より) */
+.pcard { grid-template-columns: minmax(52px, auto) 1fr auto; padding: 12px; }
+.pch { white-space: nowrap; font-size: 1.5rem; padding: 0 4px; }
+.pt { line-height: 1.35; }
+.pt small { margin-top: 2px; }
+
+/* Speak hub: units with two actions */
+.fold { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 0; overflow: hidden; }
+.fold > summary { cursor: pointer; padding: 14px 16px; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 8px; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::after { content: '›'; margin-left: auto; font-size: 1.3rem; color: var(--muted); transition: transform .2s; }
+.fold[open] > summary::after { transform: rotate(90deg); }
+.fold[open] > summary { border-bottom: 1px solid var(--line); }
+.fold > :not(summary) { margin: 12px 14px; }
+.fold-body { line-height: 1.55; }
+#app > .fold + .fold { margin-top: 8px; }
+.ulist { display: grid; gap: 0; margin: 0 !important; }
+.urow { display: grid; grid-template-columns: 32px 1fr 44px 44px; gap: 8px; align-items: center; padding: 8px 12px; border-top: 1px solid var(--line); }
+.urow:first-child { border-top: 0; }
+.uicon { font-size: 1.3rem; text-align: center; }
+.urow .vmeta small { display: block; }
+.ubtn { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); font-size: 1.15rem; }
+.speak-grid { margin: 0; }
+.speak-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+.scard { box-shadow: none; }
+
+/* JLPT path and exam info */
+.path { margin: 0; }
+.path button { padding: 12px; }
+.exam { margin: 0 !important; }
+.fold .phrases, .fold .tips { margin: 12px 14px; }
+.passbox { gap: 12px; }
+.passbar { height: auto; background: none; overflow: visible; display: grid; gap: 4px; }
+.passbar > span { font-size: .85rem; font-weight: 600; line-height: 1.3; padding: 0; }
+.passbar .pb { height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.passbar .pb i { display: block; height: 100%; background: var(--accent); border-radius: 99px; border: 0; position: static; }
+.passbar.fail .pb i { background: var(--bad); }
+.passbar.small > span { font-size: .8rem; font-weight: 500; color: var(--muted); }
+.mock-btn { margin-top: var(--gap) !important; }
+
+/* Kanji & vocab grids */
+.kgrid, .wgrid { margin: 0; }
+#app > .kgrid + .btn, #app > .wgrid + .btn { margin-top: 6px; }
+
+/* Choices & quizzes */
+.choices { margin-top: 14px; }
+#app > .choices { margin-top: 14px; }
+.choice { line-height: 1.35; }
+
+/* Done screens */
+.done { gap: 14px; padding-top: 32px; }
+.done .tips { text-align: left; }
+
+/* Interaction states */
+:where(button, a, summary):focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 2px; border-radius: 10px; }
+@media (hover: hover) {
+  .unit:hover, .pcard:hover, .vrow:hover, .scard:hover, .mode:hover, .crow:hover, .ktile:hover, .wcard:hover, .path button:hover, .choice:not(:disabled):hover {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  }
+  .btn:not(:disabled):hover { filter: brightness(.98); }
+}
+.tabs a { position: relative; }
+.tabs a.on::before { content: ''; position: absolute; top: 0; left: 30%; right: 30%; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
+
+/* Settings sheet */
+.panel { gap: 14px; }
+.panel h2 { margin-bottom: 2px; }
+.sum-title { display: grid; gap: 1px; }
+.sum-title small { font-weight: 500; font-size: .78rem; }

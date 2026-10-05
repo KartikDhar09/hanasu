@@ -1,10 +1,6 @@
 import { TRACKS, UNITS, CARDS, COUNTRIES, CONTENT_VERSION } from './data.js';
 import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession, bumpStreak, liveStreak, fill, matchScore, PASS } from './core.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
-import { initStudy } from './study.js';
-import { initSpeaking } from './speaking.js';
-import { initJlpt } from './jlpt.js';
-import { initExam } from './exam.js';
 
 // ---------- State ----------
 const KEY = 'hanasu-v1';
@@ -26,11 +22,26 @@ function load() {
     if (s) {
       // Card ids are positional, so progress from an older content layout no longer lines up.
       if (s.contentVersion !== CONTENT_VERSION) { s.progress = {}; s.spoken = {}; }
-      return { ...DEFAULTS, ...s, contentVersion: CONTENT_VERSION, profile: { ...DEFAULTS.profile, ...s.profile }, settings: { ...DEFAULTS.settings, ...s.settings } };
+      return sanitize({ ...DEFAULTS, ...s, contentVersion: CONTENT_VERSION, profile: { ...DEFAULTS.profile, ...s.profile }, settings: { ...DEFAULTS.settings, ...s.settings } });
     }
   } catch (_) { /* fall through to defaults */ }
   return { ...structuredClone(DEFAULTS), contentVersion: CONTENT_VERSION };
 }
+// Saved values that end up in page markup are forced back to known-safe shapes.
+function sanitize(s) {
+  const num = (v, lo, hi, d) => (Number.isFinite(+v) ? Math.min(hi, Math.max(lo, +v)) : d);
+  const oneOf = (v, list) => (list.includes(v) ? v : undefined);
+  s.settings.rate = num(s.settings.rate, 0.5, 1.5, DEFAULTS.settings.rate);
+  s.settings.voice = typeof s.settings.voice === 'string' ? s.settings.voice : '';
+  for (const k of ['romaji', 'kana', 'hindi', 'casual']) s.settings[k] = s.settings[k] !== false;
+  s.profile.name = String(s.profile.name || '').slice(0, 40);
+  s.profile.nameRo = String(s.profile.nameRo || '').slice(0, 40);
+  s.profile.country = num(s.profile.country, 0, COUNTRIES.length - 1, 0);
+  s.jlptLevel = oneOf(s.jlptLevel, ['n5', 'n4']);
+  s.kanjiLevel = oneOf(s.kanjiLevel, ['n5', 'n4']);
+  return s;
+}
+
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) { toast('Could not save progress'); }
 }
@@ -539,7 +550,7 @@ function saveSettings() {
 
 // Re-draw the current screen after settings change.
 function rerender() {
-  if (study.rerender() || speaking.rerender() || jlpt.rerender() || exam.rerender()) return;
+  if (Object.values(mods).some(m => m.rerender())) return;
   if (!sess) return route();
   if (sess.kind === 'learn') learnCard();
   else if (sess.kind === 'speak') speakCard();
@@ -560,6 +571,7 @@ const actions = {
   say: id => speak(view(cardById(id)).jp),
   sayslow: id => speak(view(cardById(id)).jp, true),
   'say-casual': id => speak(view(cardById(id)).casual.jp),
+  'say-text': t => speak(t),
   reveal: () => reveal(),
   'next-intro': () => { sess.i++; learnCard(); },
   'drill-next': () => { sess.done++; practised(); sess.i++; learnCard(); },
@@ -585,7 +597,9 @@ const actions = {
   },
   reset: () => {
     if (!confirm('Delete all progress and streak?')) return;
-    S.progress = {}; S.spoken = {}; S.kanjiProgress = {}; S.pbest = {}; S.streak = null; save();
+    // Everything learned or scored; profile and settings are kept.
+    for (const k of ['progress', 'spoken', 'kanjiProgress', 'vocabProgress', 'pbest', 'gbest', 'quizBest', 'readBest', 'listenDone', 'mocks']) S[k] = {};
+    S.qaDone = 0; S.streak = null; save();
     document.getElementById('sheet').hidden = true; home();
   },
 };
@@ -595,12 +609,12 @@ document.addEventListener('click', e => {
   const tab = e.target.closest('#tabs a');
   if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
   const el = e.target.closest('[data-act]');
-  if (el) { actions[el.dataset.act]?.(el.dataset.arg); return; }
+  if (el) { run(el.dataset.act, el.dataset.arg); return; }
   if (e.target.id === 'sheet' && S.setup) e.target.hidden = true;
 });
 
 document.addEventListener('keydown', e => {
-  if (e.target.matches('input, select') || study.keydown(e)) return;
+  if (e.target.matches('input, select') || mods.study?.keydown(e)) return;
   if (!sess) return;
   if (sess.kind === 'learn') {
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); sess.queue[sess.i]?.intro ? actions['next-intro']() : sess.revealed ? null : reveal(); }
@@ -608,63 +622,70 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// ---------- Sections loaded on demand ----------
+// Home needs only the phrase data; Speak, Grammar, Kanji and JLPT (and their large data files) load on first visit.
+const shared = () => ({ S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go, clearSess: () => { sess = null; stopSpeaking(); } });
+const LOADERS = {
+  study: () => import('./study.js').then(m => m.initStudy({ ...shared(), setSess: () => { sess = null; } })),
+  speaking: () => import('./speaking.js').then(m => m.initSpeaking({
+    ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true),
+  })),
+  jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
+  exam: () => import('./exam.js').then(m => m.initExam({
+    ...shared(), sayAs: (text, pitch) => say(text, { rate: S.settings.rate, voice: S.settings.voice, pitch }), stop: stopSpeaking,
+  })),
+};
+const mods = {};      // initialised modules
+const loading = {};   // in-flight loads
+function loadSection(name) {
+  return loading[name] || (loading[name] = LOADERS[name]().then(mod => { mods[name] = mod; Object.assign(actions, mod.actions); return mod; }));
+}
+const loadAll = () => Promise.all(Object.keys(LOADERS).map(loadSection));
+const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
+  : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji)/.test(h) ? 'study' : null;
+
+// Runs an action; one that belongs to a section not loaded yet loads the sections first.
+async function run(name, ...args) {
+  if (!actions[name]) await loadAll();
+  actions[name]?.(...args);
+}
+
 // Hash routing so the back button and reloads work.
 function go(h) { if (location.hash.slice(1) === h) route(); else location.hash = h; }
-function route() {
+async function route() {
   const h = location.hash.slice(1);
-  study.clear();
-  speaking.clear(); jlpt.clear(); exam.clear();
+  Object.values(mods).forEach(m => m.clear());
   const m = /^(speak|particle|verb|grammar|kanji|jlpt)/.exec(h)?.[1];
   const tab = m === 'particle' || m === 'verb' ? 'grammar' : m || 'phrases';
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
-  if (study.route(h) || speaking.route(h) || jlpt.route(h) || exam.route(h)) return;
+  const name = moduleFor(h);
+  if (name) {
+    const mod = await loadSection(name);
+    if (location.hash.slice(1) !== h) return; // the user moved on while it loaded
+    if (mod.route(h)) return;
+  }
   if (h.startsWith('unit/') && unitById(h.slice(5))) unit(h.slice(5));
   else home();
 }
 window.addEventListener('hashchange', route);
 
-// Particles, Verbs and Kanji live in study.js and share these helpers.
-const study = initStudy({
-  S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go,
-  clearSess: () => { sess = null; stopSpeaking(); },
-  setSess: () => { sess = null; },
-});
-Object.assign(actions, study.actions);
-
-const speaking = initSpeaking({
-  S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go, profile, canListen,
-  fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true),
-  clearSess: () => { sess = null; stopSpeaking(); },
-});
-Object.assign(actions, speaking.actions);
-
-const jlpt = initJlpt({
-  S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go,
-  clearSess: () => { sess = null; stopSpeaking(); },
-});
-Object.assign(actions, jlpt.actions);
-
-const exam = initExam({
-  S: () => S, esc, render, shuffle, bar, back, practised, save, go,
-  sayAs: (text, pitch) => say(text, { rate: S.settings.rate, voice: S.settings.voice, pitch }),
-  stop: stopSpeaking,
-  clearSess: () => { sess = null; stopSpeaking(); },
-});
-Object.assign(actions, exam.actions);
-
 // Text inputs name their action in data-input; it gets (data-arg, value) on every keystroke.
 document.addEventListener('input', e => {
   const el = e.target.closest('[data-input]');
-  if (el) actions[el.dataset.input]?.(el.dataset.arg, el.value);
+  if (el) run(el.dataset.input, el.dataset.arg, el.value);
 });
 
 // Form controls (selects) name their action in data-change.
 document.addEventListener('change', e => {
   const el = e.target.closest('[data-change]');
-  if (el) actions[el.dataset.change]?.(el.value);
+  if (el) run(el.dataset.change, el.value);
 });
 
 route();
 if (!S.setup) openSettings(true);
+
+// Warm the other sections in the background once the app is idle, so the first tab switch is instant.
+const idle = window.requestIdleCallback || (f => setTimeout(f, 1));
+setTimeout(() => idle(() => loadAll(), { timeout: 3000 }), 2500);
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});

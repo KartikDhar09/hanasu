@@ -31,6 +31,20 @@ try {
   for (const i of m.icons) if (!existsSync(i.src.slice(1))) fail(`manifest icon missing: ${i.src}`);
 } catch (e) { fail('manifest.webmanifest: ' + e.message); }
 
+// 4b. Security: strict CSP and no inline script anywhere (the CSP would block it).
+{
+  const vc = JSON.parse(read('vercel.json'));
+  const all = vc.headers.flatMap(h => h.headers);
+  const csp = all.find(h => h.key === 'Content-Security-Policy')?.value || '';
+  for (const d of ["script-src 'self'", "object-src 'none'", "frame-ancestors 'none'", "base-uri 'none'"]) if (!csp.includes(d)) fail(`vercel.json CSP missing ${d}`);
+  for (const k of ['X-Content-Type-Options', 'Referrer-Policy', 'Permissions-Policy', 'Strict-Transport-Security']) if (!all.some(h => h.key === k)) fail(`vercel.json missing ${k} header`);
+  if (/<script(?![^>]*\bsrc=)/i.test(html)) fail('index.html has an inline <script>');
+  for (const f of ['index.html', ...readdirSync('js').map(f => 'js/' + f)]) {
+    if (/\son(click|input|change|load|error|submit|key\w*|mouse\w*)=/i.test(read(f))) fail(`${f} uses an inline event handler`);
+    if (/\beval\(|new Function\(/.test(read(f))) fail(`${f} uses eval`);
+  }
+}
+
 // 5. Lesson content is well-formed, and no Devanagari is left anywhere (the app uses Hinglish).
 for (const f of readdirSync('js')) if (/[\u0900-\u097f]/.test(read('js/' + f))) fail(`js/${f} still contains Devanagari`);
 const { UNITS, CARDS, TRACKS, COUNTRIES } = await import('../js/data.js');

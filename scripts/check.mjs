@@ -147,7 +147,8 @@ for (const w of V.WORDS) {
 }
 for (const lv of ['n5', 'n4']) if (V.WORDS.filter(w => w.level === lv).length < 50) fail(`${lv}: needs at least 50 words`);
 if (V.WORDS.filter(w => w.level === 'n5').length < 650) fail('N5 vocabulary should be the full list (650+ words)');
-for (const lv of ['n5', 'n4']) { const jp = V.WORDS.filter(w => w.level === lv).map(w => w.jp); if (new Set(jp).size !== jp.length) fail(`${lv}: duplicate words`); }
+{ const ks = V.WORDS.map(w => w.jp + '|' + w.kana); if (new Set(ks).size !== ks.length) fail('a word is listed twice'); }
+if (V.WORDS.filter(w => w.level === 'n4').length < 550) fail('N4 vocabulary should be the full list (550+ words)');
 for (const k of KANJI_LIST) if (!k.pic || !k.hint) fail(`kanji ${k.ch}: missing picture hint`);
 
 // 5f. Reading and listening.

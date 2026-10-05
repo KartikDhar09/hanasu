@@ -2,6 +2,7 @@
 // The full lists live in vocab-n5.js / vocab-n4.js in a compact one-line format and are merged in below.
 import { toRomaji } from './conjugate.js';
 import { N5_TOPICS } from './vocab-n5.js';
+import { N4_TOPICS } from './vocab-n4.js';
 
 export const VOCAB = [
   // ================= N5 =================
@@ -119,15 +120,22 @@ export function parseList(text) {
     [jp, kana, ro || toRomaji(kana.replace(/〜/g, '')).replace(/^/, kana.startsWith('〜') ? '-' : ''), en, hg, pic]);
 }
 
-// Add the full-list topics, skipping any word already present at that level.
-for (const [level, topics] of [['n5', N5_TOPICS]]) {
-  const seen = new Set(VOCAB.filter(t => t.level === level).flatMap(t => t.words.map(w => w[0])));
+// Add the full-list topics. A word (same writing + reading) is taught once: N4 skips anything already in N5.
+const key = w => w[0] + '|' + w[1];
+const seen = new Set(VOCAB.flatMap(t => t.words.map(key)));
+for (const [level, topics] of [['n5', N5_TOPICS], ['n4', N4_TOPICS]]) {
   for (const t of topics) {
-    const words = parseList(t.list).filter(w => !seen.has(w[0]) && seen.add(w[0]));
+    const words = parseList(t.list).filter(w => !seen.has(key(w)) && seen.add(key(w)));
     if (words.length) VOCAB.push({ id: t.id, level, title: t.title, hg: t.hg, icon: t.icon, words });
   }
 }
 
-export const WORDS = VOCAB.flatMap(t => t.words.map(w => ({
-  id: `${t.id}:${w[0]}`, topic: t.id, level: t.level, jp: w[0], kana: w[1], ro: w[2], en: w[3], hg: w[4], pic: w[5],
-})));
+// id = topic:word; a second word written the same way (止める とめる / やめる) also gets its reading,
+// so existing ids (and saved progress) never change.
+const ids = new Set();
+export const WORDS = VOCAB.flatMap(t => t.words.map(w => {
+  let id = `${t.id}:${w[0]}`;
+  if (ids.has(id)) id += `:${w[1]}`;
+  ids.add(id);
+  return { id, topic: t.id, level: t.level, jp: w[0], kana: w[1], ro: w[2], en: w[3], hg: w[4], pic: w[5] };
+}));

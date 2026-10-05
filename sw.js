@@ -1,6 +1,7 @@
-// Offline support: network-first for the app (so updates show immediately), cache fallback offline.
-// Fonts are cache-first. Bump CACHE on each release.
-const CACHE = 'hanasu-v3.3';
+// Offline-first: app files are served from the cache instantly and refreshed in the background
+// (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and takes over on the
+// next open. Fonts are cache-first. Bump CACHE on each release.
+const CACHE = 'hanasu-v3.4';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/core.js', '/js/data.js', '/js/corp-more.js', '/js/speech.js', '/js/study.js', '/js/speaking.js', '/js/speaking-data.js', '/js/jlpt.js', '/js/jlpt-data.js', '/js/vocab-data.js', '/js/vocab-n5.js', '/js/vocab-n4.js', '/js/grammar-n5.js', '/js/grammar-n4.js', '/js/kanji-n4.js', '/js/exam.js', '/js/exam-data.js', '/js/exam-more.js', '/js/conjugate.js',
   '/js/particles-data.js', '/js/verbs-data.js', '/js/kanji-data.js',
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
@@ -24,19 +25,14 @@ self.addEventListener('fetch', e => {
   if (!sameOrigin && !isFont) return;
   const key = sameOrigin && req.mode === 'navigate' ? '/' : req;
   e.respondWith(caches.open(CACHE).then(async cache => {
-    if (isFont) {
-      const hit = await cache.match(req);
-      if (hit) return hit;
-      const res = await fetch(req);
-      cache.put(req, res.clone());
-      return res;
-    }
-    try {
-      const res = await fetch(req);
+    const hit = await cache.match(key, { ignoreSearch: sameOrigin });
+    if (isFont && hit) return hit;
+    // Refresh in the background; only good responses are stored.
+    const refresh = fetch(req).then(res => {
       if (res.ok) cache.put(key, res.clone());
       return res;
-    } catch (_) {
-      return (await cache.match(key)) || Response.error();
-    }
+    });
+    if (hit) { e.waitUntil(refresh.catch(() => {})); return hit; }
+    return refresh.catch(() => Response.error());
   }));
 });

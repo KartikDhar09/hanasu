@@ -1,6 +1,6 @@
 import { TRACKS, UNITS, CARDS, COUNTRIES, CONTENT_VERSION } from './data.js';
 import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession, bumpStreak, liveStreak, fill, matchScore, PASS } from './core.js';
-import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, jaVoices } from './speech.js';
+import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 import { initStudy } from './study.js';
 import { initSpeaking } from './speaking.js';
 import { initJlpt } from './jlpt.js';
@@ -54,7 +54,7 @@ const cardsOf = id => CARDS.filter(c => c.unit === id);
 const cardById = id => CARDS.find(c => c.id === id);
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const speak = (text, slow) => say(text, { rate: slow ? 0.6 : S.settings.rate, voice: S.settings.voice });
+const speak = (text, slow) => say(text, { rate: slow ? Math.min(0.65, S.settings.rate) : S.settings.rate, voice: S.settings.voice });
 
 // ---------- Rendering helpers ----------
 const $app = document.getElementById('app');
@@ -491,7 +491,7 @@ function finish(title, unitId, extra = '', backAct = 'home') {
 // ---------- Settings ----------
 function openSettings(first = false) {
   const sheet = document.getElementById('sheet');
-  const voices = jaVoices();
+  const voices = rankedVoices();
   sheet.innerHTML = `
     <div class="panel" role="dialog" aria-modal="true" aria-label="Settings">
       ${first
@@ -506,8 +506,10 @@ function openSettings(first = false) {
       <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show kana reading under kanji</label>
       <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
       <label class="check"><input type="checkbox" id="s-casual" ${S.settings.casual ? 'checked' : ''}> Show casual versions (with friends)</label>
-      <label>Voice speed <input type="range" id="s-rate" min="0.5" max="1.2" step="0.1" value="${S.settings.rate}"></label>
-      ${voices.length > 1 ? `<label>Voice <select id="s-voice"><option value="">Auto</option>${voices.map(v => `<option ${v.name === S.settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>` : ''}
+      <label>Voice speed <span class="muted" id="s-rate-val">${S.settings.rate}×</span>
+        <input type="range" id="s-rate" min="0.6" max="1.2" step="0.05" value="${S.settings.rate}" data-input="rate-label"></label>
+      ${voices.length ? `<label>Voice <select id="s-voice"><option value="">Auto (best: ${esc(voices[0].name)})</option>${voices.map(v => `<option value="${esc(v.name)}" ${v.name === S.settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>
+        <p class="muted small">Tip: on iPhone, download a better voice in Settings → Accessibility → Spoken Content → Voices → Japanese (Kyoko Enhanced or O-ren Premium).</p>` : ''}
       ${!canSpeak() || !voices.length ? `<p class="warn">No Japanese voice found. On iPhone: Settings → Accessibility → Spoken Content → Voices → Japanese. On Android: install Google Text-to-speech Japanese.</p>` : ''}
       <div class="row">
         <button class="btn" data-act="test-voice">🔊 Test voice</button>
@@ -576,6 +578,7 @@ const actions = {
   'talk-skip': () => talkAdvance(),
   settings: () => openSettings(),
   'save-settings': () => saveSettings(),
+  'rate-label': (_, v) => { document.getElementById('s-rate-val').textContent = v + '×'; },
   'test-voice': () => {
     const r = document.getElementById('s-rate'), vs = document.getElementById('s-voice');
     say('こんにちは。日本語を勉強しましょう。', { rate: +r.value, voice: vs ? vs.value : S.settings.voice });

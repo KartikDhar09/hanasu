@@ -251,9 +251,9 @@ export function initExam(ctx) {
       <h1>${s.passed ? 'Pass!' : 'Not yet'} · ${s.total}/180</h1>
       <p class="muted">${mins} min · ${ex.title}${S().settings.hindi ? (s.passed ? ' · Badhai ho!' : ' · Lage raho, ho jaayega!') : ''}</p>
       <div class="card left passbox">
-        <div class="passbar"><i style="width:${100 * s.total / 180}%"></i><span>Total ${s.total} / 180 (pass ${ex.pass.total})</span></div>
-        <div class="passbar small ${s.langReading >= ex.pass.sections[0][1] ? '' : 'fail'}"><i style="width:${100 * s.langReading / 120}%"></i><span>Language + reading ${s.langReading} / 120 (min ${ex.pass.sections[0][1]})</span></div>
-        <div class="passbar small ${s.listening >= ex.pass.sections[1][1] ? '' : 'fail'}"><i style="width:${100 * s.listening / 60}%"></i><span>Listening ${s.listening} / 60 (min ${ex.pass.sections[1][1]})</span></div>
+        <div class="passbar"><span>Total ${s.total} / 180 (pass ${ex.pass.total})</span><div class="pb"><i style="width:${100 * s.total / 180}%"></i></div></div>
+        <div class="passbar small ${s.langReading >= ex.pass.sections[0][1] ? '' : 'fail'}"><span>Language + reading ${s.langReading} / 120 (min ${ex.pass.sections[0][1]})</span><div class="pb"><i style="width:${100 * s.langReading / 120}%"></i></div></div>
+        <div class="passbar small ${s.listening >= ex.pass.sections[1][1] ? '' : 'fail'}"><span>Listening ${s.listening} / 60 (min ${ex.pass.sections[1][1]})</span><div class="pb"><i style="width:${100 * s.listening / 60}%"></i></div></div>
       </div>
       <ul class="tips">${SECTIONS.map(([id, en, jp]) => `<li>${s.bySection[id] >= 70 ? '✅' : '⚠️'} ${esc(en)} <span lang="ja" class="muted">${jp}</span>: ${s.bySection[id]}%</li>`).join('')}</ul>
       <p>Focus next on <b>${esc(SECTIONS.find(x => x[0] === weakest[0])[1])}</b>.</p>

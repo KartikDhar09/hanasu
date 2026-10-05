@@ -118,17 +118,19 @@ export function initJlpt(ctx) {
         <button class="scard" data-act="jlpt-vocab" data-arg="${lv}"><span>🖼️</span><b>Vocabulary</b><small>${WORDS.filter(w => w.level === lv).length} ${lv.toUpperCase()} words with pictures</small></button>
         <button class="scard" data-act="kana"><span lang="ja">あア</span><b>Kana charts</b><small>Hiragana & katakana with sound + quiz</small></button>
       </div>
-      <h3>The exam</h3>
+      <details class="fold"><summary>📋 About the exam: sections, times, pass marks</summary>
       <div class="exam">${ex.sections.map(sec => `<div class="exrow"><b>${esc(sec.name)}</b><span class="pill">${sec.min} min</span><small>${esc(sec.parts)}</small></div>`).join('')}</div>
       <div class="card left passbox">
         <b>To pass ${ex.title}</b>
-        <div class="passbar"><i style="width:${100 * ex.pass.total / ex.pass.max}%"></i><span>${ex.pass.total} / ${ex.pass.max} total</span></div>
-        ${ex.pass.sections.map(([n, min, max]) => `<div class="passbar small"><i style="width:${100 * min / max}%"></i><span>${esc(n)}: at least ${min} / ${max}</span></div>`).join('')}
+        <div class="passbar"><span>${ex.pass.total} / ${ex.pass.max} total</span><div class="pb"><i style="width:${100 * ex.pass.total / ex.pass.max}%"></i></div></div>
+        ${ex.pass.sections.map(([n, min, max]) => `<div class="passbar small"><span>${esc(n)}: at least ${min} / ${max}</span><div class="pb"><i style="width:${100 * min / max}%"></i></div></div>`).join('')}
       </div>
-      <h3>Question types</h3>
+      </details>
+      <details class="fold"><summary>❓ Question types</summary>
       <ul class="phrases">${QUESTION_TYPES.map(q => `<li><b lang="ja">${q[0]}</b> · ${esc(q[1])}<div class="muted small">${esc(q[2])}</div></li>`).join('')}</ul>
-      <h3>Exam tips</h3>
-      <ul class="tips">${EXAM_TIPS.map(t => `<li>${t[0]} ${esc(t[1])}${hg(t[2])}</li>`).join('')}</ul>`);
+      </details>
+      <details class="fold"><summary>💡 Exam tips</summary>
+      <ul class="tips">${EXAM_TIPS.map(t => `<li>${t[0]} ${esc(t[1])}${hg(t[2])}</li>`).join('')}</ul></details>`);
   }
 
   // ================= Kana =================

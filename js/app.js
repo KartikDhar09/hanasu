@@ -123,6 +123,10 @@ function home() {
       ${due ? `<button class="btn primary big" data-act="review">Review ${due} phrase${due > 1 ? 's' : ''}</button>` : ''}
       ${next ? `<button class="btn ${due ? '' : 'primary'} big" data-act="learn" data-arg="${next.id}">${S.progress[cardsOf(next.id)[0].id] ? 'Continue' : 'Start'}: ${esc(next.title)}</button>` : ''}
       ${!due && !next ? `<p class="muted center">All caught up. Practise speaking or role-play any unit.</p>` : ''}
+      <div class="quick">
+        <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
+        <a href="#jlpt" class="qlink"><span>🎓</span>JLPT path</a>
+      </div>
     </section>
     ${TRACKS.map(t => `
       <h2 class="track"><span lang="ja">${t.jp}</span> ${t.title}</h2>
@@ -150,7 +154,7 @@ function unit(id) {
   render(`
     <div class="head">${back()}<h1>${u.icon} ${esc(u.title)}</h1></div>
     <p class="muted sub"><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</p>
-    <div class="modes">
+    <div class="modes compact">
       <button class="mode" data-act="learn" data-arg="${id}"><span>🃏</span><b>Learn</b><small>Flashcards · seekho</small></button>
       <button class="mode" data-act="speak" data-arg="${id}"><span>🎤</span><b>Speak</b><small>Say it, get checked · bolo</small></button>
       <button class="mode" data-act="quiz" data-arg="${id}"><span>✅</span><b>Quiz</b><small>Listen &amp; choose · quiz</small></button>

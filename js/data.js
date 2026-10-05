@@ -5,6 +5,8 @@
 // Hinglish = Hindi written in Roman letters, the way people text it.
 // Placeholders: {name} (katakana), {nameRo}, {country}, {countryKana}, {countryRo}, {countryEn}, {countryHi}.
 
+import { CORP_MORE } from './corp-more.js';
+
 // Bump when phrases are added, removed or reordered: card ids are positional, so old progress is cleared.
 export const CONTENT_VERSION = 2; // Hinglish swap didn't move ids, so no reset
 
@@ -601,6 +603,9 @@ export const COUNTRIES = [
   ['オーストラリア', 'オーストラリア', 'Ōsutoraria', 'Australia', 'Australia'], ['カナダ', 'カナダ', 'Kanada', 'Canada', 'Canada'],
   ['ドイツ', 'ドイツ', 'Doitsu', 'Germany', 'Germany'], ['フランス', 'フランス', 'Furansu', 'France', 'France'],
 ];
+
+// More corporate units live in corp-more.js; appended at the end so existing card ids don't move.
+UNITS.push(...CORP_MORE);
 
 // Flat list of every phrase as a card with a stable id.
 export const CARDS = UNITS.flatMap(u => u.phrases.map((p, i) => ({

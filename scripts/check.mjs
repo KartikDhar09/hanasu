@@ -134,6 +134,7 @@ for (const g of J.GRAMMAR) {
   }
 }
 for (const lv of ['n5', 'n4']) if (J.GRAMMAR.filter(g => g.level === lv).length < 20) fail(`${lv}: needs at least 20 grammar points`);
+if (J.GRAMMAR.filter(g => g.level === 'n5').length < 60) fail('N5 grammar should be the full list (60+ points plus particles)');
 
 // 5e. Vocabulary and kanji pictures.
 const V = await import('../js/vocab-data.js');

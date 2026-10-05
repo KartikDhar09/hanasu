@@ -1,4 +1,5 @@
 // JLPT N5 / N4 course: exam facts and grammar points.
+import { GRAMMAR_N5_MORE } from './grammar-n5.js';
 // Grammar example: [japanese, kana, romaji, english, hinglish]; the grammar being taught is in [brackets].
 
 export const EXAMS = {
@@ -260,3 +261,6 @@ export const GRAMMAR = [
     ex: [['来年、引っ越し[しようと思っています]。', 'らいねん、ひっこし[しようとおもっています]。', 'rainen, hikkoshi [shiyō to omotte imasu].', 'I’m thinking of moving next year.', 'Agle saal ghar badalne ka soch raha/rahi hoon.'],
       ['週末、京都に[行こうと思っています]。', 'しゅうまつ、きょうとに[いこうとおもっています]。', 'shūmatsu, Kyōto ni [ikō to omotte imasu].', 'I’m thinking of going to Kyoto this weekend.', 'Weekend pe Kyoto jaane ka soch raha/rahi hoon.']] },
 ];
+
+// The rest of N5 grammar lives in grammar-n5.js; keep all N5 points before N4.
+GRAMMAR.splice(GRAMMAR.findIndex(g => g.level === 'n4'), 0, ...GRAMMAR_N5_MORE);

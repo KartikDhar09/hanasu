@@ -1,4 +1,5 @@
 // JLPT-style reading and listening practice.
+import { READING_MORE, LISTENING_MORE } from './exam-more.js';
 // Reading: { id, level, title, pic, text, en, words: [[word, kana, english]], qs: [{ q, en, options, answer }] }
 // Listening: { id, level, kind, pic, lines: [[speaker 'm'|'f'|'n', japanese, english]], q: [japanese, english],
 //   options: [{ jp, en, pic? }], answer }
@@ -116,3 +117,6 @@ export const LISTENING = [
     q: ['何と答えますか。', 'How do you reply?'],
     options: [{ jp: 'はい、わかりました。', en: 'Yes, understood.' }, { jp: 'はい、見てもいいです。', en: 'Yes, you may look.' }, { jp: 'いいえ、見ませんでした。', en: 'No, I didn’t look.' }], answer: 0 },
 ];
+
+READING.push(...READING_MORE);
+LISTENING.push(...LISTENING_MORE);

@@ -494,3 +494,7 @@ h3 small { font-weight: 500; }
 .panel h2 { margin-bottom: 2px; }
 .sum-title { display: grid; gap: 1px; }
 .sum-title small { font-weight: 500; font-size: .78rem; }
+/* Pass bars: rows size to their content (the old fixed 24px height made rows overlap) */
+.passbar, .passbar.small { height: auto; }
+.card.passbox { display: grid; gap: 14px; }
+.card.passbox > * + * { margin-top: 0; }

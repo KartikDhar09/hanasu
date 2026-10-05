@@ -108,6 +108,7 @@ for (const k of KANJI_LIST) {
   for (const [i, e] of k.ex.entries()) { exOk(e, `kanji ${k.ch} ex ${i}`); if (!e[0].includes(k.ch)) fail(`kanji ${k.ch} ex ${i}: word ${e[0]} doesn’t use it`); }
 }
 if (new Set(KANJI_LIST.map(k => k.ch)).size !== KANJI_LIST.length) fail('duplicate kanji');
+if (KANJI_LIST.length < 250) fail('kanji should cover the full N5 + N4 list (250+)');
 
 // 5c. Speaking content.
 const SP = await import('../js/speaking-data.js');

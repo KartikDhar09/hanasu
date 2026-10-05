@@ -1,6 +1,8 @@
 // JLPT N5 and N4 kanji. Kanji: [character, on'yomi (katakana), kun'yomi (hiragana), english, hinglish, examples]
 // Example: [word, kana, romaji, english, hinglish]. On = Chinese-origin reading (used in compounds),
 // kun = native Japanese reading (used when the kanji stands alone or with kana).
+import { toRomaji } from './conjugate.js';
+import { N4_KANJI_MORE } from './kanji-n4.js';
 
 export const KANJI_INTRO = {
   en: 'Kanji are meaning-pictures. Most have two kinds of reading: on’yomi (from Chinese, used in compound words like 日本) and kun’yomi (native Japanese, used alone like 日 ひ). Learn each kanji through its everyday words, not readings in isolation.',
@@ -253,6 +255,16 @@ export const PICS = {
   明: ['💡', 'Sun (日) + moon (月): bright.'], 重: ['🏋️', 'Heavy.'], 軽: ['🪶', 'Light.'], 弱: ['🥀', 'Weak.'], 近: ['📍', 'Near.'], 遠: ['🔭', 'Far.'], 広: ['🏟️', 'Wide.'],
   悪: ['😈', 'Bad.'], 早: ['🌄', 'The sun (日) up early.'],
 };
+
+// Rest of N4 (kanji-n4.js, one-line format) → same tuples as above, picture hints into PICS.
+for (const g of N4_KANJI_MORE) {
+  const kanji = g.list.trim().split('\n').map(line => {
+    const [ch, on, kun, en, hg, pic, hint, exs] = line.split('|').map(x => x.trim());
+    PICS[ch] = [pic, hint];
+    return [ch, on, kun, en, hg, exs.split(';').map(e => { const [w, kana, wen, whg] = e.split(','); return [w, kana, toRomaji(kana), wen, whg]; })];
+  });
+  KANJI_GROUPS_N4.push({ id: g.id, title: g.title, hg: g.hg, icon: g.icon, kanji });
+}
 
 const toItems = (groups, level) => groups.flatMap(g => g.kanji.map(k => ({
   ch: k[0], on: k[1], kun: k[2], en: k[3], hg: k[4], ex: k[5], group: g.id, level,

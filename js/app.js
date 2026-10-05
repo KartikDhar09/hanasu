@@ -633,7 +633,7 @@ Object.assign(actions, study.actions);
 
 const speaking = initSpeaking({
   S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go, profile, canListen,
-  fill: t => fill(t, profile()), record: recordAgainst, speakMode,
+  fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true),
   clearSess: () => { sess = null; stopSpeaking(); },
 });
 Object.assign(actions, speaking.actions);

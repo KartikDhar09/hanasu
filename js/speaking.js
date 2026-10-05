@@ -1,5 +1,6 @@
 // Speak tab: shadowing, answering questions, self-introduction builder and pronunciation drills.
-import { QA, JOBS, HOBBIES, YEARS, PRONUNCIATION, SOUND_TIPS } from './speaking-data.js';
+import { QA, JOBS, HOBBIES, YEARS, PRONUNCIATION, SOUND_TIPS, SLOTS, PATTERNS, buildSentence, customItem } from './speaking-data.js';
+import { toRomaji } from './conjugate.js';
 import { UNITS, CARDS, TRACKS } from './data.js';
 import { listen } from './speech.js';
 import { matchScore, PASS, isLearned } from './core.js';
@@ -32,6 +33,7 @@ export function initSpeaking(ctx) {
       <div class="speak-grid">
         <button class="scard" data-act="shadow-random"><span>🔁</span><b>Shadow 10 phrases</b><small>Listen, repeat, get a score. Mixes phrases you know with new ones.</small></button>
         <button class="scard" data-act="qa" data-arg="0"><span>💬</span><b>Answer questions</b><small>Real questions people ask you. Answer out loud.</small></button>
+        <button class="scard wide" data-act="builder"><span>🧩</span><b>Sentence builder: “Can I use X?”</b><small>Pick a pattern, swap in any software, device or test resource, and practise the sentence. “Could you install X on Y?”, “Is X available for testing?”…</small></button>
         <button class="scard" data-act="intro-builder"><span>🙋</span><b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
         <button class="scard" data-act="sounds"><span>👄</span><b>Pronunciation</b><small>Sounds that change meaning: おばさん vs おばあさん.</small></button>
       </div>
@@ -155,6 +157,76 @@ export function initSpeaking(ctx) {
     save(); introBuilder();
   }
 
+  // ================= Sentence builder =================
+  const bstate = () => (S().builder = S().builder || { p: 'install', x: 'software:0', y: 'device:0', custom: '' });
+  const slotOptions = groups => groups.flatMap(g => SLOTS[g].items.map((it, i) => ({ key: `${g}:${i}`, it, group: SLOTS[g].label })));
+  const pick = (groups, key) => { const opts = slotOptions(groups); return (opts.find(o => o.key === key) || opts[0]); };
+
+  function currentSentence() {
+    const b = bstate(), p = PATTERNS.find(x => x.id === b.p) || PATTERNS[0];
+    const x = b.custom.trim() ? customItem(b.custom, toRomaji) : pick(p.x, b.x).it;
+    const y = p.y ? pick(p.y, b.y).it : null;
+    return { p, line: buildSentence(p, x, y) };
+  }
+
+  function sentenceCard() {
+    const { p, line } = currentSentence();
+    return `${line_(line)}<div class="en">${esc(line[3])}</div>${hg(line[4])}
+      ${p.tip ? `<div class="note">💡 ${esc(p.tip)}</div>` : ''}
+      <div class="row center">
+        <button class="btn icon" data-act="say-text" data-arg="${esc(line[0])}">🔊</button>
+        <button class="btn icon" data-act="builder-slow">🐢</button>
+        <button class="btn icon" data-act="builder-random" aria-label="Random example">🎲</button>
+      </div>
+      <div id="bresult" class="result"></div>`;
+  }
+  const line_ = l => line(l, true);
+
+  function builder() {
+    ctx.clearSess(); st = { kind: 'builder' };
+    const b = bstate(), p = PATTERNS.find(x => x.id === b.p) || PATTERNS[0];
+    const selOpts = (groups, cur) => {
+      const opts = slotOptions(groups); let last = '';
+      return opts.map(o => { const head = o.group !== last ? `${last ? '</optgroup>' : ''}<optgroup label="${esc(o.group)}">` : ''; last = o.group;
+        return `${head}<option value="${o.key}" ${o.key === cur ? 'selected' : ''}>${esc(o.it[3])} · ${esc(o.it[0])}</option>`; }).join('') + '</optgroup>';
+    };
+    render(`
+      <div class="head">${back('speak-tab')}<h1>🧩 Sentence builder</h1></div>
+      <p class="muted">Choose a pattern, then fill in the blanks. You can also type a tool name your team uses.${S().settings.hindi ? ' Pattern chuno, blanks bharo, aur bolke practice karo.' : ''}</p>
+      <div class="card left form">
+        <label>Pattern <select id="b-p" data-change="builder-set">${PATTERNS.map(x => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${esc(x.en.replace('{X}', 'X').replace('{Y}', 'Y'))}</option>`).join('')}</select></label>
+        <label>X <select id="b-x" data-change="builder-set" ${b.custom.trim() ? 'disabled' : ''}>${selOpts(p.x, b.x)}</select></label>
+        <label class="sub-label">…or type your own X <input class="search" id="b-custom" data-input="builder-custom" placeholder="e.g. Photoshop, ジラ, 新しいモニター" value="${esc(b.custom)}" autocomplete="off"></label>
+        ${p.y ? `<label>Y <select id="b-y" data-change="builder-set">${selOpts(p.y, b.y)}</select></label>` : ''}
+      </div>
+      <div class="card" id="bcard">${sentenceCard()}</div>
+      <div class="actions">${micBtn('builder-mic', '', '🎤 Say it')}</div>
+      <details class="fold"><summary>📋 All ${PATTERNS.length} patterns</summary>
+        <ul class="phrases">${PATTERNS.map(x => `<li class="ex" data-act="builder-pattern" data-arg="${x.id}"><div class="jp" lang="ja">${esc(x.jp.replaceAll('{X}', 'Ｘ').replaceAll('{Y}', 'Ｙ'))}</div>
+          <div class="en">${esc(x.en.replace('{X}', 'X').replace('{Y}', 'Y'))}</div></li>`).join('')}</ul></details>`);
+  }
+
+  function builderSet() {
+    const b = bstate(), v = id => document.getElementById(id)?.value;
+    const newP = v('b-p');
+    if (newP && newP !== b.p) { b.p = newP; const p = PATTERNS.find(x => x.id === newP); b.x = slotOptions(p.x)[0].key; if (p.y) b.y = slotOptions(p.y)[0].key; }
+    else { if (v('b-x')) b.x = v('b-x'); if (v('b-y')) b.y = v('b-y'); }
+    save(); builder();
+  }
+
+  function builderRandom() {
+    const b = bstate(), p = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
+    const rnd = groups => { const o = slotOptions(groups); return o[Math.floor(Math.random() * o.length)].key; };
+    b.p = p.id; b.x = rnd(p.x); if (p.y) b.y = rnd(p.y); b.custom = '';
+    save(); builder(); speak(currentSentence().line[0]);
+  }
+
+  async function builderMic() {
+    const { line: l } = currentSentence();
+    const score = await ctx.record({ jp: l[0], kana: l[1] }, document.getElementById('bresult'), document.getElementById('mic'));
+    if (score != null) practised();
+  }
+
   // ================= Pronunciation =================
   function sounds() {
     ctx.clearSess(); st = { kind: 'sounds', test: null, right: 0, tries: 0 };
@@ -239,6 +311,13 @@ export function initSpeaking(ctx) {
     'intro-mic': i => introMic(i),
     'intro-set': () => introSet(),
     sounds: () => ctx.go('speak/sounds'),
+    builder: () => ctx.go('speak/builder'),
+    'builder-set': () => builderSet(),
+    'builder-custom': (_, v) => { bstate().custom = v; save(); document.getElementById('b-x').disabled = !!v.trim(); document.getElementById('bcard').innerHTML = sentenceCard(); },
+    'builder-slow': () => ctx.speakSlow(currentSentence().line[0]),
+    'builder-random': () => builderRandom(),
+    'builder-mic': () => builderMic(),
+    'builder-pattern': id => { const b = bstate(), p = PATTERNS.find(x => x.id === id); b.p = id; b.x = slotOptions(p.x)[0].key; if (p.y) b.y = slotOptions(p.y)[0].key; b.custom = ''; save(); builder(); window.scrollTo(0, 0); speak(currentSentence().line[0]); },
     'sound-tap': a => soundTap(a),
     'sound-test': k => soundTest(k),
     'sound-mic': k => soundMic(k),
@@ -248,12 +327,13 @@ export function initSpeaking(ctx) {
     if (h === 'speak') return hub(), true;
     if (h === 'speak/intro') return introBuilder(), true;
     if (h === 'speak/sounds') return sounds(), true;
+    if (h === 'speak/builder') return builder(), true;
     return false;
   }
 
   function rerender() {
     if (!st) return false;
-    if (st.kind === 'qa') qa(st.i); else if (st.kind === 'intro') introBuilder(); else sounds();
+    if (st.kind === 'qa') qa(st.i); else if (st.kind === 'intro') introBuilder(); else if (st.kind === 'builder') builder(); else sounds();
     return true;
   }
 

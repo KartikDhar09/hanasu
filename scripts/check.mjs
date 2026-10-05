@@ -169,6 +169,19 @@ for (const lv of ['n5', 'n4']) {
   if (E.READING.filter(r => r.level === lv).length < 10 || E.LISTENING.filter(l => l.level === lv).length < 10) fail(`${lv}: needs 10+ readings and 10+ listening items`);
 }
 
+// 5g. Sentence builder: every pattern × every allowed slot builds a clean sentence.
+for (const p of SP.PATTERNS) {
+  for (const g of [...p.x, ...(p.y || [])]) if (!SP.SLOTS[g]) fail(`pattern ${p.id}: unknown slot group ${g}`);
+  if (!p.jp.includes('{X}') || !p.kana.includes('{X}') || !p.ro.includes('{X}') || !p.en.includes('{X}') || !p.hg.includes('{X}')) fail(`pattern ${p.id}: every field needs {X}`);
+  for (const gx of p.x) for (const x of SP.SLOTS[gx].items) for (const y of p.y ? p.y.flatMap(g => SP.SLOTS[g].items) : [null]) {
+    const l = SP.buildSentence(p, x, y);
+    if (l.some(f => /[{}]/.test(f))) fail(`pattern ${p.id}: unfilled slot in ${l[0]}`);
+    if (/[\u4e00-\u9faf]/.test(l[1])) fail(`pattern ${p.id}: kana has kanji: ${l[1]}`);
+    romajiOk(l[2], `pattern ${p.id}`);
+  }
+}
+for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length !== 5 || /[\u4e00-\u9faf]/.test(it[1]) || !LATIN.test(it[4])) fail(`slot item ${it[0]}: needs [jp, kana, romaji, en, hinglish]`);
+
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };

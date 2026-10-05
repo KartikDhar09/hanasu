@@ -1,5 +1,6 @@
 // JLPT N5 / N4 course: exam facts and grammar points.
 import { GRAMMAR_N5_MORE } from './grammar-n5.js';
+import { GRAMMAR_N4_MORE } from './grammar-n4.js';
 // Grammar example: [japanese, kana, romaji, english, hinglish]; the grammar being taught is in [brackets].
 
 export const EXAMS = {
@@ -264,3 +265,4 @@ export const GRAMMAR = [
 
 // The rest of N5 grammar lives in grammar-n5.js; keep all N5 points before N4.
 GRAMMAR.splice(GRAMMAR.findIndex(g => g.level === 'n4'), 0, ...GRAMMAR_N5_MORE);
+GRAMMAR.push(...GRAMMAR_N4_MORE);

@@ -1,4 +1,7 @@
 // JLPT vocabulary by topic. Word: [japanese, kana, romaji, english, hinglish, picture].
+// The full lists live in vocab-n5.js / vocab-n4.js in a compact one-line format and are merged in below.
+import { toRomaji } from './conjugate.js';
+import { N5_TOPICS } from './vocab-n5.js';
 
 export const VOCAB = [
   // ================= N5 =================
@@ -109,6 +112,21 @@ export const VOCAB = [
     ['遅れる', 'おくれる', 'okureru', 'be late', 'late hona', '⏰'], ['準備する', 'じゅんびする', 'junbi suru', 'prepare', 'taiyaari karna', '🎒'],
   ] },
 ];
+
+// Parses "japanese|kana|english|hinglish|picture?|romaji?" lines into word tuples.
+export function parseList(text) {
+  return text.trim().split('\n').map(l => l.split('|').map(x => x.trim())).map(([jp, kana, en, hg, pic = '', ro = '']) =>
+    [jp, kana, ro || toRomaji(kana.replace(/〜/g, '')).replace(/^/, kana.startsWith('〜') ? '-' : ''), en, hg, pic]);
+}
+
+// Add the full-list topics, skipping any word already present at that level.
+for (const [level, topics] of [['n5', N5_TOPICS]]) {
+  const seen = new Set(VOCAB.filter(t => t.level === level).flatMap(t => t.words.map(w => w[0])));
+  for (const t of topics) {
+    const words = parseList(t.list).filter(w => !seen.has(w[0]) && seen.add(w[0]));
+    if (words.length) VOCAB.push({ id: t.id, level, title: t.title, hg: t.hg, icon: t.icon, words });
+  }
+}
 
 export const WORDS = VOCAB.flatMap(t => t.words.map(w => ({
   id: `${t.id}:${w[0]}`, topic: t.id, level: t.level, jp: w[0], kana: w[1], ro: w[2], en: w[3], hg: w[4], pic: w[5],

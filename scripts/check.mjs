@@ -139,10 +139,13 @@ for (const lv of ['n5', 'n4']) if (J.GRAMMAR.filter(g => g.level === lv).length 
 const V = await import('../js/vocab-data.js');
 if (new Set(V.WORDS.map(w => w.id)).size !== V.WORDS.length) fail('duplicate vocabulary ids');
 for (const w of V.WORDS) {
-  if (!w.pic || !w.en || !LATIN.test(w.hg) || /[\u4e00-\u9faf]/.test(w.kana)) fail(`word ${w.jp}: needs picture, meaning, Hinglish, kana`);
+  if (!w.en || !LATIN.test(w.hg) || /[\u4e00-\u9faf]/.test(w.kana)) fail(`word ${w.jp}: needs meaning, Hinglish, kana`);
+  if (/[^\x20-\x7e\u00c0-\u017f’'-]/.test(w.ro)) fail(`word ${w.jp}: odd romaji ${w.ro}`);
   romajiOk(w.ro, `word ${w.jp}`);
 }
 for (const lv of ['n5', 'n4']) if (V.WORDS.filter(w => w.level === lv).length < 50) fail(`${lv}: needs at least 50 words`);
+if (V.WORDS.filter(w => w.level === 'n5').length < 650) fail('N5 vocabulary should be the full list (650+ words)');
+for (const lv of ['n5', 'n4']) { const jp = V.WORDS.filter(w => w.level === lv).map(w => w.jp); if (new Set(jp).size !== jp.length) fail(`${lv}: duplicate words`); }
 for (const k of KANJI_LIST) if (!k.pic || !k.hint) fail(`kanji ${k.ch}: missing picture hint`);
 
 // 5f. Reading and listening.
@@ -266,4 +269,4 @@ if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));
   process.exit(1);
 }
-console.log(`✓ All checks passed (${UNITS.length} units, ${CARDS.length} phrases, ${UNITS.reduce((n, u) => n + u.dialogue.length, 0)} dialogue lines, ${PARTICLES.length} particles, ${VERBS.length} verbs, ${KANJI_LIST.length} kanji)`);
+console.log(`✓ All checks passed (${UNITS.length} units, ${CARDS.length} phrases, ${PARTICLES.length} particles, ${VERBS.length} verbs, ${KANJI_LIST.length} kanji, ${J.GRAMMAR.length} grammar points, ${V.WORDS.length} words)`);

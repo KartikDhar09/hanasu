@@ -173,7 +173,7 @@ export function initExam(ctx) {
       qs.push({ section: 'vocab', prompt: `<span class="tag alt">表記 · How is it written?</span><div class="kbig small-k" lang="ja">${esc(w[1])}</div>`, options: shuffle([w[0], ...others]), right: w[0], say: w[0] });
     }
     // Words with pictures
-    const ws = WORDS.filter(w => w.level === lv);
+    const ws = WORDS.filter(w => w.level === lv && w.pic);
     for (const w of shuffle(ws).slice(0, 4)) {
       const others = shuffle(ws.filter(o => o.jp !== w.jp && o.en !== w.en)).slice(0, 3).map(o => o.jp);
       qs.push({ section: 'vocab', prompt: `<span class="tag alt">Which word fits the picture?</span><div class="wpic huge">${w.pic}</div>`, options: shuffle([w.jp, ...others]), right: w.jp, say: w.jp });

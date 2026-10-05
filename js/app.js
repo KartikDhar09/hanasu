@@ -649,6 +649,12 @@ const exam = initExam({
 });
 Object.assign(actions, exam.actions);
 
+// Text inputs name their action in data-input; it gets (data-arg, value) on every keystroke.
+document.addEventListener('input', e => {
+  const el = e.target.closest('[data-input]');
+  if (el) actions[el.dataset.input]?.(el.dataset.arg, el.value);
+});
+
 // Form controls (selects) name their action in data-change.
 document.addEventListener('change', e => {
   const el = e.target.closest('[data-change]');

@@ -397,7 +397,7 @@ function talk(unitId) {
   sess = { kind: 'talk', unitId, lines: u.dialogue.map(lineView), i: 0, log: [] };
   render(`
     <div class="head">${back('unit', unitId)}<h1>💬 Role-play</h1></div>
-    <p class="muted">You play the blue lines. The app speaks the other part. Tap any bubble to hear it again.</p>
+    <p class="muted">You play the lines on the right. The app speaks the other part. Tap any bubble to hear it again.</p>
     <div class="chat" id="chat"></div>
     <div class="actions" id="actions"></div>
   `);

@@ -498,3 +498,11 @@ h3 small { font-weight: 500; }
 .passbar, .passbar.small { height: auto; }
 .card.passbox { display: grid; gap: 14px; }
 .card.passbox > * + * { margin-top: 0; }
+
+/* Vocabulary search and big lists */
+.search { width: 100%; font: inherit; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.search:focus { outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); border-color: var(--accent); }
+.fold > summary .count { margin-left: auto; font-size: .82rem; color: var(--muted); font-weight: 500; }
+.fold > summary .count + ::after { margin-left: 8px; }
+.wtxt { font-size: .7rem; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 6px; display: inline-block; }
+#vresults:empty { display: none; }

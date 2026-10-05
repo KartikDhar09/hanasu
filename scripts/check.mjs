@@ -155,6 +155,7 @@ for (const k of KANJI_LIST) if (!k.pic || !k.hint) fail(`kanji ${k.ch}: missing 
 // 5f. Reading and listening.
 const E = await import('../js/exam-data.js');
 const EX = await import('../js/exam.js');
+if (new Set([...E.READING, ...E.LISTENING].map(x => x.id)).size !== E.READING.length + E.LISTENING.length) fail('duplicate reading/listening ids');
 for (const r of E.READING) {
   if (!r.text || !r.en || !r.words.length || !r.qs.length) fail(`reading ${r.id}: incomplete`);
   for (const q of r.qs) if (!(q.answer >= 0 && q.answer < q.options.length) || new Set(q.options).size !== q.options.length) fail(`reading ${r.id}: bad question ${q.q}`);
@@ -165,7 +166,7 @@ for (const l of E.LISTENING) {
   for (const o of l.options) if (!o.jp || !o.en) fail(`listening ${l.id}: option needs jp + en`);
 }
 for (const lv of ['n5', 'n4']) {
-  if (E.READING.filter(r => r.level === lv).length < 3 || E.LISTENING.filter(l => l.level === lv).length < 4) fail(`${lv}: needs 3+ readings and 4+ listening items`);
+  if (E.READING.filter(r => r.level === lv).length < 10 || E.LISTENING.filter(l => l.level === lv).length < 10) fail(`${lv}: needs 10+ readings and 10+ listening items`);
 }
 
 // 6. Logic tests.

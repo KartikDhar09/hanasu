@@ -152,7 +152,7 @@ export function initExam(ctx) {
       <div class="card left">
         <p>A mini exam with every section, scored the way JLPT scores: <b>language knowledge + reading out of 120</b> and <b>listening out of 60</b>.</p>
         <ul class="tips">${SECTIONS.map(([, en, jp]) => `<li>✏️ ${esc(en)} <span lang="ja" class="muted">${jp}</span></li>`).join('')}</ul>
-        <div class="note">🎯 To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. About 20 minutes.</div>
+        <div class="note">🎯 To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. About 25 minutes.</div>
       </div>
       <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}">▶ Start mock test</button>
       ${hist.length ? `<h3>Your results</h3><ul class="phrases">${hist.slice(-5).reverse().map(h => `<li>${h.passed ? '✅' : '❌'} <b>${h.total}/180</b> · ${esc(h.date)}<div class="muted small">Language + reading ${h.langReading}/120 · Listening ${h.listening}/60</div></li>`).join('')}</ul>` : ''}`);
@@ -194,11 +194,11 @@ export function initExam(ctx) {
       qs.push({ section: 'grammar', prompt: `<span class="tag alt">★ Which order is correct?</span><div class="muted">${esc(e[3])}</div>`, options: shuffle([right, ...wrong]), right, say: e[0].replace(/[[\]]/g, '') });
     }
     // 読解
-    for (const r of shuffle(READING.filter(x => x.level === lv)).slice(0, 2)) {
+    for (const r of shuffle(READING.filter(x => x.level === lv)).slice(0, 3)) {
       for (const [qi, q] of r.qs.entries()) qs.push({ section: 'reading', passage: r, prompt: `${qi === 0 ? '' : '<span class="tag alt">Same passage</span>'}<b lang="ja">${esc(q.q)}</b>`, options: q.options, right: q.options[q.answer] });
     }
     // 聴解
-    for (const item of shuffle(LISTENING.filter(x => x.level === lv)).slice(0, 4)) {
+    for (const item of shuffle(LISTENING.filter(x => x.level === lv)).slice(0, 6)) {
       qs.push({ section: 'listening', item, prompt: '<span class="tag alt">聴解 · Listen and choose</span><button class="btn listen" data-act="ex-mock-play">▶ Play again</button>',
         options: item.options.map((o, i) => String(i)), right: String(item.answer) });
     }

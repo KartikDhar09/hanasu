@@ -1,5 +1,6 @@
 import { TRACKS, UNITS, CARDS, COUNTRIES } from './data.js';
 import { fill, matchScore, PASS } from './core.js';
+import { furigana } from './furigana.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 
 // ---------- State ----------
@@ -59,10 +60,12 @@ function render(html) {
 }
 
 // Japanese block: kanji line, kana reading, romaji — per settings.
+// With the kana setting on, readings sit above the kanji (furigana); a line that can't be aligned shows it underneath.
 function jpBlock(c, cls = '') {
+  const furi = S.settings.kana ? furigana(c.jp, c.kana, esc) : null;
   return `<div class="jpblock ${cls}">
-    <div class="jp" lang="ja">${esc(c.jp)}</div>
-    ${S.settings.kana && c.kana !== c.jp ? `<div class="kana" lang="ja">${esc(c.kana)}</div>` : ''}
+    <div class="jp" lang="ja">${furi || esc(c.jp)}</div>
+    ${S.settings.kana && !furi && c.kana !== c.jp ? `<div class="kana" lang="ja">${esc(c.kana)}</div>` : ''}
     ${S.settings.romaji ? `<div class="ro">${esc(c.ro)}</div>` : ''}
   </div>`;
 }
@@ -77,7 +80,7 @@ function casualBlock(c) {
   if (!c.casual || !S.settings.casual) return '';
   return `<button class="casual" data-act="say-casual" data-arg="${c.id}">
     <span class="tag-mini">😎 Casual · doston se</span>
-    <span lang="ja">${esc(c.casual.jp)}</span>${S.settings.romaji ? ` <small>${esc(c.casual.ro)}</small>` : ''}
+    <span lang="ja">${(S.settings.kana && furigana(c.casual.jp, c.casual.kana, esc)) || esc(c.casual.jp)}</span>${S.settings.romaji ? ` <small>${esc(c.casual.ro)}</small>` : ''}
   </button>`;
 }
 
@@ -443,7 +446,7 @@ function openSettings() {
       <h2>Settings</h2>
       <p class="muted small">Only these display settings are saved on this device. Nothing about you or your progress is stored.</p>
       <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
-      <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show kana reading under kanji</label>
+      <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
       <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
       <label class="check"><input type="checkbox" id="s-casual" ${S.settings.casual ? 'checked' : ''}> Show casual versions (with friends)</label>
       <label>Voice speed <span class="muted" id="s-rate-val">${S.settings.rate}×</span>

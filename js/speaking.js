@@ -3,6 +3,7 @@ import { QA, JOBS, HOBBIES, YEARS, PRONUNCIATION, SOUND_TIPS, SLOTS, PATTERNS, b
 import { toRomaji } from './conjugate.js';
 import { UNITS, CARDS, TRACKS, COUNTRIES } from './data.js';
 import { listen } from './speech.js';
+import { furigana } from './furigana.js';
 import { matchScore, PASS } from './core.js';
 
 export function initSpeaking(ctx) {
@@ -13,11 +14,11 @@ export function initSpeaking(ctx) {
   let st = null;
 
   // Japanese line block from a [jp, kana, ro, en, hg] tuple.
-  const line = (l, big = false) => `<div class="jpblock ${big ? 'big' : ''}">
-    <div class="jp" lang="ja">${esc(l[0])}</div>
-    ${S().settings.kana && l[1] !== l[0] ? `<div class="kana" lang="ja">${esc(l[1])}</div>` : ''}
+  const line = (l, big = false) => { const furi = S().settings.kana ? furigana(l[0], l[1], esc) : null; return `<div class="jpblock ${big ? 'big' : ''}">
+    <div class="jp" lang="ja">${furi || esc(l[0])}</div>
+    ${S().settings.kana && !furi && l[1] !== l[0] ? `<div class="kana" lang="ja">${esc(l[1])}</div>` : ''}
     ${S().settings.romaji ? `<div class="ro">${esc(l[2])}</div>` : ''}
-  </div>`;
+  </div>`; };
   const micBtn = (act, arg = '', label = '🎤 Speak') => ctx.canListen()
     ? `<button class="btn mic big" id="mic" data-act="${act}" data-arg="${arg}">${label}</button>`
     : `<p class="muted center">This browser can’t check speech. Say it aloud and compare with 🔊.</p>`;

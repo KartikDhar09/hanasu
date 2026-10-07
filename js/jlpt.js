@@ -4,6 +4,7 @@ import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
 import { VOCAB, WORDS } from './vocab-data.js';
 import { READING, LISTENING } from './exam-data.js';
 import { toRomaji } from './conjugate.js';
+import { furigana, markBrackets } from './furigana.js';
 
 // Gojūon chart; ・ is an empty cell.
 export const KANA_ROWS = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や・ゆ・よ', 'らりるれろ', 'わ・・・を', 'ん・・・・'];
@@ -169,11 +170,11 @@ export function initJlpt(ctx) {
         <p class="left-text">${esc(g.explain)}</p>
       </div>
       <h3>Examples <small class="muted">tap to hear</small></h3>
-      <ul class="phrases">${g.ex.map(e => `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
-        <div class="jp" lang="ja">${mark(e[0])}</div>
-        ${S().settings.kana ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
+      <ul class="phrases">${g.ex.map(e => { const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null; return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
+        <div class="jp" lang="ja">${furi || mark(e[0])}</div>
+        ${S().settings.kana && !furi ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
         ${S().settings.romaji ? `<div class="ro">${esc(plain(e[2]))}</div>` : ''}
-        <div class="en">${esc(e[3])}</div>${hg(e[4])}</li>`).join('')}</ul>
+        <div class="en">${esc(e[3])}</div>${hg(e[4])}</li>`; }).join('')}</ul>
       <button class="btn primary big" data-act="gquiz" data-arg="${g.level}.${g.id}">✏️ Practise this</button>
       <div class="row">
         <button class="btn" data-act="gpoint" data-arg="${list[i - 1]?.id || ''}" ${i ? '' : 'disabled'}>‹ Prev</button>
@@ -247,9 +248,10 @@ export function initJlpt(ctx) {
   }
 
   // ================= Vocabulary =================
+  const wordFuri = w => S().settings.kana ? furigana(w.jp, w.kana, esc) : null;
   const wordCard = w => `<button class="wcard" data-act="say-text" data-arg="${esc(w.jp)}">
-    <span class="wpic">${w.pic || '<span class="wtxt">' + esc(w.en.split(/[ /(]/)[0]) + '</span>'}</span><b lang="ja">${esc(w.jp)}</b>
-    ${S().settings.kana && w.kana !== w.jp ? `<small lang="ja">${esc(w.kana)}</small>` : ''}
+    <span class="wpic">${w.pic || '<span class="wtxt">' + esc(w.en.split(/[ /(]/)[0]) + '</span>'}</span><b lang="ja">${wordFuri(w) || esc(w.jp)}</b>
+    ${S().settings.kana && w.kana !== w.jp && !wordFuri(w) ? `<small lang="ja">${esc(w.kana)}</small>` : ''}
     <small>${esc(w.en)}${S().settings.hindi ? ` · ${esc(w.hg)}` : ''}</small></button>`;
 
   // Matches Japanese, kana, romaji (macrons optional), English or Hinglish.
@@ -303,8 +305,8 @@ export function initJlpt(ctx) {
         <div class="wpic huge">${w.pic}</div>
         <div class="prompt">${esc(w.en)}</div>${hg(w.hg, 'prompt-hi')}
         <div id="answer" hidden>
-          <div class="jpblock big"><div class="jp" lang="ja">${esc(w.jp)}</div>
-          ${S().settings.kana && w.kana !== w.jp ? `<div class="kana" lang="ja">${esc(w.kana)}</div>` : ''}
+          <div class="jpblock big"><div class="jp" lang="ja">${wordFuri(w) || esc(w.jp)}</div>
+          ${S().settings.kana && w.kana !== w.jp && !wordFuri(w) ? `<div class="kana" lang="ja">${esc(w.kana)}</div>` : ''}
           ${S().settings.romaji ? `<div class="ro">${esc(w.ro)}</div>` : ''}</div>
         </div>
       </div>

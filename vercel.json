@@ -39,8 +39,26 @@
         {
           "key": "Strict-Transport-Security",
           "value": "max-age=63072000; includeSubDomains"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive, nosnippet, noimageindex, noai, noimageai"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/((?!robots\\.txt$).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(GPTBot|ChatGPT-User|OAI-SearchBot|ClaudeBot|Claude-User|Claude-SearchBot|Claude-Web|anthropic-ai|Google-Extended|GoogleOther|CCBot|PerplexityBot|Perplexity-User|Bytespider|Amazonbot|Applebot-Extended|Meta-ExternalAgent|Meta-ExternalFetcher|FacebookBot|cohere-ai|cohere-training-data-crawler|Diffbot|YouBot|DuckAssistBot|MistralAI-User|AI2Bot|Ai2Bot-Dolma|ImagesiftBot|Omgilibot|Timpibot|PetalBot|Kangaroo\\sBot|Scrapy|img2dataset|webzio-extended|VelenPublicWebCrawler).*"
+        }
+      ],
+      "destination": "/robots.txt",
+      "permanent": false
     }
   ]
 }

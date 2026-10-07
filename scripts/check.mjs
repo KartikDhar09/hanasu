@@ -216,6 +216,10 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
+test('no third-party requests (fonts are self-hosted)', () => {
+  for (const f of ['index.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
+  assert.ok(existsSync('fonts/inter-latin.woff2'), 'self-hosted font missing');
+});
 test('.vercelignore publishes only app files', () => {
   const lines = readFileSync('.vercelignore', 'utf8').split('\n').filter(l => l && !l.startsWith('#'));
   assert.equal(lines[0], '/*', 'must start by ignoring everything');

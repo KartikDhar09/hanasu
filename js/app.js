@@ -528,8 +528,21 @@ document.addEventListener('click', e => {
   if (e.target.id === 'sheet') e.target.hidden = true;
 });
 
+// Tappable rows, examples and chat bubbles aren't <button>s; make them reachable with Tab and usable with Enter/Space.
+const makeFocusable = root => root.querySelectorAll('[data-act]:not(button, a, input, select, [tabindex])').forEach(el => {
+  el.tabIndex = 0; el.setAttribute('role', 'button');
+});
+new MutationObserver(() => { makeFocusable($app); makeFocusable(document.getElementById('sheet')); })
+  .observe(document.body, { childList: true, subtree: true });
+
 document.addEventListener('keydown', e => {
-  if (e.target.matches('input, select') || mods.study?.keydown(e)) return;
+  if (e.target.matches('input, select')) return;
+  // Enter/Space on a focused control acts on that control, not on the study shortcuts.
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('button, a, summary, [role="button"]')) {
+    if (e.target.matches('[role="button"]')) { e.preventDefault(); e.target.click(); }
+    return;
+  }
+  if (mods.study?.keydown(e)) return;
   if (!sess) return;
   if (sess.kind === 'learn') {
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); sess.queue[sess.i]?.intro ? actions['next-intro']() : sess.revealed ? null : reveal(); }

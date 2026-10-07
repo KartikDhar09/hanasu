@@ -577,7 +577,7 @@ async function route() {
   if (name) {
     const mod = await loadSection(name);
     if (location.hash.slice(1) !== h) return; // the user moved on while it loaded
-    if (mod.route(h)) return;
+    try { if (mod.route(h)) return; } catch (_) { /* malformed link: fall through to home */ }
   }
   if (h.startsWith('unit/') && unitById(h.slice(5))) unit(h.slice(5));
   else home();

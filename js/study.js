@@ -398,7 +398,7 @@ export function initStudy(ctx) {
     if (h.startsWith('verb/') && VERBS[+h.slice(5)]) return verb(h.slice(5)), true;
     if (h === 'kanji') return kanji(), true;
     if (h === 'kanji/n4') { kLevel = 'n4'; return kanji(), true; }
-    if (h.startsWith('kanji/')) return kanjiOne(decodeURIComponent(h.slice(6))), true;
+    if (h.startsWith('kanji/')) { try { return kanjiOne(decodeURIComponent(h.slice(6))), true; } catch (_) { return kanji(), true; } }
     return false;
   }
 

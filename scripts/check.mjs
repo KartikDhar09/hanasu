@@ -216,6 +216,11 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
+test('.vercelignore publishes only app files', () => {
+  const lines = readFileSync('.vercelignore', 'utf8').split('\n').filter(l => l && !l.startsWith('#'));
+  assert.equal(lines[0], '/*', 'must start by ignoring everything');
+  for (const bad of ['scripts', '.github', 'README.md', 'package.json']) assert.ok(!lines.some(l => l.includes(bad)), `${bad} must stay private`);
+});
 test('nothing but display settings is stored', () => {
   for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) {
     const src = readFileSync('js/' + f, 'utf8');

@@ -24,8 +24,8 @@ jobs:
     name: Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
       - run: npm test
@@ -39,9 +39,9 @@ jobs:
       - name: Check Vercel token
         if: env.VERCEL_TOKEN == ''
         run: echo "::warning::VERCEL_TOKEN secret is not set, so the deploy is skipped. Add it under Settings → Secrets and variables → Actions."
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         if: env.VERCEL_TOKEN != ''
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         if: env.VERCEL_TOKEN != ''
         with:
           node-version: 22
@@ -51,6 +51,13 @@ jobs:
       - name: Build
         if: env.VERCEL_TOKEN != ''
         run: npx --yes $VERCEL_CLI build --token="$VERCEL_TOKEN"
+      - name: Check only app files are published
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          cd .vercel/output/static && find . -type f | sort
+          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css)$'; then
+            echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
+          fi
       - name: Deploy preview
         if: env.VERCEL_TOKEN != ''
         id: deploy
@@ -71,9 +78,9 @@ jobs:
       - name: Check Vercel token
         if: env.VERCEL_TOKEN == ''
         run: echo "::warning::VERCEL_TOKEN secret is not set, so the deploy is skipped. Add it under Settings → Secrets and variables → Actions."
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         if: env.VERCEL_TOKEN != ''
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         if: env.VERCEL_TOKEN != ''
         with:
           node-version: 22
@@ -83,6 +90,13 @@ jobs:
       - name: Build
         if: env.VERCEL_TOKEN != ''
         run: npx --yes $VERCEL_CLI build --prod --token="$VERCEL_TOKEN"
+      - name: Check only app files are published
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          cd .vercel/output/static && find . -type f | sort
+          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css)$'; then
+            echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
+          fi
       - name: Deploy to production
         if: env.VERCEL_TOKEN != ''
         run: |
@@ -97,3 +111,8 @@ jobs:
             [ "$code" = "200" ] || { echo "::error::$path returned $code"; exit 1; }
           done
           curl -s https://hanasu-two.vercel.app/ | grep -q "<title>Hanasu</title>"
+          for path in /scripts/check.mjs /scripts/icons.swift /.github/workflows/ci.yml /README.md /package.json /vercel.json /.vercelignore /.env.local; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://hanasu-two.vercel.app$path")
+            echo "$path -> $code (should be private)"
+            [ "$code" = "404" ] || { echo "::error::$path is publicly visible"; exit 1; }
+          done

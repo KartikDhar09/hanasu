@@ -55,7 +55,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         run: |
           cd .vercel/output/static && find . -type f | sort
-          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css)$'; then
+          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|fonts/[a-z0-9-]+\.woff2)$'; then
             echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
           fi
       - name: Deploy preview
@@ -94,7 +94,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         run: |
           cd .vercel/output/static && find . -type f | sort
-          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css)$'; then
+          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|fonts/[a-z0-9-]+\.woff2)$'; then
             echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
           fi
       - name: Deploy to production

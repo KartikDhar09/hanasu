@@ -1,6 +1,7 @@
-import { TRACKS, UNITS, CARDS, COUNTRIES } from './data.js';
+// The home screen needs only the unit list; the phrases (and furigana) load right after the first paint.
+import { TRACKS, UNIT_INDEX, PHRASE_COUNT } from './units-index.js';
 import { fill, matchScore, PASS } from './core.js';
-import { furigana } from './furigana.js';
+import { watchVisible, prefetchClip, constrained } from './clips.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 
 // ---------- State ----------
@@ -31,12 +32,17 @@ function save(state = S) {
   try { localStorage.setItem(KEY, JSON.stringify({ settings: state.settings })); } catch (_) { /* private mode: settings just won't persist */ }
 }
 
+let UNITS = [], CARDS = [], COUNTRIES = [];
+let furigana = () => null;
+let phrasesReady = null;
+const loadPhrases = () => phrasesReady || (phrasesReady = Promise.all([import('./data.js'), import('./furigana.js')])
+  .then(([d, f]) => { ({ UNITS, CARDS, COUNTRIES } = d); furigana = f.furigana; }));
+
 // Lessons use an example person (スミス from India) wherever a name or country appears.
-const EXAMPLE = COUNTRIES[0];
-const profile = () => ({
-  name: 'スミス', nameRo: 'Sumisu',
-  country: EXAMPLE[0], countryKana: EXAMPLE[1], countryRo: EXAMPLE[2], countryEn: EXAMPLE[3], countryHi: EXAMPLE[4],
-});
+const profile = () => {
+  const ex = COUNTRIES[0] || ['インド', 'インド', 'Indo', 'India', 'Bharat'];
+  return { name: 'スミス', nameRo: 'Sumisu', country: ex[0], countryKana: ex[1], countryRo: ex[2], countryEn: ex[3], countryHi: ex[4] };
+};
 const view = c => {
   const p = profile();
   const casual = c.casual && { jp: fill(c.casual.jp, p), kana: fill(c.casual.kana, p), ro: fill(c.casual.ro, p) };
@@ -57,7 +63,19 @@ let sess = null; // active study session
 function render(html) {
   $app.innerHTML = html;
   window.scrollTo(0, 0);
+  watchClips($app, { newScreen: true });
 }
+
+// The line a speak button would say, so its clip can load while it's on screen.
+function lineFor(el) {
+  const { act, arg } = el.dataset;
+  if (act === 'say-text') return arg || '';
+  const c = cardById(arg);
+  if (!c) return '';
+  if (act === 'say-casual') return view(c).casual?.jp || '';
+  return ['say', 'sayslow', 'play'].includes(act) ? view(c).jp : '';
+}
+const watchClips = watchVisible(lineFor);
 
 // Japanese block: kanji line, kana reading, romaji — per settings.
 // With the kana setting on, readings sit above the kanji (furigana); a line that can't be aligned shows it underneath.
@@ -100,8 +118,8 @@ function home() {
   sess = null; stopSpeaking();
   render(`
     <section class="hero">
-      <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${CARDS.length} phrases in ${UNITS.length} units, each with flashcards, speaking practice, a quiz and a role-play.</span></div>
-      <button class="btn primary big" data-act="learn" data-arg="${UNITS[0].id}">Start: ${esc(UNITS[0].title)}</button>
+      <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${PHRASE_COUNT} phrases in ${UNIT_INDEX.length} units, each with flashcards, speaking practice, a quiz and a role-play.</span></div>
+      <button class="btn primary big" data-act="learn" data-arg="${UNIT_INDEX[0].id}">Start: ${esc(UNIT_INDEX[0].title)}</button>
       <div class="quick">
         <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
         <a href="#jlpt" class="qlink"><span>🎓</span>JLPT course</a>
@@ -111,10 +129,10 @@ function home() {
       <h2 class="track"><span lang="ja">${t.jp}</span> ${t.title}</h2>
       <p class="muted">${t.desc}${S.settings.hindi ? ` · <span lang="hi-Latn">${t.hi}</span>` : ''}</p>
       <div class="units">
-        ${UNITS.filter(u => u.track === t.id).map(u => `<button class="unit" data-act="unit" data-arg="${u.id}">
+        ${UNIT_INDEX.filter(u => u.track === t.id).map(u => `<button class="unit" data-act="unit" data-arg="${u.id}">
             <span class="icon">${u.icon}</span>
             <span class="ut"><b>${esc(u.title)}</b><small><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</small></span>
-            <span class="count">${cardsOf(u.id).length}</span>
+            <span class="count">${u.n}</span>
           </button>`).join('')}
       </div>`).join('')}
   `);
@@ -165,6 +183,7 @@ function learnCard() {
   if (s.i >= s.queue.length) return finish(`${s.done} phrase${s.done === 1 ? '' : 's'} practised`, s.unitId);
   const { c: raw, intro } = s.queue[s.i];
   const c = view(raw);
+  if (s.queue[s.i + 1]) prefetchClip(view(s.queue[s.i + 1].c).jp);
   s.revealed = intro;
   const total = s.queue.length;
   render(`
@@ -225,6 +244,7 @@ function speakCard() {
   const s = sess;
   const raw = s.cards[s.i];
   const c = view(raw);
+  if (s.cards[s.i + 1]) prefetchClip(view(s.cards[s.i + 1]).jp);
   render(`
     <div class="head">${back(s.backAct, s.unitId || '')}<div class="grow">${bar(s.i, s.cards.length)}</div><span class="muted">${s.i + 1}/${s.cards.length}</span></div>
     <div class="card">
@@ -345,6 +365,7 @@ function answer(id) {
 function talk(unitId) {
   const u = unitById(unitId);
   sess = { kind: 'talk', unitId, lines: u.dialogue.map(lineView), i: 0, log: [] };
+  sess.lines.forEach(l => prefetchClip(l.jp));
   render(`
     <div class="head">${back('unit', unitId)}<h1>💬 Role-play</h1></div>
     <p class="muted">You play the lines on the right. The app speaks the other part. Tap any bubble to hear it again.</p>
@@ -438,29 +459,59 @@ function finish(title, unitId, extra = '', backAct = 'home') {
 }
 
 // ---------- Settings ----------
+// Two tabs: Settings (saved on this device) and Credits. Tabs only show/hide, so unsaved changes survive a switch.
+const CREDITS = [
+  ['🎙️', 'VOICEVOX:四国めたん', 'Main voice: phrases, words and examples.', 'https://zunko.jp/con_ongen_kiyaku.html', 'Terms of use'],
+  ['🎙️', 'VOICEVOX:冥鳴ひまり', 'Listening conversations (woman).', 'https://meimeihimari.wixsite.com/himari/terms-of-use', 'Terms of use'],
+  ['🎙️', 'VOICEVOX:青山龍星', 'Listening conversations (man).', 'https://www.virvoxproject.com/voicevox%E3%81%AE%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84', 'Terms of use'],
+  ['🔊', 'VOICEVOX', 'Free Japanese speech engine used to record the voices.', 'https://voicevox.hiroshiba.jp/', 'voicevox.hiroshiba.jp'],
+  ['漢', 'KANJIDIC2', 'Kanji readings used to place furigana over each kanji. © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.', 'https://www.edrdg.org/edrdg/licence.html', 'Licence'],
+  ['🗣️', 'Your device’s voice', 'Speaks lines without a recording (your own words in the sentence builder, your name).', '', ''],
+  ['😀', 'Emoji', 'Pictures come from your device’s emoji font.', '', ''],
+];
 function openSettings() {
   const sheet = document.getElementById('sheet');
   const voices = rankedVoices();
   sheet.innerHTML = `
     <div class="panel" role="dialog" aria-modal="true" aria-label="Settings">
-      <h2>Settings</h2>
-      <p class="muted small">Only these display settings are saved on this device. Nothing about you or your progress is stored.</p>
-      <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
-      <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
-      <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
-      <label class="check"><input type="checkbox" id="s-casual" ${S.settings.casual ? 'checked' : ''}> Show casual versions (with friends)</label>
-      <label>Voice speed <span class="muted" id="s-rate-val">${S.settings.rate}×</span>
-        <input type="range" id="s-rate" min="0.6" max="1.2" step="0.05" value="${S.settings.rate}" data-input="rate-label"></label>
-      ${voices.length ? `<label>Voice <select id="s-voice"><option value="">Auto (best: ${esc(voices[0].name)})</option>${voices.map(v => `<option value="${esc(v.name)}" ${v.name === S.settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>
-        <p class="muted small">Tip: on iPhone, download a better voice in Settings → Accessibility → Spoken Content → Voices → Japanese (Kyoko Enhanced or O-ren Premium).</p>` : ''}
-      ${!canSpeak() || !voices.length ? `<p class="warn">No Japanese voice found. On iPhone: Settings → Accessibility → Spoken Content → Voices → Japanese. On Android: install Google Text-to-speech Japanese.</p>` : ''}
-      <div class="row">
-        <button class="btn" data-act="test-voice">🔊 Test voice</button>
-        <button class="btn primary" data-act="save-settings">Save</button>
+      <div class="seg" role="tablist" aria-label="Settings sections">
+        <button role="tab" id="t-prefs" aria-controls="p-prefs" aria-selected="true" class="on" data-act="settings-tab" data-arg="prefs">⚙︎ Settings</button>
+        <button role="tab" id="t-credits" aria-controls="p-credits" aria-selected="false" data-act="settings-tab" data-arg="credits">🙏 Credits</button>
       </div>
-      <p class="muted small">Furigana readings use KANJIDIC2 © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.</p>
+      <section id="p-prefs" role="tabpanel" aria-labelledby="t-prefs" class="panel-tab">
+        <p class="muted small">Only these display settings are saved on this device. Nothing about you or your progress is stored.</p>
+        <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
+        <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
+        <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
+        <label class="check"><input type="checkbox" id="s-casual" ${S.settings.casual ? 'checked' : ''}> Show casual versions (with friends)</label>
+        <label>Voice speed <span class="muted" id="s-rate-val">${S.settings.rate}×</span>
+          <input type="range" id="s-rate" min="0.6" max="1.2" step="0.05" value="${S.settings.rate}" data-input="rate-label"></label>
+        ${voices.length ? `<label>Browser voice <small class="muted">for lines without a recording</small> <select id="s-voice"><option value="">Auto (best: ${esc(voices[0].name)})</option>${voices.map(v => `<option value="${esc(v.name)}" ${v.name === S.settings.voice ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>
+          <p class="muted small">Tip: on iPhone, download a better voice in Settings → Accessibility → Spoken Content → Voices → Japanese (Kyoko Enhanced or O-ren Premium).</p>` : ''}
+        ${!canSpeak() || !voices.length ? `<p class="warn">No Japanese browser voice found. Recorded lines still play; others need one. On iPhone: Settings → Accessibility → Spoken Content → Voices → Japanese. On Android: install Google Text-to-speech Japanese.</p>` : ''}
+        <div class="row">
+          <button class="btn" data-act="test-voice">🔊 Test browser voice</button>
+          <button class="btn primary" data-act="save-settings">Save</button>
+        </div>
+      </section>
+      <section id="p-credits" role="tabpanel" aria-labelledby="t-credits" class="panel-tab" hidden>
+        <p class="muted small">Hanasu is built on these. Thank you! · Shukriya!</p>
+        <ul class="credits">${CREDITS.map(([icon, name, what, url, label]) => `<li>
+          <span class="cicon" lang="ja">${icon}</span>
+          <span><b lang="ja">${esc(name)}</b><small>${esc(what)}</small>${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>` : ''}</span>
+        </li>`).join('')}</ul>
+      </section>
     </div>`;
   sheet.hidden = false;
+}
+
+function settingsTab(tab) {
+  for (const t of ['prefs', 'credits']) {
+    const on = t === tab;
+    const b = document.getElementById('t-' + t);
+    b.classList.toggle('on', on); b.setAttribute('aria-selected', on);
+    document.getElementById('p-' + t).hidden = !on;
+  }
 }
 
 function saveSettings() {
@@ -517,9 +568,10 @@ const actions = {
   settings: () => openSettings(),
   'save-settings': () => saveSettings(),
   'rate-label': (_, v) => { document.getElementById('s-rate-val').textContent = v + '×'; },
+  'settings-tab': t => settingsTab(t === 'credits' ? 'credits' : 'prefs'),
   'test-voice': () => {
     const r = document.getElementById('s-rate'), vs = document.getElementById('s-voice');
-    say('こんにちは。日本語を勉強しましょう。', { rate: +r.value, voice: vs ? vs.value : S.settings.voice });
+    say('こんにちは。日本語を勉強しましょう。', { rate: +r.value, voice: vs ? vs.value : S.settings.voice, clip: false });
   },
 };
 
@@ -536,7 +588,7 @@ document.addEventListener('click', e => {
 const makeFocusable = root => root.querySelectorAll('[data-act]:not(button, a, input, select, [tabindex])').forEach(el => {
   el.tabIndex = 0; el.setAttribute('role', 'button');
 });
-new MutationObserver(() => { makeFocusable($app); makeFocusable(document.getElementById('sheet')); })
+new MutationObserver(() => { makeFocusable($app); makeFocusable(document.getElementById('sheet')); watchClips($app); })
   .observe(document.body, { childList: true, subtree: true });
 
 document.addEventListener('keydown', e => {
@@ -564,7 +616,7 @@ const LOADERS = {
   })),
   jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
   exam: () => import('./exam.js').then(m => m.initExam({
-    ...shared(), sayAs: (text, pitch) => say(text, { rate: S.settings.rate, voice: S.settings.voice, pitch }), stop: stopSpeaking,
+    ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
 };
 const mods = {};      // initialised modules
@@ -572,12 +624,15 @@ const loading = {};   // in-flight loads
 function loadSection(name) {
   return loading[name] || (loading[name] = LOADERS[name]().then(mod => { mods[name] = mod; Object.assign(actions, mod.actions); return mod; }));
 }
-const loadAll = () => Promise.all(Object.keys(LOADERS).map(loadSection));
+const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
   : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji)/.test(h) ? 'study' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
+// Settings work without the phrase data; everything else waits for it (it's usually loaded already).
+const NO_DATA = new Set(['settings', 'settings-tab', 'save-settings', 'test-voice', 'rate-label']);
 async function run(name, ...args) {
+  if (!NO_DATA.has(name)) await loadPhrases();
   if (!actions[name]) await loadAll();
   actions[name]?.(...args);
 }
@@ -590,6 +645,10 @@ async function route() {
   const m = /^(speak|particle|verb|grammar|kanji|jlpt)/.exec(h)?.[1];
   const tab = m === 'particle' || m === 'verb' ? 'grammar' : m || 'phrases';
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
+  // Home renders straight away; every other screen needs the phrase data first.
+  if (!h) return home();
+  await loadPhrases();
+  if (location.hash.slice(1) !== h) return; // the user moved on while it loaded
   const name = moduleFor(h);
   if (name) {
     const mod = await loadSection(name);
@@ -615,8 +674,15 @@ document.addEventListener('change', e => {
 
 route();
 
-// Warm the other sections in the background once the app is idle, so the first tab switch is instant.
+// After the first paint: the phrases (needed for any unit), then, when idle, the other sections, so the first
+// tab switch is instant (skipped on Data Saver / 2G, where sections load when opened).
 const idle = window.requestIdleCallback || (f => setTimeout(f, 1));
-setTimeout(() => idle(() => loadAll(), { timeout: 3000 }), 2500);
+idle(() => loadPhrases(), { timeout: 500 });
+if (!constrained()) setTimeout(() => idle(() => loadAll(), { timeout: 3000 }), 2500);
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+// The offline copy downloads every app file; start it once the page has loaded so it doesn't compete with the
+// first screen for bandwidth.
+if ('serviceWorker' in navigator) {
+  const register = () => setTimeout(() => idle(() => navigator.serviceWorker.register('/sw.js').catch(() => {})), 3000);
+  if (document.readyState === 'complete') register(); else addEventListener('load', register, { once: true });
+}

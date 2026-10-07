@@ -1,6 +1,7 @@
 // Particles, Verbs and Kanji sections. Shared helpers come from app.js via ctx.
 import { PARTICLES, PARTICLES_INTRO, CONFUSABLE } from './particles-data.js';
 import { furigana, markBrackets } from './furigana.js';
+import { prefetchClip } from './clips.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
@@ -281,6 +282,7 @@ export function initStudy(ctx) {
     const k = st.queue[st.i];
     if (!k) { return quizDone(`${st.done} kanji practised`, 'kanji', ''); }
     st.revealed = false;
+    prefetchClip(k.ex?.[0]?.[0]); prefetchClip(st.queue[st.i + 1]?.ex?.[0]?.[0]);
     render(`
       <div class="head">${back('kanji')}<div class="grow">${bar(st.i, st.queue.length)}</div><span class="muted">${st.i + 1}/${st.queue.length}</span></div>
       <div class="card">

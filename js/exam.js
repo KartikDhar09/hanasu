@@ -4,6 +4,7 @@ import { EXAMS, GRAMMAR } from './jlpt-data.js';
 import { KANJI } from './kanji-data.js';
 import { WORDS } from './vocab-data.js';
 import { chunk } from './jlpt.js';
+import { prefetchClip } from './clips.js';
 
 const SECTIONS = [['vocab', 'Vocabulary', '文字・語彙'], ['grammar', 'Grammar', '文法'], ['reading', 'Reading', '読解'], ['listening', 'Listening', '聴解']];
 
@@ -27,7 +28,6 @@ export function initExam(ctx) {
   const S = () => ctx.S();
   const hg = (t, cls = 'hi') => S().settings.hindi && t ? `<div class="${cls}" lang="hi-Latn">${esc(t)}</div>` : '';
   const level = () => 'n5';
-  const voice = who => ({ m: 0.75, f: 1.25, n: 1 }[who] || 1);
   let st = null;
 
   // Question, conversation, question again. A new play (or leaving the question) stops the old one.
@@ -35,7 +35,7 @@ export function initExam(ctx) {
     const token = {};
     if (st) st.token = token;
     const live = () => st?.token === token;
-    const say = (t, who) => ctx.sayAs(t, voice(who));
+    const say = (t, who) => ctx.sayAs(t, who);
     await say(item.q[0], 'n');
     for (const [who, jp] of item.lines) { if (!live()) return; await new Promise(r => setTimeout(r, 400)); if (!live()) return; await say(jp, who); }
     if (live()) { await new Promise(r => setTimeout(r, 500)); if (live()) await say(item.q[0], 'n'); }
@@ -102,6 +102,7 @@ export function initExam(ctx) {
     ctx.clearSess();
     const item = LISTENING.find(x => x.id === id);
     st = { kind: 'listen', id, answered: false };
+    prefetchClip(item.q[0]); for (const [who, jp] of item.lines) prefetchClip(jp, who === 'm' || who === 'f' ? who : 'n');
     render(`
       <div class="head">${back('ex-listening', item.level)}<h1>${item.pic} ${esc(item.kind)}</h1></div>
       <div class="card">

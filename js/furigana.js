@@ -40,7 +40,18 @@ export function splitReading(chars, reading) {
 }
 
 // lit renders the kana/punctuation stretches (default: escaped as-is); esc escapes kanji and readings.
-export function furigana(jp, kana, esc, lit = esc, { split = true } = {}) {
+// Each line is aligned once and remembered: screens re-render often, and the vocabulary lists show hundreds of words.
+const memo = new Map();
+export function furigana(jp, kana, esc, lit = esc, opts = {}) {
+  const key = `${lit === esc ? 0 : 1}${opts.split === false ? 0 : 1}${jp}\u0000${kana}`;
+  if (memo.has(key)) return memo.get(key);
+  const out = align(jp, kana, esc, lit, opts);
+  if (memo.size > 5000) memo.clear();
+  memo.set(key, out);
+  return out;
+}
+
+function align(jp, kana, esc, lit, { split = true } = {}) {
   if (!jp || !kana || jp === kana) return null;
   const parts = jp.match(SPLIT) || [];
   if (parts.every(p => IS_LIT.test(p))) return null;

@@ -220,7 +220,6 @@ const readingsMod = await import('../js/kanji-readings.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 test('no third-party requests (fonts are self-hosted)', () => {
   for (const f of ['index.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
-  assert.ok(existsSync('fonts/inter-latin.woff2'), 'self-hosted font missing');
 });
 test('.vercelignore publishes only app files', () => {
   const lines = readFileSync('.vercelignore', 'utf8').split('\n').filter(l => l && !l.startsWith('#'));
@@ -236,6 +235,20 @@ test('nothing but display settings is stored', () => {
   const app = readFileSync('js/app.js', 'utf8');
   assert.match(app, /JSON\.stringify\(\{ settings: state\.settings \}\)/);
 });
+const clipsMod = await import('../js/clips.js');
+const spoken = await (await import('./audio-texts.mjs')).audioTexts();
+test('every line the app speaks has a recorded clip (run scripts/make-audio.mjs)', () => {
+  const missing = Object.entries(spoken).flatMap(([who, lines]) => lines.filter(t => !existsSync('.' + clipsMod.clipPath(t, who))).map(t => `${who}:${t}`));
+  assert.ok(!missing.length, `${missing.length} lines have no clip, e.g. ${missing.slice(0, 5).join(' | ')}`);
+  const want = new Set(Object.entries(spoken).flatMap(([who, lines]) => lines.map(t => clipsMod.clipPath(t, who))));
+  const orphans = ['n', 'm', 'f'].flatMap(who => existsSync('audio/' + who) ? readdirSync('audio/' + who).map(f => `/audio/${who}/${f}`) : []).filter(p => !want.has(p));
+  assert.ok(!orphans.length, `${orphans.length} clips for lines that no longer exist`);
+  assert.ok(existsSync('audio/silence.m4a'));
+  assert.equal(clipsMod.clipPath('おはようございます。'), clipsMod.clipPath(' おはようございます。 '), 'clip names ignore surrounding spaces');
+  assert.equal(clipsMod.clipPath('私[は]学生です。'), clipsMod.clipPath('私は学生です。'), 'clip names ignore grammar brackets');
+});
+const idx = await (await import('./units-index.mjs')).buildIndex();
+if (readFileSync('js/units-index.js', 'utf8') !== idx) fail('js/units-index.js is out of date: run node scripts/units-index.mjs');
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;
   assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby>です。');

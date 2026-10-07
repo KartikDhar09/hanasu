@@ -216,6 +216,7 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const furiMod = await import('../js/furigana.js');
+const readingsMod = await import('../js/kanji-readings.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 test('no third-party requests (fonts are self-hosted)', () => {
   for (const f of ['index.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
@@ -237,11 +238,21 @@ test('nothing but display settings is stored', () => {
 });
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;
-  assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日本<rt>にほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半年<rt>はんとし</rt></ruby>です。');
+  assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby>です。');
   assert.equal(F('何にしますか。', 'なににしますか。', e), '<ruby>何<rt>なに</rt></ruby>にしますか。');
-  assert.equal(F('私[は]学生です。', 'わたし[は]がくせいです。', e, furiMod.markBrackets(e)), '<ruby>私<rt>わたし</rt></ruby><mark>は</mark><ruby>学生<rt>がくせい</rt></ruby>です。');
+  assert.equal(F('私[は]学生です。', 'わたし[は]がくせいです。', e, furiMod.markBrackets(e)), '<ruby>私<rt>わたし</rt></ruby><mark>は</mark><ruby>学<rt>がく</rt></ruby><ruby>生<rt>せい</rt></ruby>です。');
   assert.equal(F('こんにちは。', 'こんにちは。', e), null, 'no kanji, no ruby');
   assert.equal(F('日本です。', 'にほんだ。', e), null, 'mismatch falls back');
+  // Readings go over each kanji where the split is certain; words read as a whole keep one grouped reading.
+  assert.equal(F('日本', 'にほん', e), '<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>');
+  assert.equal(F('時々', 'ときどき', e), '<ruby>時<rt>とき</rt></ruby><ruby>々<rt>どき</rt></ruby>');
+  assert.equal(F('誕生日', 'たんじょうび', e), '<ruby>誕<rt>たん</rt></ruby><ruby>生<rt>じょう</rt></ruby><ruby>日<rt>び</rt></ruby>');
+  assert.equal(F('受付', 'うけつけ', e), '<ruby>受<rt>うけ</rt></ruby><ruby>付<rt>つけ</rt></ruby>');
+  assert.equal(F('今日', 'きょう', e), '<ruby class="grp">今日<rt>きょう</rt></ruby>');
+  assert.equal(F('大人', 'おとな', e), '<ruby class="grp">大人<rt>おとな</rt></ruby>');
+  const used = new Set(JSON.stringify([CARDS, V.WORDS, J.GRAMMAR]).match(/\p{Script=Han}/gu));
+  const missing = [...used].filter(ch => !readingsMod.READINGS[ch]);
+  assert.ok(missing.length < 20, `kanji without readings (re-run scripts/kanji-readings.mjs): ${missing.join('')}`);
   // Every phrase, dialogue line, word and example either aligns or falls back; nearly all should align.
   const pairs = [...CARDS.map(c => [c.jp, c.kana]), ...V.WORDS.map(w => [w.jp, w.kana]), ...J.GRAMMAR.flatMap(g => g.ex.map(x => [x[0], x[1]]))]
     .filter(([a, b]) => a !== b && !/[{]/.test(a));

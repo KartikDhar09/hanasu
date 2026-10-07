@@ -1,12 +1,9 @@
 // JLPT tab: exam overview, study path, kana charts, grammar points and exam-style drills.
 import { EXAMS, EXAM_TIPS, QUESTION_TYPES, GRAMMAR } from './jlpt-data.js';
-import { UNITS, CARDS } from './data.js';
-import { PARTICLES } from './particles-data.js';
 import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
 import { VOCAB, WORDS } from './vocab-data.js';
 import { READING, LISTENING } from './exam-data.js';
 import { toRomaji } from './conjugate.js';
-import { isLearned, isDue, grade, pickSession, AGAIN, GOOD, EASY } from './core.js';
 
 // Gojūon chart; ・ is an empty cell.
 export const KANA_ROWS = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や・ゆ・よ', 'らりるれろ', 'わ・・・を', 'ん・・・・'];
@@ -33,53 +30,41 @@ export function chunk(sentence) {
 }
 
 export function initJlpt(ctx) {
-  const { esc, render, speak, shuffle, bar, back, practised, save } = ctx;
+  const { esc, render, speak, shuffle, bar, back } = ctx;
   const S = () => ctx.S();
   const hg = (t, cls = 'hi') => S().settings.hindi && t ? `<div class="${cls}" lang="hi-Latn">${esc(t)}</div>` : '';
-  const level = () => S().jlptLevel || 'n5';
-  const best = () => (S().quizBest = S().quizBest || {});
+  let lvl = 'n5'; // chosen level, for this visit only
+  const level = () => lvl;
   const mark = (s, blank) => esc(s).replace(/\[(.+?)\]/g, (_, p) => blank ? '<span class="gap wide">？</span>' : `<mark>${p}</mark>`);
   const plain = s => s.replace(/[[\]]/g, '');
   let st = null;
 
-  // ---- Study path: each step reports progress 0..1 from what you’ve done in the app ----
-  const pct = key => (best()[key] || 0) / 100;
-  const trackLearned = ids => { const cs = CARDS.filter(c => ids.includes(UNITS.find(u => u.id === c.unit).track)); return cs.filter(c => isLearned(S().progress[c.id])).length / cs.length; };
-  const kanjiLearned = list => () => list.filter(k => isLearned((S().kanjiProgress || {})[k.ch])).length / list.length;
-  const vprog = () => (S().vocabProgress = S().vocabProgress || {});
-  const vocabLearned = lv => () => { const ws = WORDS.filter(w => w.level === lv); return ws.filter(w => isLearned(vprog()[w.id])).length / ws.length; };
-  const particleAvg = () => PARTICLES.reduce((n, p) => n + ((S().pbest || {})[p.id] || 0), 0) / PARTICLES.length / 100;
-
-  const readAvg = lv => () => { const rs = READING.filter(r => r.level === lv); return rs.reduce((t, r) => t + ((S().readBest || {})[r.id] || 0), 0) / rs.length / 100; };
-  const listenPart = lv => () => { const ls = LISTENING.filter(l => l.level === lv); return ls.filter(l => (S().listenDone || {})[l.id]).length / ls.length; };
-  const mockReady = lv => () => Math.min(1, (best()['mock-' + lv] || 0) / (100 * EXAMS[lv].pass.total / 180));
+  // ---- Study path: the order to work through each level ----
   const examSteps = lv => [
-    ['📖', 'Reading practice', 'Notes, emails and notices.', readAvg(lv), 'ex-reading'],
-    ['🎧', 'Listening practice', 'Conversations with picture answers.', listenPart(lv), 'ex-listening'],
-    ['🏁', 'Pass a mock test', `Score ${EXAMS[lv].pass.total}+/180 with every section above the minimum.`, mockReady(lv), 'ex-mock'],
+    ['📖', 'Reading practice', 'Notes, emails and notices.', 'ex-reading'],
+    ['🎧', 'Listening practice', 'Conversations with picture answers.', 'ex-listening'],
+    ['🏁', 'Mock test', `Aim for ${EXAMS[lv].pass.total}+/180 with every section above the minimum.`, 'ex-mock'],
   ];
 
   function path(lv) {
-    const n5 = [
-      ['あ', 'Hiragana & katakana', 'Read every kana. Quiz score 80%+.', () => pct('kana'), 'kana'],
-      ['💬', 'Everyday N5 phrases', 'Learn the Everyday N5 track.', () => trackLearned(['n5']), 'home'],
-      ['の', 'Particles', 'Practise each particle quiz.', particleAvg, 'particles'],
-      ['🏃', 'Verbs & forms', 'Conjugation quiz score.', () => pct('vquiz'), 'verbs'],
-      ['漢', 'N5 kanji', `Learn all ${KANJI_N5.length} kanji with flashcards.`, kanjiLearned(KANJI_N5), 'kanji'],
-      ['🍙', 'N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words. Learn them with flashcards.`, vocabLearned('n5'), 'jlpt-vocab'],
-      ['📘', 'N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns. Grammar quiz score.`, () => pct('gram-n5'), 'jlpt-grammar'],
-      ['★', 'Sentence order', 'Build sentences in the right order.', () => pct('order-n5'), 'order'],
+    if (lv === 'n5') return [
+      ['あ', 'Hiragana & katakana', 'Read every kana. Aim for 80%+ on the quiz.', 'kana'],
+      ['💬', 'Everyday N5 phrases', 'Work through the Everyday N5 track.', 'home'],
+      ['の', 'Particles', 'Practise each particle quiz.', 'particles'],
+      ['🏃', 'Verbs & forms', 'Conjugation tables and quiz.', 'verbs'],
+      ['漢', 'N5 kanji', `All ${KANJI_N5.length} kanji with flashcards.`, 'kanji'],
+      ['🍙', 'N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words with flashcards.`, 'jlpt-vocab'],
+      ['📘', 'N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns, then the grammar quiz.`, 'jlpt-grammar'],
+      ['★', 'Sentence order', 'Build sentences in the right order.', 'order'],
       ...examSteps('n5'),
     ];
-    if (lv === 'n5') return n5;
-    const n5avg = () => n5.reduce((t, s) => t + Math.min(1, s[3]()), 0) / n5.length;
     return [
-      ['5', 'Finish N5 first', 'N4 includes everything in N5.', n5avg, 'jlpt-n5'],
-      ['🏢', 'Office & corporate phrases', 'Learn the Office and Corporate tracks.', () => trackLearned(['office', 'corp']), 'home'],
-      ['漢', 'N4 kanji', `${KANJI_N4.length} more kanji.`, kanjiLearned(KANJI_N4), 'kanji-n4'],
-      ['💼', 'N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, vocabLearned('n4'), 'jlpt-vocab'],
-      ['📗', 'N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns. Grammar quiz score.`, () => pct('gram-n4'), 'jlpt-grammar'],
-      ['★', 'Sentence order (N4)', 'Build N4 sentences in the right order.', () => pct('order-n4'), 'order'],
+      ['5', 'N5 first', 'N4 includes everything in N5.', 'jlpt-n5'],
+      ['🏢', 'Office & corporate phrases', 'Work through the Office and Corporate tracks.', 'home'],
+      ['漢', 'N4 kanji', `${KANJI_N4.length} more kanji.`, 'kanji-n4'],
+      ['💼', 'N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, 'jlpt-vocab'],
+      ['📗', 'N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns, then the grammar quiz.`, 'jlpt-grammar'],
+      ['★', 'Sentence order (N4)', 'Build N4 sentences in the right order.', 'order'],
       ...examSteps('n4'),
     ];
   }
@@ -89,7 +74,6 @@ export function initJlpt(ctx) {
     ctx.clearSess(); st = null;
     const lv = level(), ex = EXAMS[lv];
     const steps = path(lv);
-    const overall = steps.reduce((t, s) => t + Math.min(1, s[3]()), 0) / steps.length;
     render(`
       <h1 class="page">JLPT <span lang="ja">日本語能力試験</span></h1>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-level" data-arg="${l}">${EXAMS[l].title}</button>`).join('')}</div>
@@ -98,16 +82,12 @@ export function initJlpt(ctx) {
         <p>${esc(ex.can)}</p>${hg(ex.canHg)}
         <div class="note">📚 You need: ${esc(ex.need)}</div>
       </div>
-      <h3>Your path to ${ex.title} <small class="muted">${Math.round(overall * 100)}% ready</small></h3>
-      ${bar(overall, 1)}
-      <ol class="path">${steps.map(s => {
-        const p = Math.min(1, s[3]());
-        return `<li class="${p >= 0.8 ? 'done' : ''}"><button data-act="${s[4]}" data-arg="${['jlpt-grammar', 'order', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[4]) ? lv : ''}">
-          <span class="pico" lang="ja">${p >= 0.8 ? '✓' : s[0]}</span>
-          <span class="ptext"><b>${esc(s[1])}</b><small>${esc(s[2])}</small>${bar(p, 1)}</span>
-          <span class="count">${Math.round(p * 100)}%</span></button></li>`;
-      }).join('')}</ol>
-      <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">🏁 Take a ${ex.title} mock test${best()['mock-' + lv] ? ` <small>(best ${Math.round(best()['mock-' + lv] * 1.8)}/180)</small>` : ''}</button>
+      <h3>Your path to ${ex.title}</h3>
+      <ol class="path">${steps.map(s => `<li><button data-act="${s[3]}" data-arg="${['jlpt-grammar', 'order', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[3]) ? lv : ''}">
+          <span class="pico" lang="ja">${s[0]}</span>
+          <span class="ptext"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span>
+          <span class="count">›</span></button></li>`).join('')}</ol>
+      <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">🏁 Take a ${ex.title} mock test</button>
       <h3>Practise like the exam</h3>
       <div class="speak-grid">
         <button class="scard" data-act="ex-reading" data-arg="${lv}"><span>📖</span><b>Reading</b><small>${READING.filter(r => r.level === lv).length} real-life passages with questions</small></button>
@@ -143,7 +123,7 @@ export function initJlpt(ctx) {
       <div class="head">${back('jlpt')}<h1>Kana charts</h1></div>
       <div class="seg"><button class="${script === 'hira' ? 'on' : ''}" data-act="kana-script" data-arg="hira">ひらがな Hiragana</button><button class="${script === 'kata' ? 'on' : ''}" data-act="kana-script" data-arg="kata">カタカナ Katakana</button></div>
       <p class="muted small">${script === 'hira' ? 'Hiragana is for Japanese words and grammar endings.' : 'Katakana is for foreign words: コーヒー (coffee), インド (India), パソコン (PC).'} Tap any kana to hear it.${S().settings.hindi ? ' Hindi ki tarah, har akshar ek awaaz hai!' : ''}</p>
-      <button class="btn primary big" data-act="kana-quiz" data-arg="${script}">🎯 Kana quiz ${best().kana ? `<small>(best ${best().kana}%)</small>` : ''}</button>
+      <button class="btn primary big" data-act="kana-quiz" data-arg="${script}">🎯 Kana quiz</button>
       <h3>Basic</h3><div class="kchart">${KANA_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
       <h3>With ゛ and ゜ <small class="muted">voiced sounds</small></h3><div class="kchart">${DAKUTEN_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
       <h3>Combinations</h3><div class="kchart three">${COMBO_ROWS.map(r => combos(r).map(cell).join('')).join('')}</div>
@@ -159,7 +139,7 @@ export function initJlpt(ctx) {
         ? { type: 'listen', k: conv(k), right: conv(k), options: shuffle([k, ...others]).map(conv) } // hear it, pick the kana
         : { type: 'read', k: conv(k), right: r, options: shuffle([r, ...others.map(toRomaji)]) }; // see it, pick the romaji
     });
-    st = { kind: 'kquizk', script, qs, i: 0, right: 0, key: 'kana', back: 'kana' };
+    st = { kind: 'kquizk', script, qs, i: 0, right: 0, back: 'kana' };
     quizQ();
   }
 
@@ -173,8 +153,7 @@ export function initJlpt(ctx) {
       <div class="row"><button class="btn primary" data-act="gquiz" data-arg="${lv}">✏️ Grammar quiz</button><button class="btn" data-act="order" data-arg="${lv}">★ Sentence order</button></div>
       <div class="pgrid">${pts.map(g => `<button class="pcard" data-act="gpoint" data-arg="${g.id}">
         <span class="pch">${g.pic}</span>
-        <span class="pt"><b lang="ja">${esc(g.pattern)}</b>${esc(g.en)}${S().settings.hindi ? `<small lang="hi-Latn">${esc(g.hg)}</small>` : ''}</span>
-        <span class="count">${(S().gbest || {})[g.id] != null ? `${S().gbest[g.id]}%` : ''}</span></button>`).join('')}</div>`);
+        <span class="pt"><b lang="ja">${esc(g.pattern)}</b>${esc(g.en)}${S().settings.hindi ? `<small lang="hi-Latn">${esc(g.hg)}</small>` : ''}</span></button>`).join('')}</div>`);
   }
 
   function gpoint(id) {
@@ -215,7 +194,7 @@ export function initJlpt(ctx) {
       const others = [...new Set(shuffle(pool.filter(x => x.g.id !== g.id)).map(x => x.e[0].match(/\[(.+?)\]/)[1]))].filter(x => x !== right).slice(0, 3);
       return { type: 'gram', g, e, right, options: shuffle([right, ...others]) };
     });
-    st = { kind: 'gquiz', qs, i: 0, right: 0, key: only ? null : 'gram-' + lv, gid: only, back: only ? 'gpoint' : 'jlpt-grammar', backArg: only || lv };
+    st = { kind: 'gquiz', qs, i: 0, right: 0, back: only ? 'gpoint' : 'jlpt-grammar', backArg: only || lv };
     quizQ();
   }
 
@@ -223,7 +202,7 @@ export function initJlpt(ctx) {
   function order(lv) {
     const pool = GRAMMAR.filter(g => g.level === lv).flatMap(g => g.ex).map(e => ({ e, parts: chunk(e[0]) })).filter(x => x.parts.length >= 3 && x.parts.length <= 6);
     const qs = shuffle(pool).slice(0, 8).map(x => ({ type: 'order', e: x.e, parts: x.parts, shuffled: shuffle(x.parts.map((p, i) => ({ p, i }))) }));
-    st = { kind: 'order', qs, i: 0, right: 0, key: 'order-' + lv, back: 'jlpt' };
+    st = { kind: 'order', qs, i: 0, right: 0, back: 'jlpt' };
     ctx.clearSess();
     orderQ();
   }
@@ -268,7 +247,7 @@ export function initJlpt(ctx) {
   }
 
   // ================= Vocabulary =================
-  const wordCard = w => `<button class="wcard ${isLearned(vprog()[w.id]) ? 'known' : ''}" data-act="say-text" data-arg="${esc(w.jp)}">
+  const wordCard = w => `<button class="wcard" data-act="say-text" data-arg="${esc(w.jp)}">
     <span class="wpic">${w.pic || '<span class="wtxt">' + esc(w.en.split(/[ /(]/)[0]) + '</span>'}</span><b lang="ja">${esc(w.jp)}</b>
     ${S().settings.kana && w.kana !== w.jp ? `<small lang="ja">${esc(w.kana)}</small>` : ''}
     <small>${esc(w.en)}${S().settings.hindi ? ` · ${esc(w.hg)}` : ''}</small></button>`;
@@ -290,17 +269,15 @@ export function initJlpt(ctx) {
   function vocab(lv) {
     ctx.clearSess(); st = null;
     const ws = WORDS.filter(w => w.level === lv);
-    const due = ws.filter(w => isDue(vprog()[w.id])).length;
     render(`
       <div class="head">${back('jlpt')}<h1>${lv.toUpperCase()} vocabulary</h1></div>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-vocab" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
-      <div class="stats small-stats"><div><b>${ws.filter(w => isLearned(vprog()[w.id])).length}</b><span>of ${ws.length} learned</span></div><div><b>${due}</b><span>due now</span></div></div>
-      <div class="row"><button class="btn primary" data-act="vlearn" data-arg="${lv}">🃏 ${due ? `Review ${due}` : 'Learn new'}</button><button class="btn" data-act="vocab-quiz" data-arg="${lv}">🎯 Picture quiz</button></div>
+      <div class="row"><button class="btn primary" data-act="vlearn" data-arg="${lv}">🃏 Flashcards</button><button class="btn" data-act="vocab-quiz" data-arg="${lv}">🎯 Picture quiz</button></div>
       <input class="search" type="search" id="vsearch" data-input="vocab-search" data-arg="${lv}" placeholder="🔍 Search ${ws.length} words (日本語, romaji, English, Hinglish)" aria-label="Search words" value="${esc(st?.q || '')}" autocomplete="off">
       <div id="vresults"></div>
       <div id="vtopics">${VOCAB.filter(t => t.level === lv).map((t, i) => `
         <details class="fold" ${i === 0 ? 'open' : ''}><summary><span class="sum-title">${t.icon} ${esc(t.title)}${S().settings.hindi ? `<small class="muted" lang="hi-Latn">${esc(t.hg)}</small>` : ''}</span>
-          <span class="count">${WORDS.filter(w => w.topic === t.id && isLearned(vprog()[w.id])).length}/${t.words.length}</span></summary>
+          <span class="count">${t.words.length}</span></summary>
           <div class="wgrid">${WORDS.filter(w => w.topic === t.id).map(wordCard).join('')}</div>
           <button class="btn small ghost" data-act="vlearn" data-arg="${t.id}">🃏 Learn this topic</button>
         </details>`).join('')}</div>`);
@@ -308,16 +285,13 @@ export function initJlpt(ctx) {
 
   function vlearn(arg) {
     const items = arg === 'n5' || arg === 'n4' ? WORDS.filter(w => w.level === arg) : WORDS.filter(w => w.topic === arg);
-    let queue = pickSession(items, vprog(), { newLimit: 8, max: 16 });
-    if (!queue.length) queue = shuffle(items).slice(0, 10);
-    st = { kind: 'vlearn', queue, i: 0, done: 0, lv: items[0].level };
+    st = { kind: 'vlearn', queue: shuffle(items).slice(0, 12), i: 0, lv: items[0].level };
     vcard();
   }
 
   function vcard() {
     const w = st.queue[st.i];
     if (!w) {
-      practised();
       const lv = st.lv; st = null;
       return render(`<div class="done"><div class="big-emoji">🖼️</div><h1>Words practised</h1><button class="btn primary big" data-act="jlpt-vocab" data-arg="${lv}">Back</button></div>`);
     }
@@ -341,18 +315,16 @@ export function initJlpt(ctx) {
     if (st.revealed) return;
     st.revealed = true;
     document.getElementById('answer').hidden = false;
-    document.getElementById('actions').innerHTML = `<div class="grades">
-      <button class="btn again" data-act="vgrade" data-arg="${AGAIN}">Forgot</button>
-      <button class="btn good" data-act="vgrade" data-arg="${GOOD}">Got it</button>
-      <button class="btn easy" data-act="vgrade" data-arg="${EASY}">Easy</button></div>`;
+    document.getElementById('actions').innerHTML = `<div class="grades two">
+      <button class="btn again" data-act="vgrade" data-arg="again">Again later</button>
+      <button class="btn good" data-act="vgrade" data-arg="ok">Got it</button></div>`;
     speak(st.queue[st.i].jp);
   }
 
   function vgrade(g) {
     const w = st.queue[st.i];
-    vprog()[w.id] = grade(vprog()[w.id], +g);
-    if (+g === AGAIN) st.queue.push(w); else st.done++;
-    save(); st.i++; vcard();
+    if (g === 'again') st.queue.push(w);
+    st.i++; vcard();
   }
 
   // Picture → word, and word → meaning (like 文脈規定 / meaning questions).
@@ -364,7 +336,7 @@ export function initJlpt(ctx) {
         ? { type: 'pic', w, right: w.jp, options: shuffle([w, ...others]).map(o => o.jp) }
         : { type: 'mean', w, right: w.en, options: shuffle([w, ...others]).map(o => o.en) };
     });
-    st = { kind: 'vquizj', qs, i: 0, right: 0, key: 'vocab-' + lv, back: 'jlpt-vocab', backArg: lv };
+    st = { kind: 'vquizj', qs, i: 0, right: 0, back: 'jlpt-vocab', backArg: lv };
     quizQ();
   }
 
@@ -420,9 +392,6 @@ export function initJlpt(ctx) {
 
   function done() {
     const score = Math.round(100 * st.right / st.qs.length);
-    if (st.key) best()[st.key] = Math.max(best()[st.key] || 0, score);
-    if (st.gid) { S().gbest = S().gbest || {}; S().gbest[st.gid] = Math.max(S().gbest[st.gid] || 0, score); }
-    save(); practised();
     const backAct = st.back, backArg = st.backArg || '';
     st = null;
     render(`<div class="done">
@@ -435,8 +404,8 @@ export function initJlpt(ctx) {
 
   const actions = {
     jlpt: () => ctx.go('jlpt'),
-    'jlpt-n5': () => { S().jlptLevel = 'n5'; save(); ctx.go('jlpt'); },
-    'jlpt-level': l => { S().jlptLevel = l; save(); hub(); },
+    'jlpt-n5': () => { lvl = 'n5'; hub(); window.scrollTo(0, 0); },
+    'jlpt-level': l => { lvl = l === 'n4' ? 'n4' : 'n5'; hub(); },
     kana: () => ctx.go('jlpt/kana'),
     'kana-script': s => kana(s),
     'kana-quiz': s => kanaQuiz(s),
@@ -453,7 +422,7 @@ export function initJlpt(ctx) {
     vgrade: g => vgrade(g),
     'vocab-quiz': lv => vocabQuiz(lv),
     'vocab-search': (lv, q) => vocabSearch(lv, q),
-    'kanji-n4': () => { S().kanjiLevel = 'n4'; save(); ctx.go('kanji'); },
+    'kanji-n4': () => ctx.go('kanji/n4'),
     'quiz-next-j': () => { st.i++; st.kind === 'order' ? orderQ() : quizQ(); },
   };
 

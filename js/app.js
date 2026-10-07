@@ -1,59 +1,41 @@
-import { TRACKS, UNITS, CARDS, COUNTRIES, CONTENT_VERSION } from './data.js';
-import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession, bumpStreak, liveStreak, fill, matchScore, PASS } from './core.js';
+import { TRACKS, UNITS, CARDS, COUNTRIES } from './data.js';
+import { fill, matchScore, PASS } from './core.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 
 // ---------- State ----------
+// Nothing about the learner is stored: no name, progress, streak or scores.
+// Only display settings are saved, so the app looks the same next time.
 const KEY = 'hanasu-v1';
-const DEFAULTS = {
-  setup: false,
-  profile: { name: '', nameRo: '', country: 0 },
-  settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' },
-  progress: {},   // cardId -> { box, due, seen }
-  streak: null,   // { last, count }
-  spoken: {},     // cardId -> best speaking score (0..1)
-  kanjiProgress: {}, // kanji -> { box, due, seen }
-  pbest: {},      // particle id -> best quiz %
-};
+const DEFAULTS = { settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' } };
 let S = load();
 
 function load() {
-  try {
-    const s = JSON.parse(localStorage.getItem(KEY));
-    if (s) {
-      // Card ids are positional, so progress from an older content layout no longer lines up.
-      if (s.contentVersion !== CONTENT_VERSION) { s.progress = {}; s.spoken = {}; }
-      return sanitize({ ...DEFAULTS, ...s, contentVersion: CONTENT_VERSION, profile: { ...DEFAULTS.profile, ...s.profile }, settings: { ...DEFAULTS.settings, ...s.settings } });
-    }
-  } catch (_) { /* fall through to defaults */ }
-  return { ...structuredClone(DEFAULTS), contentVersion: CONTENT_VERSION };
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (_) { /* unreadable: start fresh */ }
+  const state = sanitize({ settings: { ...DEFAULTS.settings, ...(saved && saved.settings) } });
+  // Older versions stored progress and a profile; keep only the settings and drop the rest.
+  if (saved && Object.keys(saved).some(k => k !== 'settings')) save(state);
+  return state;
 }
 // Saved values that end up in page markup are forced back to known-safe shapes.
 function sanitize(s) {
   const num = (v, lo, hi, d) => (Number.isFinite(+v) ? Math.min(hi, Math.max(lo, +v)) : d);
-  const oneOf = (v, list) => (list.includes(v) ? v : undefined);
   s.settings.rate = num(s.settings.rate, 0.5, 1.5, DEFAULTS.settings.rate);
   s.settings.voice = typeof s.settings.voice === 'string' ? s.settings.voice : '';
   for (const k of ['romaji', 'kana', 'hindi', 'casual']) s.settings[k] = s.settings[k] !== false;
-  s.profile.name = String(s.profile.name || '').slice(0, 40);
-  s.profile.nameRo = String(s.profile.nameRo || '').slice(0, 40);
-  s.profile.country = num(s.profile.country, 0, COUNTRIES.length - 1, 0);
-  s.jlptLevel = oneOf(s.jlptLevel, ['n5', 'n4']);
-  s.kanjiLevel = oneOf(s.kanjiLevel, ['n5', 'n4']);
   return s;
 }
 
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) { toast('Could not save progress'); }
+function save(state = S) {
+  try { localStorage.setItem(KEY, JSON.stringify({ settings: state.settings })); } catch (_) { /* private mode: settings just won't persist */ }
 }
-function practised() { S.streak = bumpStreak(S.streak); save(); }
 
-const profile = () => {
-  const c = COUNTRIES[S.profile.country] || COUNTRIES[0];
-  return {
-    name: S.profile.name || 'スミス', nameRo: S.profile.nameRo || 'Sumisu',
-    country: c[0], countryKana: c[1], countryRo: c[2], countryEn: c[3], countryHi: c[4],
-  };
-};
+// Lessons use an example person (スミス from India) wherever a name or country appears.
+const EXAMPLE = COUNTRIES[0];
+const profile = () => ({
+  name: 'スミス', nameRo: 'Sumisu',
+  country: EXAMPLE[0], countryKana: EXAMPLE[1], countryRo: EXAMPLE[2], countryEn: EXAMPLE[3], countryHi: EXAMPLE[4],
+});
 const view = c => {
   const p = profile();
   const casual = c.casual && { jp: fill(c.casual.jp, p), kana: fill(c.casual.kana, p), ro: fill(c.casual.ro, p) };
@@ -74,11 +56,6 @@ let sess = null; // active study session
 function render(html) {
   $app.innerHTML = html;
   window.scrollTo(0, 0);
-  updateTop();
-}
-
-function updateTop() {
-  document.getElementById('streak').textContent = liveStreak(S.streak);
 }
 
 // Japanese block: kanji line, kana reading, romaji — per settings.
@@ -118,41 +95,24 @@ const bar = (n, d) => `<div class="bar"><i style="width:${d ? Math.round(100 * n
 // ---------- Home ----------
 function home() {
   sess = null; stopSpeaking();
-  const now = Date.now();
-  const due = CARDS.filter(c => isDue(S.progress[c.id], now)).length;
-  const learned = CARDS.filter(c => isLearned(S.progress[c.id])).length;
-  const next = UNITS.find(u => cardsOf(u.id).some(c => !S.progress[c.id]));
-  const streak = liveStreak(S.streak);
-
   render(`
     <section class="hero">
-      <div class="stats">
-        <div><b>${streak}</b><span>day streak</span></div>
-        <div><b>${learned}</b><span>of ${CARDS.length} phrases</span></div>
-        <div><b>${due}</b><span>due now</span></div>
-      </div>
-      ${due ? `<button class="btn primary big" data-act="review">Review ${due} phrase${due > 1 ? 's' : ''}</button>` : ''}
-      ${next ? `<button class="btn ${due ? '' : 'primary'} big" data-act="learn" data-arg="${next.id}">${S.progress[cardsOf(next.id)[0].id] ? 'Continue' : 'Start'}: ${esc(next.title)}</button>` : ''}
-      ${!due && !next ? `<p class="muted center">All caught up. Practise speaking or role-play any unit.</p>` : ''}
+      <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${CARDS.length} phrases in ${UNITS.length} units, each with flashcards, speaking practice, a quiz and a role-play.</span></div>
+      <button class="btn primary big" data-act="learn" data-arg="${UNITS[0].id}">Start: ${esc(UNITS[0].title)}</button>
       <div class="quick">
         <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
-        <a href="#jlpt" class="qlink"><span>🎓</span>JLPT path</a>
+        <a href="#jlpt" class="qlink"><span>🎓</span>JLPT course</a>
       </div>
     </section>
     ${TRACKS.map(t => `
       <h2 class="track"><span lang="ja">${t.jp}</span> ${t.title}</h2>
       <p class="muted">${t.desc}${S.settings.hindi ? ` · <span lang="hi-Latn">${t.hi}</span>` : ''}</p>
       <div class="units">
-        ${UNITS.filter(u => u.track === t.id).map(u => {
-          const cs = cardsOf(u.id);
-          const n = cs.filter(c => isLearned(S.progress[c.id])).length;
-          return `<button class="unit" data-act="unit" data-arg="${u.id}">
+        ${UNITS.filter(u => u.track === t.id).map(u => `<button class="unit" data-act="unit" data-arg="${u.id}">
             <span class="icon">${u.icon}</span>
             <span class="ut"><b>${esc(u.title)}</b><small><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</small></span>
-            <span class="count">${n}/${cs.length}</span>
-            ${bar(n, cs.length)}
-          </button>`;
-        }).join('')}
+            <span class="count">${cardsOf(u.id).length}</span>
+          </button>`).join('')}
       </div>`).join('')}
   `);
 }
@@ -178,34 +138,22 @@ function unit(id) {
         ${meaning(c)}
         ${casualBlock(c)}
         ${note(c)}
-        <span class="state">${isLearned(S.progress[c.id]) ? '✓' : ''}</span>
       </li>`).join('')}
     </ul>
   `);
 }
 
-// ---------- Learn / Review (flashcards with spaced repetition) ----------
-// New cards are introduced first (hear + repeat), then tested English → Japanese.
-function buildQueue(cards) {
-  const picked = pickSession(cards, S.progress);
-  const reviews = picked.filter(c => S.progress[c.id]).map(c => ({ c, intro: false }));
-  const fresh = picked.filter(c => !S.progress[c.id]);
-  const q = [...reviews];
-  for (let i = 0; i < fresh.length; i += 4) {
-    const batch = fresh.slice(i, i + 4);
-    q.push(...batch.map(c => ({ c, intro: true })), ...shuffle(batch).map(c => ({ c, intro: false })));
-  }
-  return q;
-}
-
+// ---------- Learn (flashcards) ----------
+// Phrases come in groups of four: first heard and repeated, then tested English → Japanese.
+// Nothing is saved; “Again” just brings a phrase back later in the same session.
 function learn(unitId) {
-  const cards = unitId ? cardsOf(unitId) : CARDS;
-  const queue = buildQueue(cards);
-  if (!queue.length) {
-    // Nothing due: drill the whole unit again without touching the schedule.
-    if (unitId) sess = { kind: 'learn', unitId, queue: cardsOf(unitId).map(c => ({ c, intro: false, drill: true })), i: 0, done: 0 };
-    else { toast('Nothing due right now'); return home(); }
-  } else sess = { kind: 'learn', unitId, queue, i: 0, done: 0 };
+  const cards = cardsOf(unitId);
+  const queue = [];
+  for (let i = 0; i < cards.length; i += 4) {
+    const batch = cards.slice(i, i + 4);
+    queue.push(...batch.map(c => ({ c, intro: true })), ...shuffle(batch).map(c => ({ c, intro: false })));
+  }
+  sess = { kind: 'learn', unitId, queue, i: 0, done: 0 };
   learnCard();
 }
 
@@ -217,7 +165,7 @@ function learnCard() {
   s.revealed = intro;
   const total = s.queue.length;
   render(`
-    <div class="head">${back(s.unitId ? 'unit' : 'home', s.unitId || '')}<div class="grow">${bar(s.i, total)}</div><span class="muted">${s.i + 1}/${total}</span></div>
+    <div class="head">${back('unit', s.unitId)}<div class="grow">${bar(s.i, total)}</div><span class="muted">${s.i + 1}/${total}</span></div>
     <div class="card ${intro ? 'intro' : ''}">
       ${intro ? '<span class="tag">New phrase</span>' : '<span class="tag alt">Say it in Japanese</span>'}
       <div class="prompt">${esc(c.en)}</div>
@@ -247,13 +195,10 @@ function reveal() {
   s.revealed = true;
   const { c } = s.queue[s.i];
   document.getElementById('answer').hidden = false;
-  document.getElementById('actions').innerHTML = s.queue[s.i].drill
-    ? `<button class="btn primary big" data-act="drill-next">Next</button>`
-    : `<p class="muted center">How did you do?</p>
-       <div class="grades">
-         <button class="btn again" data-act="grade" data-arg="${AGAIN}">Forgot</button>
-         <button class="btn good" data-act="grade" data-arg="${GOOD}">Got it</button>
-         <button class="btn easy" data-act="grade" data-arg="${EASY}">Easy</button>
+  document.getElementById('actions').innerHTML = `<p class="muted center">Did you remember it?</p>
+       <div class="grades two">
+         <button class="btn again" data-act="grade" data-arg="again">Again later</button>
+         <button class="btn good" data-act="grade" data-arg="ok">Got it</button>
        </div>`;
   speak(view(c).jp);
 }
@@ -261,10 +206,8 @@ function reveal() {
 function gradeCard(g) {
   const s = sess;
   const { c } = s.queue[s.i];
-  S.progress[c.id] = grade(S.progress[c.id], g);
-  if (g === AGAIN) s.queue.push({ c, intro: false }); // see it again this session
+  if (g === 'again') s.queue.push({ c, intro: false }); // see it again later this session
   else s.done++;
-  practised();
   s.i++; learnCard();
 }
 
@@ -279,7 +222,6 @@ function speakCard() {
   const s = sess;
   const raw = s.cards[s.i];
   const c = view(raw);
-  const best = S.spoken[raw.id];
   render(`
     <div class="head">${back(s.backAct, s.unitId || '')}<div class="grow">${bar(s.i, s.cards.length)}</div><span class="muted">${s.i + 1}/${s.cards.length}</span></div>
     <div class="card">
@@ -292,7 +234,7 @@ function speakCard() {
         <button class="btn icon" data-act="sayslow" data-arg="${raw.id}">🐢</button>
       </div>
       ${casualBlock(c)}
-      <div id="result" class="result">${best != null ? `<span class="muted">Best: ${Math.round(best * 100)}%</span>` : ''}</div>
+      <div id="result" class="result"></div>
     </div>
     <div class="actions">
       ${canListen()
@@ -332,13 +274,8 @@ async function recordAgainst(c, resultEl, micEl) {
 }
 
 async function micSpeak() {
-  const s = sess;
-  const raw = s.cards[s.i];
-  const score = await recordAgainst(view(raw), document.getElementById('result'), document.getElementById('mic'));
-  if (score != null && sess === s) {
-    S.spoken[raw.id] = Math.max(S.spoken[raw.id] || 0, score);
-    practised();
-  }
+  const raw = sess.cards[sess.i];
+  await recordAgainst(view(raw), document.getElementById('result'), document.getElementById('mic'));
 }
 
 // ---------- Quiz ----------
@@ -356,7 +293,6 @@ function quiz(unitId) {
 function quizQ() {
   const s = sess;
   if (s.i >= s.qs.length) {
-    practised();
     return finish(`Quiz score: ${s.right}/${s.qs.length}`, s.unitId, s.right === s.qs.length ? 'Perfect! 🎯' : '');
   }
   const q = s.qs[s.i];
@@ -437,7 +373,6 @@ async function talkStep() {
   }
   if (sess !== s) return;
   if (s.i >= s.lines.length) {
-    practised();
     actions.innerHTML = `
       <p class="center">🎉 Conversation complete!</p>
       <div class="row"><button class="btn" data-act="talk" data-arg="${s.unitId}">Again</button>
@@ -487,7 +422,7 @@ function finish(title, unitId, extra = '', backAct = 'home') {
       <div class="big-emoji">🌸</div>
       <h1>${esc(title)}</h1>
       ${extra ? `<p>${extra}</p>` : ''}
-      <p class="muted">${liveStreak(S.streak)}-day streak · よくできました！</p>
+      <p class="muted">よくできました！ Bahut badhiya!</p>
       ${unitId ? `
         <div class="modes">
           <button class="mode" data-act="speak" data-arg="${unitId}"><span>🎤</span><b>Speak</b></button>
@@ -500,19 +435,13 @@ function finish(title, unitId, extra = '', backAct = 'home') {
 }
 
 // ---------- Settings ----------
-function openSettings(first = false) {
+function openSettings() {
   const sheet = document.getElementById('sheet');
   const voices = rankedVoices();
   sheet.innerHTML = `
     <div class="panel" role="dialog" aria-modal="true" aria-label="Settings">
-      ${first
-        ? `<h2>ようこそ! Welcome</h2><p class="muted">Learn phrases you’ll actually say: daily life first, then the office. Tell us your name so the introduction lessons are about you.</p>`
-        : `<h2>Settings</h2>`}
-      <label>Your name in katakana <input id="s-name" lang="ja" placeholder="e.g. スミス" value="${esc(S.profile.name)}"></label>
-      <label>Your name in romaji <input id="s-namero" placeholder="e.g. Sumisu" value="${esc(S.profile.nameRo)}"></label>
-      <label>Where you’re from
-        <select id="s-country">${COUNTRIES.map((c, i) => `<option value="${i}" ${i === +S.profile.country ? 'selected' : ''}>${c[3]} · ${c[0]} · ${c[4]}</option>`).join('')}</select>
-      </label>
+      <h2>Settings</h2>
+      <p class="muted small">Only these display settings are saved on this device. Nothing about you or your progress is stored.</p>
       <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
       <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show kana reading under kanji</label>
       <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
@@ -524,25 +453,20 @@ function openSettings(first = false) {
       ${!canSpeak() || !voices.length ? `<p class="warn">No Japanese voice found. On iPhone: Settings → Accessibility → Spoken Content → Voices → Japanese. On Android: install Google Text-to-speech Japanese.</p>` : ''}
       <div class="row">
         <button class="btn" data-act="test-voice">🔊 Test voice</button>
-        <button class="btn primary" data-act="save-settings">${first ? 'Start learning' : 'Save'}</button>
+        <button class="btn primary" data-act="save-settings">Save</button>
       </div>
-      ${first ? '' : `<button class="btn danger small" data-act="reset">Reset all progress</button>`}
     </div>`;
   sheet.hidden = false;
 }
 
 function saveSettings() {
   const v = id => document.getElementById(id);
-  S.profile.name = v('s-name').value.trim();
-  S.profile.nameRo = v('s-namero').value.trim();
-  S.profile.country = +v('s-country').value;
   S.settings.romaji = v('s-romaji').checked;
   S.settings.kana = v('s-kana').checked;
   S.settings.hindi = v('s-hindi').checked;
   S.settings.casual = v('s-casual').checked;
   S.settings.rate = +v('s-rate').value;
   if (v('s-voice')) S.settings.voice = v('s-voice').value;
-  S.setup = true;
   save();
   document.getElementById('sheet').hidden = true;
   rerender();
@@ -562,7 +486,6 @@ function rerender() {
 const actions = {
   home: () => go(''),
   unit: id => go('unit/' + id),
-  review: () => learn(null),
   learn: id => learn(id),
   speak: id => speakMode(id),
   quiz: id => quiz(id),
@@ -574,13 +497,12 @@ const actions = {
   'say-text': t => speak(t),
   reveal: () => reveal(),
   'next-intro': () => { sess.i++; learnCard(); },
-  'drill-next': () => { sess.done++; practised(); sess.i++; learnCard(); },
   grade: g => gradeCard(+g),
   mic: () => micSpeak(),
   'mic-stop': () => stopListening(),
   'speak-move': d => {
     sess.i += +d;
-    if (sess.i >= sess.cards.length) { practised(); return finish('Speaking practice done', sess.unitId, '', sess.backAct); }
+    if (sess.i >= sess.cards.length) { return finish('Speaking practice done', sess.unitId, '', sess.backAct); }
     speakCard();
   },
   answer: id => answer(id),
@@ -595,13 +517,6 @@ const actions = {
     const r = document.getElementById('s-rate'), vs = document.getElementById('s-voice');
     say('こんにちは。日本語を勉強しましょう。', { rate: +r.value, voice: vs ? vs.value : S.settings.voice });
   },
-  reset: () => {
-    if (!confirm('Delete all progress and streak?')) return;
-    // Everything learned or scored; profile and settings are kept.
-    for (const k of ['progress', 'spoken', 'kanjiProgress', 'vocabProgress', 'pbest', 'gbest', 'quizBest', 'readBest', 'listenDone', 'mocks']) S[k] = {};
-    S.qaDone = 0; S.streak = null; save();
-    document.getElementById('sheet').hidden = true; home();
-  },
 };
 
 document.addEventListener('click', e => {
@@ -610,7 +525,7 @@ document.addEventListener('click', e => {
   if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
   const el = e.target.closest('[data-act]');
   if (el) { run(el.dataset.act, el.dataset.arg); return; }
-  if (e.target.id === 'sheet' && S.setup) e.target.hidden = true;
+  if (e.target.id === 'sheet') e.target.hidden = true;
 });
 
 document.addEventListener('keydown', e => {
@@ -618,13 +533,13 @@ document.addEventListener('keydown', e => {
   if (!sess) return;
   if (sess.kind === 'learn') {
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); sess.queue[sess.i]?.intro ? actions['next-intro']() : sess.revealed ? null : reveal(); }
-    else if (sess.revealed && !sess.queue[sess.i]?.intro && !sess.queue[sess.i]?.drill && '123'.includes(e.key)) gradeCard([AGAIN, GOOD, EASY][+e.key - 1]);
+    else if (sess.revealed && !sess.queue[sess.i]?.intro && '12'.includes(e.key)) gradeCard(e.key === '1' ? 'again' : 'ok');
   }
 });
 
 // ---------- Sections loaded on demand ----------
 // Home needs only the phrase data; Speak, Grammar, Kanji and JLPT (and their large data files) load on first visit.
-const shared = () => ({ S: () => S, esc, render, speak, shuffle, bar, back, practised, save, go, clearSess: () => { sess = null; stopSpeaking(); } });
+const shared = () => ({ S: () => S, esc, render, speak, shuffle, bar, back, go, clearSess: () => { sess = null; stopSpeaking(); } });
 const LOADERS = {
   study: () => import('./study.js').then(m => m.initStudy({ ...shared(), setSess: () => { sess = null; } })),
   speaking: () => import('./speaking.js').then(m => m.initSpeaking({
@@ -682,7 +597,6 @@ document.addEventListener('change', e => {
 });
 
 route();
-if (!S.setup) openSettings(true);
 
 // Warm the other sections in the background once the app is idle, so the first tab switch is instant.
 const idle = window.requestIdleCallback || (f => setTimeout(f, 1));

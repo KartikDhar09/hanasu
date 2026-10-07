@@ -23,10 +23,10 @@ export function scoreMock(results, level) {
 }
 
 export function initExam(ctx) {
-  const { esc, render, shuffle, bar, back, practised, save } = ctx;
+  const { esc, render, shuffle, bar, back } = ctx;
   const S = () => ctx.S();
   const hg = (t, cls = 'hi') => S().settings.hindi && t ? `<div class="${cls}" lang="hi-Latn">${esc(t)}</div>` : '';
-  const level = () => S().jlptLevel || 'n5';
+  const level = () => 'n5';
   const voice = who => ({ m: 0.75, f: 1.25, n: 1 }[who] || 1);
   let st = null;
 
@@ -53,8 +53,7 @@ export function initExam(ctx) {
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-reading" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
       <p class="muted">Real-life notes, emails and notices, like the exam. Read the Japanese first. Use the key words if you get stuck, and the translation only at the end.</p>
       <div class="pgrid">${READING.filter(r => r.level === lv).map(r => `<button class="pcard" data-act="ex-passage" data-arg="${r.id}">
-        <span class="pch">${r.pic}</span><span class="pt"><b>${esc(r.title)}</b><small>${r.qs.length} questions</small></span>
-        <span class="count">${(S().readBest || {})[r.id] != null ? `${S().readBest[r.id]}%` : ''}</span></button>`).join('')}</div>`);
+        <span class="pch">${r.pic}</span><span class="pt"><b>${esc(r.title)}</b><small>${r.qs.length} questions</small></span></button>`).join('')}</div>`);
   }
 
   function passage(id) {
@@ -81,11 +80,6 @@ export function initExam(ctx) {
       b.disabled = true;
       if (i === q.answer) b.classList.add('right'); else if (i === oi) b.classList.add('wrong');
     }
-    if (Object.keys(st.picked).length === r.qs.length) {
-      const score = Math.round(100 * r.qs.filter((q, i) => st.picked[i] === q.answer).length / r.qs.length);
-      S().readBest = S().readBest || {}; S().readBest[r.id] = Math.max(S().readBest[r.id] || 0, score);
-      practised();
-    }
   }
 
   // ================= Listening =================
@@ -96,8 +90,7 @@ export function initExam(ctx) {
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-listening" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
       <p class="muted">Like the real test: you hear the question first, then the conversation, then the question again. The man’s voice is lower, the woman’s higher. Don’t read the transcript until you’ve answered!</p>
       <div class="pgrid">${LISTENING.filter(l => l.level === lv).map(l => `<button class="pcard" data-act="ex-listen" data-arg="${l.id}">
-        <span class="pch">${l.pic}</span><span class="pt"><b>${esc(l.kind)}</b><small>${esc(l.q[1])}</small></span>
-        <span class="count">${(S().listenDone || {})[l.id] ? '✓' : ''}</span></button>`).join('')}</div>`);
+        <span class="pch">${l.pic}</span><span class="pt"><b>${esc(l.kind)}</b><small>${esc(l.q[1])}</small></span></button>`).join('')}</div>`);
   }
 
   const listeningOptions = (item, act, arg = '') => `<div class="choices ${item.options[0].pic ? 'four' : ''}">${item.options.map((o, oi) => `<button class="choice ${o.pic ? 'center' : ''}" data-act="${act}" data-arg="${arg}${oi}" id="lo-${oi}">
@@ -131,8 +124,6 @@ export function initExam(ctx) {
       b.disabled = true;
       if (i === item.answer) b.classList.add('right'); else if (i === +oi) b.classList.add('wrong');
     });
-    S().listenDone = S().listenDone || {}; S().listenDone[item.id] = true;
-    practised();
     const ok = +oi === item.answer;
     document.getElementById('actions').innerHTML = `
       <div class="score ${ok ? 'ok' : 'retry'} center">${ok ? '✓ Correct!' : '✗ Not quite. Read the transcript, then listen again.'}</div>
@@ -145,7 +136,7 @@ export function initExam(ctx) {
   // ================= Mock test =================
   function mockIntro(lv) {
     ctx.clearSess(); st = null;
-    const ex = EXAMS[lv], hist = (S().mocks || {})[lv] || [];
+    const ex = EXAMS[lv];
     render(`
       <div class="head">${back('jlpt')}<h1>${ex.title} mock test</h1></div>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-mock" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
@@ -154,8 +145,7 @@ export function initExam(ctx) {
         <ul class="tips">${SECTIONS.map(([, en, jp]) => `<li>✏️ ${esc(en)} <span lang="ja" class="muted">${jp}</span></li>`).join('')}</ul>
         <div class="note">🎯 To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. About 25 minutes.</div>
       </div>
-      <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}">▶ Start mock test</button>
-      ${hist.length ? `<h3>Your results</h3><ul class="phrases">${hist.slice(-5).reverse().map(h => `<li>${h.passed ? '✅' : '❌'} <b>${h.total}/180</b> · ${esc(h.date)}<div class="muted small">Language + reading ${h.langReading}/120 · Listening ${h.listening}/60</div></li>`).join('')}</ul>` : ''}`);
+      <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}">▶ Start mock test</button>`);
   }
 
   function buildMock(lv) {
@@ -239,11 +229,6 @@ export function initExam(ctx) {
   function mockDone() {
     const s = scoreMock(st.results, st.lv), ex = EXAMS[st.lv];
     const mins = Math.max(1, Math.round((Date.now() - st.started) / 60000));
-    S().mocks = S().mocks || {};
-    (S().mocks[st.lv] = S().mocks[st.lv] || []).push({ date: new Date().toLocaleDateString(), ...s });
-    const b = (S().quizBest = S().quizBest || {});
-    b['mock-' + st.lv] = Math.max(b['mock-' + st.lv] || 0, Math.round(100 * s.total / 180));
-    save(); practised();
     const lv = st.lv; st = null;
     const weakest = Object.entries(s.bySection).sort((a, b) => a[1] - b[1])[0];
     render(`<div class="done">

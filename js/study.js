@@ -67,7 +67,7 @@ export function initStudy(ctx) {
         ${S().settings.hindi ? `<div class="compare"><b>🇮🇳 Hindi mein:</b> ${esc(p.hindi)}</div>` : ''}
         ${p.tip ? `<div class="note">💡 ${esc(p.tip)}</div>` : ''}
       </div>
-      <h3>Examples <small class="muted">tap to hear</small></h3>
+      <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
       <ul class="phrases">${p.examples.map((e, i) => example(e, i)).join('')}</ul>
       <button class="btn primary big" data-act="pquiz" data-arg="${p.id}">🎯 Practise ${p.p}</button>`);
   }
@@ -133,7 +133,7 @@ export function initStudy(ctx) {
       <ul class="tips">${TIPS.map(t => `<li>💡 ${esc(t)}</li>`).join('')}</ul>
       <button class="btn primary big" data-act="vquiz">🎯 Conjugation quiz</button>
       ${GROUPS.map(g => `
-        <h3>${esc(g.name)}</h3>
+        <h2 class="sec">${esc(g.name)}</h2>
         <div class="vlist">${VERBS.map((v, i) => v.group === g.id ? `<button class="vrow" data-act="verb" data-arg="${i}">
           <span lang="ja" class="vjp">${v.jp}</span>
           <span class="vmeta">${S().settings.romaji ? `<i>${vRomaji(v.kana, 'dict')}</i> · ` : ''}${esc(v.en)}${S().settings.hindi ? ` · <span lang="hi-Latn" class="muted">${esc(v.hg)}</span>` : ''}</span>
@@ -154,7 +154,7 @@ export function initStudy(ctx) {
         <ul class="phrases">${example(v.ex, 0)}</ul>
         <div class="note">💡 ${esc(g.how)}</div>
       </div>
-      <h3>All forms <small class="muted">tap to hear</small></h3>
+      <h2 class="sec">All forms <small class="muted">tap to hear</small></h2>
       <div class="conj">${FORMS.map(f => `<button class="crow" data-act="say-text" data-arg="${esc(c[f.id][0])}">
         <span class="cl"><b>${esc(f.label)}</b><small>${esc(f.en)}${S().settings.hindi ? ` · <span lang="hi-Latn">${esc(f.hg)}</span>` : ''}</small></span>
         <span class="cv"><span lang="ja" class="cj">${c[f.id][0]}</span>${S().settings.kana && c[f.id][1] !== c[f.id][0] ? `<small lang="ja">${c[f.id][1]}</small>` : ''}${S().settings.romaji ? `<small class="ro">${vRomaji(c[f.id][1], f.id)}</small>` : ''}</span>
@@ -235,7 +235,7 @@ export function initStudy(ctx) {
         <button class="btn" data-act="kquiz" data-arg="">🎯 Quiz</button>
       </div>
       ${ALL_KANJI_GROUPS.filter(g => g.level === klevel()).map(g => `
-        <h3>${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h3>
+        <h2 class="sec">${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
         <div class="kgrid">${g.kanji.map(k => `<button class="ktile" data-act="kanji-one" data-arg="${k[0]}">
           <span lang="ja">${k[0]}</span><small>${esc(k[3].split(' /')[0])}</small></button>`).join('')}</div>
         <button class="btn small ghost" data-act="klearn" data-arg="${g.id}">🃏 Learn this group</button>`).join('')}`);

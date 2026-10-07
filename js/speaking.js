@@ -36,7 +36,7 @@ export function initSpeaking(ctx) {
         <button class="scard" data-act="intro-builder"><span>🙋</span><b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
         <button class="scard" data-act="sounds"><span>👄</span><b>Pronunciation</b><small>Sounds that change meaning: おばさん vs おばあさん.</small></button>
       </div>
-      <h3>Practise a unit <small class="muted">🎤 shadow · 💬 role-play</small></h3>
+      <h2 class="sec">Practise a unit <small class="muted">🎤 shadow · 💬 role-play</small></h2>
       ${TRACKS.map(t => `<details class="fold" ${t.id === 'n5' ? 'open' : ''}><summary><span class="sum-title">${esc(t.title)}<small lang="ja" class="accent">${t.jp}</small></span></summary>
         <div class="ulist">${UNITS.filter(u => u.track === t.id).map(u => `<div class="urow">
           <span class="uicon">${u.icon}</span>
@@ -237,7 +237,7 @@ export function initSpeaking(ctx) {
       <div class="intro">Tap a picture to hear the word. Then press <b>🎧 Test me</b>: the app says one of the pair and you pick the picture. Press <b>🎤</b> and say one word, and the app tells you which one it heard.${hg('Picture dabao, suno. Phir test karo, aur khud bolke dekho.', 'hi intro-hg')}</div>
       <div id="score" class="muted center"></div>
       ${PRONUNCIATION.map((g, gi) => `
-        <h3>${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h3>
+        <h2 class="sec">${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
         <p class="muted small">${esc(g.tip)}</p>
         ${g.pairs.map((pair, pi) => `<div class="pair" id="pair-${gi}-${pi}">
           ${pair.map((w, wi) => `<button class="ptile" data-act="sound-tap" data-arg="${gi}.${pi}.${wi}">
@@ -248,7 +248,7 @@ export function initSpeaking(ctx) {
           </div>
           <div class="result" id="sres-${gi}-${pi}"></div>
         </div>`).join('')}`).join('')}
-      <h3>Rhythm tips</h3>
+      <h2 class="sec">Rhythm tips</h2>
       <ul class="phrases">${SOUND_TIPS.map(t => `<li><b lang="ja">${t[0]}</b><div>${esc(t[1])}</div>${hg(t[2])}</li>`).join('')}</ul>`);
   }
 

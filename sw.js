@@ -1,7 +1,7 @@
 // Offline-first: app files are served from the cache instantly and refreshed in the background
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and takes over on the
 // next open. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v4.0';
+const CACHE = 'hanasu-v4.0.1';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v1';

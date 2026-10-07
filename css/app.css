@@ -106,7 +106,7 @@ h1.page { margin: 0; font-size: 1.5rem; }
 /* ---------- Bottom tabs ---------- */
 .tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(5, 1fr);
-  background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg) 97%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--line); padding: 0 max(0px, calc((100% - 640px) / 2)) env(safe-area-inset-bottom);
 }
 .tabs a { position: relative; display: grid; justify-items: center; gap: 1px; padding: 8px 0 6px; font-size: .72rem; font-weight: 600; color: var(--muted); text-decoration: none; }

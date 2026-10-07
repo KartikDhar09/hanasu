@@ -1,5 +1,6 @@
 // The home screen needs only the unit list; the phrases (and furigana) load right after the first paint.
 import { TRACKS, UNIT_INDEX, PHRASE_COUNT } from './units-index.js';
+import { DEPS } from './module-deps.js';
 import { fill, matchScore, PASS } from './core.js';
 import { watchVisible, prefetchClip, constrained } from './clips.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
@@ -35,7 +36,10 @@ function save(state = S) {
 let UNITS = [], CARDS = [], COUNTRIES = [];
 let furigana = () => null;
 let phrasesReady = null;
-const loadPhrases = () => phrasesReady || (phrasesReady = Promise.all([import('./data.js'), import('./furigana.js')])
+// Requests every file a part of the app needs at once, instead of one import chain after another
+// (the browser shares each module, so the real imports below reuse these downloads).
+const warm = part => DEPS[part].forEach(f => import(`./${f}`).catch(() => {}));
+const loadPhrases = () => phrasesReady || (warm('phrases'), phrasesReady = Promise.all([import('./data.js'), import('./furigana.js')])
   .then(([d, f]) => { ({ UNITS, CARDS, COUNTRIES } = d); furigana = f.furigana; }));
 
 // Lessons use an example person (スミス from India) wherever a name or country appears.
@@ -623,6 +627,7 @@ const LOADERS = {
 const mods = {};      // initialised modules
 const loading = {};   // in-flight loads
 function loadSection(name) {
+  if (!loading[name]) warm(name);
   return loading[name] || (loading[name] = LOADERS[name]().then(mod => { mods[name] = mod; Object.assign(actions, mod.actions); return mod; }));
 }
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
@@ -648,11 +653,13 @@ async function route() {
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   // Home renders straight away; every other screen needs the phrase data first.
   if (!h) return home();
+  // The section and the phrase data load side by side, not one after the other.
+  const name = moduleFor(h);
+  const section = name ? loadSection(name) : null;
   await loadPhrases();
   if (location.hash.slice(1) !== h) return; // the user moved on while it loaded
-  const name = moduleFor(h);
   if (name) {
-    const mod = await loadSection(name);
+    const mod = await section;
     if (location.hash.slice(1) !== h) return; // the user moved on while it loaded
     try { if (mod.route(h)) return; } catch (_) { /* malformed link: fall through to home */ }
   }

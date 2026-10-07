@@ -98,7 +98,6 @@ h1.page { margin: 0; font-size: 1.5rem; }
 }
 .logo { font-weight: 700; color: var(--ink); text-decoration: none; margin-right: auto; font-size: 1.1rem; }
 .logo span { color: var(--accent); }
-.chip { background: var(--surface-2); border-radius: 99px; padding: 4px 12px; font-size: .9rem; }
 .gear { background: none; border: 0; font-size: 1.4rem; padding: 4px 6px; color: var(--muted); }
 
 /* ---------- Bottom tabs ---------- */
@@ -136,6 +135,7 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .row.center > .btn { flex: 0 0 auto; }
 
 /* ---------- Home ---------- */
+.hero-text { display: grid; gap: 4px; }
 .hero { background: var(--surface); border-radius: var(--radius); padding: 18px 16px; box-shadow: var(--shadow); display: grid; gap: 12px; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-bottom: 4px; }
 .stats b { display: block; font-size: 1.6rem; color: var(--accent); }
@@ -235,6 +235,7 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .actions { margin-top: 16px; display: grid; gap: 10px; }
 .actions p { margin: 0; }
 .grades { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grades.two { grid-template-columns: 1fr 1fr; }
 .grades .again { color: var(--bad); }
 .grades .good { background: var(--ok); color: var(--ok-ink); border-color: var(--ok); }
 .grades .easy { color: var(--ok); }
@@ -356,7 +357,6 @@ details.answers .phrases { margin-top: 8px; }
 .ktile { display: grid; justify-items: center; padding: 8px 2px 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .ktile span { font-family: var(--jp); font-size: 1.6rem; line-height: 1.2; }
 .ktile small { font-size: .65rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.ktile.known { border-color: var(--ok); background: var(--ok-soft); }
 .kbig { font-family: var(--jp); font-size: 4.5rem; line-height: 1.1; font-weight: 500; text-align: center; margin: 6px 0; }
 .kbig.small-k { font-size: 2.6rem; }
 .kdetail.no-big .kbig { display: none; }
@@ -369,7 +369,6 @@ details.answers .phrases { margin-top: 8px; }
 .wcard { display: grid; justify-items: center; gap: 1px; padding: 10px 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-align: center; }
 .wcard b { font-size: 1.1rem; font-weight: 600; }
 .wcard small { color: var(--muted); font-size: .72rem; }
-.wcard.known { border-color: var(--ok); background: var(--ok-soft); }
 .wpic { font-size: 2rem; line-height: 1.2; }
 .wpic.huge { font-size: 4.5rem; text-align: center; margin: 6px 0; }
 .wtxt { font-size: .7rem; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 6px; display: inline-block; }

@@ -18,7 +18,7 @@ const html = read('index.html');
 for (const [, ref] of html.matchAll(/(?:src|href)="\/([^"#?]+)"/g)) {
   if (!existsSync(ref)) fail(`index.html references missing file /${ref}`);
 }
-for (const id of ['app', 'sheet', 'toast', 'streak']) if (!html.includes(`id="${id}"`)) fail(`index.html is missing #${id}`);
+for (const id of ['app', 'sheet', 'toast']) if (!html.includes(`id="${id}"`)) fail(`index.html is missing #${id}`);
 
 // 3. Service worker precaches real files, including every module.
 const shell = read('sw.js').match(/const SHELL = \[([\s\S]*?)\];/)?.[1] || '';
@@ -216,34 +216,14 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
-const DAY = 864e5, now = Date.UTC(2026, 9, 4);
-
-test('new card graded good is due tomorrow', () => {
-  const s = core.grade(undefined, core.GOOD, now);
-  assert.equal(s.box, 1); assert.equal(s.due, now + DAY); assert.equal(s.seen, 1);
-});
-test('easy skips a box, forgot resets', () => {
-  const a = core.grade(undefined, core.EASY, now); assert.equal(a.box, 2);
-  const b = core.grade(a, core.AGAIN, now); assert.equal(b.box, 0); assert.ok(b.due - now < DAY);
-});
-test('box is capped', () => {
-  let s; for (let i = 0; i < 20; i++) s = core.grade(s, core.EASY, now);
-  assert.equal(s.box, core.INTERVALS.length - 1);
-});
-test('session puts due cards before new and respects limits', () => {
-  const cards = CARDS.slice(0, 30);
-  const progress = { [cards[5].id]: { box: 1, due: now - 1, seen: 1 }, [cards[6].id]: { box: 1, due: now + DAY, seen: 1 } };
-  const s = core.pickSession(cards, progress, { now, newLimit: 3 });
-  assert.equal(s[0].id, cards[5].id); assert.equal(s.length, 4);
-  assert.ok(!s.some(c => c.id === cards[6].id));
-});
-test('streak counts consecutive days and resets after a gap', () => {
-  const d = (n) => new Date(2026, 9, n, 12);
-  let st = core.bumpStreak(null, d(1)); assert.equal(st.count, 1);
-  st = core.bumpStreak(st, d(1)); assert.equal(st.count, 1);
-  st = core.bumpStreak(st, d(2)); assert.equal(st.count, 2);
-  assert.equal(core.liveStreak(st, d(3)), 2); assert.equal(core.liveStreak(st, d(4)), 0);
-  st = core.bumpStreak(st, d(4)); assert.equal(st.count, 1);
+test('nothing but display settings is stored', () => {
+  for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) {
+    const src = readFileSync('js/' + f, 'utf8');
+    if (f !== 'app.js') assert.ok(!/localStorage|indexedDB|sessionStorage|document\.cookie/.test(src), `${f} touches storage`);
+    assert.ok(!/practised\(|bumpStreak|quizBest|kanjiProgress|vocabProgress|readBest|listenDone|S\(\)\.(progress|spoken|mocks|intro|builder|jlptLevel)/.test(src), `${f} still tracks the learner`);
+  }
+  const app = readFileSync('js/app.js', 'utf8');
+  assert.match(app, /JSON\.stringify\(\{ settings: state\.settings \}\)/);
 });
 test('fill replaces placeholders', () => {
   const p = { name: 'スミス', nameRo: 'Sumisu', country: '中国', countryKana: 'ちゅうごく', countryRo: 'Chūgoku', countryEn: 'China', countryHi: 'China' };

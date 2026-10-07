@@ -1,12 +1,12 @@
 // Speak tab: shadowing, answering questions, self-introduction builder and pronunciation drills.
 import { QA, JOBS, HOBBIES, YEARS, PRONUNCIATION, SOUND_TIPS, SLOTS, PATTERNS, buildSentence, customItem } from './speaking-data.js';
 import { toRomaji } from './conjugate.js';
-import { UNITS, CARDS, TRACKS } from './data.js';
+import { UNITS, CARDS, TRACKS, COUNTRIES } from './data.js';
 import { listen } from './speech.js';
-import { matchScore, PASS, isLearned } from './core.js';
+import { matchScore, PASS } from './core.js';
 
 export function initSpeaking(ctx) {
-  const { esc, render, speak, shuffle, bar, back, practised, save } = ctx;
+  const { esc, render, speak, shuffle, bar, back } = ctx;
   const S = () => ctx.S();
   const hg = (t, cls = 'hi') => S().settings.hindi && t ? `<div class="${cls}" lang="hi-Latn">${esc(t)}</div>` : '';
   const fillLine = l => l.map(x => ctx.fill(x));
@@ -25,13 +25,11 @@ export function initSpeaking(ctx) {
   // ================= Hub =================
   function hub() {
     ctx.clearSess(); st = null;
-    const spoken = Object.keys(S().spoken || {}).length;
     render(`
       <h1 class="page">Speak <span lang="ja">話す</span></h1>
       <div class="intro">Speaking is a skill, like cricket: you get better by doing it out loud, every day. Use headphones, speak at normal volume, and copy the rhythm.${hg('Roz zor se bolo. Sunte raho, copy karo, phir khud bolo.', 'hi intro-hg')}</div>
-      <div class="stats small-stats"><div><b>${spoken}</b><span>phrases spoken</span></div><div><b>${S().qaDone || 0}</b><span>questions answered</span></div></div>
       <div class="speak-grid">
-        <button class="scard" data-act="shadow-random"><span>🔁</span><b>Shadow 10 phrases</b><small>Listen, repeat, get a score. Mixes phrases you know with new ones.</small></button>
+        <button class="scard" data-act="shadow-random"><span>🔁</span><b>Shadow 10 phrases</b><small>Listen, repeat, get a score. A random mix from every unit.</small></button>
         <button class="scard" data-act="qa" data-arg="0"><span>💬</span><b>Answer questions</b><small>Real questions people ask you. Answer out loud.</small></button>
         <button class="scard wide" data-act="builder"><span>🧩</span><b>Sentence builder: “Can I use X?”</b><small>Pick a pattern, swap in any software, device or test resource, and practise the sentence. “Could you install X on Y?”, “Is X available for testing?”…</small></button>
         <button class="scard" data-act="intro-builder"><span>🙋</span><b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
@@ -48,9 +46,7 @@ export function initSpeaking(ctx) {
   }
 
   function shadowRandom() {
-    const known = shuffle(CARDS.filter(c => isLearned(S().progress[c.id])));
-    const rest = shuffle(CARDS.filter(c => !isLearned(S().progress[c.id])));
-    ctx.speakMode(null, 0, [...known.slice(0, 6), ...rest].slice(0, 10), 'speak-tab');
+    ctx.speakMode(null, 0, shuffle(CARDS).slice(0, 10), 'speak-tab');
   }
 
   // ================= Q&A =================
@@ -90,16 +86,16 @@ export function initSpeaking(ctx) {
     const score = await ctx.record(target, document.getElementById('result'), document.getElementById('mic'));
     if (score == null) return;
     if (score < PASS) document.querySelector('.answers').open = true;
-    S().qaDone = (S().qaDone || 0) + (st?.counted ? 0 : 1);
-    if (st) st.counted = true;
-    practised();
   }
 
   // ================= Self-introduction =================
-  const introState = () => (S().intro = S().intro || { job: 0, hobby: 0, years: 3, style: 'friendly' });
+  // Kept in memory only; nothing about the learner is saved.
+  const intro = { job: 0, hobby: 0, years: 3, style: 'friendly', name: 'スミス', nameRo: 'Sumisu', country: 0 };
+  const introState = () => intro;
 
   function introLines() {
-    const o = introState(), p = ctx.profile();
+    const o = introState(), c = COUNTRIES[o.country] || COUNTRIES[0];
+    const p = { name: o.name, nameRo: o.nameRo, country: c[0], countryKana: c[1], countryRo: c[2], countryEn: c[3], countryHi: c[4] };
     const office = o.style === 'office';
     const job = JOBS[o.job], hob = HOBBIES[o.hobby], yr = YEARS[o.years];
     const yearsLine = o.years === 0
@@ -125,8 +121,11 @@ export function initSpeaking(ctx) {
     const lines = introLines();
     render(`
       <div class="head">${back('speak-tab')}<h1>🙋 My self-introduction</h1></div>
-      <p class="muted">The 自己紹介 (jikoshoukai) you’ll give at work, school and parties. Change the options and it rewrites itself. Name and country come from Settings ⚙︎.</p>
+      <p class="muted">The 自己紹介 (jikoshoukai) you’ll give at work, school and parties. Change the options and it rewrites itself. Nothing you type here is saved.</p>
       <div class="card left form">
+        <label>Name (katakana) <input class="search" id="i-name" data-change="intro-set" value="${esc(o.name)}" autocomplete="off" maxlength="20"></label>
+        <label>Name (romaji) <input class="search" id="i-namero" data-change="intro-set" value="${esc(o.nameRo)}" autocomplete="off" maxlength="30"></label>
+        <label>Country ${sel('i-country', COUNTRIES.map(c => `${c[3]} · ${c[0]}`), o.country)}</label>
         <label>Style ${sel('i-style', ['😊 Friendly (neighbours, friends)', '👔 Office (first day, clients)'], o.style === 'office' ? 1 : 0)}</label>
         <label>Job ${sel('i-job', JOBS.map(j => `${j[5]} ${j[3]}`), o.job)}</label>
         <label>Hobby ${sel('i-hobby', HOBBIES.map(h => `${h[5]} ${h[3]}`), o.hobby)}</label>
@@ -147,18 +146,21 @@ export function initSpeaking(ctx) {
 
   async function introMic(i) {
     const l = introLines()[+i];
-    const score = await ctx.record({ jp: l[0], kana: l[1] }, document.getElementById('res-' + i), document.getElementById('mic-' + i));
-    if (score != null) practised();
+    await ctx.record({ jp: l[0], kana: l[1] }, document.getElementById('res-' + i), document.getElementById('mic-' + i));
   }
 
   function introSet() {
     const o = introState(), v = id => +document.getElementById(id).value;
     o.style = v('i-style') ? 'office' : 'friendly'; o.job = v('i-job'); o.hobby = v('i-hobby'); o.years = v('i-years');
-    save(); introBuilder();
+    o.country = v('i-country');
+    o.name = document.getElementById('i-name').value.trim().slice(0, 20) || 'スミス';
+    o.nameRo = document.getElementById('i-namero').value.trim().slice(0, 30) || 'Sumisu';
+    introBuilder();
   }
 
   // ================= Sentence builder =================
-  const bstate = () => (S().builder = S().builder || { p: 'install', x: 'software:0', y: 'device:0', custom: '' });
+  const bs = { p: 'install', x: 'software:0', y: 'device:0', custom: '' };
+  const bstate = () => bs;
   const slotOptions = groups => groups.flatMap(g => SLOTS[g].items.map((it, i) => ({ key: `${g}:${i}`, it, group: SLOTS[g].label })));
   const pick = (groups, key) => { const opts = slotOptions(groups); return (opts.find(o => o.key === key) || opts[0]); };
 
@@ -211,20 +213,19 @@ export function initSpeaking(ctx) {
     const newP = v('b-p');
     if (newP && newP !== b.p) { b.p = newP; const p = PATTERNS.find(x => x.id === newP); b.x = slotOptions(p.x)[0].key; if (p.y) b.y = slotOptions(p.y)[0].key; }
     else { if (v('b-x')) b.x = v('b-x'); if (v('b-y')) b.y = v('b-y'); }
-    save(); builder();
+    builder();
   }
 
   function builderRandom() {
     const b = bstate(), p = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
     const rnd = groups => { const o = slotOptions(groups); return o[Math.floor(Math.random() * o.length)].key; };
     b.p = p.id; b.x = rnd(p.x); if (p.y) b.y = rnd(p.y); b.custom = '';
-    save(); builder(); speak(currentSentence().line[0]);
+    builder(); speak(currentSentence().line[0]);
   }
 
   async function builderMic() {
     const { line: l } = currentSentence();
-    const score = await ctx.record({ jp: l[0], kana: l[1] }, document.getElementById('bresult'), document.getElementById('mic'));
-    if (score != null) practised();
+    await ctx.record({ jp: l[0], kana: l[1] }, document.getElementById('bresult'), document.getElementById('mic'));
   }
 
   // ================= Pronunciation =================
@@ -266,7 +267,6 @@ export function initSpeaking(ctx) {
       st.test = null;
       document.querySelectorAll('.pair.testing').forEach(el => el.classList.remove('testing'));
       if (!ok) speak(PRONUNCIATION[gi].pairs[pi][t.wi][0], true);
-      practised();
       return;
     }
     speak(w[0]);
@@ -294,7 +294,6 @@ export function initSpeaking(ctx) {
       res.innerHTML = scores[best] >= 0.6
         ? `<div class="score ok">I heard <b lang="ja">${esc(pair[best][0])}</b> ${pair[best][4]} (${esc(pair[best][2])})</div>`
         : `<div class="score retry">I heard “${esc(heard[0])}”. Try again, slowly.</div>`;
-      practised();
     } catch (e) {
       res.innerHTML = `<span class="muted">Couldn’t listen (${esc(e.message)}).</span>`;
     } finally { mic.classList.remove('on'); mic.textContent = '🎤'; }
@@ -313,11 +312,11 @@ export function initSpeaking(ctx) {
     sounds: () => ctx.go('speak/sounds'),
     builder: () => ctx.go('speak/builder'),
     'builder-set': () => builderSet(),
-    'builder-custom': (_, v) => { bstate().custom = v; save(); document.getElementById('b-x').disabled = !!v.trim(); document.getElementById('bcard').innerHTML = sentenceCard(); },
+    'builder-custom': (_, v) => { bstate().custom = v; document.getElementById('b-x').disabled = !!v.trim(); document.getElementById('bcard').innerHTML = sentenceCard(); },
     'builder-slow': () => ctx.speakSlow(currentSentence().line[0]),
     'builder-random': () => builderRandom(),
     'builder-mic': () => builderMic(),
-    'builder-pattern': id => { const b = bstate(), p = PATTERNS.find(x => x.id === id); b.p = id; b.x = slotOptions(p.x)[0].key; if (p.y) b.y = slotOptions(p.y)[0].key; b.custom = ''; save(); builder(); window.scrollTo(0, 0); speak(currentSentence().line[0]); },
+    'builder-pattern': id => { const b = bstate(), p = PATTERNS.find(x => x.id === id); b.p = id; b.x = slotOptions(p.x)[0].key; if (p.y) b.y = slotOptions(p.y)[0].key; b.custom = ''; builder(); window.scrollTo(0, 0); speak(currentSentence().line[0]); },
     'sound-tap': a => soundTap(a),
     'sound-test': k => soundTest(k),
     'sound-mic': k => soundMic(k),

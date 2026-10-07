@@ -3,13 +3,12 @@ import { PARTICLES, PARTICLES_INTRO, CONFUSABLE } from './particles-data.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
-import { grade, AGAIN, GOOD, EASY, isLearned, isDue, pickSession } from './core.js';
 
 const ALL_PARTICLES = PARTICLES.map(p => p.p);
 const plain = s => s.replace(/[[\]]/g, '');
 
 export function initStudy(ctx) {
-  const { esc, render, speak, shuffle, bar, back, practised, save } = ctx;
+  const { esc, render, speak, shuffle, bar, back } = ctx;
   const S = () => ctx.S();
   const hg = (text, cls = 'hi') => S().settings.hindi && text ? `<div class="${cls}" lang="hi-Latn">${esc(text)}</div>` : '';
   const ro = text => S().settings.romaji ? `<div class="ro">${esc(text)}</div>` : '';
@@ -50,7 +49,6 @@ export function initStudy(ctx) {
         ${PARTICLES.map(p => `<button class="pcard" data-act="particle" data-arg="${p.id}">
           <span class="pch" lang="ja">${p.p}</span>
           <span class="pt"><b>${esc(p.ro)}</b> · ${esc(p.title)}${S().settings.hindi ? `<small lang="hi-Latn">${esc(p.hg)}</small>` : ''}</span>
-          <span class="count">${S().pbest?.[p.id] != null ? `${S().pbest[p.id]}%` : ''}</span>
         </button>`).join('')}
       </div>`);
   }
@@ -87,9 +85,7 @@ export function initStudy(ctx) {
 
   function pquizQ() {
     const q = st.qs[st.i];
-    if (!q) return quizDone(`Particle quiz: ${st.right}/${st.qs.length}`, st.id ? 'particle' : 'particles', st.id || '', () => {
-      if (st.id) { S().pbest = S().pbest || {}; S().pbest[st.id] = Math.max(S().pbest[st.id] || 0, Math.round(100 * st.right / st.qs.length)); }
-    });
+    if (!q) return quizDone(`Particle quiz: ${st.right}/${st.qs.length}`, st.id ? 'particle' : 'particles', st.id || '');
     st.answered = false;
     render(`
       <div class="head">${back(st.id ? 'particle' : 'particles', st.id || '')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
@@ -188,10 +184,7 @@ export function initStudy(ctx) {
 
   function vquizQ() {
     const q = st.qs[st.i];
-    if (!q) return quizDone(`Conjugation quiz: ${st.right}/${st.qs.length}`, 'verbs', '', () => {
-      const b = (S().quizBest = S().quizBest || {});
-      b.vquiz = Math.max(b.vquiz || 0, Math.round(100 * st.right / st.qs.length));
-    });
+    if (!q) return quizDone(`Conjugation quiz: ${st.right}/${st.qs.length}`, 'verbs', '');
     st.answered = false;
     render(`
       <div class="head">${back('verbs')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
@@ -224,29 +217,23 @@ export function initStudy(ctx) {
   }
 
   // ================= Kanji =================
-  const kprog = () => (S().kanjiProgress = S().kanjiProgress || {});
-
-  const klevel = () => S().kanjiLevel || 'n5';
+  let kLevel = 'n5'; // chosen level, for this visit only
+  const klevel = () => kLevel;
   const levelKanji = () => KANJI.filter(k => k.level === klevel());
 
   function kanji() {
     ctx.clearSess(); st = null;
-    const now = Date.now();
-    const pool = levelKanji();
-    const due = pool.filter(k => isDue(kprog()[k.ch], now)).length;
-    const learned = pool.filter(k => isLearned(kprog()[k.ch])).length;
     render(`
       <h1 class="page">Kanji <span lang="ja">漢字</span></h1>
       <details class="fold"><summary>💡 How kanji work</summary><div class="fold-body">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div></details>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === klevel() ? 'on' : ''}" data-act="kanji-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
-      <div class="stats small-stats"><div><b>${learned}</b><span>of ${pool.length} learned</span></div><div><b>${due}</b><span>due now</span></div></div>
       <div class="row">
-        <button class="btn primary" data-act="klearn" data-arg="">🃏 ${due ? `Review ${due}` : 'Learn new'}</button>
+        <button class="btn primary" data-act="klearn" data-arg="">🃏 Flashcards</button>
         <button class="btn" data-act="kquiz" data-arg="">🎯 Quiz</button>
       </div>
       ${ALL_KANJI_GROUPS.filter(g => g.level === klevel()).map(g => `
         <h3>${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h3>
-        <div class="kgrid">${g.kanji.map(k => `<button class="ktile ${isLearned(kprog()[k[0]]) ? 'known' : ''}" data-act="kanji-one" data-arg="${k[0]}">
+        <div class="kgrid">${g.kanji.map(k => `<button class="ktile" data-act="kanji-one" data-arg="${k[0]}">
           <span lang="ja">${k[0]}</span><small>${esc(k[3].split(' /')[0])}</small></button>`).join('')}</div>
         <button class="btn small ghost" data-act="klearn" data-arg="${g.id}">🃏 Learn this group</button>`).join('')}`);
   }
@@ -282,8 +269,7 @@ export function initStudy(ctx) {
 
   function klearn(groupId) {
     const items = (groupId ? KANJI.filter(k => k.group === groupId) : levelKanji()).map(k => ({ ...k, id: k.ch }));
-    let queue = pickSession(items, kprog(), { newLimit: 6, max: 15 });
-    if (!queue.length) queue = shuffle(items).slice(0, 10); // all caught up: free practice
+    const queue = shuffle(items).slice(0, 12);
     st = { kind: 'klearn', groupId, queue, i: 0, done: 0 };
     ctx.setSess(st);
     kcard();
@@ -291,14 +277,13 @@ export function initStudy(ctx) {
 
   function kcard() {
     const k = st.queue[st.i];
-    if (!k) { practised(); return quizDone(`${st.done} kanji practised`, 'kanji', ''); }
+    if (!k) { return quizDone(`${st.done} kanji practised`, 'kanji', ''); }
     st.revealed = false;
     render(`
       <div class="head">${back('kanji')}<div class="grow">${bar(st.i, st.queue.length)}</div><span class="muted">${st.i + 1}/${st.queue.length}</span></div>
       <div class="card">
-        <span class="tag ${kprog()[k.ch] ? 'alt' : ''}">${kprog()[k.ch] ? 'What does it mean?' : 'New kanji'}</span>
+        <span class="tag alt">What does it mean?</span>
         <div id="kfront" class="kbig" lang="ja">${k.ch}</div>
-        ${kprog()[k.ch] ? '' : `<div class="khint"><span>${k.pic}</span>${esc(k.hint)}</div>`}
         <div id="answer" hidden>${kanjiDetail(k, 'no-big')}</div>
       </div>
       <div class="actions" id="actions"><button class="btn primary big" data-act="kreveal">Show answer</button></div>`);
@@ -308,18 +293,15 @@ export function initStudy(ctx) {
     if (st.revealed) return;
     st.revealed = true;
     document.getElementById('answer').hidden = false;
-    document.getElementById('actions').innerHTML = `<div class="grades">
-      <button class="btn again" data-act="kgrade" data-arg="${AGAIN}">Forgot</button>
-      <button class="btn good" data-act="kgrade" data-arg="${GOOD}">Got it</button>
-      <button class="btn easy" data-act="kgrade" data-arg="${EASY}">Easy</button></div>`;
+    document.getElementById('actions').innerHTML = `<div class="grades two">
+      <button class="btn again" data-act="kgrade" data-arg="again">Again later</button>
+      <button class="btn good" data-act="kgrade" data-arg="ok">Got it</button></div>`;
     speak(st.queue[st.i].ex[0][0]);
   }
 
   function kgrade(g) {
     const k = st.queue[st.i];
-    kprog()[k.ch] = grade(kprog()[k.ch], +g);
-    if (+g === AGAIN) st.queue.push(k); else st.done++;
-    save();
+    if (g === 'again') st.queue.push(k); else st.done++; // nothing saved: “again” repeats it this session
     st.i++; kcard();
   }
 
@@ -341,10 +323,7 @@ export function initStudy(ctx) {
 
   function kquizQ() {
     const q = st.qs[st.i];
-    if (!q) return quizDone(`Kanji quiz: ${st.right}/${st.qs.length}`, 'kanji', '', () => {
-      const b = (S().quizBest = S().quizBest || {}), key = 'kanji-' + klevel();
-      b[key] = Math.max(b[key] || 0, Math.round(100 * st.right / st.qs.length));
-    });
+    if (!q) return quizDone(`Kanji quiz: ${st.right}/${st.qs.length}`, 'kanji', '');
     st.answered = false;
     render(`
       <div class="head">${back('kanji')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
@@ -378,7 +357,6 @@ export function initStudy(ctx) {
   // ================= Shared =================
   function quizDone(title, backTo, arg, onDone) {
     onDone?.();
-    practised();
     st = null; ctx.clearSess();
     render(`<div class="done">
       <div class="big-emoji">🌸</div><h1>${esc(title)}</h1>
@@ -401,7 +379,7 @@ export function initStudy(ctx) {
     vnext: () => { st.i++; vquizQ(); },
     kanji: () => ctx.go('kanji'),
     'kanji-one': ch => ch && ctx.go('kanji/' + encodeURIComponent(ch)),
-    'kanji-level': l => { S().kanjiLevel = l; save(); kanji(); },
+    'kanji-level': l => { kLevel = l === 'n4' ? 'n4' : 'n5'; kanji(); },
     klearn: g => klearn(g),
     kreveal: () => kreveal(),
     kgrade: g => kgrade(g),
@@ -419,6 +397,7 @@ export function initStudy(ctx) {
     if (h === 'verbs') return verbs(), true;
     if (h.startsWith('verb/') && VERBS[+h.slice(5)]) return verb(h.slice(5)), true;
     if (h === 'kanji') return kanji(), true;
+    if (h === 'kanji/n4') { kLevel = 'n4'; return kanji(), true; }
     if (h.startsWith('kanji/')) return kanjiOne(decodeURIComponent(h.slice(6))), true;
     return false;
   }
@@ -436,7 +415,7 @@ export function initStudy(ctx) {
   return { actions, route, rerender, clear() { st = null; }, keydown(e) {
     if (st?.kind !== 'klearn') return false;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!st.revealed) kreveal(); return true; }
-    if (st.revealed && '123'.includes(e.key)) { kgrade([AGAIN, GOOD, EASY][+e.key - 1]); return true; }
+    if (st.revealed && '12'.includes(e.key)) { kgrade(e.key === '1' ? 'again' : 'ok'); return true; }
     return false;
   } };
 }

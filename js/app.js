@@ -458,6 +458,7 @@ function openSettings() {
         <button class="btn" data-act="test-voice">🔊 Test voice</button>
         <button class="btn primary" data-act="save-settings">Save</button>
       </div>
+      <p class="muted small">Furigana readings use KANJIDIC2 © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.</p>
     </div>`;
   sheet.hidden = false;
 }

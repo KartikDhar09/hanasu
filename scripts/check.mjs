@@ -45,6 +45,23 @@ try {
   }
 }
 
+// 4c. Keep crawlers and AI agents out.
+{
+  const robots = read('robots.txt');
+  if (!/User-agent: \*\s*\nDisallow: \/\s*$/m.test(robots)) fail('robots.txt must disallow everything for *');
+  for (const ua of ['GPTBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Google-Extended', 'CCBot', 'PerplexityBot']) if (!robots.includes(`User-agent: ${ua}\nDisallow: /`)) fail(`robots.txt must block ${ua}`);
+  const vc = JSON.parse(read('vercel.json'));
+  if (!vc.headers.flatMap(h => h.headers).some(h => h.key === 'X-Robots-Tag' && h.value.includes('noindex'))) fail('vercel.json needs X-Robots-Tag noindex');
+  if (!/<meta name="robots" content="noindex/.test(html)) fail('index.html needs a robots noindex meta tag');
+  const r = vc.redirects?.[0];
+  const re = new RegExp('^' + r.has[0].value + '$');
+  for (const ua of ['Mozilla/5.0 (compatible; GPTBot/1.2; +https://openai.com/gptbot)', 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ChatGPT-User/1.0; +https://openai.com/bot)', 'Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)', 'Claude-User/1.0'])
+    if (!re.test(ua)) fail(`AI user agent not blocked: ${ua}`);
+  for (const ua of ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 'curl/8.7.1'])
+    if (re.test(ua)) fail(`a normal browser would be blocked: ${ua}`);
+  if (new RegExp(r.source.replace('/((?!robots\\.txt$).*)', '^/((?!robots\\.txt$).*)$')).test('/robots.txt')) fail('the redirect must not apply to robots.txt (redirect loop)');
+}
+
 // 5. Lesson content is well-formed, and no Devanagari is left anywhere (the app uses Hinglish).
 for (const f of readdirSync('js')) if (/[\u0900-\u097f]/.test(read('js/' + f))) fail(`js/${f} still contains Devanagari`);
 const { UNITS, CARDS, TRACKS, COUNTRIES } = await import('../js/data.js');

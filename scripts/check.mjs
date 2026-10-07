@@ -264,6 +264,7 @@ test('text colours meet WCAG AA contrast (4.5:1) in light and dark themes', () =
     assert.ok(r >= 4.5, `${name}: --${f} on --${b} is ${r.toFixed(2)}:1`);
   }
 });
+if (readFileSync('js/module-deps.js', 'utf8') !== (await import('./module-deps.mjs')).buildDeps()) fail('js/module-deps.js is out of date: run node scripts/module-deps.mjs');
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;
   assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby>です。');

@@ -71,7 +71,7 @@ mark { background: var(--accent-soft); color: var(--accent); font-weight: 700; b
 .accent, h1.page span { color: var(--accent); }
 
 /* ---------- Layout system ---------- */
-main { max-width: 640px; margin: 0 auto; padding: 16px 16px calc(84px + env(safe-area-inset-bottom)); }
+main { max-width: 640px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
 #app > * { margin-top: 0; margin-bottom: 0; }
 #app > * + * { margin-top: var(--gap); }
 #app > h2, #app > h3 { margin-top: var(--section); }
@@ -95,7 +95,7 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .top {
   position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px;
   /* On wide screens the bar's contents line up with the 640px content column. */
-  padding: calc(10px + env(safe-area-inset-top)) max(16px, calc((100% - 640px) / 2 + 16px)) 10px;
+  padding: calc(10px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right), calc((100% - 640px) / 2 + 16px)) 10px max(16px, env(safe-area-inset-left), calc((100% - 640px) / 2 + 16px));
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
 }
@@ -106,8 +106,8 @@ h1.page { margin: 0; font-size: 1.5rem; }
 /* ---------- Bottom tabs ---------- */
 .tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(5, 1fr);
-  background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--line); padding: 0 max(0px, calc((100% - 640px) / 2)) env(safe-area-inset-bottom);
+  background: color-mix(in srgb, var(--bg) 97%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line); padding: 0 max(env(safe-area-inset-right), calc((100% - 640px) / 2)) env(safe-area-inset-bottom) max(env(safe-area-inset-left), calc((100% - 640px) / 2));
 }
 .tabs a { position: relative; display: grid; justify-items: center; gap: 1px; padding: 8px 0 6px; font-size: .72rem; font-weight: 600; color: var(--muted); text-decoration: none; }
 .tabs a span { font-size: 1.25rem; line-height: 1.2; }
@@ -203,7 +203,7 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .jpblock .kana { color: var(--muted); font-size: .9rem; }
 .jpblock .ro { color: var(--muted); font-size: .85rem; font-style: italic; }
 .jpblock.big { text-align: center; margin: 12px 0; }
-.jpblock.big .jp { font-size: 1.8rem; }
+.jpblock.big .jp { font-size: clamp(1.4rem, 7vw, 1.8rem); line-break: strict; }
 .jpblock.big .kana { font-size: 1.05rem; }
 .jpblock.big .ro { font-size: 1rem; }
 .big-jp { font-size: 1.5rem; margin: 6px 0; }
@@ -297,8 +297,8 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .panel input:not([type]), .panel select {
   width: 100%; min-width: 0; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
 }
-.panel input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
-.panel input[type="range"] { accent-color: var(--accent); }
+.panel input[type="checkbox"] { width: 24px; height: 24px; flex: none; accent-color: var(--accent); }
+.panel input[type="range"] { accent-color: var(--accent); width: 100%; height: 32px; margin: 0; }
 .warn { color: var(--warn); font-size: .9rem; }
 .panel-tab { display: grid; gap: 14px; }
 .panel-tab[hidden] { display: none; }
@@ -306,7 +306,7 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .credits li { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
 .credits .cicon { font-size: 1.3rem; text-align: center; line-height: 1.4; }
 .credits small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
-.credits a { display: inline-block; margin-top: 4px; font-size: .85rem; color: var(--accent); }
+.credits a { display: inline-block; margin-top: 2px; padding: 4px 0; min-height: 24px; font-size: .85rem; color: var(--accent); }
 .toast {
   position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); opacity: 0;
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; transition: .25s; pointer-events: none; z-index: 30;
@@ -375,7 +375,7 @@ details.answers .phrases { margin-top: 8px; }
 .kgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; margin: 0; }
 .ktile { display: grid; justify-items: center; padding: 8px 2px 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .ktile span { font-family: var(--jp); font-size: 1.6rem; line-height: 1.2; }
-.ktile small { font-size: .65rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ktile small { font-size: .72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .kbig { font-family: var(--jp); font-size: 4.5rem; line-height: 1.1; font-weight: 500; text-align: center; margin: 6px 0; }
 .kbig.small-k { font-size: 2.6rem; }
 .kdetail.no-big .kbig { display: none; }
@@ -478,5 +478,18 @@ details.answers .phrases { margin-top: 8px; }
   .units { grid-template-columns: 1fr 1fr; }
   .modes { grid-template-columns: repeat(4, 1fr); }
   .modes.compact .mode small { display: block; font-size: .72rem; }
+}
+/* ---------- Short landscape screens (a phone held sideways) ----------
+   The header scrolls away and the tab bar slims down, so cards aren't squeezed into ~280px of height. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .top { position: static; }
+  .tabs a { grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px; padding: 6px 0; font-size: .75rem; }
+  .tabs a span { font-size: 1.05rem; }
+  main { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
+  .card { min-height: 0; padding: 12px 16px; }
+  .jpblock.big { margin: 6px 0; }
+  .pic, .wpic.huge, .big-emoji { font-size: 2.4rem; }
+  .kbig { font-size: 3.2rem; }
+  .done { padding-top: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

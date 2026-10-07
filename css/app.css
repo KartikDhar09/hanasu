@@ -194,6 +194,11 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .ex { cursor: pointer; }
 
 /* ---------- Japanese text ---------- */
+/* Furigana: the reading sits above each kanji run. Lines with readings get extra height so rows don't collide. */
+ruby { ruby-position: over; ruby-align: center; }
+rt { font-size: .56em; font-weight: 400; color: var(--muted); letter-spacing: 0; user-select: none; }
+:is(.jp, .wcard b, .bubble .jp, .casual span):has(ruby) { line-height: 2; }
+.jpblock.big .jp:has(ruby) { line-height: 1.9; }
 .jpblock .jp { font-size: 1.2rem; font-weight: 500; }
 .jpblock .kana { color: var(--muted); font-size: .9rem; }
 .jpblock .ro { color: var(--muted); font-size: .85rem; font-style: italic; }

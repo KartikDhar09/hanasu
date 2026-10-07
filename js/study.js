@@ -1,5 +1,6 @@
 // Particles, Verbs and Kanji sections. Shared helpers come from app.js via ctx.
 import { PARTICLES, PARTICLES_INTRO, CONFUSABLE } from './particles-data.js';
+import { furigana, markBrackets } from './furigana.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
@@ -19,9 +20,10 @@ export function initStudy(ctx) {
   const mark = (s, blank) => esc(s).replace(/\[(.+?)\]/g, (_, p) => blank ? '<span class="gap">？</span>' : `<mark>${p}</mark>`);
 
   function example(e, i, key) {
+    const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null;
     return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
-      <div class="jp" lang="ja">${mark(e[0])}</div>
-      ${S().settings.kana ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
+      <div class="jp" lang="ja">${furi || mark(e[0])}</div>
+      ${S().settings.kana && !furi ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
       ${ro(plain(e[2]))}
       <div class="en">${esc(e[3])}</div>${hg(e[4])}
     </li>`;

@@ -215,6 +215,7 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 
 // 6. Logic tests.
 const core = await import('../js/core.js');
+const furiMod = await import('../js/furigana.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 test('no third-party requests (fonts are self-hosted)', () => {
   for (const f of ['index.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
@@ -233,6 +234,19 @@ test('nothing but display settings is stored', () => {
   }
   const app = readFileSync('js/app.js', 'utf8');
   assert.match(app, /JSON\.stringify\(\{ settings: state\.settings \}\)/);
+});
+test('furigana lines readings up with kanji', () => {
+  const F = furiMod.furigana, e = s => s;
+  assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日本<rt>にほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半年<rt>はんとし</rt></ruby>です。');
+  assert.equal(F('何にしますか。', 'なににしますか。', e), '<ruby>何<rt>なに</rt></ruby>にしますか。');
+  assert.equal(F('私[は]学生です。', 'わたし[は]がくせいです。', e, furiMod.markBrackets(e)), '<ruby>私<rt>わたし</rt></ruby><mark>は</mark><ruby>学生<rt>がくせい</rt></ruby>です。');
+  assert.equal(F('こんにちは。', 'こんにちは。', e), null, 'no kanji, no ruby');
+  assert.equal(F('日本です。', 'にほんだ。', e), null, 'mismatch falls back');
+  // Every phrase, dialogue line, word and example either aligns or falls back; nearly all should align.
+  const pairs = [...CARDS.map(c => [c.jp, c.kana]), ...V.WORDS.map(w => [w.jp, w.kana]), ...J.GRAMMAR.flatMap(g => g.ex.map(x => [x[0], x[1]]))]
+    .filter(([a, b]) => a !== b && !/[{]/.test(a));
+  const ok = pairs.filter(([a, b]) => F(a, b, e)).length;
+  assert.ok(ok / pairs.length > 0.98, `only ${ok}/${pairs.length} lines get furigana`);
 });
 test('fill replaces placeholders', () => {
   const p = { name: 'スミス', nameRo: 'Sumisu', country: '中国', countryKana: 'ちゅうごく', countryRo: 'Chūgoku', countryEn: 'China', countryHi: 'China' };

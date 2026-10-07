@@ -4,13 +4,8 @@
    Layout: one vertical rhythm. Top-level blocks in #app are 12px apart,
    section headings get 28px above them (see "Layout system").
    ===================================================================== */
-/* Inter (SIL Open Font License 1.1, rsms.me/inter), Latin subset, variable weight, served from this site.
-   Japanese uses the device's own font: Hiragino on Apple, Noto CJK on Android, Yu Gothic/Meiryo on Windows. */
-@font-face {
-  font-family: Inter; font-style: normal; font-weight: 400 700; font-display: swap;
-  src: url(/fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
+/* Text uses the device's own fonts (no font download): San Francisco on Apple, Roboto on Android, Segoe UI on Windows;
+   Japanese: Hiragino on Apple, Noto CJK on Android, Yu Gothic/Meiryo on Windows. */
 :root {
   --bg: #FAFAFA;
   --surface: #FFFFFF;
@@ -57,7 +52,7 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.5 Inter, var(--jp), system-ui, sans-serif;
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, var(--jp), sans-serif;
   padding-bottom: env(safe-area-inset-bottom);
 }
 [lang="ja"] { font-family: var(--jp); }
@@ -304,6 +299,13 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .panel input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
 .panel input[type="range"] { accent-color: var(--accent); }
 .warn { color: var(--warn); font-size: .9rem; }
+.panel-tab { display: grid; gap: 14px; }
+.panel-tab[hidden] { display: none; }
+.credits { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.credits li { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.credits .cicon { font-size: 1.3rem; text-align: center; line-height: 1.4; }
+.credits small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
+.credits a { display: inline-block; margin-top: 4px; font-size: .85rem; color: var(--accent); }
 .toast {
   position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); opacity: 0;
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; transition: .25s; pointer-events: none; z-index: 30;

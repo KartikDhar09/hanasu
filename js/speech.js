@@ -1,4 +1,6 @@
-// Japanese text-to-speech and speech recognition via the browser's Web Speech API.
+// Japanese speech: recorded VOICEVOX clips where they exist (js/clips.js), otherwise the browser's Web Speech API.
+// Also speech recognition.
+import { playClip, stopClip } from './clips.js';
 
 const synth = window.speechSynthesis;
 let voices = [];
@@ -54,9 +56,13 @@ function utter(text, { rate, pitch, voice, volume = 1 }) {
 let warming = null;
 const warmUp = () => warming || (warming = utter('。', { rate: 2, pitch: 1, volume: 0 }).finally(() => { warming = null; }));
 
-export async function say(text, { rate = 0.9, voice = '', pitch = 1 } = {}) {
-  if (!synth) return;
+// who picks the recorded voice: n = main, m = man, f = woman. pitch only applies to the browser voice.
+// clip: false forces the browser voice (Settings uses it to test the chosen browser voice).
+export async function say(text, { rate = 0.9, voice = '', pitch = 1, who = 'n', clip = true } = {}) {
   const id = ++seq;
+  if (synth?.speaking || synth?.pending) synth.cancel();
+  if (clip && await playClip(text, { who, rate, isCurrent: () => id === seq })) return;
+  if (!synth || id !== seq) return;
   // Let a warm-up finish (it's tiny) instead of cutting it off; otherwise stop whatever is playing.
   if (warming) await warming;
   const wasBusy = synth.speaking || synth.pending;
@@ -75,7 +81,7 @@ if (synth && typeof document !== 'undefined') {
   document.addEventListener('pointerdown', () => { if (!synth.speaking) warmUp(); }, { once: true, capture: true });
 }
 
-export const stopSpeaking = () => { seq++; synth?.cancel(); };
+export const stopSpeaking = () => { seq++; synth?.cancel(); stopClip(); };
 
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 export const canListen = () => !!Recognition;

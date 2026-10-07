@@ -5,6 +5,7 @@ import { VOCAB, WORDS } from './vocab-data.js';
 import { READING, LISTENING } from './exam-data.js';
 import { toRomaji } from './conjugate.js';
 import { furigana, markBrackets } from './furigana.js';
+import { prefetchClip } from './clips.js';
 
 // Gojūon chart; ・ is an empty cell.
 export const KANA_ROWS = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や・ゆ・よ', 'らりるれろ', 'わ・・・を', 'ん・・・・'];
@@ -254,6 +255,13 @@ export function initJlpt(ctx) {
     ${S().settings.kana && w.kana !== w.jp && !wordFuri(w) ? `<small lang="ja">${esc(w.kana)}</small>` : ''}
     <small>${esc(w.en)}${S().settings.hindi ? ` · ${esc(w.hg)}` : ''}</small></button>`;
 
+  // Topic word grids are drawn when the topic is opened, not all at once (each level has ~700 words).
+  const topicCards = id => WORDS.filter(w => w.topic === id).map(wordCard).join('');
+  document.addEventListener('toggle', e => {
+    const grid = e.target.open && e.target.querySelector?.('.wgrid[data-topic]:empty');
+    if (grid) grid.innerHTML = topicCards(grid.dataset.topic);
+  }, true);
+
   // Matches Japanese, kana, romaji (macrons optional), English or Hinglish.
   const flat = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   function vocabSearch(lv, q) {
@@ -280,7 +288,7 @@ export function initJlpt(ctx) {
       <div id="vtopics">${VOCAB.filter(t => t.level === lv).map((t, i) => `
         <details class="fold" ${i === 0 ? 'open' : ''}><summary><span class="sum-title">${t.icon} ${esc(t.title)}${S().settings.hindi ? `<small class="muted" lang="hi-Latn">${esc(t.hg)}</small>` : ''}</span>
           <span class="count">${t.words.length}</span></summary>
-          <div class="wgrid">${WORDS.filter(w => w.topic === t.id).map(wordCard).join('')}</div>
+          <div class="wgrid" data-topic="${t.id}">${i === 0 ? topicCards(t.id) : ''}</div>
           <button class="btn small ghost" data-act="vlearn" data-arg="${t.id}">🃏 Learn this topic</button>
         </details>`).join('')}</div>`);
   }
@@ -293,6 +301,7 @@ export function initJlpt(ctx) {
 
   function vcard() {
     const w = st.queue[st.i];
+    if (w) { prefetchClip(w.jp); if (st.queue[st.i + 1]) prefetchClip(st.queue[st.i + 1].jp); }
     if (!w) {
       const lv = st.lv; st = null;
       return render(`<div class="done"><div class="big-emoji">🖼️</div><h1>Words practised</h1><button class="btn primary big" data-act="jlpt-vocab" data-arg="${lv}">Back</button></div>`);

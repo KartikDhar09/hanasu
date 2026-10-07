@@ -84,13 +84,13 @@ export function initJlpt(ctx) {
         <p>${esc(ex.can)}</p>${hg(ex.canHg)}
         <div class="note">📚 You need: ${esc(ex.need)}</div>
       </div>
-      <h3>Your path to ${ex.title}</h3>
+      <h2 class="sec">Your path to ${ex.title}</h2>
       <ol class="path">${steps.map(s => `<li><button data-act="${s[3]}" data-arg="${['jlpt-grammar', 'order', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[3]) ? lv : ''}">
           <span class="pico" lang="ja">${s[0]}</span>
           <span class="ptext"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span>
           <span class="count">›</span></button></li>`).join('')}</ol>
       <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">🏁 Take a ${ex.title} mock test</button>
-      <h3>Practise like the exam</h3>
+      <h2 class="sec">Practise like the exam</h2>
       <div class="speak-grid">
         <button class="scard" data-act="ex-reading" data-arg="${lv}"><span>📖</span><b>Reading</b><small>${READING.filter(r => r.level === lv).length} real-life passages with questions</small></button>
         <button class="scard" data-act="ex-listening" data-arg="${lv}"><span>🎧</span><b>Listening</b><small>${LISTENING.filter(l => l.level === lv).length} conversations, some with picture answers</small></button>
@@ -126,9 +126,9 @@ export function initJlpt(ctx) {
       <div class="seg"><button class="${script === 'hira' ? 'on' : ''}" data-act="kana-script" data-arg="hira">ひらがな Hiragana</button><button class="${script === 'kata' ? 'on' : ''}" data-act="kana-script" data-arg="kata">カタカナ Katakana</button></div>
       <p class="muted small">${script === 'hira' ? 'Hiragana is for Japanese words and grammar endings.' : 'Katakana is for foreign words: コーヒー (coffee), インド (India), パソコン (PC).'} Tap any kana to hear it.${S().settings.hindi ? ' Hindi ki tarah, har akshar ek awaaz hai!' : ''}</p>
       <button class="btn primary big" data-act="kana-quiz" data-arg="${script}">🎯 Kana quiz</button>
-      <h3>Basic</h3><div class="kchart">${KANA_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
-      <h3>With ゛ and ゜ <small class="muted">voiced sounds</small></h3><div class="kchart">${DAKUTEN_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
-      <h3>Combinations</h3><div class="kchart three">${COMBO_ROWS.map(r => combos(r).map(cell).join('')).join('')}</div>
+      <h2 class="sec">Basic</h2><div class="kchart">${KANA_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
+      <h2 class="sec">With ゛ and ゜ <small class="muted">voiced sounds</small></h2><div class="kchart">${DAKUTEN_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
+      <h2 class="sec">Combinations</h2><div class="kchart three">${COMBO_ROWS.map(r => combos(r).map(cell).join('')).join('')}</div>
       ${script === 'kata' ? '<div class="note">💡 ー makes a vowel long: コーヒー = kōhī. Small ッ doubles the next sound: ベッド = beddo.</div>' : '<div class="note">💡 Small っ doubles the next sound: きって = kitte. は and へ are read “wa” and “e” when they’re particles.</div>'}`);
   }
 
@@ -170,7 +170,7 @@ export function initJlpt(ctx) {
         <div class="formula" lang="ja">${esc(g.how)}</div>
         <p class="left-text">${esc(g.explain)}</p>
       </div>
-      <h3>Examples <small class="muted">tap to hear</small></h3>
+      <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
       <ul class="phrases">${g.ex.map(e => { const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null; return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
         <div class="jp" lang="ja">${furi || mark(e[0])}</div>
         ${S().settings.kana && !furi ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}

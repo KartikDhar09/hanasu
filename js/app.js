@@ -152,7 +152,7 @@ function unit(id) {
       <button class="mode" data-act="quiz" data-arg="${id}"><span>✅</span><b>Quiz</b><small>Listen &amp; choose · quiz</small></button>
       <button class="mode" data-act="talk" data-arg="${id}"><span>💬</span><b>Role-play</b><small>Real conversation · baatcheet</small></button>
     </div>
-    <h3>Phrases <small class="muted">tap to hear</small></h3>
+    <h2 class="sec">Phrases <small class="muted">tap to hear</small></h2>
     <ul class="phrases">
       ${cs.map(c => `<li data-act="play" data-arg="${c.id}">
         ${jpBlock(c)}
@@ -585,8 +585,9 @@ document.addEventListener('click', e => {
 });
 
 // Tappable rows, examples and chat bubbles aren't <button>s; make them reachable with Tab and usable with Enter/Space.
+// List items keep their list role (screen readers announce the list); other elements become buttons.
 const makeFocusable = root => root.querySelectorAll('[data-act]:not(button, a, input, select, [tabindex])').forEach(el => {
-  el.tabIndex = 0; el.setAttribute('role', 'button');
+  el.tabIndex = 0; if (el.tagName !== 'LI') el.setAttribute('role', 'button');
 });
 new MutationObserver(() => { makeFocusable($app); makeFocusable(document.getElementById('sheet')); watchClips($app); })
   .observe(document.body, { childList: true, subtree: true });
@@ -594,8 +595,8 @@ new MutationObserver(() => { makeFocusable($app); makeFocusable(document.getElem
 document.addEventListener('keydown', e => {
   if (e.target.matches('input, select')) return;
   // Enter/Space on a focused control acts on that control, not on the study shortcuts.
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('button, a, summary, [role="button"]')) {
-    if (e.target.matches('[role="button"]')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('button, a, summary, [role="button"], li[data-act]')) {
+    if (e.target.matches('[role="button"], li[data-act]')) { e.preventDefault(); e.target.click(); }
     return;
   }
   if (mods.study?.keydown(e)) return;

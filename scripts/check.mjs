@@ -249,6 +249,21 @@ test('every line the app speaks has a recorded clip (run scripts/make-audio.mjs)
 });
 const idx = await (await import('./units-index.mjs')).buildIndex();
 if (readFileSync('js/units-index.js', 'utf8') !== idx) fail('js/units-index.js is out of date: run node scripts/units-index.mjs');
+test('text colours meet WCAG AA contrast (4.5:1) in light and dark themes', () => {
+  const css = readFileSync('css/app.css', 'utf8');
+  const vars = block => Object.fromEntries([...block.matchAll(/--([\w-]+):\s*(#[0-9A-Fa-f]{6})/g)].map(m => [m[1], m[2]]));
+  const light = vars(css.slice(css.indexOf(':root {'), css.indexOf('}', css.indexOf(':root {'))));
+  const darkStart = css.indexOf(':root {', css.indexOf('prefers-color-scheme: dark'));
+  const dark = { ...light, ...vars(css.slice(darkStart, css.indexOf('}', darkStart))) };
+  const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const pairs = [['ink', 'bg'], ['ink', 'surface'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'surface-2'], ['accent', 'bg'], ['accent', 'surface'],
+    ['accent', 'accent-soft'], ['accent-ink', 'accent-btn'], ['ok-ink', 'ok'], ['ok', 'surface'], ['bad', 'surface'], ['warn', 'surface'], ['casual', 'surface'], ['you-ink', 'you']];
+  for (const [name, t] of [['light', light], ['dark', dark]]) for (const [f, b] of pairs) {
+    const r = ratio(t[f], t[b]);
+    assert.ok(r >= 4.5, `${name}: --${f} on --${b} is ${r.toFixed(2)}:1`);
+  }
+});
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;
   assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby>です。');

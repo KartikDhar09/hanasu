@@ -395,8 +395,7 @@ details.answers .phrases { margin-top: 8px; }
 /* ---------- Stroke order ---------- */
 .stroke-card { gap: 8px; }
 .board { position: relative; width: min(100%, 320px); aspect-ratio: 1; margin: 8px auto 4px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.board svg, .board canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.board canvas { touch-action: none; cursor: crosshair; }
+.board svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .board .guide-line { fill: none; stroke: var(--line); stroke-width: .5; stroke-dasharray: 2 2; }
 .board .ghost { fill: none; stroke: var(--line); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .board .stroke { fill: none; stroke: transparent; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -404,10 +403,8 @@ details.answers .phrases { margin-top: 8px; }
 .board .stroke.current { stroke: var(--accent); }
 .board .num { font: 600 5.5px system-ui, sans-serif; fill: var(--accent); opacity: 0; }
 .board .num.shown { opacity: 1; }
-.board.tracing .stroke.done:not(.current) { stroke: color-mix(in srgb, var(--ink) 25%, transparent); }
 .stroke-count { text-align: center; color: var(--muted); font-size: .9rem; min-height: 1.4em; }
 .stroke-controls .btn.primary { min-width: 120px; }
-.stroke-modes { max-width: 320px; margin: 0 auto; width: 100%; }
 .stroke-card .row { flex-wrap: wrap; gap: 6px 10px; }
 
 /* ---------- Speak tab ---------- */

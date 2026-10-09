@@ -1,5 +1,5 @@
-// Strokes tab: stroke order for every N5/N4 kanji. Watch the strokes drawn in order, step through them one at a
-// time, then trace the kanji with a finger. Stroke data: KanjiVG (CC BY-SA 3.0), one small file per kanji in
+// Strokes tab: stroke order for every N5/N4 kanji. Watch the strokes drawn in order and step through them one at
+// a time. Stroke data: KanjiVG (CC BY-SA 3.0), one small file per kanji in
 // /strokes, made by scripts/strokes.mjs and loaded only when that kanji is opened.
 import { KANJI, ALL_KANJI_GROUPS } from './kanji-data.js';
 
@@ -22,14 +22,14 @@ export function initStrokes(ctx) {
   const { esc, render, back } = ctx;
   const S = () => ctx.S();
   let level = 'n5';      // chosen level, for this visit only
-  let st = null;         // { ch, data, step, numbers, trace, playing }
+  let st = null;         // { ch, data, step, numbers, playing, isPlaying }
 
   // ================= Grid =================
   function grid() {
     ctx.clearSess(); st = null;
     render(`
       <h1 class="page">Stroke order <span lang="ja">書き順</span></h1>
-      <div class="intro">Kanji are written in a fixed order: top to bottom, left to right, horizontal before vertical. Pick a kanji to watch it drawn stroke by stroke, then trace it yourself.${S().settings.hindi ? '<div class="hi intro-hg" lang="hi-Latn">Har kanji ka likhne ka ek tarika hai. Dekho, phir khud likho.</div>' : ''}</div>
+      <div class="intro">Kanji are written in a fixed order: top to bottom, left to right, horizontal before vertical. Pick a kanji to watch it drawn stroke by stroke.${S().settings.hindi ? '<div class="hi intro-hg" lang="hi-Latn">Har kanji ka likhne ka ek tarika hai. Dekho aur seekho.</div>' : ''}</div>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === level ? 'on' : ''}" data-act="stroke-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
       ${ALL_KANJI_GROUPS.filter(g => g.level === level).map(g => `
         <h2 class="sec">${g.icon} ${esc(g.title)}</h2>
@@ -42,7 +42,7 @@ export function initStrokes(ctx) {
     const k = KANJI.find(x => x.ch === ch);
     if (!k) return grid();
     ctx.clearSess();
-    st = { ch, data: null, step: 0, numbers: true, trace: false, playing: 0 };
+    st = { ch, data: null, step: 0, numbers: true, playing: 0 };
     const list = KANJI.filter(x => x.level === k.level), i = list.indexOf(k);
     render(`
       <div class="head">${back('stroke-tab')}<h1>Stroke order</h1><span class="pill">${k.level.toUpperCase()}</span></div>
@@ -51,7 +51,6 @@ export function initStrokes(ctx) {
         <div class="muted small" lang="ja">${esc([k.on, k.kun].filter(Boolean).join(' · '))}</div>
         <div class="board" id="board" aria-label="Stroke order of ${esc(k.ch)}" role="img">
           <svg viewBox="0 0 109 109" id="strokes" aria-hidden="true"><path class="guide-line" d="M54.5 0V109M0 54.5H109"/></svg>
-          <canvas id="pad" aria-label="Tracing pad" hidden></canvas>
         </div>
         <div class="stroke-count" id="count" aria-live="polite">Loading…</div>
         <div class="row center stroke-controls">
@@ -59,13 +58,8 @@ export function initStrokes(ctx) {
           <button class="btn primary" data-act="stroke-play" id="play">▶ Play</button>
           <button class="btn icon" data-act="stroke-next" aria-label="Next stroke">›</button>
         </div>
-        <div class="seg stroke-modes">
-          <button class="on" data-act="stroke-mode" data-arg="watch" id="m-watch">👀 Watch</button>
-          <button data-act="stroke-mode" data-arg="trace" id="m-trace">✍️ Trace</button>
-        </div>
         <div class="row center">
           <button class="btn small ghost" data-act="stroke-numbers" id="nums">🔢 Hide numbers</button>
-          <button class="btn small ghost" data-act="stroke-clear" id="clear" hidden>🧽 Clear</button>
           <button class="btn small ghost" data-act="kanji-one" data-arg="${esc(k.ch)}">漢 Kanji page</button>
         </div>
       </div>
@@ -92,7 +86,6 @@ export function initStrokes(ctx) {
     });
     st.paths = st.data.p.map(d => { const p = document.createElementNS(SVG, 'path'); p.setAttribute('d', d); p.setAttribute('class', 'stroke'); svg.append(p); return p; });
     st.nums = st.data.n.map(([x, y], i) => { const t = document.createElementNS(SVG, 'text'); t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('class', 'num'); t.textContent = i + 1; svg.append(t); return t; });
-    sizePad();
   }
 
   // Strokes before the current step are drawn; the current one is highlighted.
@@ -144,37 +137,6 @@ export function initStrokes(ctx) {
     draw();
   }
 
-  // ================= Tracing =================
-  function sizePad() {
-    const pad = document.getElementById('pad'), box = document.getElementById('board').getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    pad.width = Math.round(box.width * dpr); pad.height = Math.round(box.height * dpr);
-    const g = pad.getContext('2d');
-    g.scale(dpr, dpr); g.lineCap = g.lineJoin = 'round'; g.lineWidth = Math.max(5, box.width * 0.045);
-    g.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#2B2B2B';
-    let last = null;
-    const at = e => { const r = pad.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-    pad.onpointerdown = e => { pad.setPointerCapture(e.pointerId); last = at(e); g.beginPath(); g.arc(last[0], last[1], g.lineWidth / 2, 0, 7); g.fillStyle = g.strokeStyle; g.fill(); };
-    pad.onpointermove = e => { if (!last) return; const p = at(e); g.beginPath(); g.moveTo(...last); g.lineTo(...p); g.stroke(); last = p; };
-    pad.onpointerup = pad.onpointercancel = () => { last = null; };
-  }
-  function clearPad() { const pad = document.getElementById('pad'); pad?.getContext('2d').clearRect(0, 0, pad.width, pad.height); }
-
-  function mode(m) {
-    if (!st?.data) return;
-    st.trace = m === 'trace';
-    stop();
-    document.getElementById('m-watch').classList.toggle('on', !st.trace);
-    document.getElementById('m-trace').classList.toggle('on', st.trace);
-    document.getElementById('pad').hidden = !st.trace;
-    document.getElementById('clear').hidden = !st.trace;
-    document.getElementById('board').classList.toggle('tracing', st.trace);
-    // Tracing starts from a faint outline with numbers; watching shows the finished kanji.
-    st.step = st.trace ? 0 : st.paths.length;
-    draw();
-    if (st.trace) { sizePad(); document.getElementById('count').textContent = `Trace the ${st.paths.length} strokes in order. Use › to see the next one.`; }
-  }
-
   function toggleNumbers() {
     if (!st?.data) return;
     st.numbers = !st.numbers;
@@ -189,9 +151,7 @@ export function initStrokes(ctx) {
     'stroke-play': () => (st?.isPlaying ? (stop(), draw()) : play()),
     'stroke-prev': () => stepBy(-1),
     'stroke-next': () => stepBy(1),
-    'stroke-mode': m => mode(m),
     'stroke-numbers': () => toggleNumbers(),
-    'stroke-clear': () => clearPad(),
   };
 
   function route(h) {

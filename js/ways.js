@@ -31,6 +31,7 @@ export function parseWays(text) {
 // One file per part of the app, loaded only when that part is opened (screens draw first, folds fill in after).
 const FILES = {
   n5: () => import('./ways-n5.js').then(m => m.WAYS_N5),
+  office: () => import('./ways-office.js').then(m => m.WAYS_OFFICE),
 };
 export const WAYS_PARTS = Object.keys(FILES);
 const cache = {};

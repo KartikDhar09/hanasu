@@ -278,7 +278,7 @@ test('every kanji has stroke-order data with only drawing commands (run scripts/
   assert.equal(readdirSync('strokes').length, KANJI_LIST.length, 'stroke files for kanji the app no longer has');
 });
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
-const WAYS_TRACKS = ['n5'];
+const WAYS_TRACKS = ['n5', 'office'];
 test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
   const WAYS = WAYS_ALL;
   const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };

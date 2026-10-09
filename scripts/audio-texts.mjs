@@ -18,11 +18,14 @@ export async function audioTexts() {
   const { conjugate, toRomaji } = await import('../js/conjugate.js');
   const { ALL_KANA } = await import('../js/jlpt.js');
   const { LISTENING } = await import('../js/exam-data.js');
+  const WAYS = await (await import('../js/ways.js')).allWays();
   const f = t => fill(t, PROFILE);
   const n = new Set(), m = new Set(), w = new Set();
   const add = (set, t) => { if (t && /[ぁ-ゖァ-ヺ一-龯々]/.test(t)) set.add(plain(t).trim()); };
 
   for (const c of CARDS) { add(n, f(c.jp)); if (c.casual) add(n, f(c.casual.jp)); }
+  // Business versions and other ways to say each line.
+  for (const w of WAYS.values()) for (const l of [w.biz, ...w.alt]) if (l && l !== 'same') add(n, f(l.jp));
   for (const u of UNITS) for (const l of u.dialogue || []) add(n, f(l[1]));
   for (const q of SP.QA) for (const l of [q.q, ...q.a]) add(n, f(l[0]));
   for (const x of WORDS) add(n, x.jp);

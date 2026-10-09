@@ -216,6 +216,7 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const furiMod = await import('../js/furigana.js');
+const WAYS_ALL = await (await import('../js/ways.js')).allWays();
 const strokeMod = await import('./strokes.mjs');
 const readingsMod = await import('../js/kanji-readings.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
@@ -275,6 +276,32 @@ test('every kanji has stroke-order data with only drawing commands (run scripts/
     assert.ok(d.p.length > 0 && d.p.every(p => /^[MmCcSsLlHhVvZz0-9.,\s-]+$/.test(p)), `bad stroke data for ${k.ch}`);
   }
   assert.equal(readdirSync('strokes').length, KANJI_LIST.length, 'stroke files for kanji the app no longer has');
+});
+// "More ways to say it": tracks done so far (all will be covered when the batches finish).
+const WAYS_TRACKS = ['n5'];
+test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
+  const WAYS = WAYS_ALL;
+  const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
+  const f = t => core.fill(t, P);
+  const norm = t => f(t).replace(/[、。！？!?…\s]/g, '');
+  for (const [id, w] of WAYS) {
+    const c = CARDS.find(x => x.id === id);
+    assert.ok(c, `ways for unknown phrase ${id}`);
+    assert.ok(w.biz, `${id}: no business version (use b= if it's already right for work)`);
+    assert.ok(w.alt.length >= 2 && w.alt.length <= 3, `${id}: ${w.alt.length} other ways (want 2–3)`);
+    const lines = [...(w.biz === 'same' ? [] : [w.biz]), ...w.alt];
+    const seen = new Set([norm(c.jp), ...(c.casual ? [norm(c.casual.jp)] : [])]);
+    for (const l of lines) {
+      assert.ok(!seen.has(norm(l.jp)), `${id}: "${l.jp}" repeats the phrase or another way`);
+      seen.add(norm(l.jp));
+      assert.match(l.kana.replace(/\{\w+\}/g, ''), /^[ぁ-ゖァ-ヺー・、。！？「」…〜\s!?.]+$/, `${id}: reading must be kana: ${l.kana}`);
+      assert.ok(!/[ऀ-ॿ]/.test(l.hi), `${id}: Hinglish must be Roman letters`);
+      assert.ok(!/[ぁ-ゖァ-ヺ一-龯]/.test(l.ro + l.en), `${id}: romaji/English contain Japanese`);
+      if (/[一-龯々]/.test(f(l.jp))) assert.ok(furiMod.furigana(f(l.jp), f(l.kana), s => s), `${id}: reading doesn't line up with the kanji: ${l.jp} / ${l.kana}`);
+    }
+  }
+  const missing = CARDS.filter(c => WAYS_TRACKS.includes(UNITS.find(u => u.id === c.unit).track) && !WAYS.has(c.id)).map(c => c.id);
+  assert.ok(!missing.length, `phrases without other ways: ${missing.join(', ')}`);
 });
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;

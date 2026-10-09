@@ -35,12 +35,13 @@ function save(state = S) {
 
 let UNITS = [], CARDS = [], COUNTRIES = [];
 let furigana = () => null;
+let loadWays = null;
 let phrasesReady = null;
 // Requests every file a part of the app needs at once, instead of one import chain after another
 // (the browser shares each module, so the real imports below reuse these downloads).
 const warm = part => DEPS[part].forEach(f => import(`./${f}`).catch(() => {}));
-const loadPhrases = () => phrasesReady || (warm('phrases'), phrasesReady = Promise.all([import('./data.js'), import('./furigana.js')])
-  .then(([d, f]) => { ({ UNITS, CARDS, COUNTRIES } = d); furigana = f.furigana; }));
+const loadPhrases = () => phrasesReady || (warm('phrases'), phrasesReady = Promise.all([import('./data.js'), import('./furigana.js'), import('./ways.js')])
+  .then(([d, f, w]) => { ({ UNITS, CARDS, COUNTRIES } = d); furigana = f.furigana; loadWays = w.loadWays; }));
 
 // Lessons use an example person (スミス from India) wherever a name or country appears.
 const profile = () => {
@@ -68,6 +69,7 @@ function render(html) {
   $app.innerHTML = html;
   window.scrollTo(0, 0);
   watchClips($app, { newScreen: true });
+  if ($app.querySelector('.ways-slot')) fillWays();
 }
 
 // The line a speak button would say, so its clip can load while it's on screen.
@@ -107,6 +109,28 @@ function casualBlock(c) {
 }
 
 const note = c => c.note ? `<div class="note">💡 ${esc(c.note)}</div>` : '';
+
+// 👔 Business version and other ways to say a line, folded away until opened. Each one plays when tapped.
+// Rendered into an empty slot once that track's data has loaded, so the screen itself never waits for it.
+const waysSlot = id => `<div class="ways-slot" data-ways="${esc(id)}"></div>`;
+function fillWays() {
+  const slots = [...$app.querySelectorAll('.ways-slot:empty')];
+  const tracks = new Set(slots.map(s => unitById(cardById(s.dataset.ways)?.unit)?.track).filter(Boolean));
+  for (const track of tracks) loadWays?.(track).then(map => {
+    for (const s of $app.querySelectorAll('.ways-slot:empty')) if (map.has(s.dataset.ways)) s.innerHTML = waysBlock(map.get(s.dataset.ways));
+  }).catch(() => {});
+}
+function waysBlock(w) {
+  if (!w) return '';
+  const p = profile();
+  const f = l => ({ jp: fill(l.jp, p), kana: fill(l.kana, p), ro: fill(l.ro, p), en: fill(l.en, p), hi: fill(l.hi, p), note: fill(l.note, p) });
+  const item = (tag, l) => `<li class="way" data-act="say-text" data-arg="${esc(l.jp)}">
+      <span class="way-tag">${tag}</span>${jpBlock(l)}${meaning(l)}${l.note ? `<div class="way-note">💡 ${esc(l.note)}</div>` : ''}</li>`;
+  const biz = w.biz === 'same' ? '<li class="way same"><span class="way-tag">👔 Business</span>The same: already right for work.</li>'
+    : w.biz ? item('👔 Business', f(w.biz)) : '';
+  return `<details class="ways"><summary>👔 Business · ${w.alt.length} other way${w.alt.length === 1 ? '' : 's'} to say it</summary>
+    <ul class="way-list">${biz}${w.alt.map(a => item('🔁 Also', f(a))).join('')}</ul></details>`;
+}
 
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -163,6 +187,7 @@ function unit(id) {
         ${meaning(c)}
         ${casualBlock(c)}
         ${note(c)}
+        ${waysSlot(c.id)}
       </li>`).join('')}
     </ul>
   `);
@@ -204,6 +229,7 @@ function learnCard() {
         </div>
         ${casualBlock(c)}
         ${note(c)}
+        ${waysSlot(raw.id)}
       </div>
     </div>
     <div class="actions" id="actions">
@@ -584,6 +610,8 @@ document.addEventListener('click', e => {
   // Tabs: re-route even when the hash is unchanged (e.g. tapping Kanji mid-quiz goes back to the Kanji page).
   const tab = e.target.closest('#tabs a');
   if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
+  // Opening a "more ways" fold inside a tappable row shouldn't also play the row.
+  if (e.target.closest('summary') && e.target.closest('[data-act]')?.contains(e.target.closest('summary'))) return;
   const el = e.target.closest('[data-act]');
   if (el) { run(el.dataset.act, el.dataset.arg); return; }
   if (e.target.id === 'sheet') e.target.hidden = true;

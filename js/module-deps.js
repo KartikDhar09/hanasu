@@ -4,7 +4,8 @@ export const DEPS = {
     "corp-more.js",
     "data.js",
     "furigana.js",
-    "kanji-readings.js"
+    "kanji-readings.js",
+    "ways.js"
   ],
   study: [
     "conjugate.js",

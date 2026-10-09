@@ -1,6 +1,6 @@
 {
   "name": "hanasu",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "private": true,
   "type": "module",
   "description": "PWA for speaking Japanese: N5 everyday conversation and office Japanese.",

@@ -469,6 +469,7 @@ const CREDITS = [
   ['🎙️', 'VOICEVOX:冥鳴ひまり', 'Listening conversations (woman).', 'https://meimeihimari.wixsite.com/himari/terms-of-use', 'Terms of use'],
   ['🎙️', 'VOICEVOX:青山龍星', 'Listening conversations (man).', 'https://www.virvoxproject.com/voicevox%E3%81%AE%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84', 'Terms of use'],
   ['🔊', 'VOICEVOX', 'Free Japanese speech engine used to record the voices.', 'https://voicevox.hiroshiba.jp/', 'voicevox.hiroshiba.jp'],
+  ['✍️', 'KanjiVG', 'Stroke order for every kanji. © Ulrich Apel and contributors, CC BY-SA 3.0.', 'https://kanjivg.tagaini.net/', 'kanjivg.tagaini.net'],
   ['漢', 'KANJIDIC2', 'Kanji readings used to place furigana over each kanji. © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.', 'https://www.edrdg.org/edrdg/licence.html', 'Licence'],
   ['🗣️', 'Your device’s voice', 'Speaks lines without a recording (your own words in the sentence builder, your name).', '', ''],
   ['😀', 'Emoji', 'Pictures come from your device’s emoji font.', '', ''],
@@ -620,6 +621,7 @@ const LOADERS = {
     ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true),
   })),
   jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
+  strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
   exam: () => import('./exam.js').then(m => m.initExam({
     ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
@@ -632,7 +634,7 @@ function loadSection(name) {
 }
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
-  : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji)/.test(h) ? 'study' : null;
+  : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -648,7 +650,7 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 async function route() {
   const h = location.hash.slice(1);
   Object.values(mods).forEach(m => m.clear());
-  const m = /^(speak|particle|verb|grammar|kanji|jlpt)/.exec(h)?.[1];
+  const m = /^(speak|particle|verb|grammar|kanji|jlpt|write)/.exec(h)?.[1];
   const tab = m === 'particle' || m === 'verb' ? 'grammar' : m || 'phrases';
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   // Home renders straight away; every other screen needs the phrase data first.

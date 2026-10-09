@@ -55,7 +55,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         run: |
           cd .vercel/output/static && find . -type f | sort
-          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a)$'; then
+          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a|strokes/[0-9a-f]{5}\.json)$'; then
             echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
           fi
       - name: Deploy preview
@@ -94,7 +94,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         run: |
           cd .vercel/output/static && find . -type f | sort
-          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a)$'; then
+          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a|strokes/[0-9a-f]{5}\.json)$'; then
             echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
           fi
       - name: Deploy to production

@@ -216,6 +216,7 @@ for (const g of Object.values(SP.SLOTS)) for (const it of g.items) if (it.length
 // 6. Logic tests.
 const core = await import('../js/core.js');
 const furiMod = await import('../js/furigana.js');
+const strokeMod = await import('./strokes.mjs');
 const readingsMod = await import('../js/kanji-readings.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 test('no third-party requests (fonts are self-hosted)', () => {
@@ -265,6 +266,16 @@ test('text colours meet WCAG AA contrast (4.5:1) in light and dark themes', () =
   }
 });
 if (readFileSync('js/module-deps.js', 'utf8') !== (await import('./module-deps.mjs')).buildDeps()) fail('js/module-deps.js is out of date: run node scripts/module-deps.mjs');
+test('every kanji has stroke-order data with only drawing commands (run scripts/strokes.mjs)', () => {
+  const { strokeFile } = strokeMod;
+  for (const k of KANJI_LIST) {
+    const f = strokeFile(k.ch);
+    assert.ok(existsSync(f), `no stroke data for ${k.ch}`);
+    const d = JSON.parse(readFileSync(f, 'utf8'));
+    assert.ok(d.p.length > 0 && d.p.every(p => /^[MmCcSsLlHhVvZz0-9.,\s-]+$/.test(p)), `bad stroke data for ${k.ch}`);
+  }
+  assert.equal(readdirSync('strokes').length, KANJI_LIST.length, 'stroke files for kanji the app no longer has');
+});
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;
   assert.equal(F('日本に来て、まだ半年です。', 'にほんにきて、まだはんとしです。', e), '<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>に<ruby>来<rt>き</rt></ruby>て、まだ<ruby>半<rt>はん</rt></ruby><ruby>年<rt>とし</rt></ruby>です。');

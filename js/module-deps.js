@@ -57,5 +57,11 @@ export const DEPS = {
     "vocab-data.js",
     "vocab-n4.js",
     "vocab-n5.js"
+  ],
+  strokes: [
+    "conjugate.js",
+    "kanji-data.js",
+    "kanji-n4.js",
+    "strokes.js"
   ]
 };

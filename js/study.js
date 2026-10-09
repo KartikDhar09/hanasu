@@ -264,6 +264,7 @@ export function initStudy(ctx) {
     render(`
       <div class="head">${back('kanji')}<h1>${esc(ALL_KANJI_GROUPS.find(g => g.id === k.group).title)}</h1><span class="pill">${k.level.toUpperCase()}</span></div>
       <div class="card">${kanjiDetail(k)}</div>
+      <button class="btn" data-act="stroke-open" data-arg="${k.ch}">✍️ Stroke order</button>
       <div class="row">
         <button class="btn" data-act="kanji-one" data-arg="${list[i - 1]?.ch || ''}" ${i ? '' : 'disabled'}>‹ ${list[i - 1]?.ch || ''}</button>
         <button class="btn" data-act="kanji-one" data-arg="${list[i + 1]?.ch || ''}" ${list[i + 1] ? '' : 'disabled'}>${list[i + 1]?.ch || ''} ›</button>

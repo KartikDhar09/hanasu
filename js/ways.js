@@ -32,6 +32,7 @@ export function parseWays(text) {
 const FILES = {
   n5: () => import('./ways-n5.js').then(m => m.WAYS_N5),
   office: () => import('./ways-office.js').then(m => m.WAYS_OFFICE),
+  corp: () => import('./ways-corp.js').then(m => m.WAYS_CORP),
 };
 export const WAYS_PARTS = Object.keys(FILES);
 const cache = {};

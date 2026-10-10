@@ -362,6 +362,10 @@ details.answers .phrases { margin-top: 8px; }
 .pt small { display: block; margin-top: 2px; color: var(--muted); }
 .gap { display: inline-block; min-width: 2em; border-bottom: 2px solid var(--accent); color: var(--accent); text-align: center; margin: 0 2px; }
 .gap.wide { min-width: 3.5em; }
+.gap.star { font-weight: 700; }
+.mclock { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mclock.late { color: var(--bad, #c0392b); font-weight: 700; }
+.done details.answers { text-align: left; margin: 12px 0; }
 .groups { display: grid; gap: 8px; }
 .group p { margin: 6px 0; }
 .group.g1 { border-left: 4px solid var(--you); }

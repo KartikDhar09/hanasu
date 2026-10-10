@@ -29,6 +29,7 @@ export const DEPS = {
   jlpt: [
     "conjugate.js",
     "exam-data.js",
+    "exam-listen.js",
     "exam-more.js",
     "furigana.js",
     "grammar-n4.js",
@@ -45,7 +46,9 @@ export const DEPS = {
   exam: [
     "conjugate.js",
     "exam-data.js",
+    "exam-listen.js",
     "exam-more.js",
+    "exam-types.js",
     "exam.js",
     "furigana.js",
     "grammar-n4.js",

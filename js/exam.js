@@ -5,6 +5,23 @@ import { KANJI } from './kanji-data.js';
 import { WORDS } from './vocab-data.js';
 import { chunk } from './jlpt.js';
 import { prefetchClip } from './clips.js';
+import { CONTEXT, PARAPHRASE, USAGE, PASSAGES, ORDER } from './exam-types.js';
+
+// Question types, in exam order.
+export const TYPES = { kanji: '漢字読み', hyouki: '表記', pic: '語彙', context: '文脈規定', para: '言い換え類義', usage: '用法', form: '文法形式', order: '文の組み立て', passage: '文章の文法', read: '読解', task: '課題理解', point: 'ポイント理解', say: '発話表現', quick: '即時応答' };
+// Full mock: the real exam's papers, question counts per type and minutes.
+export const FULL = {
+  n5: [
+    { en: 'Vocabulary', jp: '言語知識（文字・語彙）', min: 20, parts: [['kanji', 7], ['hyouki', 5], ['context', 6], ['para', 3]] },
+    { en: 'Grammar & reading', jp: '言語知識（文法）・読解', min: 40, parts: [['form', 9], ['order', 4], ['passage', 4], ['read', 6]] },
+    { en: 'Listening', jp: '聴解', min: 30, parts: [['task', 7], ['point', 6], ['say', 5], ['quick', 6]] },
+  ],
+  n4: [
+    { en: 'Vocabulary', jp: '言語知識（文字・語彙）', min: 25, parts: [['kanji', 7], ['hyouki', 5], ['context', 8], ['para', 4], ['usage', 4]] },
+    { en: 'Grammar & reading', jp: '言語知識（文法）・読解', min: 55, parts: [['form', 13], ['order', 4], ['passage', 4], ['read', 8]] },
+    { en: 'Listening', jp: '聴解', min: 35, parts: [['task', 8], ['point', 7], ['say', 5], ['quick', 8]] },
+  ],
+};
 
 const SECTIONS = [['vocab', 'Vocabulary', '文字・語彙'], ['grammar', 'Grammar', '文法'], ['reading', 'Reading', '読解'], ['listening', 'Listening', '聴解']];
 
@@ -136,17 +153,126 @@ export function initExam(ctx) {
 
   // ================= Mock test =================
   function mockIntro(lv) {
-    ctx.clearSess(); st = null;
-    const ex = EXAMS[lv];
+    ctx.clearSess(); stopTimer(); st = null;
+    const ex = EXAMS[lv], plan = FULL[lv];
+    const count = p => p.parts.reduce((n, t) => n + t[1], 0);
     render(`
       <div class="head">${back('jlpt')}<h1>${ex.title} mock test</h1></div>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-mock" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
       <div class="card left">
-        <p>A mini exam with every section, scored the way JLPT scores: <b>language knowledge + reading out of 120</b> and <b>listening out of 60</b>.</p>
-        <ul class="tips">${SECTIONS.map(([, en, jp]) => `<li>✏️ ${esc(en)} <span lang="ja" class="muted">${jp}</span></li>`).join('')}</ul>
-        <div class="note">🎯 To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. About 25 minutes.</div>
+        <p><b>Full mock</b>: the real exam’s question types, counts and time limits, in the same order. Scored the way JLPT scores: <b>language knowledge + reading out of 120</b> and <b>listening out of 60</b>.</p>
+        <ul class="tips">${plan.map(p => `<li>📝 ${esc(p.en)} <span lang="ja" class="muted">${p.jp}</span> · ${count(p)} questions · ${p.min} min</li>`).join('')}</ul>
+        <div class="note">🎯 To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. Each paper has its own clock.</div>
       </div>
-      <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}">▶ Start mock test</button>`);
+      <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}.full">▶ Start full mock · ${plan.reduce((n, p) => n + p.min, 0)} min</button>
+      <button class="btn" data-act="ex-mock-start" data-arg="${lv}.quick">⚡ Quick mock · about 30 questions, no clock</button>`);
+  }
+
+  const tag = (jp, en) => `<span class="tag alt" lang="ja">${jp}</span> <span class="muted small">${esc(en)}</span>`;
+  const plain = s => s.replace(/[[\]]/g, '');
+  // Wrong options that differ from the right one and from each other.
+  const distinct = (right, pool, n = 3) => [...new Set(shuffle(pool))].filter(x => x && x !== right).slice(0, n);
+  const kanjiWords = lv => {
+    const own = KANJI.filter(k => k.level === lv).flatMap(k => k.ex);
+    return shuffle(own).filter((w, i, a) => a.findIndex(x => x[0] === w[0] || x[1] === w[1]) === i);
+  };
+  const grammarPool = lv => GRAMMAR.filter(g => g.level === lv || (lv === 'n4' && Math.random() < 0.2)).flatMap(g => g.ex).filter(e => /\[.+?\]/.test(e[0]));
+  const NOTICE = /notice|menu|forecast|hours|advert|how to/i;
+
+  // One builder per JLPT question type. Each returns n questions { section, type, prompt, options, right, review }.
+  const BUILD = {
+    kanji(lv, n, words) {
+      return words.splice(0, n).map(w => ({ section: 'vocab', type: 'kanji',
+        prompt: `${tag('漢字読み', 'How is the word read?')}<div class="kbig small-k" lang="ja">${esc(w[0])}</div>`,
+        options: shuffle([w[1], ...distinct(w[1], words.map(x => x[1]))]), right: w[1], review: w[0] }));
+    },
+    hyouki(lv, n, words) {
+      return words.splice(0, n).map(w => ({ section: 'vocab', type: 'hyouki',
+        prompt: `${tag('表記', 'How is it written?')}<div class="kbig small-k" lang="ja">${esc(w[1])}</div>`,
+        options: shuffle([w[0], ...distinct(w[0], words.map(x => x[0]))]), right: w[0], review: w[1] }));
+    },
+    context(lv, n) {
+      return shuffle(CONTEXT.filter(c => c[0] === lv)).slice(0, n).map(([, jp, , en, right, ...wrong]) => ({ section: 'vocab', type: 'context',
+        prompt: `${tag('文脈規定', 'Which word fits the gap?')}<div class="jp big-jp" lang="ja">${esc(jp).replace('（　）', '<span class="gap wide">？</span>')}</div>`,
+        options: shuffle([right, ...wrong]), right, review: jp, en }));
+    },
+    para(lv, n) {
+      return shuffle(PARAPHRASE.filter(c => c[0] === lv)).slice(0, n).map(([, jp, , en, right, ...wrong]) => ({ section: 'vocab', type: 'para',
+        prompt: `${tag('言い換え類義', 'Which sentence means the same as the underlined part?')}<div class="jp big-jp" lang="ja">${esc(jp).replace(/\[(.+?)\]/, '<u>$1</u>')}</div>`,
+        options: shuffle([right, ...wrong]), right, review: plain(jp), en }));
+    },
+    usage(lv, n) {
+      return shuffle(USAGE).slice(0, n).map(([word, kana, en, right, ...wrong]) => ({ section: 'vocab', type: 'usage',
+        prompt: `${tag('用法', 'Which sentence uses the word correctly?')}<div class="kbig small-k" lang="ja">${esc(word)}</div><div class="muted" lang="ja">${esc(kana)}</div>`,
+        options: shuffle([right, ...wrong]), right, review: word, en }));
+    },
+    form(lv, n) {
+      const pool = grammarPool(lv), gaps = pool.map(e => e[0].match(/\[(.+?)\]/)[1]);
+      const out = [];
+      for (const e of shuffle(pool)) {
+        const right = e[0].match(/\[(.+?)\]/)[1];
+        if (out.some(q => q.right === right)) continue;
+        const wrong = distinct(right, gaps);
+        if (wrong.length < 3) continue;
+        out.push({ section: 'grammar', type: 'form',
+          prompt: `${tag('文法形式', 'What goes in the gap?')}<div class="jp big-jp" lang="ja">${esc(e[0]).replace(/\[(.+?)\]/, '<span class="gap wide">？</span>')}</div>`,
+          options: shuffle([right, ...wrong]), right, review: plain(e[0]), en: e[3] });
+        if (out.length === n) break;
+      }
+      return out;
+    },
+    // ★ like the exam: four pieces in a row are blank, one has the star. Pick the piece for ★.
+    order(lv, n) {
+      return shuffle(ORDER.filter(o => o[0] === lv)).slice(0, n).map(([, before, four, after, en]) => {
+        const k = Math.floor(Math.random() * 4), right = four[k];
+        const blank = i => `<span class="gap${i === k ? ' star' : ''}">${i === k ? '★' : '＿＿'}</span>`;
+        return { section: 'grammar', type: 'order',
+          prompt: `${tag('文の組み立て', 'Put the four pieces in order. Which one goes in ★?')}<div class="jp big-jp" lang="ja">${esc(before)} ${four.map((_, i) => blank(i)).join(' ')} ${esc(after)}</div>`,
+          options: shuffle(four), right, review: before + four.join('') + after, en };
+      });
+    },
+    passage(lv, n) {
+      const out = [];
+      for (const p of shuffle(PASSAGES.filter(x => x.level === lv))) {
+        for (const [i, [right, ...wrong]] of p.blanks.entries()) {
+          if (out.length === n) return out;
+          const mark = '（' + '１２３４５６７８'[i] + '）';
+          const text = esc(p.text).replace(/\n/g, '<br>').replace(mark, `<mark>${mark}</mark>`);
+          out.push({ section: 'grammar', type: 'passage', text,
+            prompt: `${tag('文章の文法', `What goes in ${mark}?`)}`,
+            options: shuffle([right, ...wrong]), right, review: `${p.title} ${mark}`, en: p.en });
+        }
+      }
+      return out;
+    },
+    read(lv, n) {
+      // Short and mid-length passages first, then one notice to find information in, like the exam.
+      const pool = shuffle(READING.filter(r => r.level === lv));
+      const notice = pool.find(r => NOTICE.test(r.title));
+      const list = [];
+      let count = notice ? notice.qs.length : 0;
+      for (const r of pool.filter(r => !NOTICE.test(r.title))) { if (count >= n) break; list.push(r); count += r.qs.length; }
+      if (notice) list.push(notice);
+      return list.flatMap(r => r.qs.map((q, qi) => ({ section: 'reading', type: 'read', passage: r,
+        prompt: `${qi ? '<span class="tag alt">Same passage</span> ' : ''}<b lang="ja">${esc(q.q)}</b>`,
+        options: q.options, right: q.options[q.answer], review: q.q, en: q.en }))).slice(0, n);
+    },
+  };
+  // Listening parts, by the kinds written in exam-data.js.
+  const LISTEN_KINDS = { task: ['Task-based', 'Picture question'], point: ['Key point', 'Key point (why?)'], say: ['What do you say?'], quick: ['Quick response'] };
+  for (const [type, kinds] of Object.entries(LISTEN_KINDS)) {
+    BUILD[type] = (lv, n, words, used) => shuffle(LISTENING.filter(x => x.level === lv && kinds.includes(x.kind) && !used.has(x.id))).slice(0, n).map(item => {
+      used.add(item.id);
+      const line = type === 'say' || type === 'quick'; // the situation or remark is the question
+      return { section: 'listening', type, item,
+        prompt: `${tag(TYPES[type], item.kind)}<button class="btn listen" data-act="ex-mock-play">▶ Play again</button>`,
+        options: item.options.map((o, i) => String(i)), right: String(item.answer), review: line ? item.lines[0][1] : item.q[0], en: line ? item.lines[0][2] : item.q[1], answerText: item.options[item.answer].jp };
+    });
+  }
+
+  function buildFull(lv) {
+    const words = kanjiWords(lv), used = new Set();
+    return FULL[lv].map((p, pi) => ({ ...p, qs: p.parts.flatMap(([type, n]) => BUILD[type](lv, n, words, used).map(q => ({ ...q, paper: pi }))) }));
   }
 
   function buildMock(lv) {
@@ -156,82 +282,116 @@ export function initExam(ctx) {
     // 漢字読み: kanji word → reading
     for (const w of words.slice(0, 5)) {
       const others = shuffle(words.filter(x => x[1] !== w[1])).slice(0, 3).map(x => x[1]);
-      qs.push({ section: 'vocab', prompt: `<span class="tag alt">漢字読み · How is it read?</span><div class="kbig small-k" lang="ja">${esc(w[0])}</div>`, options: shuffle([w[1], ...others]), right: w[1], say: w[0] });
+      qs.push({ section: 'vocab', type: 'kanji', prompt: `<span class="tag alt">漢字読み · How is it read?</span><div class="kbig small-k" lang="ja">${esc(w[0])}</div>`, options: shuffle([w[1], ...others]), right: w[1], review: w[0] });
     }
     // 表記: reading → written form
     for (const w of words.slice(5, 9)) {
       const others = shuffle(words.filter(x => x[0] !== w[0] && x[1] !== w[1])).slice(0, 3).map(x => x[0]);
-      qs.push({ section: 'vocab', prompt: `<span class="tag alt">表記 · How is it written?</span><div class="kbig small-k" lang="ja">${esc(w[1])}</div>`, options: shuffle([w[0], ...others]), right: w[0], say: w[0] });
+      qs.push({ section: 'vocab', type: 'hyouki', prompt: `<span class="tag alt">表記 · How is it written?</span><div class="kbig small-k" lang="ja">${esc(w[1])}</div>`, options: shuffle([w[0], ...others]), right: w[0], review: w[1] });
     }
     // Words with pictures
     const ws = WORDS.filter(w => w.level === lv && w.pic);
     for (const w of shuffle(ws).slice(0, 4)) {
       const others = shuffle(ws.filter(o => o.jp !== w.jp && o.en !== w.en)).slice(0, 3).map(o => o.jp);
-      qs.push({ section: 'vocab', prompt: `<span class="tag alt">Which word fits the picture?</span><div class="wpic huge">${w.pic}</div>`, options: shuffle([w.jp, ...others]), right: w.jp, say: w.jp });
+      qs.push({ section: 'vocab', type: 'pic', prompt: `<span class="tag alt">Which word fits the picture?</span><div class="wpic huge">${w.pic}</div>`, options: shuffle([w.jp, ...others]), right: w.jp, review: w.pic });
     }
-    // 文法形式: grammar fill-in
-    const pool = GRAMMAR.filter(g => g.level === lv || (lv === 'n4' && Math.random() < 0.25)).flatMap(g => g.ex);
-    const gx = shuffle(pool);
-    for (const e of gx.slice(0, 6)) {
-      const right = e[0].match(/\[(.+?)\]/)[1];
-      const others = [...new Set(shuffle(pool).map(x => x[0].match(/\[(.+?)\]/)[1]))].filter(x => x !== right).slice(0, 3);
-      qs.push({ section: 'grammar', prompt: `<span class="tag alt">文法 · Fill in the blank</span><div class="jp big-jp" lang="ja">${esc(e[0]).replace(/\[(.+?)\]/, '<span class="gap wide">？</span>')}</div>`, options: shuffle([right, ...others]), right, say: e[0].replace(/[[\]]/g, '') });
-    }
-    // 文の組み立て as multiple choice: which order is correct?
-    for (const e of gx.slice(6).filter(x => chunk(x[0]).length >= 3 && chunk(x[0]).length <= 5).slice(0, 2)) {
-      const parts = chunk(e[0]), right = parts.join(' / ');
-      const wrong = new Set();
-      for (let t = 0; t < 20 && wrong.size < 3; t++) { const o = shuffle(parts).join(' / '); if (o !== right) wrong.add(o); }
-      qs.push({ section: 'grammar', prompt: `<span class="tag alt">★ Which order is correct?</span><div class="muted">${esc(e[3])}</div>`, options: shuffle([right, ...wrong]), right, say: e[0].replace(/[[\]]/g, '') });
-    }
-    // 読解
-    for (const r of shuffle(READING.filter(x => x.level === lv)).slice(0, 3)) {
-      for (const [qi, q] of r.qs.entries()) qs.push({ section: 'reading', passage: r, prompt: `${qi === 0 ? '' : '<span class="tag alt">Same passage</span>'}<b lang="ja">${esc(q.q)}</b>`, options: q.options, right: q.options[q.answer] });
-    }
-    // 聴解
-    for (const item of shuffle(LISTENING.filter(x => x.level === lv)).slice(0, 6)) {
-      qs.push({ section: 'listening', item, prompt: '<span class="tag alt">聴解 · Listen and choose</span><button class="btn listen" data-act="ex-mock-play">▶ Play again</button>',
-        options: item.options.map((o, i) => String(i)), right: String(item.answer) });
-    }
-    return qs;
+    qs.push(...BUILD.context(lv, 3), ...BUILD.form(lv, 6), ...BUILD.order(lv, 2), ...BUILD.read(lv, 6));
+    qs.push(...BUILD.task(lv, 2, null, new Set()), ...BUILD.point(lv, 2, null, new Set()), ...BUILD.say(lv, 1, null, new Set()), ...BUILD.quick(lv, 1, null, new Set()));
+    return [{ en: 'Quick mock', jp: 'ミニ模試', min: 0, qs }];
   }
 
-  function mockStart(lv) {
-    ctx.clearSess();
-    st = { kind: 'mock', lv, qs: buildMock(lv), i: 0, results: [], started: Date.now() };
+  // Each paper's clock counts down on screen. Like the real test, time running out ends the paper,
+  // but here you choose when: the rest of the paper is then marked wrong.
+  let timer = null;
+  const stopTimer = () => { clearInterval(timer); timer = null; };
+  const left = () => st.papers[st.p].min * 60000 - (Date.now() - st.paperStart);
+  const clock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  function tick() {
+    const el = document.getElementById('mclock');
+    if (!el || st?.kind !== 'mock') return stopTimer();
+    const ms = left();
+    el.textContent = '⏱ ' + clock(ms);
+    el.classList.toggle('late', ms <= 0);
+    if (ms <= 0 && !document.getElementById('mtimeup')) {
+      el.insertAdjacentHTML('afterend', `<div class="note" id="mtimeup">⌛ Time’s up for this paper. In the real test it ends now. <button class="btn" data-act="ex-mock-endpaper">End paper</button></div>`);
+    }
+  }
+
+  function mockStart(arg) {
+    ctx.clearSess(); stopTimer();
+    const [lv, mode] = arg.split('.');
+    const papers = mode === 'quick' ? buildMock(lv) : buildFull(lv);
+    st = { kind: 'mock', lv, mode, papers, p: 0, i: 0, results: [], started: Date.now(), intro: mode !== 'quick' };
+    st.paperStart = Date.now();
     mockQ();
   }
 
+  function paperIntro() {
+    const p = st.papers[st.p];
+    const parts = [...new Set(p.qs.map(q => q.type))].map(t => `<li><span lang="ja">${TYPES[t]}</span> · ${p.qs.filter(q => q.type === t).length}</li>`).join('');
+    render(`
+      <div class="head">${back('ex-mock', st.lv)}<h1>Paper ${st.p + 1} of ${st.papers.length}</h1></div>
+      <div class="card left">
+        <h2>${esc(p.en)} <span lang="ja" class="muted">${p.jp}</span></h2>
+        <p>${p.qs.length} questions · ${p.min} minutes</p>
+        <ul class="tips">${parts}</ul>
+        ${p.qs[0]?.section === 'listening' ? '<div class="note">🎧 Each question plays once by itself: the question, the conversation, then the question again. You can replay it here, which the real test doesn’t allow.</div>' : ''}
+      </div>
+      <button class="btn primary big" data-act="ex-mock-paper">▶ Start paper ${st.p + 1}</button>`);
+  }
+
   function mockQ() {
-    const q = st.qs[st.i];
-    if (!q) return mockDone();
-    const mins = Math.floor((Date.now() - st.started) / 60000);
+    const paper = st.papers[st.p];
+    if (!paper) return mockDone();
+    if (st.intro) return paperIntro();
+    const q = paper.qs[st.i];
+    if (!q) { st.p++; st.i = 0; st.intro = true; stopTimer(); return mockQ(); }
+    const total = st.papers.reduce((n, p) => n + p.qs.length, 0);
+    const done = st.papers.slice(0, st.p).reduce((n, p) => n + p.qs.length, 0) + st.i;
     const sec = SECTIONS.find(s => s[0] === q.section);
     const optHtml = q.item
       ? listeningOptions(q.item, 'ex-mock-answer')
       : `<div class="choices">${q.options.map((o, i) => `<button class="choice" data-act="ex-mock-answer" data-arg="${i}"><span lang="ja">${i + 1}. ${esc(o)}</span></button>`).join('')}</div>`;
+    const timed = paper.min > 0;
     render(`
-      <div class="head">${back('ex-mock', st.lv)}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">⏱ ${mins}m</span></div>
-      <p class="muted small center">${esc(sec[1])} <span lang="ja">${sec[2]}</span> · ${st.i + 1}/${st.qs.length}</p>
+      <div class="head">${back('ex-mock', st.lv)}<div class="grow">${bar(done, total)}</div><span class="muted mclock" id="mclock">${timed ? '⏱ ' + clock(left()) : '⏱ ' + Math.floor((Date.now() - st.started) / 60000) + 'm'}</span></div>
+      <p class="muted small center">${esc(sec[1])} <span lang="ja">${sec[2]}</span> · ${st.i + 1}/${paper.qs.length}${st.papers.length > 1 ? ` · paper ${st.p + 1}/${st.papers.length}` : ''}</p>
       ${q.passage ? `<div class="card left">${passageHtml(q.passage)}</div>` : ''}
-      <div class="card ${q.passage ? 'left' : ''}">${q.prompt}</div>
+      ${q.text ? `<div class="card left"><div class="passage" lang="ja">${q.text}</div></div>` : ''}
+      <div class="card ${q.passage || q.text ? 'left' : ''}">${q.prompt}</div>
       ${optHtml}`);
+    if (timed) { if (!timer) timer = setInterval(tick, 1000); tick(); }
     if (q.item) playListening(q.item);
   }
 
   function mockAnswer(i) {
-    const q = st.qs[st.i];
+    const q = st.papers[st.p].qs[st.i];
     st.token = null; ctx.stop();
-    st.results.push({ section: q.section, ok: q.options[+i] === q.right });
+    st.results.push({ section: q.section, type: q.type, ok: q.options[+i] === q.right, q, picked: q.options[+i] });
     st.i++;
     mockQ();
   }
 
+  function endPaper() {
+    const paper = st.papers[st.p];
+    for (const q of paper.qs.slice(st.i)) st.results.push({ section: q.section, type: q.type, ok: false, q, picked: null });
+    st.i = paper.qs.length;
+    mockQ();
+  }
+
   function mockDone() {
+    stopTimer();
     const s = scoreMock(st.results, st.lv), ex = EXAMS[st.lv];
     const mins = Math.max(1, Math.round((Date.now() - st.started) / 60000));
-    const lv = st.lv; st = null;
+    const lv = st.lv, results = st.results; st = null;
     const weakest = Object.entries(s.bySection).sort((a, b) => a[1] - b[1])[0];
+    const types = [...new Set(results.map(r => r.type))].map(t => {
+      const r = results.filter(x => x.type === t), ok = r.filter(x => x.ok).length;
+      return `<li>${ok / r.length >= 0.7 ? '✅' : '⚠️'} <span lang="ja">${TYPES[t] || t}</span>: ${ok}/${r.length}</li>`;
+    }).join('');
+    const answerOf = q => q.answerText || q.right;
+    const wrong = results.filter(r => !r.ok).map(({ q, picked }) => `<li><span lang="ja">${esc(q.review)}</span>${q.en ? `<div class="muted small">${esc(q.en)}</div>` : ''}
+      <div>✓ <span lang="ja">${esc(answerOf(q))}</span>${picked == null ? ' <span class="muted small">(not answered)</span>' : q.item ? '' : ` <span class="muted small">· you chose <span lang="ja">${esc(picked)}</span></span>`}</div></li>`).join('');
     render(`<div class="done">
       <div class="big-emoji">${s.passed ? '🎉' : '📚'}</div>
       <h1>${s.passed ? 'Pass!' : 'Not yet'} · ${s.total}/180</h1>
@@ -243,6 +403,8 @@ export function initExam(ctx) {
       </div>
       <ul class="tips">${SECTIONS.map(([id, en, jp]) => `<li>${s.bySection[id] >= 70 ? '✅' : '⚠️'} ${esc(en)} <span lang="ja" class="muted">${jp}</span>: ${s.bySection[id]}%</li>`).join('')}</ul>
       <p>Focus next on <b>${esc(SECTIONS.find(x => x[0] === weakest[0])[1])}</b>.</p>
+      <details class="answers left"><summary>📊 By question type</summary><ul class="tips">${types}</ul></details>
+      ${wrong ? `<details class="answers left"><summary>🔁 Review mistakes (${results.filter(r => !r.ok).length})</summary><ul class="phrases">${wrong}</ul></details>` : ''}
       <button class="btn primary big" data-act="ex-mock" data-arg="${lv}">Done</button>
     </div>`);
   }
@@ -258,7 +420,9 @@ export function initExam(ctx) {
     'ex-mock': lv => ctx.go('jlpt/mock/' + (lv || level())),
     'ex-mock-start': lv => mockStart(lv),
     'ex-mock-answer': i => mockAnswer(i),
-    'ex-mock-play': () => { const q = st?.qs?.[st.i]; if (q?.item) playListening(q.item); },
+    'ex-mock-paper': () => { st.intro = false; st.paperStart = Date.now(); mockQ(); },
+    'ex-mock-endpaper': () => endPaper(),
+    'ex-mock-play': () => { const q = st?.papers?.[st.p]?.qs[st.i]; if (q?.item) playListening(q.item); },
   };
 
   function route(h) {
@@ -277,5 +441,5 @@ export function initExam(ctx) {
     return true;
   }
 
-  return { actions, route, rerender, clear() { st = null; } };
+  return { actions, route, rerender, clear() { stopTimer(); st = null; } };
 }

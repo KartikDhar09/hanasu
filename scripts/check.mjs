@@ -200,6 +200,37 @@ for (const lv of ['n5', 'n4']) {
   if (E.READING.filter(r => r.level === lv).length < 10 || E.LISTENING.filter(l => l.level === lv).length < 10) fail(`${lv}: needs 10+ readings and 10+ listening items`);
 }
 
+// 5f2. Exam question types and the full mock's counts.
+const T = await import('../js/exam-types.js');
+const uniq = (a, where) => { if (new Set(a).size !== a.length || a.some(x => !x || !String(x).trim())) fail(`${where}: options must be 4 different, non-empty answers`); };
+for (const c of T.CONTEXT) {
+  if (c.length !== 8 || !['n5', 'n4'].includes(c[0]) || !c[1].includes('（　）') || !c[2].includes('（　）')) fail(`context ${c[1]}: needs [level, jp（　）, kana（　）, en, right, 3 wrong]`);
+  uniq(c.slice(4), `context ${c[1]}`);
+}
+for (const c of T.PARAPHRASE) {
+  if (c.length !== 8 || !['n5', 'n4'].includes(c[0]) || !/\[.+?\]/.test(c[1])) fail(`paraphrase ${c[1]}: needs [level, jp with [part], kana, en, right, 3 wrong]`);
+  uniq(c.slice(4), `paraphrase ${c[1]}`);
+}
+for (const u of T.USAGE) { if (u.length !== 7) fail(`usage ${u[0]}: needs [word, kana, en, right, 3 wrong]`); uniq(u.slice(3), `usage ${u[0]}`); }
+for (const p of T.PASSAGES) {
+  p.blanks.forEach((b, i) => { if (!p.text.includes('（' + '１２３４５６７８'[i] + '）')) fail(`passage ${p.id}: text has no blank ${i + 1}`); uniq(b, `passage ${p.id} blank ${i + 1}`); });
+}
+for (const o of T.ORDER) if (o.length !== 5 || o[2].length !== 4 || new Set(o[2]).size !== 4 || !o[4]) fail(`order ${o[1]}: needs [level, before, 4 different pieces, after, en]`);
+for (const lv of ['n5', 'n4']) {
+  const need = {}; for (const paper of EX.FULL[lv]) for (const [t, n] of paper.parts) need[t] = n;
+  const have = {
+    order: T.ORDER.filter(o => o[0] === lv).length,
+    context: T.CONTEXT.filter(c => c[0] === lv).length, para: T.PARAPHRASE.filter(c => c[0] === lv).length, usage: T.USAGE.length,
+    passage: T.PASSAGES.filter(p => p.level === lv).reduce((n, p) => n + p.blanks.length, 0),
+    read: E.READING.filter(r => r.level === lv).reduce((n, r) => n + r.qs.length, 0),
+    task: E.LISTENING.filter(l => l.level === lv && ['Task-based', 'Picture question'].includes(l.kind)).length,
+    point: E.LISTENING.filter(l => l.level === lv && l.kind.startsWith('Key point')).length,
+    say: E.LISTENING.filter(l => l.level === lv && l.kind === 'What do you say?').length,
+    quick: E.LISTENING.filter(l => l.level === lv && l.kind === 'Quick response').length,
+  };
+  for (const [t, n] of Object.entries(have)) if (need[t] && n < need[t]) fail(`${lv} full mock: ${t} needs ${need[t]}, bank has ${n}`);
+}
+
 // 5g. Sentence builder: every pattern × every allowed slot builds a clean sentence.
 for (const p of SP.PATTERNS) {
   for (const g of [...p.x, ...(p.y || [])]) if (!SP.SLOTS[g]) fail(`pattern ${p.id}: unknown slot group ${g}`);

@@ -96,4 +96,45 @@ export const N4_KANJI_MORE = [
 理|リ||reason / logic|kaaran / tark|🧠|King (王) + village (里): logic and order.|料理,りょうり,cooking,khaana banana;理由,りゆう,reason,vajah
 銀|ギン||silver|chaandi|🥈|Metal (金) + stop (艮): silver.|銀行,ぎんこう,bank,bank;銀,ぎん,silver,chaandi
 ` },
+  // Kanji the standard N5/N4 lists include that the app was missing (added 2026-10). A group marked n5 joins the N5 set.
+  { id: 'n5-school2', level: 'n5', title: 'School', hg: 'School', icon: '🏫', list: `
+校|コウ||school|school / vidyalaya|🏫|A tree (木) and crossed legs (交): the place people meet to learn.|学校,がっこう,school,school;高校,こうこう,high school,high school
+` },
+  { id: 'n4-nature4', title: 'Nature & weather', hg: 'Prakriti aur mausam', icon: '🌲', list: `
+森|シン|もり|forest|jungal|🌲|Three trees (木): a whole forest.|森,もり,forest,jungal;森林,しんりん,woods,van
+林|リン|はやし|woods / grove|upvan|🌳|Two trees (木 木): a small wood.|林,はやし,woods,upvan;小林,こばやし,Kobayashi (surname),Kobayashi (naam)
+池|チ|いけ|pond|taalaab|🦆|Water (氵) and a winding shape: a pond.|池,いけ,pond,taalaab;電池,でんち,battery,battery
+光|コウ|ひかり・ひか(る)|light|roshni|✨|Rays shining out over a person: light.|光,ひかり,light,roshni;日光,にっこう,sunlight,dhoop
+暑|ショ|あつ(い)|hot (weather)|garmi|🥵|The sun (日) blazing over someone: hot weather.|暑い,あつい,hot (weather),garam;暑さ,あつさ,the heat,garmi
+寒|カン|さむ(い)|cold (weather)|thand|🥶|A roof over ice (冫): cold even indoors.|寒い,さむい,cold,thanda;寒さ,さむさ,the cold,thand
+暗|アン|くら(い)|dark|andhera|🌑|The sun (日) gone, only a sound (音) left in the dark.|暗い,くらい,dark,andhera;暗記,あんき,memorising,ratna
+` },
+  { id: 'n4-places3', title: 'Cities & places', hg: 'Shahar aur jagah', icon: '🏙️', list: `
+区|ク||ward / district|ilaaka|🗺️|A box marking off one area.|区役所,くやくしょ,ward office,ward office;地区,ちく,district,ilaaka
+県|ケン||prefecture|zila / rajya|🗾|Japan’s 47 regions, like states.|静岡県,しずおかけん,Shizuoka Prefecture,Shizuoka prefecture;県庁,けんちょう,prefectural office,prefecture office
+市|シ|いち|city / market|shahar / bazaar|🏙️|Cloth hung up at a market; a city grew around it.|市役所,しやくしょ,city hall,city hall;市場,いちば,market,bazaar
+村|ソン|むら|village|gaon|🏡|A tree (木) and a hand (寸): a farming village.|村,むら,village,gaon;村長,そんちょう,village head,mukhiya
+都|ト・ツ|みやこ|capital / metropolis|rajdhani|🏯|A big town (阝 on the right means town).|東京都,とうきょうと,Tokyo Metropolis,Tokyo;都合,つごう,convenience,suvidha
+門|モン|かど|gate|darwaaza|⛩️|A picture of two swinging doors.|門,もん,gate,gate;専門,せんもん,speciality,visheshagyata
+` },
+  { id: 'n4-describe3', title: 'More describing kanji', hg: 'Aur varnan', icon: '📏', list: `
+太|タイ・タ|ふと(い)|fat / thick|mota|🐘|Big (大) with an extra dot: even bigger.|太い,ふとい,thick,mota;太る,ふとる,gain weight,mota hona
+短|タン|みじか(い)|short|chhota|📏|An arrow (矢) and a bean (豆): both short things.|短い,みじかい,short,chhota;短期,たんき,short term,kam samay ke liye
+低|テイ|ひく(い)|low / short (height)|neecha|📉|A person (亻) standing on a low base.|低い,ひくい,low,neecha;最低,さいてい,the lowest / the worst,sabse kam
+正|セイ・ショウ|ただ(しい)|correct|sahi|✅|One line (一) where you stop (止): the right place.|正しい,ただしい,correct,sahi;正月,しょうがつ,New Year,naya saal
+好|コウ|す(き)・この(む)|like / fond of|pasand|💕|A woman (女) and a child (子): someone you love.|好き,すき,like,pasand;大好き,だいすき,love,bahut pasand
+洋|ヨウ||ocean / Western|samudra / pashchimi|🌊|Water (氵) and sheep (羊): the wide ocean, and things from across it.|洋服,ようふく,Western clothes,kapde;太平洋,たいへいよう,Pacific Ocean,Prashant mahasagar
+` },
+  { id: 'n4-actions3', title: 'Actions & everyday kanji', hg: 'Kriyaayein aur roz ke kanji', icon: '➡️', list: `
+引|イン|ひ(く)|pull|kheenchna|🏹|A bow (弓) and its string: pulling.|引く,ひく,pull,kheenchna;引っ越し,ひっこし,moving house,ghar badalna
+回|カイ|まわ(る)|times / turn round|baar / ghoomna|🔄|A box inside a box: going round and round.|一回,いっかい,once,ek baar;回る,まわる,go round,ghoomna
+合|ゴウ・ガッ|あ(う)|fit / match|milna|🤝|A lid on a mouth (口): things that fit together.|合う,あう,fit / match,milna;試合,しあい,match (game),match
+進|シン|すす(む)|move forward|aage badhna|➡️|A bird (隹) on the move (辶): going forward.|進む,すすむ,move forward,aage badhna;進学,しんがく,going on to higher education,aage padhna
+説|セツ|と(く)|explain / theory|samjhaana|💬|Words (言) that make things clear.|説明,せつめい,explanation,samjhaana;小説,しょうせつ,novel,upanyaas
+産|サン|う(む)|produce / give birth|paida karna|🏭|Things that are made or born.|生産,せいさん,production,utpaadan;産業,さんぎょう,industry,udyog
+旅|リョ|たび|travel|safar|🧳|A flag and people setting off together.|旅行,りょこう,trip,safar;旅館,りょかん,Japanese inn,Japanese hotel
+菜|サイ|な|vegetable / greens|sabzi|🥬|A plant (艹) you pick by hand.|野菜,やさい,vegetables,sabziyan;菜の花,なのはな,rape blossoms,sarson ke phool
+首|シュ|くび|neck|gardan|🦒|A head with hair on top.|首,くび,neck,gardan;首都,しゅと,capital city,rajdhani
+声|セイ|こえ|voice|aawaaz|🗣️|The sound that comes out of a person.|声,こえ,voice,aawaaz;大声,おおごえ,loud voice,oonchi aawaaz
+` },
 ];

@@ -263,7 +263,7 @@ for (const g of N4_KANJI_MORE) {
     PICS[ch] = [pic, hint];
     return [ch, on, kun, en, hg, exs.split(';').map(e => { const [w, kana, wen, whg] = e.split(','); return [w, kana, toRomaji(kana), wen, whg]; })];
   });
-  KANJI_GROUPS_N4.push({ id: g.id, title: g.title, hg: g.hg, icon: g.icon, kanji });
+  (g.level === 'n5' ? KANJI_GROUPS : KANJI_GROUPS_N4).push({ id: g.id, title: g.title, hg: g.hg, icon: g.icon, kanji });
 }
 
 const toItems = (groups, level) => groups.flatMap(g => g.kanji.map(k => ({

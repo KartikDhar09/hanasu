@@ -676,4 +676,33 @@ export const N5_TOPICS = [
 キロ|キロ|kilo|kilo|⚖️
 グラム|グラム|gram|gram|⚖️
 ` },
+  // Standard N5 words the app was missing (added 2026-10).
+  { id: 'n5-more', title: 'More everyday N5 words', hg: 'Aur roz ke shabd', icon: '➕', list: `
+いかが|いかが|how (polite)|kaisa (aadar se)
+一緒|いっしょ|together|saath
+大勢|おおぜい|many people|bahut saare log|👥
+お手洗い|おてあらい|restroom|washroom|🚻
+一昨年|おととし|the year before last|do saal pehle
+お巡りさん|おまわりさん|police officer (friendly)|police wale|👮
+方|かた|person (polite)|vyakti (aadar se)
+下さい|ください|please give me|dijiye
+曇る|くもる|get cloudy|baadal chhaana|☁️
+先|さき|ahead / earlier|aage / pehle
+再来年|さらいねん|the year after next|do saal baad
+自動車|じどうしゃ|car (formal)|gaadi|🚗
+字引|じびき|dictionary (old-fashioned)|shabdkosh (purana shabd)|📖
+煙草|たばこ|cigarette / tobacco|cigarette|🚬
+温い|ぬるい|lukewarm|gungunaa
+始め|はじめ|the beginning|shuruaat
+二十歳|はたち|20 years old|bees saal ka/ki|🎂
+話|はなし|talk / story|baat / kahaani|💬
+風呂|ふろ|bath|nahaane ka tub|🛁
+本当|ほんとう|true / really|sach
+門|もん|gate|gate|⛩️
+昨夜|ゆうべ|last night|kal raat|🌙
+ご主人|ごしゅじん|(someone’s) husband|(kisi ke) pati
+昼間|ひるま|daytime|din ka samay|🌞
+ちょうど|ちょうど|exactly / just|theek / bilkul
+たいてい|たいてい|usually|aam taur par
+` },
 ];

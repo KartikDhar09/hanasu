@@ -638,4 +638,157 @@ export const N4_TOPICS = [
 ミス|ミス|mistake|galti|❌
 レポート|レポート|report|report|📝
 ` },
+  // Standard N4 words the app was missing (added 2026-10).
+  { id: 'n4-work4', title: 'Work, school & formal words', hg: 'Kaam, padhai aur aupchaarik shabd', icon: '🏢', list: `
+挨拶|あいさつ|greeting|abhivaadan|👋
+案内|あんない|guidance / showing around|raasta dikhana
+以下|いか|below / or less|… se kam
+以外|いがい|except / other than|… ke alaawa
+以上|いじょう|above / or more / that’s all|… se zyada / bas itna
+一生懸命|いっしょうけんめい|with all one’s effort|jee-jaan se
+遠慮|えんりょ|holding back / restraint|sankoch
+関係|かんけい|relation / connection|sambandh
+競争|きょうそう|competition|muqaabla
+講堂|こうどう|auditorium|sabhaagaar|🏛️
+出席|しゅっせき|attendance|haaziri
+準備|じゅんび|preparation|taiyaari
+紹介|しょうかい|introduction|parichay
+招待|しょうたい|invitation|nimantran|💌
+承知|しょうち|understanding / agreeing|samajhna / maanna
+新聞社|しんぶんしゃ|newspaper company|akhbaar ki company|📰
+翻訳|ほんやく|translation|anuvaad
+返事|へんじ|reply|jawaab
+用意|ようい|getting ready / preparation|taiyaari
+利用|りよう|use|istemaal
+拝見|はいけん|seeing (humble)|dekhna (vinamra)
+世話|せわ|care / looking after|dekhbhaal
+遅刻|ちこく|being late|der se aana|⏰
+寝坊|ねぼう|oversleeping|der tak sona|😴
+支度|したく|getting ready|taiyaari
+故障|こしょう|breakdown / out of order|kharaabi|🔧
+辞典|じてん|dictionary|shabdkosh|📕
+日記|にっき|diary|diary|📔
+書き方|かきかた|way of writing|likhne ka tareeka
+仕方|しかた|way of doing|tareeka
+下宿|げしゅく|lodging / boarding house|paying guest
+席|せき|seat|seat|💺
+生産|せいさん|production|utpaadan|🏭
+輸出|ゆしゅつ|export|niryaat|🚢
+輸入|ゆにゅう|import|aayaat|📦
+西洋|せいよう|the West|pashchim
+時代|じだい|era / period|zamaana
+割合|わりあい|ratio / rate|anupaat
+倍|ばい|double / times|dugna / guna
+公務員|こうむいん|civil servant|sarkari karmachaari
+市民|しみん|citizen|naagrik
+係|かかり|person in charge|zimmedaar
+アナウンサー|アナウンサー|announcer|announcer|🎙️
+` },
+  { id: 'n4-life4', title: 'Home, things & places', hg: 'Ghar, cheezein aur jagah', icon: '🏠', list: `
+裏|うら|back / reverse side|peechhe ki taraf
+表|おもて|front / surface|saamne ki taraf
+下着|したぎ|underwear|andar ke kapde|🩲
+手袋|てぶくろ|gloves|dastaane|🧤
+木綿|もめん|cotton|sooti kapda
+絹|きぬ|silk|resham
+糸|いと|thread|dhaaga|🧵
+指輪|ゆびわ|ring|angoothi|💍
+ハンドバッグ|ハンドバッグ|handbag|handbag|👜
+玩具|おもちゃ|toy|khilauna|🧸
+葡萄|ぶどう|grapes|angoor|🍇
+髭|ひげ|beard / moustache|daadhi / moonchh|🧔
+腰|こし|lower back / hips|kamar
+湯|ゆ|hot water|garam paani|♨️
+隅|すみ|corner|kona
+小鳥|ことり|small bird|chhoti chidiya|🐦
+汽車|きしゃ|steam train (old-fashioned)|bhaap wali rail (purana shabd)|🚂
+飛行場|ひこうじょう|airfield (old-fashioned; now 空港)|hawai adda (purana shabd)|🛬
+展覧会|てんらんかい|exhibition|pradarshani|🖼️
+花見|はなみ|cherry-blossom viewing|sakura dekhna|🌸
+地下|ちか|underground / basement|zameen ke neeche
+エスカレーター|エスカレーター|escalator|escalator
+コンピュータ|コンピュータ|computer|computer|💻
+ファックス|ファックス|fax|fax|📠
+ワープロ|ワープロ|word processor (old-fashioned)|word processor (purana)
+ホームページ|ホームページ|website / homepage|website|🌐
+スクリーン|スクリーン|screen|screen|🖥️
+電報|でんぽう|telegram (old-fashioned)|taar (purana)
+サンドイッチ|サンドイッチ|sandwich|sandwich|🥪
+プレゼント|プレゼント|present / gift|tohfa|🎁
+お宅|おたく|(your) home (polite)|aapka ghar
+家庭|かてい|household / home|ghar-parivaar
+` },
+  { id: 'n4-people4', title: 'People & feelings', hg: 'Log aur bhaavnaayein', icon: '🫂', list: `
+お子さん|おこさん|(someone’s) child|(aapke) bachche|🧒
+お金持ち|おかねもち|rich person|ameer|💰
+君|きみ|you (casual, to juniors)|tum
+僕|ぼく|I (men, casual)|main (ladke)
+高校生|こうこうせい|high-school student|high school ka chhaatra|🎒
+親しい|したしい|close / intimate|kareebi
+心|こころ|heart / mind|dil / man|❤️
+気持ち|きもち|feeling|ehsaas
+力|ちから|strength / power|taakat|💪
+喧嘩|けんか|quarrel|jhagda|😤
+` },
+  { id: 'n4-verbs4', title: 'More N4 verbs', hg: 'Aur N4 kriyaayein', icon: '🏃', list: `
+打つ|うつ|hit / type|maarna / type karna|⌨️
+構う|かまう|mind / care about|parwaah karna
+進む|すすむ|move forward / progress|aage badhna
+足す|たす|add|jodna|➕
+訪ねる|たずねる|visit (someone)|milne jaana
+尋ねる|たずねる|ask|poochna
+楽しむ|たのしむ|enjoy|mazaa lena
+捕まえる|つかまえる|catch|pakadna|🎣
+捕まる|つかまる|be caught|pakda jaana
+伝える|つたえる|tell / pass on|bataana / pahunchaana
+積もる|つもる|pile up (snow)|jamna (baraf)|❄️
+見える|みえる|can be seen|dikhna
+向かう|むかう|head towards|ki taraf jaana
+申し上げる|もうしあげる|say (humble)|kehna (vinamra)
+止む|やむ|stop (rain)|rukna (baarish)|🌦️
+引き出す|ひきだす|withdraw (money)|paise nikaalna|🏧
+` },
+  { id: 'n4-words4', title: 'Useful N4 words & expressions', hg: 'Kaam ke N4 shabd', icon: '💡', list: `
+例えば|たとえば|for example|jaise ki
+久しぶり|ひさしぶり|after a long time|kaafi samay baad
+非常|ひじょう|emergency / extreme|aapaatkaal / atyant|🚨
+別|べつ|different / separate|alag
+急|きゅう|sudden / urgent|achaanak / jaldi
+形|かたち|shape|aakaar|🔷
+用|よう|errand / something to do|kaam
+訳|わけ|reason / meaning|kaaran / matlab
+両方|りょうほう|both|dono
+周り|まわり|surroundings|aas-paas
+遠く|とおく|far away|door
+終わり|おわり|the end|ant
+帰り|かえり|return / way home|wapsi
+昼休み|ひるやすみ|lunch break|lunch break|🍱
+反対|はんたい|opposite / against|ulta / virodh
+場合|ばあい|case / situation|sthiti
+退院|たいいん|leaving hospital|hospital se chhutti|🏥
+これから|これから|from now on|ab se
+しばらく|しばらく|for a while|kuch der
+随分|ずいぶん|quite / very|kaafi
+そんなに|そんなに|that much|itna
+大分|だいぶ|considerably|kaafi had tak
+到頭|とうとう|finally / at last|aakhirkaar
+どんどん|どんどん|rapidly / steadily|tezi se
+まず|まず|first of all|sabse pehle
+是非|ぜひ|by all means|zaroor
+うまい|うまい|good at / tasty (casual)|achha / swaadisht|😋
+かっこいい|かっこいい|cool / good-looking|cool / smart|😎
+邪魔|じゃま|in the way / bother|rukaawat
+楽しみ|たのしみ|something to look forward to|intezaar ki khushi
+ご存知|ごぞんじ|knowing (honorific)|jaanna (aadar se)
+代わり|かわり|substitute / instead|badle mein
+お陰|おかげ|thanks to|ki badaulat
+お礼|おれい|thanks / reward|dhanyavaad / inaam
+事|こと|thing / matter|baat / cheez
+字|じ|character / handwriting|akshar
+日|ひ|day / sun|din / sooraj|☀️
+夢|ゆめ|dream|sapna|💭
+すり|すり|pickpocket|jebkatra
+一度|いちど|once|ek baar
+さ来月|さらいげつ|the month after next|do mahine baad
+` },
 ];

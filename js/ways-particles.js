@@ -178,7 +178,7 @@ b|では、また明日よろしくお願いしますね。|では、またあ�
 a|じゃあ、また明日ですね。|じゃあ、またあしたですね。|jā, mata ashita desu ne.|OK, see you tomorrow, then.|Achha, toh kal milte hain.
 a|続きはまた明日ですね。|つづきはまたあしたですね。|tsuzuki wa mata ashita desu ne.|We’ll continue tomorrow, then.|Baaki kal karenge na.
 @pt:yo:0
-b|会議は三時からでございますよ。|かいぎはさんじからでございますよ。|kaigi wa san-ji kara de gozaimasu yo.|The meeting begins at three, just so you know.|Bata doon, meeting teen baje se hai.
+b|念のため、会議は三時からですよ。|ねんのため、かいぎはさんじからですよ。|nen no tame, kaigi wa san-ji kara desu yo.|Just a reminder: the meeting is at three.|Yaad dila doon, meeting teen baje hai.|Polite enough for coworkers; to a client, drop よ
 a|会議、三時からですよ。忘れないでくださいね。|かいぎ、さんじからですよ。わすれないでくださいね。|kaigi, san-ji kara desu yo. wasurenaide kudasai ne.|The meeting’s at three, you know. Don’t forget.|Meeting teen baje hai. Bhoolna mat.
 a|三時から会議がありますよ。|さんじからかいぎがありますよ。|san-ji kara kaigi ga arimasu yo.|There’s a meeting at three, you know.|Teen baje meeting hai, yaad hai na.
 @pt:yo:1
@@ -186,7 +186,7 @@ b|こちらのラーメン、大変おいしいですよ。|こちらのラー�
 a|この店のラーメン、おすすめですよ。|このみせのラーメン、おすすめですよ。|kono mise no rāmen, osusume desu yo.|I recommend this shop’s ramen.|Is dukaan ka ramen try karo.
 a|このラーメン、すごくおいしいですよ。|このラーメン、すごくおいしいですよ。|kono rāmen, sugoku oishii desu yo.|This ramen is really delicious!|Yeh ramen bahut mast hai!
 @pt:yo:2
-b|恐れ入りますが、ミュートになっておりますよ。|おそれいりますが、ミュートになっておりますよ。|osore irimasu ga, myūto ni natte orimasu yo.|Excuse me, but you are on mute.|Maaf kijiye, aap mute par hain.
+b|恐れ入りますが、マイクがミュートになっていますよ。|おそれいりますが、マイクがミュートになっていますよ。|osore irimasu ga, maiku ga myūto ni natte imasu yo.|Excuse me, but your mic is on mute.|Maaf kijiye, aapka mic mute hai.|Not おります: that humble form is only for yourself
 a|すみません、マイクがミュートですよ。|すみません、マイクがミュートですよ。|sumimasen, maiku ga myūto desu yo.|Sorry, your mic is on mute.|Maaf kijiye, aapka mic mute hai.
 a|声が聞こえませんよ。ミュートかもしれません。|こえがきこえませんよ。ミュートかもしれません。|koe ga kikoemasen yo. myūto kamo shiremasen.|We can’t hear you. You might be on mute.|Awaaz nahi aa rahi. Shaayad mute ho.
 @pt:ya:0

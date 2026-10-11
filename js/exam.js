@@ -5,6 +5,7 @@ import { KANJI } from './kanji-data.js';
 import { WORDS } from './vocab-data.js';
 import { chunk } from './jlpt.js';
 import { prefetchClip } from './clips.js';
+import { sameMeaning } from './core.js';
 import { CONTEXT, PARAPHRASE, USAGE, PASSAGES, ORDER } from './exam-types.js';
 
 // Question types, in exam order.
@@ -292,7 +293,7 @@ export function initExam(ctx) {
     // Words with pictures
     const ws = WORDS.filter(w => w.level === lv && w.pic);
     for (const w of shuffle(ws).slice(0, 4)) {
-      const others = shuffle(ws.filter(o => o.jp !== w.jp && o.en !== w.en)).slice(0, 3).map(o => o.jp);
+      const others = shuffle(ws.filter(o => o.jp !== w.jp && o.pic !== w.pic && !sameMeaning(o.en, w.en))).slice(0, 3).map(o => o.jp);
       qs.push({ section: 'vocab', type: 'pic', prompt: `<span class="tag alt">Which word fits the picture?</span><div class="wpic huge">${w.pic}</div>`, options: shuffle([w.jp, ...others]), right: w.jp, review: w.pic });
     }
     qs.push(...BUILD.context(lv, 3), ...BUILD.form(lv, 6), ...BUILD.order(lv, 2), ...BUILD.read(lv, 6));

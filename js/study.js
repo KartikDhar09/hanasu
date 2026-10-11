@@ -5,7 +5,7 @@ import { prefetchClip } from './clips.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
-import { sayable } from './core.js';
+import { sayable, sameMeaning } from './core.js';
 
 const ALL_PARTICLES = PARTICLES.map(p => p.p);
 const plain = s => s.replace(/[[\]]/g, '');
@@ -317,7 +317,7 @@ export function initStudy(ctx) {
     const pool = levelKanji();
     const qs = shuffle(pool).slice(0, 10).map((k, n) => {
       if (n % 2 === 0) {
-        const others = shuffle(pool.filter(o => o.ch !== k.ch && o.en !== k.en)).slice(0, 3);
+        const others = shuffle(pool.filter(o => o.ch !== k.ch && !sameMeaning(o.en, k.en))).slice(0, 3);
         return { type: 'meaning', k, right: k.en, options: shuffle([k, ...others]).map(o => ({ v: o.en, hg: o.hg })) };
       }
       const word = k.ex[Math.floor(Math.random() * k.ex.length)];

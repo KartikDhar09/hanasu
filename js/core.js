@@ -127,3 +127,8 @@ export const PASS = 0.75;
 // after the written line, so these are spoken from their kana instead. check.mjs keeps this list complete.
 export const TWO_READINGS = new Set(['十分', '市場', '止める', '空く', '開く']);
 export const sayable = (jp, kana) => TWO_READINGS.has(jp) ? kana : jp;
+
+// Quizzes never offer a wrong option that also fits: two English glosses clash when they share a meaning
+// ("rice / meal" and "rice (uncooked)"; "clock / watch" and "see / watch").
+const glosses = e => e.toLowerCase().replace(/\(.*?\)/g, '').split(/[/;,]/).map(s => s.trim()).filter(Boolean);
+export const sameMeaning = (a, b) => a === b || glosses(a).some(x => glosses(b).includes(x));

@@ -383,6 +383,11 @@ test('fill replaces placeholders', () => {
   assert.equal(core.fill('{name}です。{country}から', p), 'スミスです。中国から');
   assert.equal(core.fill('{countryKana}から {nameRo}', p), 'ちゅうごくから Sumisu');
 });
+test('quiz options with the same meaning count as clashing', () => {
+  assert.ok(core.sameMeaning('rice / meal', 'rice (uncooked)'));
+  assert.ok(core.sameMeaning('clock / watch', 'see / watch'));
+  assert.ok(!core.sameMeaning('hot (weather)', 'cold (weather)'));
+});
 test('words taught with two readings are spoken from their kana', () => {
   // One clip per written line, so a word with two readings (十分 じゅうぶん / じゅっぷん) must be in TWO_READINGS.
   const seen = new Map(), two = new Set();

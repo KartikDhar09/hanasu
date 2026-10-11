@@ -104,28 +104,31 @@ export function initStrokes(ctx) {
   // Draws the strokes in order, one after another, the way a pen would.
   async function play() {
     if (!st?.data) return;
-    const token = ++st.playing;
+    // Tied to this kanji's state: opening another kanji makes a new st (whose counter starts again at 0),
+    // so checking the counter alone let an old animation run on into the new page.
+    const s = st, token = ++s.playing;
+    const live = () => st === s && s.playing === token;
     st.isPlaying = true;
     const btn = document.getElementById('play');
     btn.textContent = '■ Stop';
     if (reduceMotion()) {
-      for (let i = 1; i <= st.paths.length; i++) { if (st.playing !== token) return; st.step = i; draw(); await wait(500); }
+      for (let i = 1; i <= s.paths.length; i++) { if (!live()) return; s.step = i; draw(); await wait(500); }
     } else {
-      st.step = 0; draw();
-      for (let i = 0; i < st.paths.length; i++) {
-        if (st?.playing !== token) return;
-        st.step = i + 1; draw();
-        const p = st.paths[i], len = p.getTotalLength();
+      s.step = 0; draw();
+      for (let i = 0; i < s.paths.length; i++) {
+        if (!live()) return;
+        s.step = i + 1; draw();
+        const p = s.paths[i], len = p.getTotalLength();
         p.classList.add('current');
         p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
         await p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: Math.max(280, len * 9), easing: 'ease-in-out', fill: 'forwards' }).finished.catch(() => {});
-        if (st?.playing !== token) return;
+        if (!live()) return;
         p.style.strokeDashoffset = 0;
         await wait(120);
       }
-      if (st?.playing === token) draw();
+      if (live()) draw();
     }
-    if (st?.playing === token) { st.isPlaying = false; btn.textContent = '↻ Replay'; }
+    if (live()) { s.isPlaying = false; btn.textContent = '↻ Replay'; }
   }
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const stop = () => { if (!st) return; st.playing++; st.isPlaying = false; const b = document.getElementById('play'); if (b) b.textContent = '▶ Play'; };

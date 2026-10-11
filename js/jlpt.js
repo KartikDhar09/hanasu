@@ -2,7 +2,7 @@
 import { EXAMS, EXAM_TIPS, QUESTION_TYPES, GRAMMAR } from './jlpt-data.js';
 import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
 import { VOCAB, WORDS } from './vocab-data.js';
-import { sayable } from './core.js';
+import { sayable, sameMeaning } from './core.js';
 import { READING, LISTENING } from './exam-data.js';
 import { toRomaji } from './conjugate.js';
 import { furigana, markBrackets } from './furigana.js';
@@ -349,7 +349,8 @@ export function initJlpt(ctx) {
   function vocabQuiz(lv) {
     const ws = WORDS.filter(w => w.level === lv);
     const qs = shuffle(ws).slice(0, 12).map((w, n) => {
-      const others = shuffle(ws.filter(o => o.en !== w.en && o.jp !== w.jp)).slice(0, 3);
+      // Not a word with the same meaning, nor (for the picture question) the same picture.
+      const others = shuffle(ws.filter(o => o.jp !== w.jp && !sameMeaning(o.en, w.en) && !(w.pic && o.pic === w.pic))).slice(0, 3);
       return n % 2 && w.pic
         ? { type: 'pic', w, right: w.jp, options: shuffle([w, ...others]).map(o => o.jp) }
         : { type: 'mean', w, right: w.en, options: shuffle([w, ...others]).map(o => o.en) };

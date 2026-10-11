@@ -1,6 +1,7 @@
 // Records a natural voice clip for every line in scripts/audio-texts.mjs, using a local VOICEVOX engine.
 // Run the engine first (it listens only on this Mac):  ~/tools/voicevox/macos-arm64/run --host 127.0.0.1 --port 50021
 // Then:  node scripts/make-audio.mjs        (only new lines are recorded; clips for removed lines are deleted)
+//        node scripts/make-audio.mjs --all  (re-records every clip; bump AUDIO in sw.js so phones fetch the new ones)
 // Voices (credit required, shown in Settings): n = VOICEVOX:四国めたん, f = VOICEVOX:冥鳴ひまり, m = VOICEVOX:青山龍星.
 import { mkdirSync, existsSync, readdirSync, rmSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -12,13 +13,18 @@ import { clipPath, normalizeLine } from '../js/clips.js';
 const ENGINE = 'http://127.0.0.1:50021';
 const SPEAKERS = { n: 2, f: 14, m: 13 };
 const BITRATE = '32000';
+const LEAD = 0.4; // seconds of silence before the voice (js/clips.js LEAD_SKIP must stay below this)
+const ALL = process.argv.includes('--all'); // re-record every clip, e.g. after changing LEAD
 const ROOT = new URL('../', import.meta.url).pathname;
 const tmp = mkdtempSync(join(tmpdir(), 'hanasu-audio-'));
 
 async function synth(text, speaker) {
   const q = await fetch(`${ENGINE}/audio_query?${new URLSearchParams({ text, speaker })}`, { method: 'POST' });
   if (!q.ok) throw new Error(`audio_query ${q.status} for ${text}`);
-  const s = await fetch(`${ENGINE}/synthesis?speaker=${speaker}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: await q.text() });
+  // Lead-in silence: speakers and Bluetooth headphones that have gone idle fade in over the first few hundred ms,
+  // which swallowed the first word with VOICEVOX's default 0.1 s. The app skips most of it when audio is already awake.
+  const query = { ...(await q.json()), prePhonemeLength: LEAD };
+  const s = await fetch(`${ENGINE}/synthesis?speaker=${speaker}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(query) });
   if (!s.ok) throw new Error(`synthesis ${s.status} for ${text}`);
   return Buffer.from(await s.arrayBuffer());
 }
@@ -54,7 +60,7 @@ for (const [who, lines] of Object.entries(texts)) {
     if (want.has(p) && normalizeLine(want.get(p)) !== normalizeLine(t)) throw new Error(`clip name collision: ${t} / ${want.get(p)}`);
     want.set(p, t);
   }
-  const todo = [...want].filter(([p]) => !existsSync(join(ROOT, p)));
+  const todo = [...want].filter(([p]) => ALL || !existsSync(join(ROOT, p)));
   kept += want.size - todo.length;
   // A few at a time keeps the engine busy without overloading the Mac.
   const queue = [...todo];

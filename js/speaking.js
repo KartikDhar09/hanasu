@@ -4,7 +4,8 @@ import { toRomaji } from './conjugate.js';
 import { UNITS, CARDS, TRACKS, COUNTRIES } from './data.js';
 import { listen } from './speech.js';
 import { furigana } from './furigana.js';
-import { matchScore, PASS } from './core.js';
+import { matchScore, useReadings, PASS } from './core.js';
+import { READINGS } from './kanji-readings.js';
 
 export function initSpeaking(ctx) {
   const { esc, render, speak, shuffle, bar, back } = ctx;
@@ -290,6 +291,7 @@ export function initSpeaking(ctx) {
     try {
       const heard = await listen();
       if (!heard.length) { res.innerHTML = '<span class="muted">Didn’t catch that. Try again.</span>'; return; }
+      useReadings(READINGS);
       const scores = pair.map(w => matchScore(heard, w[0], w[0]));
       const best = scores[0] >= scores[1] ? 0 : 1;
       res.innerHTML = scores[best] >= 0.6

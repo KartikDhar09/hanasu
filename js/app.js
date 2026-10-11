@@ -113,8 +113,9 @@ const note = c => c.note ? `<div class="note">💡 ${esc(c.note)}</div>` : '';
 // 👔 Business version and other ways to say a line, folded away until opened. Each one plays when tapped.
 // Rendered into an empty slot once that track's data has loaded, so the screen itself never waits for it.
 const waysSlot = id => `<div class="ways-slot" data-ways="${esc(id)}"></div>`;
-// A ways id is a phrase id (greet:0), a role-play line (dlg:greet:0) or a Q&A answer (qa:0:1, its own file).
-const trackOfWays = id => id.startsWith('qa:') ? 'qa' : unitById(id.startsWith('dlg:') ? id.split(':')[1] : cardById(id)?.unit)?.track;
+// A ways id is a phrase id (greet:0), a role-play line (dlg:greet:0), a Q&A answer (qa:0:1) or a particle example (pt:wa:0).
+const WAYS_PREFIX = { 'qa:': 'qa', 'pt:': 'particles' }; // parts with their own file, by id prefix
+const trackOfWays = id => WAYS_PREFIX[id.slice(0, 3)] || unitById(id.startsWith('dlg:') ? id.split(':')[1] : cardById(id)?.unit)?.track;
 function fillWays() {
   const slots = [...$app.querySelectorAll('.ways-slot:empty')];
   const tracks = new Set(slots.map(s => trackOfWays(s.dataset.ways)).filter(Boolean));
@@ -659,7 +660,7 @@ document.addEventListener('keydown', e => {
 
 // ---------- Sections loaded on demand ----------
 // Home needs only the phrase data; Speak, Grammar, Kanji and JLPT (and their large data files) load on first visit.
-const shared = () => ({ S: () => S, esc, render, speak, shuffle, bar, back, go, clearSess: () => { sess = null; stopSpeaking(); } });
+const shared = () => ({ S: () => S, esc, render, speak, shuffle, bar, back, go, waysSlot, clearSess: () => { sess = null; stopSpeaking(); } });
 const LOADERS = {
   study: () => import('./study.js').then(m => m.initStudy({ ...shared(), setSess: () => { sess = null; } })),
   speaking: () => import('./speaking.js').then(m => m.initSpeaking({

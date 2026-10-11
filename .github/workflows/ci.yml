@@ -62,7 +62,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         id: deploy
         run: |
-          url=$(npx --yes $VERCEL_CLI deploy --prebuilt --token="$VERCEL_TOKEN")
+          url=$(npx --yes $VERCEL_CLI deploy --prebuilt --archive=tgz --token="$VERCEL_TOKEN")
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "### Preview deployed: $url" >> "$GITHUB_STEP_SUMMARY"
 
@@ -100,7 +100,7 @@ jobs:
       - name: Deploy to production
         if: env.VERCEL_TOKEN != ''
         run: |
-          url=$(npx --yes $VERCEL_CLI deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          url=$(npx --yes $VERCEL_CLI deploy --prebuilt --archive=tgz --prod --token="$VERCEL_TOKEN")
           echo "### Production deployed: $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Smoke test live site
         if: env.VERCEL_TOKEN != ''

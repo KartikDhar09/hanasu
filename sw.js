@@ -1,7 +1,7 @@
 // Offline-first: app files are served from the cache instantly and refreshed in the background
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and takes over on the
 // next open. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v4.9';
+const CACHE = 'hanasu-v4.9.1';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v2';
@@ -44,7 +44,9 @@ async function audio(req, e) {
   const cache = await caches.open(AUDIO);
   const hit = await cache.match(req);
   if (hit) return hit;
-  const res = await fetch(req);
+  // no-cache: ask the server (a cheap 304 if unchanged) so a clip re-recorded under the same name never comes
+  // from the browser's HTTP cache.
+  const res = await fetch(req, { cache: 'no-cache' });
   // Only whole files: a partial (206) response can't be cached.
   if (res.status === 200) {
     e.waitUntil(cache.put(req, res.clone()).then(async () => {

@@ -44,7 +44,7 @@ function clipUrl(path) {
   if (urls.has(path)) { const p = urls.get(path); urls.delete(path); urls.set(path, p); return p; }
   const p = (async () => {
     try {
-      const res = await fetch(path);
+      const res = await fetch(path, { cache: 'no-cache' }); // revalidate: a re-recorded clip keeps its name
       if (res.ok && (res.headers.get('content-type') || '').startsWith('audio/')) return URL.createObjectURL(await res.blob());
     } catch (_) { /* offline and not cached: fall back to the browser voice */ }
     return null;

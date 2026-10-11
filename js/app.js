@@ -113,8 +113,8 @@ const note = c => c.note ? `<div class="note">💡 ${esc(c.note)}</div>` : '';
 // 👔 Business version and other ways to say a line, folded away until opened. Each one plays when tapped.
 // Rendered into an empty slot once that track's data has loaded, so the screen itself never waits for it.
 const waysSlot = id => `<div class="ways-slot" data-ways="${esc(id)}"></div>`;
-// A ways id is a phrase id (greet:0) or a role-play line (dlg:greet:0).
-const trackOfWays = id => unitById(id.startsWith('dlg:') ? id.split(':')[1] : cardById(id)?.unit)?.track;
+// A ways id is a phrase id (greet:0), a role-play line (dlg:greet:0) or a Q&A answer (qa:0:1, its own file).
+const trackOfWays = id => id.startsWith('qa:') ? 'qa' : unitById(id.startsWith('dlg:') ? id.split(':')[1] : cardById(id)?.unit)?.track;
 function fillWays() {
   const slots = [...$app.querySelectorAll('.ways-slot:empty')];
   const tracks = new Set(slots.map(s => trackOfWays(s.dataset.ways)).filter(Boolean));
@@ -663,7 +663,7 @@ const shared = () => ({ S: () => S, esc, render, speak, shuffle, bar, back, go, 
 const LOADERS = {
   study: () => import('./study.js').then(m => m.initStudy({ ...shared(), setSess: () => { sess = null; } })),
   speaking: () => import('./speaking.js').then(m => m.initSpeaking({
-    ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true),
+    ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true), waysOf, waysSlot,
   })),
   jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),

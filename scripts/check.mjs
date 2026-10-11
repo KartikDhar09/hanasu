@@ -143,6 +143,7 @@ if (KANJI_LIST.length < 250) fail('kanji should cover the full N5 + N4 list (250
 
 // 5c. Speaking content.
 const SP = await import('../js/speaking-data.js');
+const KR = await import('../js/kanji-readings.js');
 for (const [i, item] of SP.QA.entries()) {
   if (!item.pic || item.a.length < 2) fail(`QA ${i}: needs a picture and 2 answers`);
   for (const l of [item.q, ...item.a]) {
@@ -371,6 +372,17 @@ test('speech matching accepts kanji, kana, katakana and digits', () => {
   assert.ok(core.matchScore(['こんばんは'], 'おはようございます。', 'おはようございます。') < core.PASS);
   assert.equal(core.matchScore([], '駅', 'えき'), 0);
   assert.equal(core.matchScore(['ありがとう'], 'ありがとうございます。', 'ありがとうございます。', ['ありがとう。']), 1);
+  // Compared as sounds: the recogniser's own kanji are read back, and long vowels / っ / small ゃゅょ count.
+  core.useReadings(KR.READINGS);
+  assert.ok(core.matchScore(['お願いします'], 'おねがいします。', 'おねがいします。') >= core.PASS);
+  assert.ok(core.matchScore(['今日は暑いですね'], 'きょうはあついですね。', 'きょうはあついですね。') >= core.PASS);
+  assert.ok(core.matchScore(['コーヒーをください'], 'こおひいをください', 'こおひいをください') === 1);
+  assert.ok(core.matchScore(['おばさん'], 'おばあさん', 'おばあさん') < core.PASS);
+  assert.ok(core.matchScore(['美容院'], '病院', 'びょういん') < core.PASS);
+  assert.ok(core.matchScore(['切手'], '来て', 'きて') < core.PASS);
+  for (const g of SP.PRONUNCIATION) for (const pair of g.pairs) for (const [a, b] of [[0, 1], [1, 0]]) {
+    assert.ok(core.matchScore([pair[a][0]], pair[b][0], pair[b][0]) < core.PASS, `minimal pair ${pair[a][0]} must not pass as ${pair[b][0]}`);
+  }
 });
 
 test('conjugates group 1 verbs', () => {

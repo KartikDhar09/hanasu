@@ -13,6 +13,12 @@ let player = null;          // one shared <audio>: iOS lets it play later once i
 let playing = null;         // { resolve } for the clip in progress
 const urls = new Map();     // clip path → Promise<object URL | null>, oldest first; capped so memory stays small
 const MAX_URLS = 200;
+// Clips start with 0.4 s of silence (scripts/make-audio.mjs LEAD) because an output that has gone idle (Bluetooth
+// headphones, phone speakers) fades in and swallowed the first word. While audio is still awake from a clip that
+// just ended, most of that silence is skipped so back-to-back lines don't lag.
+const LEAD_SKIP = 0.3;
+const AWAKE_MS = 1500;
+let lastEnd = 0;
 
 function ensurePlayer() {
   if (player || typeof Audio === 'undefined') return player;
@@ -96,7 +102,7 @@ export function watchVisible(textFor, { dwell = 250, perScreen = 40 } = {}) {
 }
 
 export function stopClip() {
-  if (player && !player.paused) player.pause();
+  if (player && !player.paused) { player.pause(); lastEnd = Date.now(); }
   if (playing) { playing.resolve(); playing = null; }
 }
 
@@ -111,10 +117,12 @@ export async function playClip(text, { who = 'n', rate = 1, isCurrent = () => tr
   stopClip();
   return new Promise(resolve => {
     playing = { resolve: () => resolve(true) };
-    const done = () => { p.onended = p.onerror = null; if (playing) { playing = null; resolve(true); } };
+    const done = () => { lastEnd = Date.now(); p.onended = p.onerror = null; if (playing) { playing = null; resolve(true); } };
     p.onended = done;
     p.onerror = () => { p.onended = p.onerror = null; playing = null; resolve(false); };
+    const awake = Date.now() - lastEnd < AWAKE_MS;
     p.src = url;
+    if (awake) p.currentTime = LEAD_SKIP;
     p.playbackRate = rate;
     p.play().catch(() => { p.onended = p.onerror = null; playing = null; resolve(false); });
   });

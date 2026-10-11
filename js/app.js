@@ -1,7 +1,7 @@
 // The home screen needs only the unit list; the phrases (and furigana) load right after the first paint.
 import { TRACKS, UNIT_INDEX, PHRASE_COUNT } from './units-index.js';
 import { DEPS } from './module-deps.js';
-import { fill, matchScore, PASS } from './core.js';
+import { fill, matchScore, useReadings, PASS } from './core.js';
 import { watchVisible, prefetchClip, constrained } from './clips.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 
@@ -310,6 +310,7 @@ async function recordAgainst(c, resultEl, micEl) {
   try {
     const heard = await listen();
     if (!heard.length) { resultEl.innerHTML = `<span class="muted">Didn’t catch that. Try again, a little louder.</span>`; return null; }
+    useReadings((await import('./kanji-readings.js')).READINGS); // reads the recogniser's kanji back as kana
     const score = matchScore(heard, c.jp, c.kana, [...(c.casual ? [c.casual.jp, c.casual.kana] : []), ...(c.alts || []).flat()]);
     const ok = score >= PASS;
     resultEl.innerHTML = `

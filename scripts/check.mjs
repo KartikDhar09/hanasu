@@ -312,14 +312,17 @@ test('every kanji has stroke-order data with only drawing commands (run scripts/
 });
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
 const WAYS_TRACKS = ['n5', 'office', 'corp'];
+const DLG_TRACKS = ['n5', 'office', 'corp']; // role-play lines done so far
 test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
   const WAYS = WAYS_ALL;
   const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
   const f = t => core.fill(t, P);
   const norm = t => f(t).replace(/[、。！？!?…\s]/g, '');
+  // Role-play lines use ids dlg:<unit>:<line index>.
+  const DLG = new Map(UNITS.flatMap(u => (u.dialogue || []).map((l, i) => [`dlg:${u.id}:${i}`, { jp: l[1], unit: u.id }])));
   for (const [id, w] of WAYS) {
-    const c = CARDS.find(x => x.id === id);
-    assert.ok(c, `ways for unknown phrase ${id}`);
+    const c = CARDS.find(x => x.id === id) || DLG.get(id);
+    assert.ok(c, `ways for unknown phrase or role-play line ${id}`);
     assert.ok(w.biz, `${id}: no business version (use b= if it's already right for work)`);
     assert.ok(w.alt.length >= 2 && w.alt.length <= 3, `${id}: ${w.alt.length} other ways (want 2–3)`);
     const lines = [...(w.biz === 'same' ? [] : [w.biz]), ...w.alt];
@@ -335,6 +338,8 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   }
   const missing = CARDS.filter(c => WAYS_TRACKS.includes(UNITS.find(u => u.id === c.unit).track) && !WAYS.has(c.id)).map(c => c.id);
   assert.ok(!missing.length, `phrases without other ways: ${missing.join(', ')}`);
+  const missingDlg = [...DLG].filter(([id, l]) => DLG_TRACKS.includes(UNITS.find(u => u.id === l.unit).track) && !WAYS.has(id)).map(([id]) => id);
+  assert.ok(!missingDlg.length, `role-play lines without other ways: ${missingDlg.join(', ')}`);
 });
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;

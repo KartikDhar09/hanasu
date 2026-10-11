@@ -824,4 +824,521 @@ a|上司の許可はいりますか。|じょうしのきょかはいります�
 b|使用後は、元の状態に戻しておきます。|しようごは、もとのじょうたいにもどしておきます。|shiyō-go wa, moto no jōtai ni modoshite okimasu.|After use, I will restore it to its original state.|Use ke baad pehle jaisa kar dunga/dungi.
 a|使ったら、ちゃんと片付けます。|つかったら、ちゃんとかたづけます。|tsukattara, chanto katazukemasu.|I’ll tidy up properly after using it.|Use karke theek se sameit dunga/dungi.
 a|設定は元通りにしておきます。|せっていはもとどおりにしておきます。|settei wa moto-dōri ni shite okimasu.|I’ll put the settings back as they were.|Settings pehle jaisi kar dunga/dungi.
+
+@dlg:c-ask:0
+b|佐藤さん、少々お伺いしてもよろしいでしょうか。|さとうさん、しょうしょうおうかがいしてもよろしいでしょうか。|Satō-san, shōshō o-ukagai shite mo yoroshii deshō ka?|Sato-san, may I ask you something?|Sato-san, kya main kuch poochh sakta/sakti hoon?
+a|佐藤さん、一つ質問してもいいですか。|さとうさん、ひとつしつもんしてもいいですか。|Satō-san, hitotsu shitsumon shite mo ii desu ka?|Sato-san, can I ask one question?|Sato-san, ek sawaal poochh sakta/sakti hoon?
+a|佐藤さん、今お時間ありますか。|さとうさん、いまおじかんありますか。|Satō-san, ima o-jikan arimasu ka?|Sato-san, do you have time now?|Sato-san, abhi samay hai?
+@dlg:c-ask:1
+b|はい、どうぞ。|はい、どうぞ。|hai, dōzo.|Yes, go ahead.|Haan, poochhiye.
+a|うん、何でも聞いて。|うん、なんでもきいて。|un, nan demo kiite.|Sure, ask me anything.|Haan, kuch bhi poochho.|Casual
+a|ええ、大丈夫ですよ。|ええ、だいじょうぶですよ。|ē, daijōbu desu yo.|Yes, that’s fine.|Haan, theek hai.
+@dlg:c-ask:2
+b|「経費精算」とはどういう意味でしょうか。|「けいひせいさん」とはどういういみでしょうか。|“keihi seisan” to wa dō iu imi deshō ka?|What does “keihi seisan” mean?|“Keihi seisan” ka matlab kya hai?
+a|「経費精算」の意味を教えてください。|「けいひせいさん」のいみをおしえてください。|“keihi seisan” no imi o oshiete kudasai.|Please tell me what “keihi seisan” means.|“Keihi seisan” ka matlab bataiye.
+a|「経費精算」って、どういうことですか。|「けいひせいさん」って、どういうことですか。|“keihi seisan” tte, dō iu koto desu ka?|What does “keihi seisan” mean, exactly?|“Keihi seisan” matlab kya?
+@dlg:c-ask:3
+b|業務で立て替えた費用を、会社に請求する手続きのことです。|ぎょうむでたてかえたひようを、かいしゃにせいきゅうするてつづきのことです。|gyōmu de tatekaeta hiyō o, kaisha ni seikyū suru tetsuzuki no koto desu.|It’s the process of claiming back from the company money you paid for work.|Kaam ke liye apni jeb se diye paise company se wapas maangne ki prakriya.
+a|仕事で使ったお金を会社に返してもらうことです。|しごとでつかったおかねをかいしゃにかえしてもらうことです。|shigoto de tsukatta o-kane o kaisha ni kaeshite morau koto desu.|It means getting the company to pay you back for money spent on work.|Kaam mein kharch hue paise company se wapas lena.
+a|交通費とか、立て替えたお金を申請することです。|こうつうひとか、たてかえたおかねをしんせいすることです。|kōtsūhi toka, tatekaeta o-kane o shinsei suru koto desu.|It’s applying for money you paid upfront, like travel costs.|Travel jaise kharche ke paise wapas maangna.
+@dlg:c-ask:4
+b|こちらの書類は、どちらに提出すればよろしいでしょうか。|こちらのしょるいは、どちらにていしゅつすればよろしいでしょうか。|kochira no shorui wa, dochira ni teishutsu sureba yoroshii deshō ka?|Where should I submit this form?|Yeh form kahaan jama karna hai?
+a|この書類の提出先はどこですか。|このしょるいのていしゅつさきはどこですか。|kono shorui no teishutsu-saki wa doko desu ka?|Where does this form go?|Yeh form kahaan dena hai?
+a|この書類、誰に渡せばいいですか。|このしょるい、だれにわたせばいいですか。|kono shorui, dare ni wataseba ii desu ka?|Who should I give this form to?|Yeh form kisko dena hai?
+@dlg:c-ask:5
+b|総務部にご提出ください。|そうむぶにごていしゅつください。|sōmu-bu ni go-teishutsu kudasai.|Please submit it to General Affairs.|General Affairs mein jama kijiye.
+a|総務部の箱に入れておいてください。|そうむぶのはこにいれておいてください。|sōmu-bu no hako ni irete oite kudasai.|Put it in the General Affairs box.|General Affairs ke box mein daal dijiye.
+a|総務に持っていけば大丈夫ですよ。|そうむにもっていけばだいじょうぶですよ。|sōmu ni motte ikeba daijōbu desu yo.|Just take it to General Affairs.|General Affairs le jaaiye, ho jaayega.
+@dlg:c-ask:6
+b|承知しました。ご丁寧にありがとうございます。|しょうちしました。ごていねいにありがとうございます。|shōchi shimashita. go-teinei ni arigatō gozaimasu.|Understood. Thank you for explaining so carefully.|Samajh gaya/gayi. Itne dhyaan se batane ke liye shukriya.
+a|よくわかりました。ありがとうございます。|よくわかりました。ありがとうございます。|yoku wakarimashita. arigatō gozaimasu.|That’s clear now. Thank you.|Achhi tarah samajh aa gaya. Shukriya.
+a|助かりました。また聞くかもしれません。|たすかりました。またきくかもしれません。|tasukarimashita. mata kiku kamo shiremasen.|That helped. I may ask again.|Madad hui. Shaayad phir poochhun.
+@dlg:c-check:0
+b|こちらの資料を、明日の朝までに修正していただけますか。|こちらのしりょうを、あしたのあさまでにしゅうせいしていただけますか。|kochira no shiryō o, ashita no asa made ni shūsei shite itadakemasu ka?|Could you revise this document by tomorrow morning?|Kya aap yeh document kal subah tak theek kar denge?
+a|この資料、明日の朝までに直しておいてください。|このしりょう、あしたのあさまでになおしておいてください。|kono shiryō, ashita no asa made ni naoshite oite kudasai.|Please have this document fixed by tomorrow morning.|Yeh document kal subah tak theek kar dena.
+a|明日の朝までに、この資料の修正をお願いします。|あしたのあさまでに、このしりょうのしゅうせいをおねがいします。|ashita no asa made ni, kono shiryō no shūsei o onegaishimasu.|Please revise this document by tomorrow morning.|Kal subah tak is document ko sudhaar dijiye.
+@dlg:c-check:1
+b|恐れ入りますが、もう一度おっしゃっていただけますか。|おそれいりますが、もういちどおっしゃっていただけますか。|osore irimasu ga, mō ichido osshatte itadakemasu ka?|I’m sorry, could you say that once more?|Maaf kijiye, kya aap ek baar phir bolenge?
+a|すみません、聞き取れませんでした。|すみません、ききとれませんでした。|sumimasen, kikitoremasen deshita.|Sorry, I didn’t catch that.|Maaf kijiye, sun nahi paaya/paayi.
+a|すみません、いつまでですか。|すみません、いつまでですか。|sumimasen, itsu made desu ka?|Sorry, by when?|Maaf kijiye, kab tak?
+@dlg:c-check:2
+b|明日の朝までに、修正をお願いします。|あしたのあさまでに、しゅうせいをおねがいします。|ashita no asa made ni, shūsei o onegaishimasu.|Please revise it by tomorrow morning.|Kal subah tak sudhaar dijiye.
+a|明日の朝、九時までにお願いします。|あしたのあさ、くじまでにおねがいします。|ashita no asa, ku-ji made ni onegaishimasu.|By nine tomorrow morning, please.|Kal subah nau baje tak.
+a|明日の朝までです。直してくださいね。|あしたのあさまでです。なおしてくださいね。|ashita no asa made desu. naoshite kudasai ne.|By tomorrow morning. Please fix it.|Kal subah tak. Theek kar dena.
+@dlg:c-check:3
+b|具体的には、どのように修正すればよろしいでしょうか。|ぐたいてきには、どのようにしゅうせいすればよろしいでしょうか。|gutaiteki ni wa, dono yō ni shūsei sureba yoroshii deshō ka?|Specifically, how should I revise it?|Theek-theek kya badalna hai?
+a|どこを直せばいいですか。|どこをなおせばいいですか。|doko o naoseba ii desu ka?|Which part should I fix?|Kaunsa hissa theek karna hai?
+a|修正するところを教えてください。|しゅうせいするところをおしえてください。|shūsei suru tokoro o oshiete kudasai.|Please show me what to change.|Kya badalna hai, bata dijiye.
+@dlg:c-check:4
+b|グラフを最新のデータに更新してください。|グラフをさいしんのデータにこうしんしてください。|gurafu o saishin no dēta ni kōshin shite kudasai.|Please update the graphs with the latest data.|Graph ko latest data se update kijiye.
+a|グラフのデータを新しくしてください。|グラフのデータをあたらしくしてください。|gurafu no dēta o atarashiku shite kudasai.|Please make the graph data new.|Graph ka data naya kar dijiye.
+a|グラフだけ、今月のデータに変えてください。|グラフだけ、こんげつのデータにかえてください。|gurafu dake, kongetsu no dēta ni kaete kudasai.|Just change the graphs to this month’s data.|Bas graph ko is mahine ke data se badal dijiye.
+@dlg:c-check:5
+b|承知しました。不明な点がございましたら、改めてご相談してもよろしいでしょうか。|しょうちしました。ふめいなてんがございましたら、あらためてごそうだんしてもよろしいでしょうか。|shōchi shimashita. fumei na ten ga gozaimashitara, aratamete go-sōdan shite mo yoroshii deshō ka?|Understood. If anything is unclear, may I consult you again?|Samajh gaya/gayi. Kuch samajh na aaye toh phir salaah le sakta/sakti hoon?
+a|わかりました。また質問するかもしれません。|わかりました。またしつもんするかもしれません。|wakarimashita. mata shitsumon suru kamo shiremasen.|Understood. I may have more questions.|Theek hai. Shaayad phir sawaal poochhun.
+a|わかりました。困ったら相談させてください。|わかりました。こまったらそうだんさせてください。|wakarimashita. komattara sōdan sasete kudasai.|OK. If I get stuck, let me come to you.|Theek hai. Atak gaya/gayi toh aapse poochhunga/poochhungi.
+@dlg:c-check:6
+b|ええ、いつでもご相談ください。|ええ、いつでもごそうだんください。|ē, itsu demo go-sōdan kudasai.|Yes, feel free to ask any time.|Haan, kabhi bhi poochh lijiye.
+a|いつでもどうぞ。|いつでもどうぞ。|itsu demo dōzo.|Any time.|Kabhi bhi.
+a|うん、遠慮しないでね。|うん、えんりょしないでね。|un, enryo shinaide ne.|Sure, don’t hold back.|Haan, jhijhakna mat.
+@dlg:c-report:0
+b|課長、今少しお時間よろしいでしょうか。ご報告がございます。|かちょう、いますこしおじかんよろしいでしょうか。ごほうこくがございます。|kachō, ima sukoshi o-jikan yoroshii deshō ka? go-hōkoku ga gozaimasu.|Manager, do you have a moment? I have something to report.|Sir/Ma’am, kya abhi thoda samay hai? Ek report deni hai.
+a|課長、お忙しいところすみません。進捗のご報告です。|かちょう、おいそがしいところすみません。しんちょくのごほうこくです。|kachō, o-isogashii tokoro sumimasen. shinchoku no go-hōkoku desu.|Sorry to interrupt, Manager. A progress update.|Sir/Ma’am, disturb karne ke liye maaf. Progress update hai.
+a|課長、ちょっとご相談したいことがあります。|かちょう、ちょっとごそうだんしたいことがあります。|kachō, chotto go-sōdan shitai koto ga arimasu.|Manager, there’s something I’d like to discuss.|Sir/Ma’am, aapse kuch salaah leni hai.
+@dlg:c-report:1
+b|はい、どうぞ。|はい、どうぞ。|hai, dōzo.|Yes, go ahead.|Haan, boliye.
+a|いいよ。何？|いいよ。なに？|ii yo. nani?|Sure. What is it?|Haan, kya hai?
+a|うん、聞くよ。|うん、きくよ。|un, kiku yo.|OK, I’m listening.|Haan, bolo.
+@dlg:c-report:2
+b|予定より少し遅れております。問題が発生いたしました。|よていよりすこしおくれております。もんだいがはっせいいたしました。|yotei yori sukoshi okurete orimasu. mondai ga hassei itashimashita.|We are slightly behind schedule. A problem has arisen.|Kaam schedule se thoda peeche hai. Ek samasya aa gayi hai.
+a|実は、トラブルがあって、少し遅れています。|じつは、トラブルがあって、すこしおくれています。|jitsu wa, toraburu ga atte, sukoshi okurete imasu.|Actually, there was some trouble, so we’re a bit behind.|Asal mein, kuch dikkat aayi, isliye thoda late hai.
+a|予定より遅れていて、申し訳ありません。|よていよりおくれていて、もうしわけありません。|yotei yori okurete ite, mōshiwake arimasen.|I’m sorry, we’re behind schedule.|Maaf kijiye, kaam schedule se peeche hai.
+@dlg:c-report:3
+b|そうですか。いつ頃終わる見込みですか。|そうですか。いつごろおわるみこみですか。|sō desu ka. itsu goro owaru mikomi desu ka?|I see. When do you expect it to be finished?|Achha. Kab tak khatam hone ki ummeed hai?
+a|そうか。どのくらいかかりそう？|そうか。どのくらいかかりそう？|sō ka. dono kurai kakarisō?|I see. How long will it take?|Achha. Kitna samay lagega?
+a|なるほど。いつまでにできる？|なるほど。いつまでにできる？|naruhodo. itsu made ni dekiru?|I see. By when can you do it?|Samjha. Kab tak ho jaayega?
+@dlg:c-report:4
+b|金曜日までに完了する見込みです。|きんようびまでにかんりょうするみこみです。|kin’yōbi made ni kanryō suru mikomi desu.|We expect to complete it by Friday.|Shukravaar tak poora hone ki ummeed hai.
+a|金曜日には終わると思います。|きんようびにはおわるとおもいます。|kin’yōbi ni wa owaru to omoimasu.|I think it’ll be done by Friday.|Shukravaar tak ho jaayega.
+a|金曜日までに必ず終わらせます。|きんようびまでにかならずおわらせます。|kin’yōbi made ni kanarazu owarasemasu.|I’ll make sure it’s finished by Friday.|Shukravaar tak zaroor khatam karunga/karungi.
+@dlg:c-report:5
+b|承知しました。また状況を報告してください。|しょうちしました。またじょうきょうをほうこくしてください。|shōchi shimashita. mata jōkyō o hōkoku shite kudasai.|Understood. Please keep me updated.|Theek hai. Aage ki sthiti bataate rehna.
+a|了解。何かあったらすぐ言ってね。|りょうかい。なにかあったらすぐいってね。|ryōkai. nani ka attara sugu itte ne.|Got it. Tell me right away if anything happens.|Theek. Kuch ho toh turant batana.
+a|わかった。よろしく頼むよ。|わかった。よろしくたのむよ。|wakatta. yoroshiku tanomu yo.|OK. I’m counting on you.|Theek hai. Tumpe bharosa hai.
+@dlg:c-schedule:0
+b|打ち合わせをお願いしたいのですが、ご都合はいかがでしょうか。|うちあわせをおねがいしたいのですが、ごつごうはいかがでしょうか。|uchiawase o onegai shitai no desu ga, go-tsugō wa ikaga deshō ka?|I’d like to arrange a meeting. What would suit you?|Ek meeting rakhni hai, aapke liye kab theek rahega?
+a|打ち合わせの日程を決めたいんですが。|うちあわせのにっていをきめたいんですが。|uchiawase no nittei o kimetai n desu ga.|I’d like to set a date for a meeting.|Meeting ki date tay karni hai.
+a|一度、打ち合わせできますか。|いちど、うちあわせできますか。|ichido, uchiawase dekimasu ka?|Could we have a meeting at some point?|Ek baar meeting ho sakti hai?
+@dlg:c-schedule:1
+b|来週の火曜日はいかがでしょうか。|らいしゅうのかようびはいかがでしょうか。|raishū no kayōbi wa ikaga deshō ka?|Would next Tuesday suit you?|Agle mangalvaar kaisa rahega?
+a|来週の火曜日なら空いています。|らいしゅうのかようびならあいています。|raishū no kayōbi nara aite imasu.|I’m free next Tuesday.|Agle mangalvaar main free hoon.
+a|火曜日はご都合いかがですか。|かようびはごつごういかがですか。|kayōbi wa go-tsugō ikaga desu ka?|Does Tuesday work for you?|Mangalvaar aapke liye theek hai?
+@dlg:c-schedule:2
+b|申し訳ございません、その日は都合がつきません。水曜日はいかがでしょうか。|もうしわけございません、そのひはつごうがつきません。すいようびはいかがでしょうか。|mōshiwake gozaimasen, sono hi wa tsugō ga tsukimasen. suiyōbi wa ikaga deshō ka?|I’m sorry, that day doesn’t work. Would Wednesday suit you?|Maaf kijiye, us din nahi ho paayega. Budhvaar kaisa rahega?
+a|火曜日は予定があって…。水曜日はどうでしょう？|かようびはよていがあって…。すいようびはどうでしょう？|kayōbi wa yotei ga atte… suiyōbi wa dō deshō?|I have plans on Tuesday… How about Wednesday?|Mangalvaar ko kuch hai… Budhvaar kaisa?
+a|火曜日はちょっと難しいです。水曜日でもいいですか。|かようびはちょっとむずかしいです。すいようびでもいいですか。|kayōbi wa chotto muzukashii desu. suiyōbi demo ii desu ka?|Tuesday’s a bit hard. Is Wednesday OK?|Mangalvaar mushkil hai. Budhvaar chalega?
+@dlg:c-schedule:3
+b|午後でしたら問題ございません。|ごごでしたらもんだいございません。|gogo deshitara mondai gozaimasen.|The afternoon would be no problem.|Dopahar ke baad koi dikkat nahi.
+a|水曜日の午後なら空いています。|すいようびのごごならあいています。|suiyōbi no gogo nara aite imasu.|I’m free Wednesday afternoon.|Budhvaar dopahar free hoon.
+a|午前は会議なので、午後でお願いします。|ごぜんはかいぎなので、ごごでおねがいします。|gozen wa kaigi na node, gogo de onegaishimasu.|I have a meeting in the morning, so the afternoon, please.|Subah meeting hai, dopahar rakhiye.
+@dlg:c-schedule:4
+b|では、水曜日の二時でお願いいたします。|では、すいようびのにじでおねがいいたします。|dewa, suiyōbi no ni-ji de onegai itashimasu.|Then Wednesday at two, please.|Toh budhvaar do baje rakhte hain.
+a|じゃあ、水曜の二時で決まりですね。|じゃあ、すいようのにじできまりですね。|jā, suiyō no ni-ji de kimari desu ne.|So Wednesday at two it is.|Toh budhvaar do baje pakka.
+a|水曜日の二時からはどうですか。|すいようびのにじからはどうですか。|suiyōbi no ni-ji kara wa dō desu ka?|How about from two on Wednesday?|Budhvaar do baje se kaisa?
+@dlg:c-schedule:5
+b|承知しました。会議室を予約しておきます。|しょうちしました。かいぎしつをよやくしておきます。|shōchi shimashita. kaigishitsu o yoyaku shite okimasu.|Understood. I’ll book a meeting room.|Theek hai. Meeting room book kar deta/deti hoon.
+a|はい。会議室は私が取っておきます。|はい。かいぎしつはわたしがとっておきます。|hai. kaigishitsu wa watashi ga totte okimasu.|Sure. I’ll get the meeting room.|Haan. Meeting room main le leta/leti hoon.
+a|わかりました。後で招待を送ります。|わかりました。あとでしょうたいをおくります。|wakarimashita. ato de shōtai o okurimasu.|OK. I’ll send an invite later.|Theek hai. Baad mein invite bhejta/bhejti hoon.
+@dlg:c-guest:0
+b=
+a|ようこそお越しくださいました。こちらへどうぞ。|ようこそおこしくださいました。こちらへどうぞ。|yōkoso o-koshi kudasaimashita. kochira e dōzo.|Thank you for coming. This way, please.|Aane ke liye shukriya. Is taraf aaiye.
+a|本日はお越しいただきありがとうございます。ご案内いたします。|ほんじつはおこしいただきありがとうございます。ごあんないいたします。|honjitsu wa o-koshi itadaki arigatō gozaimasu. go-annai itashimasu.|Thank you for coming today. Let me show you the way.|Aaj aane ke liye shukriya. Main aapko le chalta/chalti hoon.
+@dlg:c-guest:1
+b|失礼いたします。|しつれいいたします。|shitsurei itashimasu.|Excuse me (as I come in).|Maaf kijiye, andar aata/aati hoon.
+a|ありがとうございます。|ありがとうございます。|arigatō gozaimasu.|Thank you.|Shukriya.
+a|お邪魔いたします。|おじゃまいたします。|o-jama itashimasu.|Excuse me for intruding.|Disturb karne ke liye maafi.
+@dlg:c-guest:2
+b=
+a|さくら商事の{name}です。本日はよろしくお願いいたします。|さくらしょうじの{name}です。ほんじつはよろしくおねがいいたします。|Sakura Shōji no {nameRo} desu. honjitsu wa yoroshiku onegai itashimasu.|I’m {nameRo} from Sakura Trading. Thank you for today.|Main Sakura Trading se {nameRo}. Aaj ke liye shukriya.
+a|はじめまして。さくら商事で営業を担当しております、{name}と申します。|はじめまして。さくらしょうじでえいぎょうをたんとうしております、{name}ともうします。|hajimemashite. Sakura Shōji de eigyō o tantō shite orimasu, {nameRo} to mōshimasu.|How do you do. I’m {nameRo}, in charge of sales at Sakura Trading.|Namaste. Main {nameRo}, Sakura Trading mein sales dekhta/dekhti hoon.
+@dlg:c-guest:3
+b|みどり銀行の山本と申します。よろしくお願いいたします。|みどりぎんこうのやまもとともうします。よろしくおねがいいたします。|Midori Ginkō no Yamamoto to mōshimasu. yoroshiku onegai itashimasu.|My name is Yamamoto, from Midori Bank. Pleased to meet you.|Main Midori Bank se Yamamoto. Aapse milkar khushi hui.
+a|はじめまして。みどり銀行の山本でございます。|はじめまして。みどりぎんこうのやまもとでございます。|hajimemashite. Midori Ginkō no Yamamoto de gozaimasu.|How do you do. I’m Yamamoto of Midori Bank.|Namaste. Midori Bank se Yamamoto.
+a|山本です。本日はお時間をいただき、ありがとうございます。|やまもとです。ほんじつはおじかんをいただき、ありがとうございます。|Yamamoto desu. honjitsu wa o-jikan o itadaki, arigatō gozaimasu.|I’m Yamamoto. Thank you for your time today.|Main Yamamoto. Aaj samay dene ke liye shukriya.
+@dlg:c-guest:4
+b=
+a|ありがとうございます。どうぞこちらにお座りください。|ありがとうございます。どうぞこちらにおすわりください。|arigatō gozaimasu. dōzo kochira ni o-suwari kudasai.|Thank you. Please sit here.|Shukriya. Yahaan baithiye.
+a|頂戴します。どうぞおかけになってください。|ちょうだいします。どうぞおかけになってください。|chōdai shimasu. dōzo o-kake ni natte kudasai.|Thank you (for the card). Please take a seat.|Shukriya. Kripya baithiye.
+@dlg:c-guest:5
+b|恐れ入ります。|おそれいります。|osore irimasu.|Thank you very much (humble).|Aapki meherbaani.
+a|ありがとうございます。失礼します。|ありがとうございます。しつれいします。|arigatō gozaimasu. shitsurei shimasu.|Thank you. Excuse me (as I sit).|Shukriya. Baithta/baithti hoon.
+a|では、失礼いたします。|では、しつれいいたします。|dewa, shitsurei itashimasu.|Then, excuse me.|Achha, baithta/baithti hoon.
+@dlg:c-discuss:0
+b|何かご意見はございますか。|なにかごいけんはございますか。|nani ka go-iken wa gozaimasu ka?|Do you have any opinions?|Kya kisi ki koi raay hai?
+a|皆さん、どう思いますか。|みなさん、どうおもいますか。|minasan, dō omoimasu ka?|What does everyone think?|Sab kya sochte hain?
+a|他にアイデアはありますか。|ほかにアイデアはありますか。|hoka ni aidea wa arimasu ka?|Any other ideas?|Koi aur idea?
+@dlg:c-discuss:1
+b|一つご提案があるのですが、こちらの案はいかがでしょうか。|ひとつごていあんがあるのですが、こちらのあんはいかがでしょうか。|hitotsu go-teian ga aru no desu ga, kochira no an wa ikaga deshō ka?|I have one proposal. What do you think of this plan?|Mera ek sujhaav hai, yeh plan kaisa rahega?
+a|こちらの案もいいと思うんですが、どうですか。|こちらのあんもいいとおもうんですが、どうですか。|kochira no an mo ii to omou n desu ga, dō desu ka?|I think this plan is good too. What do you think?|Mujhe lagta hai yeh plan bhi achha hai, kya kehte hain?
+a|別の案なんですが、聞いていただけますか。|べつのあんなんですが、きいていただけますか。|betsu no an na n desu ga, kiite itadakemasu ka?|I have another idea. Could you hear it?|Ek alag plan hai, sunenge?
+@dlg:c-discuss:2
+b|良い案ですね。ただ、コスト面はいかがでしょうか。|よいあんですね。ただ、コストめんはいかがでしょうか。|yoi an desu ne. tada, kosuto-men wa ikaga deshō ka?|A good plan. But what about the cost side?|Achha plan hai. Par cost ka kya?
+a|面白いですね。予算は大丈夫ですか。|おもしろいですね。よさんはだいじょうぶですか。|omoshiroi desu ne. yosan wa daijōbu desu ka?|Interesting. Is the budget OK?|Dilchasp hai. Budget theek hai?
+a|いいと思います。費用はどのくらいですか。|いいとおもいます。ひようはどのくらいですか。|ii to omoimasu. hiyō wa dono kurai desu ka?|I like it. How much would it cost?|Achha laga. Kharcha kitna hoga?
+@dlg:c-discuss:3
+b|おっしゃるとおりです。少々高いかと存じます。|おっしゃるとおりです。しょうしょうたかいかとぞんじます。|ossharu tōri desu. shōshō takai ka to zonjimasu.|You’re right. I believe it is somewhat expensive.|Aap sahi keh rahe hain. Thoda mehenga hai.
+a|そうですね。予算より少しオーバーします。|そうですね。よさんよりすこしオーバーします。|sō desu ne. yosan yori sukoshi ōbā shimasu.|Yes. It goes a little over budget.|Haan. Budget se thoda zyaada hai.
+a|確かに、コストは課題です。|たしかに、コストはかだいです。|tashika ni, kosuto wa kadai desu.|True, cost is an issue.|Sach hai, cost ek masla hai.
+@dlg:c-discuss:4
+b|では、改めて検討いたしましょう。|では、あらためてけんとういたしましょう。|dewa, aratamete kentō itashimashō.|Then let’s consider it again.|Toh ise dobaara dekhte hain.
+a|じゃあ、次回までにもう一度考えましょう。|じゃあ、じかいまでにもういちどかんがえましょう。|jā, jikai made ni mō ichido kangaemashō.|Then let’s think it over again before next time.|Toh agli baar tak phir sochte hain.
+a|コストを見直して、また話しましょう。|コストをみなおして、またはなしましょう。|kosuto o minaoshite, mata hanashimashō.|Let’s review the cost and talk again.|Cost dobaara dekhkar phir baat karte hain.
+@dlg:c-discuss:5
+b|承知しました。|しょうちしました。|shōchi shimashita.|Understood.|Theek hai.
+a|わかりました。費用を調べておきます。|わかりました。ひようをしらべておきます。|wakarimashita. hiyō o shirabete okimasu.|OK. I’ll look into the costs.|Theek hai. Kharcha check kar leta/leti hoon.
+a|了解です。|りょうかいです。|ryōkai desu.|Got it.|Theek hai.|Fine with coworkers; to a boss use 承知しました
+@dlg:c-request:0
+b|{name}さん、少しお願いしたいことがあるのですが。|{name}さん、すこしおねがいしたいことがあるのですが。|{nameRo}-san, sukoshi onegai shitai koto ga aru no desu ga.|{nameRo}, there’s something I’d like to ask of you.|{nameRo}-san, aapse ek kaam ke liye kehna tha.
+a|{name}さん、ちょっと頼みたいことがあるんだけど。|{name}さん、ちょっとたのみたいことがあるんだけど。|{nameRo}-san, chotto tanomitai koto ga aru n da kedo.|{nameRo}, I’ve got a favour to ask.|{nameRo}, ek kaam tha.|Casual
+a|{name}さん、今お時間ありますか。|{name}さん、いまおじかんありますか。|{nameRo}-san, ima o-jikan arimasu ka?|{nameRo}, do you have a moment?|{nameRo}-san, abhi samay hai?
+@dlg:c-request:1
+b|はい、どのようなご用件でしょうか。|はい、どのようなごようけんでしょうか。|hai, dono yō na go-yōken deshō ka?|Yes, what can I do for you?|Haan, kya kaam hai?
+a|はい、どうしましたか。|はい、どうしましたか。|hai, dō shimashita ka?|Yes, what’s up?|Haan, kya hua?
+a|はい、何でしょう？|はい、なんでしょう？|hai, nan deshō?|Yes, what is it?|Haan, kahiye?
+@dlg:c-request:2
+b|こちらの資料を確認していただけますか。|こちらのしりょうをかくにんしていただけますか。|kochira no shiryō o kakunin shite itadakemasu ka?|Could you check this document?|Kya aap yeh document check kar denge?
+a|この資料、チェックしてもらえませんか。|このしりょう、チェックしてもらえませんか。|kono shiryō, chekku shite moraemasen ka?|Could you check this document for me?|Yeh document check kar denge?
+a|この資料に目を通してもらえますか。|このしりょうにめをとおしてもらえますか。|kono shiryō ni me o tōshite moraemasu ka?|Could you look through this document?|Is document par nazar daal lenge?
+@dlg:c-request:3
+b|申し訳ありません、ただいま手が離せない状況でして。後ほどでもよろしいでしょうか。|もうしわけありません、ただいまてがはなせないじょうきょうでして。のちほどでもよろしいでしょうか。|mōshiwake arimasen, tadaima te ga hanasenai jōkyō deshite. nochihodo demo yoroshii deshō ka?|I’m sorry, I’m tied up at the moment. Would later be all right?|Maaf kijiye, abhi kaam mein phansa/phansi hoon. Baad mein chalega?
+a|すみません、今急ぎの仕事をしていて…。後でもいいですか。|すみません、いまいそぎのしごとをしていて…。あとでもいいですか。|sumimasen, ima isogi no shigoto o shite ite… ato demo ii desu ka?|Sorry, I’m on something urgent… Is later OK?|Maaf kijiye, abhi urgent kaam hai… baad mein chalega?
+a|今ちょっと手一杯で…。少し待ってもらえますか。|いまちょっとていっぱいで…。すこしまってもらえますか。|ima chotto te-ippai de… sukoshi matte moraemasu ka?|My hands are full right now… Could you wait a bit?|Abhi haath bhare hue hain… thoda rukenge?
+@dlg:c-request:4
+b|もちろんです。お手すきの際にお願いします。|もちろんです。おてすきのさいにおねがいします。|mochiron desu. o-tesuki no sai ni onegaishimasu.|Of course. Whenever you have a moment.|Bilkul. Jab free hon tab kar dijiye.
+a|大丈夫ですよ。急ぎませんから。|だいじょうぶですよ。いそぎませんから。|daijōbu desu yo. isogimasen kara.|That’s fine. It’s not urgent.|Koi baat nahi. Jaldi nahi hai.
+a|いいですよ。時間がある時にお願いします。|いいですよ。じかんがあるときにおねがいします。|ii desu yo. jikan ga aru toki ni onegaishimasu.|Sure. When you have time, please.|Theek hai. Jab samay mile tab.
+@dlg:c-request:5
+b|三十分後でしたら対応できます。|さんじゅっぷんごでしたらたいおうできます。|sanjuppun-go deshitara taiō dekimasu.|I can deal with it in thirty minutes.|Aadhe ghante baad dekh sakta/sakti hoon.
+a|三十分後に見ますね。|さんじゅっぷんごにみますね。|sanjuppun-go ni mimasu ne.|I’ll look at it in thirty minutes.|Aadhe ghante mein dekhta/dekhti hoon.
+a|これが終わったら、すぐ見ます。|これがおわったら、すぐみます。|kore ga owattara, sugu mimasu.|As soon as I finish this, I’ll look.|Yeh khatam hote hi dekhta/dekhti hoon.
+@dlg:c-mail:0
+b|お疲れ様です。明日の資料をお送りいただけますか。|おつかれさまです。あしたのしりょうをおおくりいただけますか。|otsukaresama desu. ashita no shiryō o o-okuri itadakemasu ka?|Hello. Could you send me tomorrow’s material?|Namaste. Kal ka material bhej denge?
+a|お疲れ様です。明日の資料、メールでもらえますか。|おつかれさまです。あしたのしりょう、メールでもらえますか。|otsukaresama desu. ashita no shiryō, mēru de moraemasu ka?|Hi. Can I get tomorrow’s material by email?|Hi. Kal ka material email kar denge?
+a|お疲れ様です。明日の資料ができたら送ってください。|おつかれさまです。あしたのしりょうができたらおくってください。|otsukaresama desu. ashita no shiryō ga dekitara okutte kudasai.|Hi. Please send tomorrow’s material when it’s ready.|Hi. Kal ka material taiyaar ho toh bhej dena.
+@dlg:c-mail:1
+b|お疲れ様です。かしこまりました。|おつかれさまです。かしこまりました。|otsukaresama desu. kashikomarimashita.|Hello. Certainly.|Namaste. Ji zaroor.
+a|お疲れ様です。すぐにお送りします。|おつかれさまです。すぐにおおくりします。|otsukaresama desu. sugu ni o-okuri shimasu.|Hi. I’ll send it right away.|Hi. Abhi bhejta/bhejti hoon.
+a|お疲れ様です。わかりました、今送ります。|おつかれさまです。わかりました、いまおくります。|otsukaresama desu. wakarimashita, ima okurimasu.|Hi. OK, sending it now.|Hi. Theek hai, abhi bhejta/bhejti hoon.
+@dlg:c-mail:2
+b|資料を添付いたしますので、ご確認のほどよろしくお願いいたします。|しりょうをてんぷいたしますので、ごかくにんのほどよろしくおねがいいたします。|shiryō o tenpu itashimasu node, go-kakunin no hodo yoroshiku onegai itashimasu.|I’m attaching the material; please check it.|Material attach kar raha/rahi hoon, kripya dekh lijiye.
+a|資料をお送りします。ご確認ください。|しりょうをおおくりします。ごかくにんください。|shiryō o o-okuri shimasu. go-kakunin kudasai.|Here is the material. Please check it.|Material bhej raha/rahi hoon. Dekh lijiye.
+a|添付ファイルをご覧ください。|てんぷファイルをごらんください。|tenpu fairu o goran kudasai.|Please see the attached file.|Attached file dekh lijiye.
+@dlg:c-mail:3
+b|ありがとうございます。確認いたします。|ありがとうございます。かくにんいたします。|arigatō gozaimasu. kakunin itashimasu.|Thank you. I’ll check it.|Shukriya. Main dekh leta/leti hoon.
+a|受け取りました。ありがとうございます。|うけとりました。ありがとうございます。|uketorimashita. arigatō gozaimasu.|Received. Thank you.|Mil gaya. Shukriya.
+a|早速ありがとうございます！見ておきます。|さっそくありがとうございます！みておきます。|sassoku arigatō gozaimasu! mite okimasu.|Thanks for being so quick! I’ll look at it.|Itni jaldi ke liye shukriya! Dekh leta/leti hoon.
+@dlg:c-mail:4
+b|引き続きよろしくお願いいたします。|ひきつづきよろしくおねがいいたします。|hikitsuzuki yoroshiku onegai itashimasu.|I look forward to continuing to work with you.|Aage bhi aapke saath kaam ka intezaar hai.
+a|何かあれば、いつでもご連絡ください。|なにかあれば、いつでもごれんらくください。|nani ka areba, itsu demo go-renraku kudasai.|If anything comes up, contact me any time.|Kuch ho toh kabhi bhi sampark kijiye.
+a|よろしくお願いします。|よろしくおねがいします。|yoroshiku onegaishimasu.|Thanks in advance.|Shukriya.
+@dlg:c-trouble:0
+b|すみません、パソコンが動かなくなってしまったのですが。|すみません、パソコンがうごかなくなってしまったのですが。|sumimasen, pasokon ga ugokanaku natte shimatta no desu ga.|Excuse me, my computer has stopped working.|Maaf kijiye, mera computer chal nahi raha.
+a|すみません、パソコンが固まってしまいました。|すみません、パソコンがかたまってしまいました。|sumimasen, pasokon ga katamatte shimaimashita.|Sorry, my computer has frozen.|Maaf kijiye, computer hang ho gaya.
+a|パソコンの調子が悪いんですが…。|パソコンのちょうしがわるいんですが…。|pasokon no chōshi ga warui n desu ga…|My computer isn’t working well…|Computer theek se kaam nahi kar raha…
+@dlg:c-trouble:1
+b|再起動はお試しになりましたか。|さいきどうはおためしになりましたか。|saikidō wa o-tameshi ni narimashita ka?|Have you tried restarting it?|Kya aapne restart karke dekha?
+a|一回、電源を切ってみました？|いっかい、でんげんをきってみました？|ikkai, dengen o kitte mimashita?|Have you tried turning it off once?|Ek baar band karke dekha?
+a|再起動、してみた？|さいきどう、してみた？|saikidō, shite mita?|Did you try restarting?|Restart kiya?|Casual
+@dlg:c-trouble:2
+b|はい、試してみたのですが、ファイルが開けない状態です。|はい、ためしてみたのですが、ファイルがあけないじょうたいです。|hai, tameshite mita no desu ga, fairu ga akenai jōtai desu.|Yes, I tried, but the file still won’t open.|Haan, try kiya, par file ab bhi nahi khul rahi.
+a|はい。でも、まだファイルが開かないんです。|はい。でも、まだファイルがひらかないんです。|hai. demo, mada fairu ga hirakanai n desu.|Yes. But the file still won’t open.|Haan. Par file ab bhi nahi khul rahi.
+a|しました。でも、エラーが出ます。|しました。でも、エラーがでます。|shimashita. demo, erā ga demasu.|I did. But I get an error.|Kiya. Par error aa raha hai.
+@dlg:c-trouble:3
+b|では、情報システム部にお問い合わせください。|では、じょうほうシステムぶにおといあわせください。|dewa, jōhō shisutemu-bu ni o-toiawase kudasai.|Then please contact the IT department.|Toh IT department se sampark kijiye.
+a|じゃあ、IT担当に連絡してみてください。|じゃあ、アイティーたんとうにれんらくしてみてください。|jā, aitī tantō ni renraku shite mite kudasai.|Then try contacting the IT person.|Toh IT wale se baat karke dekhiye.
+a|それなら、ヘルプデスクに電話するといいですよ。|それなら、ヘルプデスクにでんわするといいですよ。|sore nara, herupu desuku ni denwa suru to ii desu yo.|In that case, you should call the help desk.|Toh help desk ko call kar lijiye.
+@dlg:c-trouble:4
+b|承知しました。ありがとうございます。|しょうちしました。ありがとうございます。|shōchi shimashita. arigatō gozaimasu.|Understood. Thank you.|Theek hai. Shukriya.
+a|そうします。助かりました。|そうします。たすかりました。|sō shimasu. tasukarimashita.|I’ll do that. That helped.|Wahi karta/karti hoon. Madad hui.
+a|今から連絡してみます。|いまかられんらくしてみます。|ima kara renraku shite mimasu.|I’ll contact them now.|Abhi sampark karta/karti hoon.
+@dlg:c-social:0
+b|{name}さん、どうぞお注ぎします。|{name}さん、どうぞおつぎします。|{nameRo}-san, dōzo o-tsugi shimasu.|{nameRo}, let me pour for you.|{nameRo}-san, main aapke liye daalta/daalti hoon.
+a|{name}さん、グラスが空いてますよ。|{name}さん、グラスがあいてますよ。|{nameRo}-san, gurasu ga aitemasu yo.|{nameRo}, your glass is empty.|{nameRo}-san, aapka glass khaali hai.
+a|{name}さん、何飲みますか。|{name}さん、なにのみますか。|{nameRo}-san, nani nomimasu ka?|{nameRo}, what will you drink?|{nameRo}-san, kya piyenge?
+@dlg:c-social:1
+b|恐れ入ります。私からもお注ぎいたします。|おそれいります。わたしからもおつぎいたします。|osore irimasu. watashi kara mo o-tsugi itashimasu.|Thank you very much. Allow me to pour for you as well.|Shukriya. Main bhi aapke liye daalta/daalti hoon.
+a|ありがとうございます。どうぞ、こちらも。|ありがとうございます。どうぞ、こちらも。|arigatō gozaimasu. dōzo, kochira mo.|Thank you. Here, let me too.|Shukriya. Lijiye, aapke liye bhi.
+a|すみません、いただきます。|すみません、いただきます。|sumimasen, itadakimasu.|Thank you, I’ll have some.|Shukriya, le leta/leti hoon.
+@dlg:c-social:2
+b=
+a|お国はどちらですか。|おくにはどちらですか。|o-kuni wa dochira desu ka?|Which country are you from?|Aapka desh kaunsa hai?
+a|もともとはどちらの方なんですか。|もともとはどちらのかたなんですか。|motomoto wa dochira no kata na n desu ka?|Where are you originally from?|Aap asal mein kahaan se hain?
+@dlg:c-social:3
+b|{country}の出身です。|{countryKana}のしゅっしんです。|{countryRo} no shusshin desu.|I’m from {countryEn}.|Main {countryHi} se hoon.
+a|{country}から来ました。|{countryKana}からきました。|{countryRo} kara kimashita.|I came from {countryEn}.|{countryHi} se aaya/aayi hoon.
+a|生まれは{country}です。|うまれは{countryKana}です。|umare wa {countryRo} desu.|I was born in {countryEn}.|Mera janm {countryHi} mein hua.
+@dlg:c-social:4
+b|そうなんですね。最近はお忙しいですか。|そうなんですね。さいきんはおいそがしいですか。|sō na n desu ne. saikin wa o-isogashii desu ka?|Is that so. Have you been busy lately?|Achha. Aajkal busy hain?
+a|へえ、いいですね。仕事はどうですか。|へえ、いいですね。しごとはどうですか。|hē, ii desu ne. shigoto wa dō desu ka?|Oh, nice. How’s work?|Wah. Kaam kaisa chal raha hai?
+a|そうなんだ！最近、忙しい？|そうなんだ！さいきん、いそがしい？|sō na n da! saikin, isogashii?|Oh really! Busy lately?|Achha! Aajkal busy ho?|Casual
+@dlg:c-social:5
+b|はい、おかげさまで忙しくしております。でも、やりがいがあります。|はい、おかげさまでいそがしくしております。でも、やりがいがあります。|hai, okagesama de isogashiku shite orimasu. demo, yarigai ga arimasu.|Yes, I’m kept busy, thankfully. But it’s rewarding.|Haan, kaafi busy hoon. Par kaam mein mazaa aata hai.
+a|少し忙しいですけど、毎日楽しいです。|すこしいそがしいですけど、まいにちたのしいです。|sukoshi isogashii desu kedo, mainichi tanoshii desu.|A little busy, but every day is fun.|Thoda busy hoon, par roz mazaa aata hai.
+a|はい。でも、いい経験になっています。|はい。でも、いいけいけんになっています。|hai. demo, ii keiken ni natte imasu.|Yes. But it’s good experience.|Haan. Par achha anubhav mil raha hai.
+@dlg:c-social:6
+b|本日はごちそうさまでした。ぜひまたご一緒させてください。|ほんじつはごちそうさまでした。ぜひまたごいっしょさせてください。|honjitsu wa gochisōsama deshita. zehi mata go-issho sasete kudasai.|Thank you for tonight. I’d love to join you again.|Aaj ke liye shukriya. Phir zaroor saath chalunga/chalungi.
+a|今日は楽しかったです。ありがとうございました。|きょうはたのしかったです。ありがとうございました。|kyō wa tanoshikatta desu. arigatō gozaimashita.|I had a great time today. Thank you.|Aaj bahut mazaa aaya. Shukriya.
+a|ごちそうさまでした。次は私がご馳走します。|ごちそうさまでした。つぎはわたしがごちそうします。|gochisōsama deshita. tsugi wa watashi ga gochisō shimasu.|Thanks for the treat. Next time it’s on me.|Treat ke liye shukriya. Agli baar meri taraf se.
+@dlg:c-it:0
+b|佐藤さん、今少しよろしいでしょうか。|さとうさん、いますこしよろしいでしょうか。|Satō-san, ima sukoshi yoroshii deshō ka?|Sato-san, do you have a moment?|Sato-san, kya abhi thoda samay hai?
+a|佐藤さん、お忙しいところすみません。|さとうさん、おいそがしいところすみません。|Satō-san, o-isogashii tokoro sumimasen.|Sato-san, sorry to bother you.|Sato-san, disturb karne ke liye maaf kijiye.
+a|佐藤さん、少しお時間いただけますか。|さとうさん、すこしおじかんいただけますか。|Satō-san, sukoshi o-jikan itadakemasu ka?|Sato-san, could I have a little of your time?|Sato-san, thoda samay denge?
+@dlg:c-it:1
+b|はい、どうされましたか。|はい、どうされましたか。|hai, dō saremashita ka?|Yes, what can I do for you?|Haan, kya hua?
+a|うん、何かあった？|うん、なにかあった？|un, nani ka atta?|Yeah, something up?|Haan, kuch hua?|Casual
+a|はい、大丈夫ですよ。|はい、だいじょうぶですよ。|hai, daijōbu desu yo.|Yes, I’m free.|Haan, bataiye.
+@dlg:c-it:2
+b|このソフトをインストールしたいのですが、お手伝いいただけますか。|このソフトをインストールしたいのですが、おてつだいいただけますか。|kono sofuto o insutōru shitai no desu ga, o-tetsudai itadakemasu ka?|I’d like to install this software. Could you help me?|Yeh software install karna hai, madad kar denge?
+a|このソフトのインストールの仕方を教えてもらえますか。|このソフトのインストールのしかたをおしえてもらえますか。|kono sofuto no insutōru no shikata o oshiete moraemasu ka?|Could you show me how to install this software?|Yeh software kaise install karte hain, bata denge?
+a|このソフトを入れたいんですが、うまくいかなくて。|このソフトをいれたいんですが、うまくいかなくて。|kono sofuto o iretai n desu ga, umaku ikanakute.|I want to put this software on, but it isn’t working.|Yeh software daalna hai par ho nahi raha.
+@dlg:c-it:3
+b|承知しました。管理者権限が必要ですので、パスワードを入力いたします。|しょうちしました。かんりしゃけんげんがひつようですので、パスワードをにゅうりょくいたします。|shōchi shimashita. kanrisha kengen ga hitsuyō desu node, pasuwādo o nyūryoku itashimasu.|Certainly. It needs admin rights, so I’ll enter the password.|Theek hai. Admin rights chahiye, main password daal deta/deti hoon.
+a|いいですよ。管理者のパスワードがいるので、入れますね。|いいですよ。かんりしゃのパスワードがいるので、いれますね。|ii desu yo. kanrisha no pasuwādo ga iru node, iremasu ne.|Sure. It needs the admin password, so I’ll put it in.|Haan. Admin password chahiye, main daal deta/deti hoon.
+a|ちょっと貸してください。パスワードを入れます。|ちょっとかしてください。パスワードをいれます。|chotto kashite kudasai. pasuwādo o iremasu.|Let me have it for a sec. I’ll enter the password.|Zara dijiye. Password daal deta/deti hoon.
+@dlg:c-it:4
+b|お手数をおかけして申し訳ございません。|おてすうをおかけしてもうしわけございません。|o-tesū o okake shite mōshiwake gozaimasen.|I’m very sorry to trouble you.|Aapko takleef di, maafi chahta/chahti hoon.
+a|お忙しいのに、ありがとうございます。|おいそがしいのに、ありがとうございます。|o-isogashii noni, arigatō gozaimasu.|Thank you, even though you’re busy.|Aap busy hokar bhi madad kar rahe hain, shukriya.
+a|すみません、助かります。|すみません、たすかります。|sumimasen, tasukarimasu.|Sorry, and thanks, that helps.|Maaf kijiye, badi madad hai.
+@dlg:c-it:5
+b|完了しました。再起動をお試しください。|かんりょうしました。さいきどうをおためしください。|kanryō shimashita. saikidō o o-tameshi kudasai.|It’s done. Please try restarting.|Ho gaya. Restart karke dekhiye.
+a|入りました。一度再起動してください。|はいりました。いちどさいきどうしてください。|hairimashita. ichido saikidō shite kudasai.|It’s installed. Please restart once.|Install ho gaya. Ek baar restart kijiye.
+a|はい、終わりましたよ。再起動すれば使えます。|はい、おわりましたよ。さいきどうすればつかえます。|hai, owarimashita yo. saikidō sureba tsukaemasu.|There, done. Restart and you can use it.|Ho gaya. Restart karne par chalega.
+@dlg:c-it:6
+b|おかげさまで無事に動きました。ありがとうございました。|おかげさまでぶじにうごきました。ありがとうございました。|okagesama de buji ni ugokimashita. arigatō gozaimashita.|Thanks to you, it works now. Thank you very much.|Aapki wajah se chal gaya. Bahut shukriya.
+a|動きました！本当に助かりました。|うごきました！ほんとうにたすかりました。|ugokimashita! hontō ni tasukarimashita.|It works! You really saved me.|Chal gaya! Sach mein madad hui.
+a|ちゃんと使えます。ありがとうございます！|ちゃんとつかえます。ありがとうございます！|chanto tsukaemasu. arigatō gozaimasu!|It works properly. Thank you!|Theek se chal raha hai. Shukriya!
+@dlg:c-suggest:0
+b|課長、一つご提案させていただいてもよろしいでしょうか。|かちょう、ひとつごていあんさせていただいてもよろしいでしょうか。|kachō, hitotsu go-teian sasete itadaite mo yoroshii deshō ka?|Manager, may I make one suggestion?|Sir/Ma’am, kya main ek sujhaav de sakta/sakti hoon?
+a|課長、少しアイデアがあるんですが。|かちょう、すこしアイデアがあるんですが。|kachō, sukoshi aidea ga aru n desu ga.|Manager, I have a small idea.|Sir/Ma’am, mere paas ek idea hai.
+a|課長、ご相談したいことがあります。|かちょう、ごそうだんしたいことがあります。|kachō, go-sōdan shitai koto ga arimasu.|Manager, there’s something I’d like to discuss.|Sir/Ma’am, aapse kuch baat karni hai.
+@dlg:c-suggest:1
+b|はい、どうぞ。聞かせてください。|はい、どうぞ。きかせてください。|hai, dōzo. kikasete kudasai.|Yes, please. Let me hear it.|Haan, boliye. Sunaiye.
+a|いいよ。どんなこと？|いいよ。どんなこと？|ii yo. donna koto?|Sure. What is it?|Haan. Kya baat hai?
+a|うん、聞くよ。|うん、きくよ。|un, kiku yo.|OK, I’m listening.|Haan, bolo.
+@dlg:c-suggest:2
+b|報告書をエクセルで一元管理してはいかがでしょうか。|ほうこくしょをエクセルでいちげんかんりしてはいかがでしょうか。|hōkokusho o Ekuseru de ichigen kanri shite wa ikaga deshō ka?|How about managing all the reports in one Excel file?|Saari reports ek hi Excel mein rakhein toh kaisa?
+a|報告書をエクセルにまとめたらどうかと思うんですが。|ほうこくしょをエクセルにまとめたらどうかとおもうんですが。|hōkokusho o Ekuseru ni matometara dō ka to omou n desu ga.|I was thinking we could put the reports together in Excel.|Mujhe laga reports ko Excel mein jod dein toh achha rahega.
+a|報告書の管理にエクセルを使ってみませんか。|ほうこくしょのかんりにエクセルをつかってみませんか。|hōkokusho no kanri ni Ekuseru o tsukatte mimasen ka?|Shall we try using Excel to manage the reports?|Reports ke liye Excel try karein?
+@dlg:c-suggest:3
+b|なるほど。その理由を聞かせてもらえますか。|なるほど。そのりゆうをきかせてもらえますか。|naruhodo. sono riyū o kikasete moraemasu ka?|I see. Could you tell me the reason?|Achha. Iski wajah bataoge?
+a|へえ。どうしてそれがいいと思う？|へえ。どうしてそれがいいとおもう？|hē. dōshite sore ga ii to omou?|Oh? Why do you think that’s better?|Achha? Yeh behtar kyon lagta hai?
+a|面白いね。メリットは何？|おもしろいね。メリットはなに？|omoshiroi ne. meritto wa nani?|Interesting. What’s the benefit?|Dilchasp. Fayda kya hai?
+@dlg:c-suggest:4
+b|前職で同じ方法を導入したところ、作業時間が半分になりました。|ぜんしょくでおなじほうほうをどうにゅうしたところ、さぎょうじかんがはんぶんになりました。|zenshoku de onaji hōhō o dōnyū shita tokoro, sagyō jikan ga hanbun ni narimashita.|When we introduced the same method at my previous job, the work time was halved.|Pichhli naukri mein yahi tareeka apnaaya tha, kaam ka samay aadha ho gaya.
+a|前の職場でやってみたら、時間がかなり短くなりました。|まえのしょくばでやってみたら、じかんがかなりみじかくなりました。|mae no shokuba de yatte mitara, jikan ga kanari mijikaku narimashita.|We tried it at my old workplace and it saved a lot of time.|Pichhli jagah try kiya tha, kaafi samay bacha.
+a|一つにまとめると、探す時間が減るからです。|ひとつにまとめると、さがすじかんがへるからです。|hitotsu ni matomeru to, sagasu jikan ga heru kara desu.|Because keeping it in one place cuts the time spent searching.|Ek jagah rakhne se dhoondhne ka samay bachta hai.
+@dlg:c-suggest:5
+b|良いですね。では、来週から試験的に導入してみましょう。|よいですね。では、らいしゅうからしけんてきにどうにゅうしてみましょう。|yoi desu ne. dewa, raishū kara shikenteki ni dōnyū shite mimashō.|Good. Let’s trial it from next week.|Achha hai. Agle hafte se try karte hain.
+a|いいね。来週からやってみよう。|いいね。らいしゅうからやってみよう。|ii ne. raishū kara yatte miyō.|Nice. Let’s try it from next week.|Badhiya. Agle hafte se karte hain.
+a|わかった。じゃあ、準備をお願いね。|わかった。じゃあ、じゅんびをおねがいね。|wakatta. jā, junbi o onegai ne.|OK. Then please get it ready.|Theek hai. Toh taiyaari kar lo.
+@dlg:c-feedback:0
+b|田中さん、資料を作成いたしましたので、ご確認いただけますでしょうか。|たなかさん、しりょうをさくせいいたしましたので、ごかくにんいただけますでしょうか。|Tanaka-san, shiryō o sakusei itashimashita node, go-kakunin itadakemasu deshō ka?|Tanaka-san, I’ve prepared the document; could you check it?|Tanaka-san, document bana liya hai, kya aap check karenge?
+a|田中さん、資料ができたので、チェックしてもらえますか。|たなかさん、しりょうができたので、チェックしてもらえますか。|Tanaka-san, shiryō ga dekita node, chekku shite moraemasu ka?|Tanaka-san, the document is ready. Could you check it?|Tanaka-san, document taiyaar hai, check kar denge?
+a|田中さん、資料にご意見をいただけますか。|たなかさん、しりょうにごいけんをいただけますか。|Tanaka-san, shiryō ni go-iken o itadakemasu ka?|Tanaka-san, could I get your feedback on the document?|Tanaka-san, document par apni raay denge?
+@dlg:c-feedback:1
+b|拝見します。…全体的には良いと思いますが、こちらの数字が違うようです。|はいけんします。…ぜんたいてきにはよいとおもいますが、こちらのすうじがちがうようです。|haiken shimasu… zentaiteki ni wa yoi to omoimasu ga, kochira no sūji ga chigau yō desu.|Let me see… Overall it’s good, but this figure seems wrong.|Dekhta/dekhti hoon… Kul milaakar achha hai, par yeh number galat lagta hai.
+a|見ますね。…いいですね。ただ、この数字だけ確認してください。|みますね。…いいですね。ただ、このすうじだけかくにんしてください。|mimasu ne… ii desu ne. tada, kono sūji dake kakunin shite kudasai.|I’ll take a look… Good. Just check this number.|Dekhta/dekhti hoon… Achha hai. Bas yeh number check kar lo.
+a|うん、よくできてる。ここの数字、合ってる？|うん、よくできてる。ここのすうじ、あってる？|un, yoku dekiteru. koko no sūji, atteru?|Yeah, it’s well done. Is this number right?|Haan, achha bana hai. Yeh number sahi hai?|Casual
+@dlg:c-feedback:2
+b|ご指摘いただきありがとうございます。早急に修正いたします。|ごしてきいただきありがとうございます。さっきゅうにしゅうせいいたします。|go-shiteki itadaki arigatō gozaimasu. sakkyū ni shūsei itashimasu.|Thank you for pointing that out. I’ll correct it promptly.|Galti batane ke liye shukriya. Jaldi theek karta/karti hoon.
+a|すみません、確認して直します。|すみません、かくにんしてなおします。|sumimasen, kakunin shite naoshimasu.|Sorry, I’ll check and fix it.|Maaf kijiye, check karke theek karta/karti hoon.
+a|ありがとうございます。今すぐ直します。|ありがとうございます。いますぐなおします。|arigatō gozaimasu. ima sugu naoshimasu.|Thanks. I’ll fix it now.|Shukriya. Abhi theek karta/karti hoon.
+@dlg:c-feedback:3
+b|それから、グラフを加えると分かりやすくなると思います。|それから、グラフをくわえるとわかりやすくなるとおもいます。|sorekara, gurafu o kuwaeru to wakariyasuku naru to omoimasu.|Also, adding a graph would make it clearer, I think.|Aur, graph jodne se samajhna aasaan hoga.
+a|あと、グラフを入れてみたらどうかな。|あと、グラフをいれてみたらどうかな。|ato, gurafu o irete mitara dō ka na.|Also, how about putting in a graph?|Aur, graph daal kar dekho.
+a|グラフで見せると、もっと伝わると思うよ。|グラフでみせると、もっとつたわるとおもうよ。|gurafu de miseru to, motto tsutawaru to omou yo.|Showing it as a graph would get it across better.|Graph mein dikhaoge toh baat zyaada samajh aayegi.
+@dlg:c-feedback:4
+b|大変勉強になりました。修正後、改めてご確認をお願いいたします。|たいへんべんきょうになりました。しゅうせいご、あらためてごかくにんをおねがいいたします。|taihen benkyō ni narimashita. shūsei-go, aratamete go-kakunin o onegai itashimasu.|That was very instructive. Once revised, I’d ask you to check again.|Bahut kuch seekhne ko mila. Sudhaarne ke baad phir se check kijiyega.
+a|ありがとうございます。直したら、また見ていただけますか。|ありがとうございます。なおしたら、またみていただけますか。|arigatō gozaimasu. naoshitara, mata mite itadakemasu ka?|Thank you. Once I’ve fixed it, could you look again?|Shukriya. Theek karke phir dikhaun?
+a|なるほど。グラフも入れて、もう一度お見せします。|なるほど。グラフもいれて、もういちどおみせします。|naruhodo. gurafu mo irete, mō ichido o-mise shimasu.|I see. I’ll add a graph and show you again.|Samjha. Graph jodkar phir dikhata/dikhati hoon.
+@dlg:c-handover:0
+b|山田さん、来週休暇をいただくため、こちらの業務をお願いできますでしょうか。|やまださん、らいしゅうきゅうかをいただくため、こちらのぎょうむをおねがいできますでしょうか。|Yamada-san, raishū kyūka o itadaku tame, kochira no gyōmu o onegai dekimasu deshō ka?|Yamada-san, as I’m taking leave next week, could you take over this work?|Yamada-san, agle hafte chhutti par hoon, kya aap yeh kaam sambhal lenge?
+a|山田さん、来週お休みするので、この仕事を代わりにお願いしたいんですが。|やまださん、らいしゅうおやすみするので、このしごとをかわりにおねがいしたいんですが。|Yamada-san, raishū o-yasumi suru node, kono shigoto o kawari ni onegai shitai n desu ga.|Yamada-san, I’m off next week, so I’d like you to cover this work.|Yamada-san, agle hafte chhutti hai, yeh kaam aap dekh lenge?
+a|山田さん、来週の間、この仕事を引き継いでもらえますか。|やまださん、らいしゅうのあいだ、このしごとをひきついでもらえますか。|Yamada-san, raishū no aida, kono shigoto o hikitsuide moraemasu ka?|Yamada-san, could you take over this work next week?|Yamada-san, agle hafte yeh kaam sambhaal lenge?
+@dlg:c-handover:1
+b|承知しました。現在の進捗状況を教えていただけますか。|しょうちしました。げんざいのしんちょくじょうきょうをおしえていただけますか。|shōchi shimashita. genzai no shinchoku jōkyō o oshiete itadakemasu ka?|Certainly. Could you tell me the current status?|Theek hai. Abhi kaam kahaan tak pahuncha hai, bataiye.
+a|いいですよ。今、どんな状況ですか。|いいですよ。いま、どんなじょうきょうですか。|ii desu yo. ima, donna jōkyō desu ka?|Sure. What’s the situation now?|Haan. Abhi kya sthiti hai?
+a|もちろん。どこまで終わってますか。|もちろん。どこまでおわってますか。|mochiron. doko made owattemasu ka?|Of course. How much is done?|Bilkul. Kitna ho gaya hai?
+@dlg:c-handover:2
+b|こちらまで完了しております。残りはこちらです。引き継ぎ資料も用意いたしました。|こちらまでかんりょうしております。のこりはこちらです。ひきつぎしりょうもよういいたしました。|kochira made kanryō shite orimasu. nokori wa kochira desu. hikitsugi shiryō mo yōi itashimashita.|It’s completed up to here; this is what remains. I’ve also prepared handover notes.|Yahaan tak poora hai. Baaki yeh hai. Handover notes bhi bana diye hain.
+a|ここまでは済んでいて、残りはこの二つです。メモも作っておきました。|ここまではすんでいて、のこりはこのふたつです。メモもつくっておきました。|koko made wa sunde ite, nokori wa kono futatsu desu. memo mo tsukutte okimashita.|Up to here is done; these two are left. I’ve made notes too.|Yahaan tak ho gaya, yeh do baaki hain. Notes bhi bana liye.
+a|半分くらい終わっています。詳しくは引き継ぎ資料を見てください。|はんぶんくらいおわっています。くわしくはひきつぎしりょうをみてください。|hanbun kurai owatte imasu. kuwashiku wa hikitsugi shiryō o mite kudasai.|About half is done. Details are in the handover notes.|Lagbhag aadha ho gaya. Detail handover notes mein hai.
+@dlg:c-handover:3
+b|急ぎの案件はございますか。|いそぎのあんけんはございますか。|isogi no anken wa gozaimasu ka?|Are there any urgent matters?|Koi urgent kaam hai?
+a|期限が近いものはありますか。|きげんがちかいものはありますか。|kigen ga chikai mono wa arimasu ka?|Is anything due soon?|Kisi ki deadline paas hai?
+a|すぐやらなきゃいけないことはある？|すぐやらなきゃいけないことはある？|sugu yaranakya ikenai koto wa aru?|Anything I need to do right away?|Kuch turant karna hai?|Casual
+@dlg:c-handover:4
+b|金曜日までにお客様へご回答する件のみです。|きんようびまでにおきゃくさまへごかいとうするけんのみです。|kin’yōbi made ni o-kyaku-sama e go-kaitō suru ken nomi desu.|Only the reply to a customer due by Friday.|Bas ek customer ko shukravaar tak jawaab dena hai.
+a|お客様への返事だけ、金曜日までにお願いします。|おきゃくさまへのへんじだけ、きんようびまでにおねがいします。|o-kyaku-sama e no henji dake, kin’yōbi made ni onegaishimasu.|Just the customer reply, by Friday please.|Bas customer ko jawaab, shukravaar tak.
+a|急ぎは一件だけです。金曜日までにお客様に返信が必要です。|いそぎはいっけんだけです。きんようびまでにおきゃくさまにへんしんがひつようです。|isogi wa ikken dake desu. kin’yōbi made ni o-kyaku-sama ni henshin ga hitsuyō desu.|Only one urgent thing: a customer needs a reply by Friday.|Sirf ek urgent kaam: customer ko shukravaar tak reply dena hai.
+@dlg:c-handover:5
+b|承知しました。お任せください。|しょうちしました。おまかせください。|shōchi shimashita. o-makase kudasai.|Understood. Please leave it to me.|Theek hai. Mujh par chhod dijiye.
+a|わかりました。安心して休んでください。|わかりました。あんしんしてやすんでください。|wakarimashita. anshin shite yasunde kudasai.|Got it. Enjoy your time off without worrying.|Theek hai. Befikr hokar chhutti manaiye.
+a|了解です。何かあったら連絡しますね。|りょうかいです。なにかあったられんらくしますね。|ryōkai desu. nani ka attara renraku shimasu ne.|OK. I’ll get in touch if anything comes up.|Theek hai. Kuch hua toh bataunga/bataungi.
+@dlg:c-handover:6
+b|大変助かります。何かございましたら、いつでもお声がけください。|たいへんたすかります。なにかございましたら、いつでもおこえがけください。|taihen tasukarimasu. nani ka gozaimashitara, itsu demo o-koegake kudasai.|That’s a great help. If ever you need anything, just let me know.|Badi madad hai. Kabhi bhi kuch chahiye ho toh bataiyega.
+a|ありがとうございます。今度は私が手伝いますね。|ありがとうございます。こんどはわたしがてつだいますね。|arigatō gozaimasu. kondo wa watashi ga tetsudaimasu ne.|Thank you. Next time I’ll help you.|Shukriya. Agli baar main madad karunga/karungi.
+a|本当にありがとうございます。この借りは返します。|ほんとうにありがとうございます。このかりはかえします。|hontō ni arigatō gozaimasu. kono kari wa kaeshimasu.|Thank you so much. I owe you one.|Bahut shukriya. Yeh ehsaan chukaunga/chukaungi.
+@dlg:c-runmeeting:0
+b|定刻になりましたので、始めさせていただきます。本日の議題は三点です。|ていこくになりましたので、はじめさせていただきます。ほんじつのぎだいはさんてんです。|teikoku ni narimashita node, hajimesasete itadakimasu. honjitsu no gidai wa santen desu.|It’s the scheduled time, so let us begin. There are three items on today’s agenda.|Samay ho gaya hai, shuru karte hain. Aaj ke teen mudde hain.
+a|皆さん揃ったので、始めます。今日の議題は三つです。|みなさんそろったので、はじめます。きょうのぎだいはみっつです。|minasan sorotta node, hajimemasu. kyō no gidai wa mittsu desu.|Everyone’s here, so let’s start. Three items today.|Sab aa gaye, shuru karte hain. Aaj teen mudde hain.
+a|では、始めましょう。今日は三つ話します。|では、はじめましょう。きょうはみっつはなします。|dewa, hajimemashō. kyō wa mittsu hanashimasu.|Let’s begin. We’ll cover three things today.|Chaliye shuru karein. Aaj teen baatein karenge.
+@dlg:c-runmeeting:1
+b|よろしくお願いいたします。|よろしくおねがいいたします。|yoroshiku onegai itashimasu.|Thank you (for chairing).|Shukriya.
+a|お願いします。|おねがいします。|onegaishimasu.|Please go ahead.|Shuru kijiye.
+a|はい、お願いします。|はい、おねがいします。|hai, onegaishimasu.|Yes, please.|Haan, kijiye.
+@dlg:c-runmeeting:2
+b|まず、先週の進捗を確認いたします。…ご質問はございますか。|まず、せんしゅうのしんちょくをかくにんいたします。…ごしつもんはございますか。|mazu, senshū no shinchoku o kakunin itashimasu… go-shitsumon wa gozaimasu ka?|First, let’s review last week’s progress… Are there any questions?|Pehle pichhle hafte ki progress dekhte hain… Koi sawaal?
+a|一つ目は、先週の進み具合です。…ここまでで質問はありますか。|ひとつめは、せんしゅうのすすみぐあいです。…ここまででしつもんはありますか。|hitotsu-me wa, senshū no susumi-guai desu… koko made de shitsumon wa arimasu ka?|Item one: last week’s progress… Any questions so far?|Pehla mudda: pichhle hafte ki pragati… Ab tak koi sawaal?
+a|最初に、先週の状況を共有します。…何かありますか。|さいしょに、せんしゅうのじょうきょうをきょうゆうします。…なにかありますか。|saisho ni, senshū no jōkyō o kyōyū shimasu… nani ka arimasu ka?|First, I’ll share last week’s status… Anything?|Pehle pichhle hafte ki sthiti batata/batati hoon… Kuch hai?
+@dlg:c-runmeeting:3
+b|一点よろしいでしょうか。納期に変更はございませんか。|いってんよろしいでしょうか。のうきにへんこうはございませんか。|itten yoroshii deshō ka? nōki ni henkō wa gozaimasen ka?|May I raise one point? Is there any change to the delivery date?|Ek baat poochhun? Delivery date mein koi badlaav nahi?
+a|質問です。納期はそのままですか。|しつもんです。のうきはそのままですか。|shitsumon desu. nōki wa sono mama desu ka?|A question: is the delivery date the same?|Sawaal hai: delivery date wahi hai?
+a|一つだけ。スケジュールに影響はありませんか。|ひとつだけ。スケジュールにえいきょうはありませんか。|hitotsu dake. sukejūru ni eikyō wa arimasen ka?|Just one thing: no impact on the schedule?|Bas ek baat: schedule par koi asar nahi?
+@dlg:c-runmeeting:4
+b|はい、変更はございません。では、本日の内容をまとめます。議事録は後ほど共有いたします。|はい、へんこうはございません。では、ほんじつのないようをまとめます。ぎじろくはのちほどきょうゆういたします。|hai, henkō wa gozaimasen. dewa, honjitsu no naiyō o matomemasu. gijiroku wa nochihodo kyōyū itashimasu.|Yes, there is no change. Let me summarise today. I’ll share the minutes later.|Haan, koi badlaav nahi. Ab aaj ki baatein samet-ta/sameti hoon. Notes baad mein share karunga/karungi.
+a|はい、予定通りです。最後にまとめて、議事録は今日中に送ります。|はい、よていどおりです。さいごにまとめて、ぎじろくはきょうじゅうにおくります。|hai, yotei-dōri desu. saigo ni matomete, gijiroku wa kyō-jū ni okurimasu.|Yes, it’s on schedule. I’ll wrap up and send the minutes today.|Haan, schedule ke hisaab se. Ant mein saar, aur notes aaj hi bhejunga/bhejungi.
+a|変わりません。では、決まったことを確認して終わりにしましょう。|かわりません。では、きまったことをかくにんしておわりにしましょう。|kawarimasen. dewa, kimatta koto o kakunin shite owari ni shimashō.|No change. Let’s confirm what we decided and finish.|Koi badlaav nahi. Jo tay hua usse dohraakar khatam karte hain.
+@dlg:c-runmeeting:5
+b|本日はお忙しい中、ありがとうございました。|ほんじつはおいそがしいなか、ありがとうございました。|honjitsu wa o-isogashii naka, arigatō gozaimashita.|Thank you for your time today despite your busy schedules.|Aaj busy hote hue bhi aane ke liye shukriya.
+a|お疲れ様でした。ありがとうございました。|おつかれさまでした。ありがとうございました。|otsukaresama deshita. arigatō gozaimashita.|Thanks, everyone. Good work.|Sabka shukriya.
+a|以上で終わります。ありがとうございました。|いじょうでおわります。ありがとうございました。|ijō de owarimasu. arigatō gozaimashita.|That’s the end of the meeting. Thank you.|Meeting yahin khatam. Shukriya.
+@dlg:c-thanks:0
+b|{name}さん、昨日のプレゼンテーション、大変素晴らしかったです。|{name}さん、きのうのプレゼンテーション、たいへんすばらしかったです。|{nameRo}-san, kinō no purezentēshon, taihen subarashikatta desu.|{nameRo}, yesterday’s presentation was excellent.|{nameRo}-san, kal ki presentation behad shaandaar thi.
+a|{name}さん、昨日の発表、よかったですよ。|{name}さん、きのうのはっぴょう、よかったですよ。|{nameRo}-san, kinō no happyō, yokatta desu yo.|{nameRo}, yesterday’s talk was good.|{nameRo}-san, kal ki presentation achhi thi.
+a|{name}さん、昨日のプレゼン、評判よかったですよ。|{name}さん、きのうのプレゼン、ひょうばんよかったですよ。|{nameRo}-san, kinō no purezen, hyōban yokatta desu yo.|{nameRo}, people liked yesterday’s presentation.|{nameRo}-san, kal ki presentation sabko pasand aayi.
+@dlg:c-thanks:1
+b|恐縮です。皆様のご協力のおかげです。|きょうしゅくです。みなさまのごきょうりょくのおかげです。|kyōshuku desu. minasama no go-kyōryoku no okage desu.|I’m honoured. It’s thanks to everyone’s cooperation.|Aap itna keh rahe hain. Yeh sab ke sahyog se hua.
+a|ありがとうございます。チームのおかげです。|ありがとうございます。チームのおかげです。|arigatō gozaimasu. chīmu no okage desu.|Thank you. It’s thanks to the team.|Shukriya. Team ki wajah se hua.
+a|そう言っていただけると嬉しいです。|そういっていただけるとうれしいです。|sō itte itadakeru to ureshii desu.|I’m glad to hear you say that.|Aapke aisa kehne se khushi hui.
+@dlg:c-thanks:2
+b|資料も非常に分かりやすかったです。さすがですね。|しりょうもひじょうにわかりやすかったです。さすがですね。|shiryō mo hijō ni wakariyasukatta desu. sasuga desu ne.|The materials were very clear too. Impressive as ever.|Material bhi bahut saaf tha. Kamaal hai.
+a|スライドも見やすかったです。|スライドもみやすかったです。|suraido mo miyasukatta desu.|The slides were easy to read too.|Slides bhi dekhne mein aasaan thi.
+a|資料もよくまとまっていましたね。|しりょうもよくまとまっていましたね。|shiryō mo yoku matomatte imashita ne.|The material was well organised too.|Material bhi achhe se bana tha.
+@dlg:c-thanks:3
+b|ありがとうございます。鈴木さんにご協力いただいたおかげで、大変助かりました。|ありがとうございます。すずきさんにごきょうりょくいただいたおかげで、たいへんたすかりました。|arigatō gozaimasu. Suzuki-san ni go-kyōryoku itadaita okage de, taihen tasukarimashita.|Thank you. Suzuki-san’s help was a great support.|Shukriya. Suzuki-san ki madad se bahut aasaani hui.
+a|ありがとうございます。鈴木さんがたくさん助けてくれました。|ありがとうございます。すずきさんがたくさんたすけてくれました。|arigatō gozaimasu. Suzuki-san ga takusan tasukete kuremashita.|Thank you. Suzuki-san helped me a lot.|Shukriya. Suzuki-san ne bahut madad ki.
+a|鈴木さんのアドバイスのおかげです。|すずきさんのアドバイスのおかげです。|Suzuki-san no adobaisu no okage desu.|It’s thanks to Suzuki-san’s advice.|Suzuki-san ki salaah ki wajah se.
+@dlg:c-thanks:4
+b|今後ともよろしくお願いいたします。|こんごともよろしくおねがいいたします。|kongo tomo yoroshiku onegai itashimasu.|I look forward to working with you from now on as well.|Aage bhi saath kaam karte rahenge.
+a|次も期待していますよ。|つぎもきたいしていますよ。|tsugi mo kitai shite imasu yo.|I’m expecting great things next time too.|Agli baar bhi umeed hai.
+a|これからも一緒に頑張りましょう。|これからもいっしょにがんばりましょう。|kore kara mo issho ni ganbarimashō.|Let’s keep working hard together.|Aage bhi saath mehnat karte hain.
+@dlg:c-thanks:5
+b|こちらこそ、今後ともよろしくお願いいたします。|こちらこそ、こんごともよろしくおねがいいたします。|kochira koso, kongo tomo yoroshiku onegai itashimasu.|Likewise, I look forward to working with you from now on.|Meri taraf se bhi, aage bhi saath kaam karte rahenge.
+a|はい、引き続き頑張ります。|はい、ひきつづきがんばります。|hai, hikitsuzuki ganbarimasu.|Yes, I’ll keep it up.|Haan, aise hi mehnat karta/karti rahunga/rahungi.
+a|ありがとうございます。期待に応えられるようにします。|ありがとうございます。きたいにこたえられるようにします。|arigatō gozaimasu. kitai ni kotaerareru yō ni shimasu.|Thank you. I’ll try to live up to that.|Shukriya. Umeed par khara utarne ki koshish karunga/karungi.
+@dlg:c-disagree:0
+b|来月から、報告書を毎日提出していただくことにします。|らいげつから、ほうこくしょをまいにちていしゅつしていただくことにします。|raigetsu kara, hōkokusho o mainichi teishutsu shite itadaku koto ni shimasu.|From next month, we’ll ask for a report to be submitted every day.|Agle mahine se roz report jama karni hogi.
+a|来月から、日報を始めようと思います。|らいげつから、にっぽうをはじめようとおもいます。|raigetsu kara, nippō o hajimeyō to omoimasu.|I’m thinking of starting daily reports from next month.|Agle mahine se daily report shuru karna chahta/chahti hoon.
+a|来月からは、毎日報告をお願いします。|らいげつからは、まいにちほうこくをおねがいします。|raigetsu kara wa, mainichi hōkoku o onegaishimasu.|From next month, please report every day.|Agle mahine se roz report dijiye.
+@dlg:c-disagree:1
+b|おっしゃることは理解いたしますが、一点懸念がございます。|おっしゃることはりかいいたしますが、いってんけねんがございます。|ossharu koto wa rikai itashimasu ga, itten kenen ga gozaimasu.|I understand your point, but I have one concern.|Aapki baat samajh raha/rahi hoon, par ek chinta hai.
+a|趣旨は分かります。ただ、一つ心配な点があります。|しゅしはわかります。ただ、ひとつしんぱいなてんがあります。|shushi wa wakarimasu. tada, hitotsu shinpai na ten ga arimasu.|I see the aim. But there’s one thing I’m worried about.|Maqsad samajh aaya. Par ek baat ki fikr hai.
+a|いい考えだと思いますが、少し気になることがあります。|いいかんがえだとおもいますが、すこしきになることがあります。|ii kangae da to omoimasu ga, sukoshi ki ni naru koto ga arimasu.|I think it’s a good idea, but something bothers me a little.|Achha idea hai, par ek baat khatak rahi hai.
+@dlg:c-disagree:2
+b|どのような点でしょうか。|どのようなてんでしょうか。|dono yō na ten deshō ka?|What point would that be?|Kaunsi baat?
+a|何が気になるの？|なにがきになるの？|nani ga ki ni naru no?|What’s bothering you?|Kya baat khatak rahi hai?
+a|どういうこと？|どういうこと？|dō iu koto?|What do you mean?|Matlab?
+@dlg:c-disagree:3
+b|毎日となると、作業時間が圧迫される恐れがございます。週に一度ではいかがでしょうか。|まいにちとなると、さぎょうじかんがあっぱくされるおそれがございます。しゅうにいちどではいかがでしょうか。|mainichi to naru to, sagyō jikan ga appaku sareru osore ga gozaimasu. shū ni ichido de wa ikaga deshō ka?|If it’s daily, it may squeeze our working time. How about once a week?|Roz hoga toh kaam ka samay kam pad sakta hai. Hafte mein ek baar kaisa?
+a|毎日は少し負担が大きいかもしれません。週一回でも十分だと思います。|まいにちはすこしふたんがおおきいかもしれません。しゅういっかいでもじゅうぶんだとおもいます。|mainichi wa sukoshi futan ga ōkii kamo shiremasen. shū ikkai demo jūbun da to omoimasu.|Daily may be a bit of a burden. I think once a week is enough.|Roz thoda bojh ho sakta hai. Hafte mein ek baar kaafi hoga.
+a|毎日だと時間が足りなくなりそうです。週一回にしませんか。|まいにちだとじかんがたりなくなりそうです。しゅういっかいにしませんか。|mainichi da to jikan ga tarinaku narisō desu. shū ikkai ni shimasen ka?|Daily might leave us short of time. Shall we make it weekly?|Roz karne se samay kam padega. Hafte mein ek baar karein?
+@dlg:c-disagree:4
+b|なるほど。では、データを確認したうえで判断しましょう。|なるほど。では、データをかくにんしたうえではんだんしましょう。|naruhodo. dewa, dēta o kakunin shita ue de handan shimashō.|I see. Then let’s decide after checking the data.|Samjha. Toh data dekhkar faisla karte hain.
+a|そうか。じゃあ、まず一か月試してみよう。|そうか。じゃあ、まずいっかげつためしてみよう。|sō ka. jā, mazu ikkagetsu tameshite miyō.|I see. Then let’s try it for a month first.|Achha. Toh pehle ek mahina try karte hain.
+a|一理あるね。もう少し考えてみるよ。|いちりあるね。もうすこしかんがえてみるよ。|ichiri aru ne. mō sukoshi kangaete miru yo.|You have a point. I’ll think about it more.|Baat mein dum hai. Thoda aur sochta/sochti hoon.
+@dlg:c-disagree:5
+b|ご検討いただき、ありがとうございます。|ごけんとういただき、ありがとうございます。|go-kentō itadaki, arigatō gozaimasu.|Thank you for considering it.|Is par vichaar karne ke liye shukriya.
+a|聞いていただいて、ありがとうございます。|きいていただいて、ありがとうございます。|kiite itadaite, arigatō gozaimasu.|Thank you for listening.|Sunne ke liye shukriya.
+a|ありがとうございます。データを準備します。|ありがとうございます。データをじゅんびします。|arigatō gozaimasu. dēta o junbi shimasu.|Thank you. I’ll prepare the data.|Shukriya. Data taiyaar karta/karti hoon.
+@dlg:c-deadline:0
+b|{name}さん、こちらの資料を金曜日までにお願いできますか。|{name}さん、こちらのしりょうをきんようびまでにおねがいできますか。|{nameRo}-san, kochira no shiryō o kin’yōbi made ni onegai dekimasu ka?|{nameRo}, could you do this document by Friday?|{nameRo}-san, kya yeh document shukravaar tak kar denge?
+a|{name}さん、金曜日までにこれ作れる？|{name}さん、きんようびまでにこれつくれる？|{nameRo}-san, kin’yōbi made ni kore tsukureru?|{nameRo}, can you make this by Friday?|{nameRo}, shukravaar tak yeh bana loge?|Casual
+a|{name}さん、この資料、金曜日締め切りでお願いしたいんだけど。|{name}さん、このしりょう、きんようびしめきりでおねがいしたいんだけど。|{nameRo}-san, kono shiryō, kin’yōbi shimekiri de onegai shitai n da kedo.|{nameRo}, I’d like this document with a Friday deadline.|{nameRo}, yeh document shukravaar ki deadline ke saath chahiye.
+@dlg:c-deadline:1
+b|申し訳ございません、現在ほかの業務で手一杯の状況です。どちらを優先すべきでしょうか。|もうしわけございません、げんざいほかのぎょうむでていっぱいのじょうきょうです。どちらをゆうせんすべきでしょうか。|mōshiwake gozaimasen, genzai hoka no gyōmu de te-ippai no jōkyō desu. dochira o yūsen subeki deshō ka?|I’m very sorry, I’m fully occupied with other work. Which should I prioritise?|Maaf kijiye, abhi doosre kaam mein poora busy hoon. Pehle kaunsa karun?
+a|すみません、今ほかの仕事も締め切りが近くて…。どれを先にやればいいですか。|すみません、いまほかのしごともしめきりがちかくて…。どれをさきにやればいいですか。|sumimasen, ima hoka no shigoto mo shimekiri ga chikakute… dore o saki ni yareba ii desu ka?|Sorry, my other work is due soon too… Which should I do first?|Maaf kijiye, doosre kaam ki deadline bhi paas hai… Pehle kaunsa karun?
+a|今抱えている仕事があるので、優先順位を決めていただけますか。|いまかかえているしごとがあるので、ゆうせんじゅんいをきめていただけますか。|ima kakaete iru shigoto ga aru node, yūsen jun’i o kimete itadakemasu ka?|I have other work on, so could you set the priority?|Mere paas aur kaam hai, kya aap priority tay karenge?
+@dlg:c-deadline:2
+b|そうですね、こちらの方が急ぎかと思います。|そうですね、こちらのほうがいそぎかとおもいます。|sō desu ne, kochira no hō ga isogi ka to omoimasu.|Let me see, I think this one is more urgent.|Hmm, mujhe lagta hai yeh zyaada urgent hai.
+a|こっちを先にお願い。|こっちをさきにおねがい。|kotchi o saki ni onegai.|Do this one first, please.|Pehle yeh kar do.
+a|うーん、今回はこっちが優先かな。|うーん、こんかいはこっちがゆうせんかな。|ūn, konkai wa kotchi ga yūsen ka na.|Hmm, this one takes priority this time.|Hmm, is baar yeh pehle.
+@dlg:c-deadline:3
+b|承知しました。ただ、全てを金曜日までに仕上げるのは難しいため、半分でしたら金曜日に提出可能です。|しょうちしました。ただ、すべてをきんようびまでにしあげるのはむずかしいため、はんぶんでしたらきんようびにていしゅつかのうです。|shōchi shimashita. tada, subete o kin’yōbi made ni shiageru no wa muzukashii tame, hanbun deshitara kin’yōbi ni teishutsu kanō desu.|Understood. Finishing everything by Friday is difficult, but I can submit half on Friday.|Theek hai. Sab shukravaar tak mushkil hai, par aadha shukravaar ko de sakta/sakti hoon.
+a|わかりました。金曜日は半分まで、残りは来週でもいいですか。|わかりました。きんようびははんぶんまで、のこりはらいしゅうでもいいですか。|wakarimashita. kin’yōbi wa hanbun made, nokori wa raishū demo ii desu ka?|OK. Half by Friday, and the rest next week, is that OK?|Theek hai. Shukravaar tak aadha, baaki agle hafte chalega?
+a|わかりました。でも、全部は無理なので、まず半分出します。|わかりました。でも、ぜんぶはむりなので、まずはんぶんだします。|wakarimashita. demo, zenbu wa muri na node, mazu hanbun dashimasu.|Understood. But all of it isn’t possible, so I’ll hand in half first.|Theek hai. Par sab nahi ho paayega, pehle aadha deta/deti hoon.
+@dlg:c-deadline:4
+b|では、残りは月曜日で結構です。|では、のこりはげつようびでけっこうです。|dewa, nokori wa getsuyōbi de kekkō desu.|Then the rest by Monday is fine.|Toh baaki somvaar tak theek hai.
+a|わかった。残りは週明けでいいよ。|わかった。のこりはしゅうあけでいいよ。|wakatta. nokori wa shūake de ii yo.|OK. The rest can wait till early next week.|Theek hai. Baaki hafte ki shuruaat mein.
+a|じゃあ、月曜日の朝までにお願い。|じゃあ、げつようびのあさまでにおねがい。|jā, getsuyōbi no asa made ni onegai.|Then by Monday morning, please.|Toh somvaar subah tak kar dena.
+@dlg:c-deadline:5
+b|ご配慮いただき、ありがとうございます。|ごはいりょいただき、ありがとうございます。|go-hairyo itadaki, arigatō gozaimasu.|Thank you for your consideration.|Aapki samajh ke liye shukriya.
+a|ありがとうございます。それなら間に合います。|ありがとうございます。それならまにあいます。|arigatō gozaimasu. sore nara maniaimasu.|Thank you. Then I’ll make it in time.|Shukriya. Tab ho jaayega.
+a|ありがとうございます。月曜日に必ず出します。|ありがとうございます。げつようびにかならずだします。|arigatō gozaimasu. getsuyōbi ni kanarazu dashimasu.|Thank you. I’ll definitely hand it in on Monday.|Shukriya. Somvaar ko zaroor de dunga/dungi.
+@dlg:c-remote:0
+b|お疲れ様です。今、少しお時間よろしいでしょうか。|おつかれさまです。いま、すこしおじかんよろしいでしょうか。|otsukaresama desu. ima, sukoshi o-jikan yoroshii deshō ka?|Hello. Do you have a moment now?|Namaste. Kya abhi thoda samay hai?
+a|お疲れ様です。五分ほど話せますか。|おつかれさまです。ごふんほどはなせますか。|otsukaresama desu. go-fun hodo hanasemasu ka?|Hi. Can we talk for about five minutes?|Hi. Paanch minute baat ho sakti hai?
+a|お疲れ様です。ちょっと通話できますか。|おつかれさまです。ちょっとつうわできますか。|otsukaresama desu. chotto tsūwa dekimasu ka?|Hi. Can we have a quick call?|Hi. Ek chhoti si call ho sakti hai?
+@dlg:c-remote:1
+b|はい、問題ございません。カメラをオンにいたします。|はい、もんだいございません。カメラをオンにいたします。|hai, mondai gozaimasen. kamera o on ni itashimasu.|Yes, no problem. I’ll turn my camera on.|Haan, koi dikkat nahi. Camera on karta/karti hoon.
+a|はい、どうぞ。今カメラつけますね。|はい、どうぞ。いまカメラつけますね。|hai, dōzo. ima kamera tsukemasu ne.|Yes, go ahead. I’ll switch my camera on now.|Haan, boliye. Abhi camera on karta/karti hoon.
+a|大丈夫です。少しお待ちください。|だいじょうぶです。すこしおまちください。|daijōbu desu. sukoshi o-machi kudasai.|Sure. Just a moment.|Theek hai. Ek minute.
+@dlg:c-remote:2
+b|ありがとうございます。資料を拝見しながらお話ししたいのですが。|ありがとうございます。しりょうをはいけんしながらおはなししたいのですが。|arigatō gozaimasu. shiryō o haiken shinagara o-hanashi shitai no desu ga.|Thank you. I’d like to talk while looking at the document.|Shukriya. Document dekhte hue baat karna chahta/chahti hoon.
+a|ありがとうございます。資料を一緒に見たいんですが。|ありがとうございます。しりょうをいっしょにみたいんですが。|arigatō gozaimasu. shiryō o issho ni mitai n desu ga.|Thanks. I’d like us to look at the document together.|Shukriya. Document saath mein dekhna hai.
+a|ありがとうございます。例の資料について相談させてください。|ありがとうございます。れいのしりょうについてそうだんさせてください。|arigatō gozaimasu. rei no shiryō ni tsuite sōdan sasete kudasai.|Thanks. Let me discuss that document with you.|Shukriya. Us document ke baare mein baat karni hai.
+@dlg:c-remote:3
+b|では、画面を共有してもよろしいでしょうか。|では、がめんをきょうゆうしてもよろしいでしょうか。|dewa, gamen o kyōyū shite mo yoroshii deshō ka?|Then may I share my screen?|Toh kya main screen share kar sakta/sakti hoon?
+a|じゃあ、私の画面を出しますね。|じゃあ、わたしのがめんをだしますね。|jā, watashi no gamen o dashimasu ne.|Then I’ll put my screen up.|Toh main apni screen dikhata/dikhati hoon.
+a|画面共有しますね。見えたら教えてください。|がめんきょうゆうしますね。みえたらおしえてください。|gamen kyōyū shimasu ne. mietara oshiete kudasai.|I’ll share my screen. Tell me when you see it.|Screen share karta/karti hoon. Dikhe toh batana.
+@dlg:c-remote:4
+b|あ、音声が少々遅れているようです。|あ、おんせいがしょうしょうおくれているようです。|a, onsei ga shōshō okurete iru yō desu.|Oh, the audio seems to be slightly delayed.|Arre, awaaz thodi der se aa rahi hai.
+a|あれ、声が途切れていますね。|あれ、こえがとぎれていますね。|are, koe ga togirete imasu ne.|Hmm, your voice is cutting out.|Arre, awaaz toot rahi hai.
+a|少し音が遅れて聞こえます。|すこしおとがおくれてきこえます。|sukoshi oto ga okurete kikoemasu.|The sound is coming through a bit late.|Awaaz thodi der se sunaai de rahi hai.
+@dlg:c-remote:5
+b|申し訳ございません。一度退出し、再度入室いたします。|もうしわけございません。いちどたいしゅつし、さいどにゅうしついたします。|mōshiwake gozaimasen. ichido taishutsu shi, saido nyūshitsu itashimasu.|I’m sorry. I’ll leave once and rejoin.|Maaf kijiye. Ek baar nikal kar dobaara aata/aati hoon.
+a|すみません、入り直しますね。少々お待ちください。|すみません、はいりなおしますね。しょうしょうおまちください。|sumimasen, hairinaoshimasu ne. shōshō o-machi kudasai.|Sorry, I’ll rejoin. One moment, please.|Maaf kijiye, dobaara join karta/karti hoon. Ek minute.
+a|すみません、接続を確認してすぐ戻ります。|すみません、せつぞくをかくにんしてすぐもどります。|sumimasen, setsuzoku o kakunin shite sugu modorimasu.|Sorry, I’ll check my connection and be right back.|Maaf kijiye, connection check karke abhi aata/aati hoon.
+@dlg:c-ropes:0
+b|鈴木さん、こちらの作業手順をご教示いただけますでしょうか。|すずきさん、こちらのさぎょうてじゅんをごきょうじいただけますでしょうか。|Suzuki-san, kochira no sagyō tejun o go-kyōji itadakemasu deshō ka?|Suzuki-san, could you kindly instruct me in the procedure for this task?|Suzuki-san, kya aap is kaam ka tareeka sikha denge?
+a|鈴木さん、この作業のやり方を教えてもらえますか。|すずきさん、このさぎょうのやりかたをおしえてもらえますか。|Suzuki-san, kono sagyō no yarikata o oshiete moraemasu ka?|Suzuki-san, could you show me how to do this task?|Suzuki-san, yeh kaam kaise karte hain, sikha denge?
+a|鈴木さん、これの流れを一度見せていただけますか。|すずきさん、これのながれをいちどみせていただけますか。|Suzuki-san, kore no nagare o ichido misete itadakemasu ka?|Suzuki-san, could you show me the flow of this once?|Suzuki-san, iska poora process ek baar dikha denge?
+@dlg:c-ropes:1
+b|承知しました。マニュアルもございますが、一度実際にやってお見せしますね。|しょうちしました。マニュアルもございますが、いちどじっさいにやっておみせしますね。|shōchi shimashita. manyuaru mo gozaimasu ga, ichido jissai ni yatte o-mise shimasu ne.|Certainly. There’s a manual, but I’ll demonstrate it once.|Theek hai. Manual bhi hai, par ek baar karke dikhata/dikhati hoon.
+a|いいですよ。まずやって見せるので、見ていてください。|いいですよ。まずやってみせるので、みていてください。|ii desu yo. mazu yatte miseru node, mite ite kudasai.|Sure. I’ll show you first, so watch.|Haan. Pehle karke dikhata/dikhati hoon, dekhte rahiye.
+a|もちろん。マニュアルは後で送りますね。|もちろん。マニュアルはあとでおくりますね。|mochiron. manyuaru wa ato de okurimasu ne.|Of course. I’ll send the manual later.|Bilkul. Manual baad mein bhej dunga/dungi.
+@dlg:c-ropes:2
+b|ありがとうございます。メモを取らせていただいてもよろしいでしょうか。|ありがとうございます。メモをとらせていただいてもよろしいでしょうか。|arigatō gozaimasu. memo o torasete itadaite mo yoroshii deshō ka?|Thank you. May I take notes?|Shukriya. Kya main notes le sakta/sakti hoon?
+a|ありがとうございます。メモしながら見ますね。|ありがとうございます。メモしながらみますね。|arigatō gozaimasu. memo shinagara mimasu ne.|Thank you. I’ll take notes as I watch.|Shukriya. Notes leta/leti hua dekhta/dekhti hoon.
+a|助かります。録画してもいいですか。|たすかります。ろくがしてもいいですか。|tasukarimasu. rokuga shite mo ii desu ka?|That helps. May I record it?|Madad hogi. Record kar sakta/sakti hoon?
+@dlg:c-ropes:3
+b|もちろんです。…このように設定して、こちらをクリックし、保存します。|もちろんです。…このようにせっていして、こちらをクリックし、ほぞんします。|mochiron desu… kono yō ni settei shite, kochira o kurikku shi, hozon shimasu.|Of course… Set it like this, click here, and save.|Bilkul… Aise set karo, yahaan click karo, aur save karo.
+a|どうぞ。…まずここを開いて、次にここを押して、最後に保存です。|どうぞ。…まずここをひらいて、つぎにここをおして、さいごにほぞんです。|dōzo… mazu koko o hiraite, tsugi ni koko o oshite, saigo ni hozon desu.|Go ahead… First open this, then press here, and finally save.|Lijiye… Pehle yeh kholo, phir yahaan dabao, aur ant mein save.
+a|いいよ。…ここで選んで、クリック、それで保存。|いいよ。…ここでえらんで、クリック、それでほぞん。|ii yo… koko de erande, kurikku, sore de hozon.|Sure… Pick here, click, then save.|Haan… Yahaan chuno, click, phir save.|Casual
+@dlg:c-ropes:4
+b|よく分かりました。次回は自分で取り組んでみます。|よくわかりました。じかいはじぶんでとりくんでみます。|yoku wakarimashita. jikai wa jibun de torikunde mimasu.|I understand well now. Next time I’ll try it on my own.|Achhi tarah samajh gaya/gayi. Agli baar khud karke dekhunga/dekhungi.
+a|わかりました。今度は一人でやってみます。|わかりました。こんどはひとりでやってみます。|wakarimashita. kondo wa hitori de yatte mimasu.|Got it. Next time I’ll do it alone.|Samajh gaya/gayi. Agli baar akele karunga/karungi.
+a|ありがとうございます。一度やってみて、また確認します。|ありがとうございます。いちどやってみて、またかくにんします。|arigatō gozaimasu. ichido yatte mite, mata kakunin shimasu.|Thank you. I’ll try it once and check with you again.|Shukriya. Ek baar karke phir poochh lunga/lungi.
+@dlg:c-ropes:5
+b|ご不明な点があれば、いつでもお尋ねください。|ごふめいなてんがあれば、いつでもおたずねください。|go-fumei na ten ga areba, itsu demo o-tazune kudasai.|If anything is unclear, please ask at any time.|Kuch samajh na aaye toh kabhi bhi poochhiye.
+a|困ったら、遠慮なく聞いてくださいね。|こまったら、えんりょなくきいてくださいね。|komattara, enryo naku kiite kudasai ne.|If you’re stuck, don’t hesitate to ask.|Atak jaao toh bina jhijhak poochh lena.
+a|わからないことがあったら、また声かけてね。|わからないことがあったら、またこえかけてね。|wakaranai koto ga attara, mata koe kakete ne.|If you don’t understand something, give me a shout.|Kuch samajh na aaye toh phir awaaz de dena.|Casual
+@dlg:c-tools:0
+b|田中さん、検証機はテストに使用できますでしょうか。|たなかさん、けんしょうきはテストにしようできますでしょうか。|Tanaka-san, kenshōki wa tesuto ni shiyō dekimasu deshō ka?|Tanaka-san, would the test device be available for testing?|Tanaka-san, kya test device testing ke liye mil sakta hai?
+a|田中さん、検証機は今空いていますか。|たなかさん、けんしょうきはいまあいていますか。|Tanaka-san, kenshōki wa ima aite imasu ka?|Tanaka-san, is the test device free now?|Tanaka-san, test device abhi free hai?
+a|田中さん、テストで検証機を使いたいんですが。|たなかさん、テストでけんしょうきをつかいたいんですが。|Tanaka-san, tesuto de kenshōki o tsukaitai n desu ga.|Tanaka-san, I’d like to use the test device for testing.|Tanaka-san, testing ke liye test device chahiye.
+@dlg:c-tools:1
+b|ただいま山田さんが使用中です。三時には空く予定です。|ただいまやまださんがしようちゅうです。さんじにはあくよていです。|tadaima Yamada-san ga shiyō-chū desu. san-ji ni wa aku yotei desu.|Yamada-san is using it at the moment. It should be free at three.|Abhi Yamada-san use kar rahe hain. Teen baje khaali hoga.
+a|今は山田さんが使っています。三時なら大丈夫だと思います。|いまはやまださんがつかっています。さんじならだいじょうぶだとおもいます。|ima wa Yamada-san ga tsukatte imasu. san-ji nara daijōbu da to omoimasu.|Yamada-san has it now. Three should be fine.|Abhi Yamada-san ke paas hai. Teen baje theek rahega.
+a|山田さんが三時まで使う予定ですよ。|やまださんがさんじまでつかうよていですよ。|Yamada-san ga san-ji made tsukau yotei desu yo.|Yamada-san is booked on it until three.|Yamada-san teen baje tak use karenge.
+@dlg:c-tools:2
+b|では、三時から予約させていただけますか。|では、さんじからよやくさせていただけますか。|dewa, san-ji kara yoyaku sasete itadakemasu ka?|Then may I book it from three?|Toh kya main teen baje se book kar sakta/sakti hoon?
+a|じゃあ、三時から使わせてください。|じゃあ、さんじからつかわせてください。|jā, san-ji kara tsukawasete kudasai.|Then please let me use it from three.|Toh teen baje se mujhe use karne dijiye.
+a|三時からの枠、取ってもいいですか。|さんじからのわく、とってもいいですか。|san-ji kara no waku, totte mo ii desu ka?|Can I take the three o’clock slot?|Teen baje ka slot le sakta/sakti hoon?
+@dlg:c-tools:3
+b|承知しました。予約表にご記入をお願いします。|しょうちしました。よやくひょうにごきにゅうをおねがいします。|shōchi shimashita. yoyakuhyō ni go-kinyū o onegaishimasu.|Certainly. Please fill in the booking sheet.|Theek hai. Booking sheet mein naam likh dijiye.
+a|いいですよ。予約表に名前を書いておいてね。|いいですよ。よやくひょうになまえをかいておいてね。|ii desu yo. yoyakuhyō ni namae o kaite oite ne.|Sure. Put your name on the booking sheet.|Haan. Booking sheet mein naam likh dena.
+a|どうぞ。予約表で確認してくださいね。|どうぞ。よやくひょうでかくにんしてくださいね。|dōzo. yoyakuhyō de kakunin shite kudasai ne.|Go ahead. Check it on the booking sheet.|Theek hai. Booking sheet mein check kar lena.
+@dlg:c-tools:4
+b|それから、テスト用のパソコンにパイソンはインストールされていますか。|それから、テストようのパソコンにパイソンはインストールされていますか。|sorekara, tesuto-yō no pasokon ni Paison wa insutōru sarete imasu ka?|Also, is Python installed on the test PC?|Aur, test PC mein Python install hai?
+a|あと、テスト用パソコンでパイソンは使えますか。|あと、テストようパソコンでパイソンはつかえますか。|ato, tesuto-yō pasokon de Paison wa tsukaemasu ka?|Also, can I use Python on the test PC?|Aur, test PC par Python chalega?
+a|ちなみに、テスト用のパソコンにパイソンってありますか。|ちなみに、テストようのパソコンにパイソンってありますか。|chinami ni, tesuto-yō no pasokon ni Paison tte arimasu ka?|By the way, does the test PC have Python?|Waise, test PC mein Python hai?
+@dlg:c-tools:5
+b|インストールされていないようです。こちらでインストールいたしましょうか。|インストールされていないようです。こちらでインストールいたしましょうか。|insutōru sarete inai yō desu. kochira de insutōru itashimashō ka?|It doesn’t seem to be installed. Shall I install it for you?|Lagta hai install nahi hai. Main install kar doon?
+a|入ってないですね。入れておきましょうか。|はいってないですね。いれておきましょうか。|haittenai desu ne. irete okimashō ka?|It’s not there. Shall I put it on?|Nahi hai. Daal doon?
+a|まだですね。三時までに入れておきますよ。|まだですね。さんじまでにいれておきますよ。|mada desu ne. san-ji made ni irete okimasu yo.|Not yet. I’ll have it installed by three.|Abhi nahi. Teen baje tak daal dunga/dungi.
+@dlg:c-tools:6
+b|ぜひお願いいたします。テスト終了後、速やかにお返しします。|ぜひおねがいいたします。テストしゅうりょうご、すみやかにおかえしします。|zehi onegai itashimasu. tesuto shūryō-go, sumiyaka ni o-kaeshi shimasu.|Yes, please. I’ll return it promptly after the test.|Haan zaroor. Test ke baad turant lauta dunga/dungi.
+a|助かります。終わったらすぐ返しますね。|たすかります。おわったらすぐかえしますね。|tasukarimasu. owattara sugu kaeshimasu ne.|That helps. I’ll give it back as soon as I’m done.|Madad hogi. Khatam hote hi lauta dunga/dungi.
+a|お願いします。使ったら予約表に書いておきます。|おねがいします。つかったらよやくひょうにかいておきます。|onegaishimasu. tsukattara yoyakuhyō ni kaite okimasu.|Please. I’ll note it on the booking sheet after using it.|Kar dijiye. Use karke booking sheet mein likh dunga/dungi.
 `;

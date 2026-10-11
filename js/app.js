@@ -113,12 +113,23 @@ const note = c => c.note ? `<div class="note">💡 ${esc(c.note)}</div>` : '';
 // 👔 Business version and other ways to say a line, folded away until opened. Each one plays when tapped.
 // Rendered into an empty slot once that track's data has loaded, so the screen itself never waits for it.
 const waysSlot = id => `<div class="ways-slot" data-ways="${esc(id)}"></div>`;
+// A ways id is a phrase id (greet:0) or a role-play line (dlg:greet:0).
+const trackOfWays = id => unitById(id.startsWith('dlg:') ? id.split(':')[1] : cardById(id)?.unit)?.track;
 function fillWays() {
   const slots = [...$app.querySelectorAll('.ways-slot:empty')];
-  const tracks = new Set(slots.map(s => unitById(cardById(s.dataset.ways)?.unit)?.track).filter(Boolean));
+  const tracks = new Set(slots.map(s => trackOfWays(s.dataset.ways)).filter(Boolean));
   for (const track of tracks) loadWays?.(track).then(map => {
     for (const s of $app.querySelectorAll('.ways-slot:empty')) if (map.has(s.dataset.ways)) s.innerHTML = waysBlock(map.get(s.dataset.ways));
   }).catch(() => {});
+}
+// The business version and other ways for a line as [jp, kana] pairs, so saying any of them counts.
+async function waysOf(id) {
+  try {
+    const w = (await loadWays(trackOfWays(id))).get(id);
+    if (!w) return [];
+    const p = profile();
+    return [...(w.biz && w.biz !== 'same' ? [w.biz] : []), ...w.alt].map(l => [fill(l.jp, p), fill(l.kana, p)]);
+  } catch (_) { return []; }
 }
 function waysBlock(w) {
   if (!w) return '';
@@ -396,7 +407,7 @@ function answer(id) {
 // ---------- Role-play ----------
 function talk(unitId) {
   const u = unitById(unitId);
-  sess = { kind: 'talk', unitId, lines: u.dialogue.map(lineView), i: 0, log: [] };
+  sess = { kind: 'talk', unitId, lines: u.dialogue.map((l, i) => ({ ...lineView(l), wid: `dlg:${unitId}:${i}` })), i: 0, log: [] };
   sess.lines.forEach(l => prefetchClip(l.jp));
   render(`
     <div class="head">${back('unit', unitId)}<h1>💬 Role-play</h1></div>
@@ -411,9 +422,11 @@ function bubble(l, scoreHtml = '') {
   const chat = document.getElementById('chat');
   const div = document.createElement('div');
   div.className = `bubble ${l.who}`;
-  div.innerHTML = `${jpBlock(l)}${meaning(l)}${scoreHtml}`;
-  div.addEventListener('click', () => speak(l.jp));
+  div.innerHTML = `${jpBlock(l)}${meaning(l)}${scoreHtml}${waysSlot(l.wid)}`;
+  // Taps inside the 👔 fold play that line instead (handled by its own data-act).
+  div.addEventListener('click', e => { if (!e.target.closest('.ways')) speak(l.jp); });
   chat.appendChild(div);
+  fillWays();
   div.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
@@ -441,7 +454,8 @@ async function talkStep() {
       <span class="tag alt">Your turn — say:</span>
       <div class="prompt small">${esc(l.en)}</div>
       ${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(l.hi)}</div>` : ''}
-      <div id="hint" class="hint" hidden>${jpBlock(l)}</div>
+      <div id="hint" class="hint" hidden>${jpBlock(l)}${waysSlot(l.wid)}</div>
+      <div class="muted small">Other natural ways to say it count too.</div>
       <div id="result" class="result"></div>
     </div>
     ${canListen() ? `<button class="btn mic big" id="mic" data-act="talk-mic">🎤 Speak</button>` : ''}
@@ -449,13 +463,14 @@ async function talkStep() {
       <button class="btn" data-act="hint">💡 Hint</button>
       <button class="btn" data-act="talk-skip">${canListen() ? 'Skip' : 'Show line'} ›</button>
     </div>`;
+  fillWays();
 }
 
 async function talkMic() {
   const s = sess;
   const l = s.lines[s.i];
   const result = document.getElementById('result');
-  const score = await recordAgainst(l, result, document.getElementById('mic'));
+  const score = await recordAgainst({ ...l, alts: await waysOf(l.wid) }, result, document.getElementById('mic'));
   if (score == null || sess !== s) return;
   if (score >= PASS) talkAdvance(`<div class="score ok">✓ ${Math.round(score * 100)}%</div>`);
   else document.getElementById('hint').hidden = false;

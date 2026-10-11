@@ -71,9 +71,9 @@ export function initSpeaking(ctx) {
         ${micBtn('qa-mic', i, '🎤 Answer')}
         <div id="result" class="result center"></div>
         <details class="answers" ${ctx.canListen() ? '' : 'open'}><summary>💡 Example answers</summary>
-          <ul class="phrases">${answers.map(a => `<li class="ex" data-act="say-text" data-arg="${esc(a[0])}">${line(a)}<div class="en">${esc(a[3])}</div>${hg(a[4])}</li>`).join('')}</ul>
+          <ul class="phrases">${answers.map((a, j) => `<li class="ex" data-act="say-text" data-arg="${esc(a[0])}">${line(a)}<div class="en">${esc(a[3])}</div>${hg(a[4])}${ctx.waysSlot(`qa:${i}:${j}`)}</li>`).join('')}</ul>
         </details>
-        <p class="muted center small">Say an example answer, or make up your own. Only the examples can be scored.</p>
+        <p class="muted center small">Say an example answer or one of its other ways. Your own answers can’t be scored yet.</p>
         <div class="row">
           <button class="btn" data-act="qa" data-arg="${i - 1}" ${i ? '' : 'disabled'}>‹ Prev</button>
           <button class="btn" data-act="${i + 1 < QA.length ? 'qa' : 'speak-tab'}" data-arg="${i + 1}">${i + 1 < QA.length ? 'Next ›' : 'Finish'}</button>
@@ -84,7 +84,9 @@ export function initSpeaking(ctx) {
 
   async function qaMic(i) {
     const answers = QA[+i].a.map(fillLine);
-    const target = { jp: answers[0][0], kana: answers[0][1], alts: answers.slice(1).map(a => [a[0], a[1]]) };
+    // Every example answer and all their other ways count.
+    const more = (await Promise.all(answers.map((_, j) => ctx.waysOf(`qa:${+i}:${j}`)))).flat();
+    const target = { jp: answers[0][0], kana: answers[0][1], alts: [...answers.slice(1).map(a => [a[0], a[1]]), ...more] };
     const score = await ctx.record(target, document.getElementById('result'), document.getElementById('mic'));
     if (score == null) return;
     if (score < PASS) document.querySelector('.answers').open = true;

@@ -356,4 +356,197 @@ a|もう少し詳しく教えてもらえますか。|もうすこしくわし�
 b|少々お待ちください。|しょうしょうおまちください。|shōshō o-machi kudasai.|One moment, please.|Kripya thoda intezaar kijiye.
 a|ちょっと待ってもらえますか。|ちょっとまってもらえますか。|chotto matte moraemasu ka?|Could you wait a moment?|Thoda rukenge?
 a|すぐ行きます！|すぐいきます！|sugu ikimasu!|Coming right away!|Abhi aaya/aayi!
+
+@dlg:greet:0
+b=
+a|おはようございます。今日もよろしくお願いします。|おはようございます。きょうもよろしくおねがいします。|ohayō gozaimasu. kyō mo yoroshiku onegaishimasu.|Good morning. Let’s have a good day.|Good morning, aaj bhi saath achha kaam karein.
+a|おはよう。|おはよう。|ohayō.|Morning.|Good morning.|To friends and family
+@dlg:greet:1
+b|おはようございます。お世話になっております。|おはようございます。おせわになっております。|ohayō gozaimasu. osewa ni natte orimasu.|Good morning. Thank you for your continued support.|Good morning, aapke sahyog ke liye shukriya.|To a client
+a|おはようございます。早いですね。|おはようございます。はやいですね。|ohayō gozaimasu. hayai desu ne.|Good morning. You’re early.|Good morning. Aap jaldi aa gaye.
+a|あ、おはよう。|あ、おはよう。|a, ohayō.|Oh, morning.|Arre, good morning.|To friends
+@dlg:greet:2
+b|最近いかがですか。|さいきんいかがですか。|saikin ikaga desu ka?|How have you been lately?|Aajkal kaise hain aap?
+a|お元気ですか。|おげんきですか。|o-genki desu ka?|How are you?|Aap kaise hain?|Used when you haven’t met for a while
+a|最近どう？|さいきんどう？|saikin dō?|How’s it going?|Kya haal hai?|Casual
+@dlg:greet:3
+b|おかげさまで、元気にしております。|おかげさまで、げんきにしております。|okagesama de, genki ni shite orimasu.|I’m doing well, thank you.|Aapki dua se, sab badhiya hai.
+a|元気です。ありがとうございます。|げんきです。ありがとうございます。|genki desu. arigatō gozaimasu.|I’m fine, thank you.|Theek hoon, shukriya.
+a|まあまあです。|まあまあです。|māmā desu.|So-so.|Theek-thaak.
+@dlg:greet:4
+b|本日は冷えますね。|ほんじつはひえますね。|honjitsu wa hiemasu ne.|It’s chilly today, isn’t it?|Aaj kaafi thand hai, hai na?
+a|今日は寒いですね。風も強いですね。|きょうはさむいですね。かぜもつよいですね。|kyō wa samui desu ne. kaze mo tsuyoi desu ne.|Cold today. Windy too.|Aaj thand hai. Hawa bhi tez hai.
+a|今日、寒いね。|きょう、さむいね。|kyō, samui ne.|Cold today, huh.|Aaj thand hai na.|Casual
+@dlg:greet:5
+b|本当にそうですね。では、失礼いたします。|ほんとうにそうですね。では、しつれいいたします。|hontō ni sō desu ne. dewa, shitsurei itashimasu.|It really is. Well, excuse me.|Sach mein. Achha, main chalta/chalti hoon.
+a|そうですね。では、また。|そうですね。では、また。|sō desu ne. dewa, mata.|It is. See you then.|Haan. Phir milenge.
+a|ですね。じゃ、またね。|ですね。じゃ、またね。|desu ne. ja, mata ne.|Yeah. See you.|Haan. Chalo, milte hain.|Casual
+@dlg:intro:0
+b|はじめまして。田中と申します。|はじめまして。たなかともうします。|hajimemashite. Tanaka to mōshimasu.|How do you do. My name is Tanaka.|Namaste, mera naam Tanaka hai.
+a|はじめまして、田中です。よろしくお願いします。|はじめまして、たなかです。よろしくおねがいします。|hajimemashite, Tanaka desu. yoroshiku onegaishimasu.|Nice to meet you, I’m Tanaka.|Namaste, main Tanaka hoon.
+a|どうも、田中です。|どうも、たなかです。|dōmo, Tanaka desu.|Hi, I’m Tanaka.|Hi, main Tanaka.
+@dlg:intro:1
+b|はじめまして。{name}と申します。|はじめまして。{name}ともうします。|hajimemashite. {nameRo} to mōshimasu.|How do you do. My name is {nameRo}.|Namaste, mera naam {nameRo} hai.
+a|はじめまして、{name}です。よろしくお願いします。|はじめまして、{name}です。よろしくおねがいします。|hajimemashite, {nameRo} desu. yoroshiku onegaishimasu.|Nice to meet you, I’m {nameRo}.|Namaste, main {nameRo} hoon.
+a|{name}といいます。|{name}といいます。|{nameRo} to iimasu.|I’m called {nameRo}.|Mujhe {nameRo} kehte hain.
+@dlg:intro:2
+b|どちらのご出身ですか。|どちらのごしゅっしんですか。|dochira no go-shusshin desu ka?|Where are you from?|Aap kahaan ke rehne wale hain?
+a|お国はどちらですか。|おくにはどちらですか。|o-kuni wa dochira desu ka?|Which country are you from?|Aapka desh kaunsa hai?
+a|どこから来たんですか。|どこからきたんですか。|doko kara kita n desu ka?|Where did you come from?|Aap kahaan se aaye hain?
+@dlg:intro:3
+b|{country}から参りました。|{countryKana}からまいりました。|{countryRo} kara mairimashita.|I come from {countryEn}.|Main {countryHi} se aaya/aayi hoon.
+a|{country}出身です。|{countryKana}しゅっしんです。|{countryRo} shusshin desu.|I’m from {countryEn}.|Main {countryHi} ka/ki hoon.
+a|{country}です。|{countryKana}です。|{countryRo} desu.|{countryEn}.|{countryHi}.
+@dlg:intro:4
+b|日本語がお上手ですね。|にほんごがおじょうずですね。|nihongo ga o-jōzu desu ne.|Your Japanese is very good.|Aapki Japanese bahut achhi hai.
+a|日本語、すごいですね。|にほんご、すごいですね。|nihongo, sugoi desu ne.|Your Japanese is amazing.|Aapki Japanese kamaal ki hai.
+a|へえ、日本語うまいね。|へえ、にほんごうまいね。|hē, nihongo umai ne.|Wow, you speak Japanese well.|Wah, Japanese achhi bolte ho.|Casual
+@dlg:intro:5
+b|とんでもないです。まだまだ勉強中です。どうぞよろしくお願いいたします。|とんでもないです。まだまだべんきょうちゅうです。どうぞよろしくおねがいいたします。|tondemo nai desu. madamada benkyō-chū desu. dōzo yoroshiku onegai itashimasu.|Not at all, I’m still learning. I look forward to working with you.|Arre nahi, abhi seekh raha/rahi hoon. Aapse milkar khushi hui.
+a|ありがとうございます。でも、まだまだです。|ありがとうございます。でも、まだまだです。|arigatō gozaimasu. demo, madamada desu.|Thank you, but I still have a long way to go.|Shukriya, par abhi bahut seekhna hai.
+a|いえ、まだ勉強中です。|いえ、まだべんきょうちゅうです。|ie, mada benkyō-chū desu.|No, I’m still studying.|Nahi, abhi seekh raha/rahi hoon.
+@dlg:time:0
+b|恐れ入ります、今何時でしょうか。|おそれいります、いまなんじでしょうか。|osore irimasu, ima nan-ji deshō ka?|Excuse me, could you tell me the time?|Maaf kijiye, kya time hua hai?
+a|すみません、時間わかりますか。|すみません、じかんわかりますか。|sumimasen, jikan wakarimasu ka?|Excuse me, do you know the time?|Maaf kijiye, time pata hai?
+a|今、何時？|いま、なんじ？|ima, nan-ji?|What time is it?|Kitne baje?|Casual
+@dlg:time:1
+b|ただいま九時でございます。|ただいまくじでございます。|tadaima ku-ji de gozaimasu.|It is now nine o’clock.|Abhi nau baje hain.|Very formal, e.g. at a counter
+a|ちょうど九時です。|ちょうどくじです。|chōdo ku-ji desu.|It’s exactly nine.|Theek nau baje hain.
+a|九時ちょっと過ぎです。|くじちょっとすぎです。|ku-ji chotto sugi desu.|It’s just after nine.|Nau se thoda upar.
+@dlg:time:2
+b|銀行は何時に開きますか。|ぎんこうはなんじにあきますか。|ginkō wa nan-ji ni akimasu ka?|What time does the bank open?|Bank kitne baje khulta hai?
+a|銀行は何時からでしょうか。|ぎんこうはなんじからでしょうか。|ginkō wa nan-ji kara deshō ka?|From what time is the bank open?|Bank kab se khulta hai?
+a|銀行、何時から？|ぎんこう、なんじから？|ginkō, nan-ji kara?|Bank opens when?|Bank kab khulta hai?|Casual
+@dlg:time:3
+b|九時から開いております。|くじからあいております。|ku-ji kara aite orimasu.|It is open from nine.|Nau baje se khula hai.
+a|九時に開きますよ。|くじにあきますよ。|ku-ji ni akimasu yo.|It opens at nine.|Nau baje khulta hai.
+a|たしか九時からです。|たしかくじからです。|tashika ku-ji kara desu.|From nine, I think.|Shaayad nau baje se.
+@dlg:time:4
+b|ご親切にありがとうございます。|ごしんせつにありがとうございます。|go-shinsetsu ni arigatō gozaimasu.|Thank you for your kindness.|Aapki meherbaani ke liye shukriya.
+a|助かります。|たすかります。|tasukarimasu.|That helps.|Badi madad mili.
+a|どうも。|どうも。|dōmo.|Thanks.|Shukriya.
+@dlg:time:5
+b|どういたしまして。|どういたしまして。|dō itashimashite.|You’re welcome.|Koi baat nahi.
+a|いいえ、どういたしまして。|いいえ、どういたしまして。|iie, dō itashimashite.|Not at all, you’re welcome.|Arre, koi baat nahi.
+a|大丈夫ですよ。|だいじょうぶですよ。|daijōbu desu yo.|No problem.|Koi baat nahi.
+@dlg:shop:0
+b=
+a|いらっしゃいませ、こんにちは。|いらっしゃいませ、こんにちは。|irasshaimase, konnichiwa.|Welcome, hello.|Namaste, aaiye.
+a|どうぞご覧ください。|どうぞごらんください。|dōzo goran kudasai.|Please have a look.|Dekh lijiye.
+@dlg:shop:1
+b|恐れ入ります、こちらはおいくらですか。|おそれいります、こちらはおいくらですか。|osore irimasu, kochira wa o-ikura desu ka?|Excuse me, how much is this one?|Maaf kijiye, iska daam kya hai?
+a|すみません、これはいくらですか。|すみません、これはいくらですか。|sumimasen, kore wa ikura desu ka?|Excuse me, how much is this?|Maaf kijiye, yeh kitne ka hai?
+a|これ、おいくらですか。|これ、おいくらですか。|kore, o-ikura desu ka?|How much is this?|Yeh kitne ka hai?
+@dlg:shop:2
+b|五百円でございます。|ごひゃくえんでございます。|gohyaku-en de gozaimasu.|That will be 500 yen.|Paanch sau yen.
+a|こちらは五百円です。|こちらはごひゃくえんです。|kochira wa gohyaku-en desu.|This one is 500 yen.|Yeh paanch sau yen ka hai.
+a|税込みで五百円です。|ぜいこみでごひゃくえんです。|zeikomi de gohyaku-en desu.|500 yen including tax.|Tax milaakar paanch sau yen.
+@dlg:shop:3
+b|では、こちらをお願いします。|では、こちらをおねがいします。|dewa, kochira o onegaishimasu.|Then I’ll take this one, please.|Toh yeh de dijiye.
+a|じゃあ、これにします。|じゃあ、これにします。|jā, kore ni shimasu.|OK, I’ll go with this.|Achha, yeh le leta/leti hoon.
+a|これ、買います。|これ、かいます。|kore, kaimasu.|I’ll buy this.|Yeh khareedunga/khareedungi.
+@dlg:shop:4
+b=
+a|袋はおつけしますか。|ふくろはおつけしますか。|fukuro wa o-tsuke shimasu ka?|Shall I add a bag?|Bag de doon?
+a|袋、いりますか。|ふくろ、いりますか。|fukuro, irimasu ka?|Do you need a bag?|Bag chahiye?
+@dlg:shop:5
+b|いえ、結構です。|いえ、けっこうです。|ie, kekkō desu.|No, thank you.|Nahi, shukriya.
+a|袋はいりません。|ふくろはいりません。|fukuro wa irimasen.|I don’t need a bag.|Bag nahi chahiye.
+a|あ、このままで大丈夫です。|あ、このままでだいじょうぶです。|a, kono mama de daijōbu desu.|Oh, it’s fine as it is.|Aise hi theek hai.
+@dlg:shop:6
+b=
+a|ありがとうございました。またお越しください。|ありがとうございました。またおこしください。|arigatō gozaimashita. mata o-koshi kudasai.|Thank you. Please come again.|Shukriya, phir aaiyega.
+a|ありがとうございます。|ありがとうございます。|arigatō gozaimasu.|Thank you.|Shukriya.
+@dlg:food:0
+b=
+a|いらっしゃいませ。何名様でしょうか。|いらっしゃいませ。なんめいさまでしょうか。|irasshaimase. nanmei-sama deshō ka?|Welcome. How many in your party?|Aaiye. Kitne log hain?
+a|いらっしゃいませ。お二人ですか。|いらっしゃいませ。おふたりですか。|irasshaimase. o-futari desu ka?|Welcome. Two of you?|Aaiye. Do log?
+@dlg:food:1
+b|二名です。|にめいです。|ni-mei desu.|Two people.|Do log.|名 sounds more formal than 人
+a|二人でお願いします。|ふたりでおねがいします。|futari de onegaishimasu.|A table for two, please.|Do logon ke liye table.
+a|二人なんですが、空いてますか。|ふたりなんですが、あいてますか。|futari na n desu ga, aitemasu ka?|There are two of us. Any tables free?|Hum do hain, jagah hai?
+@dlg:food:2
+b|お席へご案内いたします。|おせきへごあんないいたします。|o-seki e go-annai itashimasu.|I’ll show you to your table.|Aapko seat tak le chalta/chalti hoon.
+a|こちらのお席へどうぞ。|こちらのおせきへどうぞ。|kochira no o-seki e dōzo.|This table, please.|Is seat par baithiye.
+a|お好きな席へどうぞ。|おすきなせきへどうぞ。|o-suki na seki e dōzo.|Sit wherever you like.|Jahaan chaahe baithiye.
+@dlg:food:3
+b|恐れ入ります、おすすめを教えていただけますか。|おそれいります、おすすめをおしえていただけますか。|osore irimasu, osusume o oshiete itadakemasu ka?|Excuse me, could you tell me what you recommend?|Maaf kijiye, aap kya recommend karenge?
+a|何がおすすめですか。|なにがおすすめですか。|nani ga osusume desu ka?|What do you recommend?|Kya achha hai yahaan?
+a|人気のメニューはどれですか。|にんきのメニューはどれですか。|ninki no menyū wa dore desu ka?|Which dish is popular?|Sabse popular dish kaunsi hai?
+@dlg:food:4
+b|カレーがおすすめです。少し辛めになっております。|カレーがおすすめです。すこしからめになっております。|karē ga osusume desu. sukoshi karame ni natte orimasu.|We recommend the curry. It is a little on the spicy side.|Curry recommend karte hain. Thodi teekhi hai.
+a|カレーが人気ですよ。少し辛いです。|カレーがにんきですよ。すこしからいです。|karē ga ninki desu yo. sukoshi karai desu.|The curry is popular. It’s a bit spicy.|Curry popular hai. Thodi teekhi hai.
+a|カレーですね。辛いの、大丈夫ですか。|カレーですね。からいの、だいじょうぶですか。|karē desu ne. karai no, daijōbu desu ka?|The curry. Are you OK with spicy food?|Curry. Teekha chalega?
+@dlg:food:5
+b|問題ございません。では、そちらを二つお願いいたします。|もんだいございません。では、そちらをふたつおねがいいたします。|mondai gozaimasen. dewa, sochira o futatsu onegai itashimasu.|That’s no problem. Two of those, please.|Koi baat nahi. Toh do plate wahi dijiye.
+a|辛いのは好きです。それを二つお願いします。|からいのはすきです。それをふたつおねがいします。|karai no wa suki desu. sore o futatsu onegaishimasu.|I like spicy food. Two of those, please.|Teekha pasand hai. Wahi do dijiye.
+a|じゃあ、カレーを二つください。|じゃあ、カレーをふたつください。|jā, karē o futatsu kudasai.|Then two curries, please.|Toh do curry dijiye.
+@dlg:way:0
+b|恐れ入ります、駅はどちらでしょうか。|おそれいります、えきはどちらでしょうか。|osore irimasu, eki wa dochira deshō ka?|Excuse me, which way is the station?|Maaf kijiye, station kis taraf hai?
+a|すみません、駅までの道を教えてください。|すみません、えきまでのみちをおしえてください。|sumimasen, eki made no michi o oshiete kudasai.|Excuse me, please tell me the way to the station.|Maaf kijiye, station ka raasta bata dijiye.
+a|すみません、駅に行きたいんですが。|すみません、えきにいきたいんですが。|sumimasen, eki ni ikitai n desu ga.|Excuse me, I want to go to the station.|Maaf kijiye, mujhe station jaana hai.
+@dlg:way:1
+b|駅でしたら、この道をまっすぐ進んで、右側にございます。|えきでしたら、このみちをまっすぐすすんで、みぎがわにございます。|eki deshitara, kono michi o massugu susunde, migi-gawa ni gozaimasu.|The station is straight down this road, on the right.|Station is raaste par seedha, daayein taraf hai.
+a|この道をまっすぐ行くと、右に見えますよ。|このみちをまっすぐいくと、みぎにみえますよ。|kono michi o massugu iku to, migi ni miemasu yo.|Go straight on this road and you’ll see it on the right.|Seedha jaaiye, daayein dikhega.
+a|まっすぐ行って、右側です。|まっすぐいって、みぎがわです。|massugu itte, migi-gawa desu.|Straight ahead, on the right side.|Seedha, daayein taraf.
+@dlg:way:2
+b|歩いてどのくらいかかりますか。|あるいてどのくらいかかりますか。|aruite dono kurai kakarimasu ka?|How long does it take on foot?|Paidal kitna samay lagega?
+a|ここから遠いですか。|ここからとおいですか。|koko kara tōi desu ka?|Is it far from here?|Yahaan se door hai?
+a|歩いて行けますか。|あるいていけますか。|aruite ikemasu ka?|Can I walk there?|Paidal ja sakte hain?
+@dlg:way:3
+b|徒歩五分ほどです。|とほごふんほどです。|toho go-fun hodo desu.|About five minutes on foot.|Paidal paanch minute.
+a|歩いて五分ぐらいです。|あるいてごふんぐらいです。|aruite go-fun gurai desu.|About five minutes’ walk.|Paidal lagbhag paanch minute.
+a|すぐですよ。五分ぐらい。|すぐですよ。ごふんぐらい。|sugu desu yo. go-fun gurai.|It’s close. About five minutes.|Bas paas mein hai. Paanch minute.
+@dlg:way:4
+b|ご丁寧にありがとうございました。|ごていねいにありがとうございました。|go-teinei ni arigatō gozaimashita.|Thank you for explaining so kindly.|Itni achhi tarah batane ke liye shukriya.
+a|わかりました。ありがとうございます。|わかりました。ありがとうございます。|wakarimashita. arigatō gozaimasu.|Got it. Thank you.|Samajh gaya/gayi. Shukriya.
+a|本当に助かりました。|ほんとうにたすかりました。|hontō ni tasukarimashita.|That really helped.|Sach mein badi madad hui.
+@dlg:plans:0
+b|週末は何をなさっていますか。|しゅうまつはなにをなさっていますか。|shūmatsu wa nani o nasatte imasu ka?|What do you do at weekends?|Weekend par aap kya karte hain?
+a|休みの日は何をしていますか。|やすみのひはなにをしていますか。|yasumi no hi wa nani o shite imasu ka?|What do you do on your days off?|Chhutti ke din kya karte ho?
+a|週末、何してる？|しゅうまつ、なにしてる？|shūmatsu, nani shiteru?|What do you do on weekends?|Weekend pe kya karte ho?|Casual
+@dlg:plans:1
+b|たいてい買い物に出かけております。|たいていかいものにでかけております。|taitei kaimono ni dekakete orimasu.|I usually go out shopping.|Aksar shopping karne jaata/jaati hoon.
+a|よく買い物に行きます。|よくかいものにいきます。|yoku kaimono ni ikimasu.|I often go shopping.|Aksar shopping jaata/jaati hoon.
+a|買い物が多いですね。|かいものがおおいですね。|kaimono ga ōi desu ne.|Mostly shopping.|Zyaadatar shopping.
+@dlg:plans:2
+b|日曜日、よろしければ一緒に映画はいかがですか。|にちようび、よろしければいっしょにえいがはいかがですか。|nichiyōbi, yoroshikereba issho ni eiga wa ikaga desu ka?|If you’d like, how about a movie together on Sunday?|Agar aapko theek lage, Sunday ko saath mein movie?
+a|日曜日、映画に行きませんか。|にちようび、えいがにいきませんか。|nichiyōbi, eiga ni ikimasen ka?|Shall we go to a movie on Sunday?|Sunday ko movie chalein?
+a|日曜、映画見に行かない？|にちよう、えいがみにいかない？|nichiyō, eiga mi ni ikanai?|Want to go see a movie Sunday?|Sunday ko movie dekhne chalein?|Casual
+@dlg:plans:3
+b|ぜひ。何時がよろしいですか。|ぜひ。なんじがよろしいですか。|zehi. nan-ji ga yoroshii desu ka?|I’d love to. What time suits you?|Zaroor. Aapko kaunsa time theek rahega?
+a|いいですね。何時にしますか。|いいですね。なんじにしますか。|ii desu ne. nan-ji ni shimasu ka?|Sounds good. What time shall we make it?|Achha hai. Kitne baje rakhein?
+a|行きたいです！何時から？|いきたいです！なんじから？|ikitai desu! nan-ji kara?|I want to go! From what time?|Chalna hai! Kitne baje se?
+@dlg:plans:4
+b|二時はいかがでしょうか。|にじはいかがでしょうか。|ni-ji wa ikaga deshō ka?|Would two o’clock suit you?|Do baje kaisa rahega?
+a|二時でどうですか。|にじでどうですか。|ni-ji de dō desu ka?|How about two o’clock?|Do baje theek hai?
+a|二時でいい？|にじでいい？|ni-ji de ii?|Two OK?|Do baje chalega?|Casual
+@dlg:plans:5
+b|承知しました。楽しみにしております。|しょうちしました。たのしみにしております。|shōchi shimashita. tanoshimi ni shite orimasu.|Certainly. I’m looking forward to it.|Theek hai. Intezaar rahega.
+a|二時で大丈夫です。楽しみにしています。|にじでだいじょうぶです。たのしみにしています。|ni-ji de daijōbu desu. tanoshimi ni shite imasu.|Two is fine. I’m looking forward to it.|Do baje theek hai. Intezaar rahega.
+a|いいですよ。楽しみ！|いいですよ。たのしみ！|ii desu yo. tanoshimi!|Sure. Can’t wait!|Theek hai. Maza aayega!
+@dlg:help:0
+b|恐れ入りますが、この近くに郵便局はございますか。|おそれいりますが、このちかくにゆうびんきょくはございますか。|osore irimasu ga, kono chikaku ni yūbinkyoku wa gozaimasu ka?|Excuse me, is there a post office near here?|Maaf kijiye, yahaan paas mein post office hai?
+a|すみません、郵便局はどこですか。|すみません、ゆうびんきょくはどこですか。|sumimasen, yūbinkyoku wa doko desu ka?|Excuse me, where is the post office?|Maaf kijiye, post office kahaan hai?
+a|郵便局を探しているんですが。|ゆうびんきょくをさがしているんですが。|yūbinkyoku o sagashite iru n desu ga.|I’m looking for the post office.|Main post office dhoondh raha/rahi hoon.
+@dlg:help:1
+b|恐れ入りますが、もう少しゆっくり話していただけますか。|おそれいりますが、もうすこしゆっくりはなしていただけますか。|osore irimasu ga, mō sukoshi yukkuri hanashite itadakemasu ka?|I’m sorry, could you speak a little more slowly?|Maaf kijiye, thoda dheere bol sakte hain?
+a|すみません、もう一度お願いします。|すみません、もういちどおねがいします。|sumimasen, mō ichido onegaishimasu.|Sorry, once more, please.|Maaf kijiye, ek baar aur.
+a|ゆっくり言ってもらえますか。|ゆっくりいってもらえますか。|yukkuri itte moraemasu ka?|Could you say it slowly?|Dheere bolenge?
+@dlg:help:2
+b|郵便局でございます。|ゆうびんきょくでございます。|yūbinkyoku de gozaimasu.|A post office.|Post office.
+a|郵便局を探しています。|ゆうびんきょくをさがしています。|yūbinkyoku o sagashite imasu.|I’m looking for a post office.|Post office dhoondh raha/rahi hoon.
+a|ゆ・う・び・ん・きょ・く、です。|ゆ・う・び・ん・きょ・く、です。|yu-u-bi-n-kyo-ku, desu.|Yu-u-bin-kyo-ku.|Yu-u-bin-kyo-ku.|Saying it syllable by syllable
+@dlg:help:3
+b|恐れ入りますが、それはどういう意味でしょうか。|おそれいりますが、それはどういういみでしょうか。|osore irimasu ga, sore wa dō iu imi deshō ka?|I’m sorry, what does that mean?|Maaf kijiye, iska matlab kya hai?
+a|すみません、その言葉がわかりません。|すみません、そのことばがわかりません。|sumimasen, sono kotoba ga wakarimasen.|Sorry, I don’t know that word.|Maaf kijiye, yeh shabd samajh nahi aaya.
+a|英語で何ですか。|えいごでなんですか。|eigo de nan desu ka?|What is it in English?|English mein kya kehte hain?
+@dlg:help:4
+b=
+a|ポストオフィスのことです。手紙や荷物を送るところです。|ポストオフィスのことです。てがみやにもつをおくるところです。|posuto ofisu no koto desu. tegami ya nimotsu o okuru tokoro desu.|It means a post office: where you send letters and parcels.|Post office matlab, jahaan chitthi aur parcel bhejte hain.
+a|手紙を出す所です。|てがみをだすところです。|tegami o dasu tokoro desu.|The place where you post letters.|Jahaan chitthi bhejte hain.
+@dlg:help:5
+b|ああ、承知しました。郵便局はあちらでございます。|ああ、しょうちしました。ゆうびんきょくはあちらでございます。|ā, shōchi shimashita. yūbinkyoku wa achira de gozaimasu.|Ah, I understand. The post office is over there.|Achha, samajh gaya/gayi. Post office udhar hai.
+a|ああ、わかりました。あそこにありますよ。|ああ、わかりました。あそこにありますよ。|ā, wakarimashita. asoko ni arimasu yo.|Ah, got it. It’s over there.|Achha, samajh gaya/gayi. Wahaan hai.
+a|ああ、郵便局ならあっちです。|ああ、ゆうびんきょくならあっちです。|ā, yūbinkyoku nara atchi desu.|Ah, the post office is that way.|Achha, post office udhar hai.
 `;

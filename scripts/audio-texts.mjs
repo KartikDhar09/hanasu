@@ -28,10 +28,11 @@ export async function audioTexts() {
   for (const w of WAYS.values()) for (const l of [w.biz, ...w.alt]) if (l && l !== 'same') add(n, f(l.jp));
   for (const u of UNITS) for (const l of u.dialogue || []) add(n, f(l[1]));
   for (const q of SP.QA) for (const l of [q.q, ...q.a]) add(n, f(l[0]));
-  for (const x of WORDS) add(n, x.jp);
+  const { sayable } = await import('../js/core.js');
+  for (const x of WORDS) add(n, sayable(x.jp, x.kana));
   for (const g of GRAMMAR) for (const e of g.ex) add(n, e[0]);
   for (const p of PARTICLES) for (const e of p.ex || p.examples || []) add(n, e[0]);
-  for (const k of KANJI) for (const e of k.ex || []) add(n, e[0]);
+  for (const k of KANJI) for (const e of k.ex || []) add(n, sayable(e[0], e[1]));
   for (const v of VERBS) { add(n, v.jp); if (v.ex) add(n, v.ex[0]); for (const form of Object.values(conjugate(v))) add(n, form[0]); }
   for (const g of SP.PRONUNCIATION) for (const pair of g.pairs) for (const x of pair) add(n, x[0]);
   for (const k of ALL_KANA) { add(n, k); add(n, toKata(k)); }
@@ -53,6 +54,32 @@ export async function audioTexts() {
     for (const [who, jp] of item.lines) add(who === 'm' ? m : who === 'f' ? w : n, jp);
   }
   return { n: [...n].sort(), m: [...m].sort(), f: [...w].sort() };
+}
+
+// The app's own kana reading for each line that has one, so the recorder can catch the engine misreading kanji.
+export async function audioKana() {
+  const { CARDS, UNITS } = await import('../js/data.js');
+  const { fill } = await import('../js/core.js');
+  const SP = await import('../js/speaking-data.js');
+  const { WORDS } = await import('../js/vocab-data.js');
+  const { GRAMMAR } = await import('../js/jlpt-data.js');
+  const { PARTICLES } = await import('../js/particles-data.js');
+  const { KANJI } = await import('../js/kanji-data.js');
+  const WAYS = await (await import('../js/ways.js')).allWays();
+  const f = t => fill(t, PROFILE);
+  const out = new Map();
+  const put = (jp, kana) => { if (jp && kana) out.set(plain(f(jp)).trim(), plain(f(kana)).trim()); };
+  for (const c of CARDS) { put(c.jp, c.kana); if (c.casual) put(c.casual.jp, c.casual.kana); }
+  for (const w of WAYS.values()) for (const l of [w.biz, ...w.alt]) if (l && l !== 'same') put(l.jp, l.kana);
+  for (const u of UNITS) for (const l of u.dialogue || []) put(l[1], l[2]);
+  for (const q of SP.QA) for (const l of [q.q, ...q.a]) put(l[0], l[1]);
+  for (const x of WORDS) put(x.jp, x.kana);
+  for (const g of GRAMMAR) for (const e of g.ex) put(e[0], e[1]);
+  for (const p of PARTICLES) for (const e of p.examples) put(e[0], e[1]);
+  for (const k of KANJI) for (const e of k.ex || []) put(e[0], e[1]);
+  const opts = groups => groups.flatMap(g => SP.SLOTS[g].items);
+  for (const p of SP.PATTERNS) for (const x of opts(p.x)) for (const y of p.y ? opts(p.y) : [null]) { const l = SP.buildSentence(p, x, y); put(l[0], l[1]); }
+  return out;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

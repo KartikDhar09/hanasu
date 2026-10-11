@@ -2,6 +2,7 @@
 import { EXAMS, EXAM_TIPS, QUESTION_TYPES, GRAMMAR } from './jlpt-data.js';
 import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
 import { VOCAB, WORDS } from './vocab-data.js';
+import { sayable } from './core.js';
 import { READING, LISTENING } from './exam-data.js';
 import { toRomaji } from './conjugate.js';
 import { furigana, markBrackets } from './furigana.js';
@@ -255,7 +256,7 @@ export function initJlpt(ctx) {
 
   // ================= Vocabulary =================
   const wordFuri = w => S().settings.kana ? furigana(w.jp, w.kana, esc) : null;
-  const wordCard = w => `<button class="wcard" data-act="say-text" data-arg="${esc(w.jp)}">
+  const wordCard = w => `<button class="wcard" data-act="say-text" data-arg="${esc(sayable(w.jp, w.kana))}">
     <span class="wpic">${w.pic || '<span class="wtxt">' + esc(w.en.split(/[ /(]/)[0]) + '</span>'}</span><b lang="ja">${wordFuri(w) || esc(w.jp)}</b>
     ${S().settings.kana && w.kana !== w.jp && !wordFuri(w) ? `<small lang="ja">${esc(w.kana)}</small>` : ''}
     <small>${esc(w.en)}${S().settings.hindi ? ` · ${esc(w.hg)}` : ''}</small></button>`;
@@ -307,7 +308,7 @@ export function initJlpt(ctx) {
 
   function vcard() {
     const w = st.queue[st.i];
-    if (w) { prefetchClip(w.jp); if (st.queue[st.i + 1]) prefetchClip(st.queue[st.i + 1].jp); }
+    if (w) { prefetchClip(sayable(w.jp, w.kana)); const nx = st.queue[st.i + 1]; if (nx) prefetchClip(sayable(nx.jp, nx.kana)); }
     if (!w) {
       const lv = st.lv; st = null;
       return render(`<div class="done"><div class="big-emoji">🖼️</div><h1>Words practised</h1><button class="btn primary big" data-act="jlpt-vocab" data-arg="${lv}">Back</button></div>`);
@@ -335,7 +336,7 @@ export function initJlpt(ctx) {
     document.getElementById('actions').innerHTML = `<div class="grades two">
       <button class="btn again" data-act="vgrade" data-arg="again">Again later</button>
       <button class="btn good" data-act="vgrade" data-arg="ok">Got it</button></div>`;
-    speak(st.queue[st.i].jp);
+    speak(sayable(st.queue[st.i].jp, st.queue[st.i].kana));
   }
 
   function vgrade(g) {
@@ -399,7 +400,7 @@ export function initJlpt(ctx) {
       speak(plain(q.e[0]));
     } else if (q.w) {
       extra = `<div class="card compact"><span class="wpic">${q.w.pic}</span> <b lang="ja">${esc(q.w.jp)}</b> ${esc(q.w.kana !== q.w.jp ? q.w.kana : '')} = ${esc(q.w.en)}${S().settings.hindi ? ` · ${esc(q.w.hg)}` : ''}</div>`;
-      speak(q.w.jp);
+      speak(sayable(q.w.jp, q.w.kana));
     } else {
       if (!ok) extra = `<div class="center"><b lang="ja" class="big-jp">${q.k}</b> = ${toRomaji(q.k)}</div>`;
       speak(q.k);

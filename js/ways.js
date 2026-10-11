@@ -1,6 +1,6 @@
 // "More ways to say it": for each line, a 👔 business version and 2–3 other natural ways to say the same thing.
 // Data lives in compact text blocks (js/ways-*.js), one block per line id:
-//   @id                                           e.g. @greet:0 (a phrase id)
+//   @id                                           e.g. @greet:0 (a phrase), @dlg:greet:0 (a role-play line), @qa:0:1 (a Q&A answer)
 //   b|japanese|kana|romaji|english|hinglish|note?   👔 business version
 //   b=                                            the line is already right for business
 //   a|japanese|kana|romaji|english|hinglish|note?   another way to say it (2–3 per id)
@@ -33,6 +33,8 @@ const FILES = {
   n5: () => import('./ways-n5.js').then(m => m.WAYS_N5),
   office: () => import('./ways-office.js').then(m => m.WAYS_OFFICE),
   corp: () => import('./ways-corp.js').then(m => m.WAYS_CORP),
+  qa: () => import('./ways-qa.js').then(m => m.WAYS_QA),
+  particles: () => import('./ways-particles.js').then(m => m.WAYS_PARTICLES),
 };
 export const WAYS_PARTS = Object.keys(FILES);
 const cache = {};

@@ -5,6 +5,7 @@ import { prefetchClip } from './clips.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
+import { sayable } from './core.js';
 
 const ALL_PARTICLES = PARTICLES.map(p => p.p);
 const plain = s => s.replace(/[[\]]/g, '');
@@ -20,13 +21,15 @@ export function initStudy(ctx) {
   // Japanese with the taught particle highlighted; blank = show a gap instead.
   const mark = (s, blank) => esc(s).replace(/\[(.+?)\]/g, (_, p) => blank ? '<span class="gap">？</span>' : `<mark>${p}</mark>`);
 
-  function example(e, i, key) {
+  // wid: the id of this example's 👔 business / other ways fold, if it has one.
+  function example(e, i, wid) {
     const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null;
     return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
       <div class="jp" lang="ja">${furi || mark(e[0])}</div>
       ${S().settings.kana && !furi ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
       ${ro(plain(e[2]))}
       <div class="en">${esc(e[3])}</div>${hg(e[4])}
+      ${wid ? ctx.waysSlot(wid) : ''}
     </li>`;
   }
 
@@ -68,7 +71,7 @@ export function initStudy(ctx) {
         ${p.tip ? `<div class="note">💡 ${esc(p.tip)}</div>` : ''}
       </div>
       <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
-      <ul class="phrases">${p.examples.map((e, i) => example(e, i)).join('')}</ul>
+      <ul class="phrases">${p.examples.map((e, i) => example(e, i, `pt:${p.id}:${i}`)).join('')}</ul>
       <button class="btn primary big" data-act="pquiz" data-arg="${p.id}">🎯 Practise ${p.p}</button>`);
   }
 
@@ -250,7 +253,7 @@ export function initStudy(ctx) {
         ${k.on ? `<div><span class="pill">On</span> <span lang="ja">${k.on}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(k.on.replace(/[()]/g, '').replace(/・/g, ' · '))}</small>` : ''}</div>` : ''}
         ${k.kun ? `<div><span class="pill">Kun</span> <span lang="ja">${k.kun}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(k.kun.replace(/[()]/g, '').replace(/・/g, ' · '))}</small>` : ''}</div>` : ''}
       </div>
-      <ul class="phrases">${k.ex.map(e => `<li class="ex" data-act="say-text" data-arg="${esc(e[0])}">
+      <ul class="phrases">${k.ex.map(e => `<li class="ex" data-act="say-text" data-arg="${esc(sayable(e[0], e[1]))}">
         <div class="jp" lang="ja">${esc(e[0])} <span class="kana-inline">${esc(e[1])}</span></div>${ro(e[2])}
         <div class="en">${esc(e[3])}</div>${hg(e[4])}</li>`).join('')}</ul>
     </div>`;

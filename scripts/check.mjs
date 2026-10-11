@@ -312,14 +312,21 @@ test('every kanji has stroke-order data with only drawing commands (run scripts/
 });
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
 const WAYS_TRACKS = ['n5', 'office', 'corp'];
+const DLG_TRACKS = ['n5', 'office', 'corp']; // role-play lines done so far
 test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
   const WAYS = WAYS_ALL;
   const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
   const f = t => core.fill(t, P);
   const norm = t => f(t).replace(/[、。！？!?…\s]/g, '');
+  // Role-play lines use ids dlg:<unit>:<line index>.
+  const DLG = new Map(UNITS.flatMap(u => (u.dialogue || []).map((l, i) => [`dlg:${u.id}:${i}`, { jp: l[1], unit: u.id }])));
+  // Q&A answers use ids qa:<question>:<answer>; every answer is covered.
+  const QAW = new Map(SP.QA.flatMap((q, i) => q.a.map((x, j) => [`qa:${i}:${j}`, { jp: x[0] }])));
+  // Particle examples: pt:<particle id>:<example>; the main line's [brackets] are dropped for comparison.
+  const PTW = new Map(PARTICLES.flatMap(p => p.examples.map((x, j) => [`pt:${p.id}:${j}`, { jp: x[0].replace(/[[\]]/g, '') }])));
   for (const [id, w] of WAYS) {
-    const c = CARDS.find(x => x.id === id);
-    assert.ok(c, `ways for unknown phrase ${id}`);
+    const c = CARDS.find(x => x.id === id) || DLG.get(id) || QAW.get(id) || PTW.get(id);
+    assert.ok(c, `ways for unknown phrase, role-play line or Q&A answer ${id}`);
     assert.ok(w.biz, `${id}: no business version (use b= if it's already right for work)`);
     assert.ok(w.alt.length >= 2 && w.alt.length <= 3, `${id}: ${w.alt.length} other ways (want 2–3)`);
     const lines = [...(w.biz === 'same' ? [] : [w.biz]), ...w.alt];
@@ -335,6 +342,17 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   }
   const missing = CARDS.filter(c => WAYS_TRACKS.includes(UNITS.find(u => u.id === c.unit).track) && !WAYS.has(c.id)).map(c => c.id);
   assert.ok(!missing.length, `phrases without other ways: ${missing.join(', ')}`);
+  const missingDlg = [...DLG].filter(([id, l]) => DLG_TRACKS.includes(UNITS.find(u => u.id === l.unit).track) && !WAYS.has(id)).map(([id]) => id);
+  assert.ok(!missingDlg.length, `role-play lines without other ways: ${missingDlg.join(', ')}`);
+  const missingQa = [...QAW.keys()].filter(id => !WAYS.has(id));
+  assert.ok(!missingQa.length, `Q&A answers without other ways: ${missingQa.join(', ')}`);
+  const missingPt = [...PTW.keys()].filter(id => !WAYS.has(id));
+  assert.ok(!missingPt.length, `particle examples without other ways: ${missingPt.join(', ')}`);
+  // Particle alternatives keep the particle being taught, so each is another example of it.
+  for (const p of PARTICLES) for (let j = 0; j < p.examples.length; j++) {
+    const w = WAYS.get(`pt:${p.id}:${j}`);
+    for (const l of [...(w.biz === 'same' ? [] : [w.biz]), ...w.alt]) assert.ok(l.jp.includes(p.p), `pt:${p.id}:${j}: "${l.jp}" doesn't use ${p.p}`);
+  }
 });
 test('furigana lines readings up with kanji', () => {
   const F = furiMod.furigana, e = s => s;
@@ -364,6 +382,15 @@ test('fill replaces placeholders', () => {
   assert.equal(core.fill('Main {countryHi} se hoon', p), 'Main China se hoon');
   assert.equal(core.fill('{name}です。{country}から', p), 'スミスです。中国から');
   assert.equal(core.fill('{countryKana}から {nameRo}', p), 'ちゅうごくから Sumisu');
+});
+test('words taught with two readings are spoken from their kana', () => {
+  // One clip per written line, so a word with two readings (十分 じゅうぶん / じゅっぷん) must be in TWO_READINGS.
+  const seen = new Map(), two = new Set();
+  for (const [jp, kana] of [...V.WORDS.map(w => [w.jp, w.kana]), ...KANJI_LIST.flatMap(k => k.ex.map(e => [e[0], e[1]]))]) {
+    if (seen.has(jp) && seen.get(jp) !== kana) two.add(jp);
+    seen.set(jp, kana);
+  }
+  assert.deepEqual([...two].sort(), [...core.TWO_READINGS].sort());
 });
 test('speech matching accepts kanji, kana, katakana and digits', () => {
   assert.ok(core.matchScore(['おはようございます'], 'おはようございます。', 'おはようございます。') === 1);

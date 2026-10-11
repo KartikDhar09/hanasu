@@ -145,6 +145,7 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .stats span { font-size: .8rem; color: var(--muted); }
 .small-stats { grid-template-columns: repeat(2, 1fr); background: var(--surface); border-radius: var(--radius); padding: 10px; }
 .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick .qlink:nth-child(3) { grid-column: 1 / -1; }
 .qlink { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 12px;
   background: var(--surface-2); color: var(--ink); text-decoration: none; font-weight: 600; font-size: .92rem; }
 .qlink span { font-size: 1.1rem; }

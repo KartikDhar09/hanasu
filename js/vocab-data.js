@@ -3,6 +3,7 @@
 import { toRomaji } from './conjugate.js';
 import { N5_TOPICS } from './vocab-n5.js';
 import { N4_TOPICS } from './vocab-n4.js';
+import { LIFE_TOPICS } from './vocab-life.js';
 
 export const VOCAB = [
   // ================= N5 =================
@@ -120,10 +121,11 @@ export function parseList(text) {
     [jp, kana, ro || toRomaji(kana.replace(/〜/g, '')).replace(/^/, kana.startsWith('〜') ? '-' : ''), en, hg, pic]);
 }
 
-// Add the full-list topics. A word (same writing + reading) is taught once: N4 skips anything already in N5.
+// Add the full-list topics. A word (same writing + reading) is taught once: N4 skips anything already in N5,
+// and Life & work (level 'life', not a JLPT level) skips anything in either.
 const key = w => w[0] + '|' + w[1];
 const seen = new Set(VOCAB.flatMap(t => t.words.map(key)));
-for (const [level, topics] of [['n5', N5_TOPICS], ['n4', N4_TOPICS]]) {
+for (const [level, topics] of [['n5', N5_TOPICS], ['n4', N4_TOPICS], ['life', LIFE_TOPICS]]) {
   for (const t of topics) {
     const words = parseList(t.list).filter(w => !seen.has(key(w)) && seen.add(key(w)));
     if (words.length) VOCAB.push({ id: t.id, level, title: t.title, hg: t.hg, icon: t.icon, words });

@@ -31,6 +31,10 @@ export function chunk(sentence) {
   return out;
 }
 
+// Vocabulary levels: the two JLPT levels, plus Life & work (everyday and office words outside the JLPT lists).
+const VLEVELS = ['n5', 'n4', 'life'];
+const VLABEL = { n5: 'N5', n4: 'N4', life: 'Life & work' };
+
 export function initJlpt(ctx) {
   const { esc, render, speak, shuffle, bar, back } = ctx;
   const S = () => ctx.S();
@@ -98,6 +102,7 @@ export function initJlpt(ctx) {
         <button class="scard" data-act="gquiz" data-arg="${lv}"><span>✏️</span><b>Grammar quiz</b><small>Fill in the blank, like 文法形式</small></button>
         <button class="scard" data-act="order" data-arg="${lv}"><span>★</span><b>Sentence order</b><small>Put the pieces in order, like 文の組み立て</small></button>
         <button class="scard" data-act="jlpt-vocab" data-arg="${lv}"><span>🖼️</span><b>Vocabulary</b><small>${WORDS.filter(w => w.level === lv).length} ${lv.toUpperCase()} words with pictures</small></button>
+        <button class="scard" data-act="jlpt-vocab" data-arg="life"><span>🏢</span><b>Life &amp; work words</b><small>${WORDS.filter(w => w.level === 'life').length} everyday and office words beyond the JLPT</small></button>
         <button class="scard" data-act="kana"><span lang="ja">あア</span><b>Kana charts</b><small>Hiragana & katakana with sound + quiz</small></button>
       </div>
       <details class="fold"><summary>📋 About the exam: sections, times, pass marks</summary>
@@ -280,8 +285,9 @@ export function initJlpt(ctx) {
     ctx.clearSess(); st = null;
     const ws = WORDS.filter(w => w.level === lv);
     render(`
-      <div class="head">${back('jlpt')}<h1>${lv.toUpperCase()} vocabulary</h1></div>
-      <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-vocab" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
+      <div class="head">${back(lv === 'life' ? 'home' : 'jlpt')}<h1>${esc(VLABEL[lv])} vocabulary</h1></div>
+      <div class="seg">${VLEVELS.map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-vocab" data-arg="${l}">${esc(VLABEL[l])}</button>`).join('')}</div>
+      ${lv === 'life' ? '<p class="muted">Everyday words for living and working in Japan that the JLPT lists leave out: the office, keigo on email and phone, contracts and pay, city hall, banking, housing, rubbish days, the clinic, commuting and disasters. Words already taught in N5/N4 are not repeated here.</p>' : ''}
       <div class="row"><button class="btn primary" data-act="vlearn" data-arg="${lv}">🃏 Flashcards</button><button class="btn" data-act="vocab-quiz" data-arg="${lv}">🎯 Picture quiz</button></div>
       <input class="search" type="search" id="vsearch" data-input="vocab-search" data-arg="${lv}" placeholder="🔍 Search ${ws.length} words (日本語, romaji, English, Hinglish)" aria-label="Search words" value="${esc(st?.q || '')}" autocomplete="off">
       <div id="vresults"></div>
@@ -294,7 +300,7 @@ export function initJlpt(ctx) {
   }
 
   function vlearn(arg) {
-    const items = arg === 'n5' || arg === 'n4' ? WORDS.filter(w => w.level === arg) : WORDS.filter(w => w.topic === arg);
+    const items = VLEVELS.includes(arg) ? WORDS.filter(w => w.level === arg) : WORDS.filter(w => w.topic === arg);
     st = { kind: 'vlearn', queue: shuffle(items).slice(0, 12), i: 0, lv: items[0].level };
     vcard();
   }
@@ -441,7 +447,7 @@ export function initJlpt(ctx) {
     if (h === 'jlpt') return hub(), true;
     if (h === 'jlpt/kana') return kana('hira'), true;
     if (h.startsWith('jlpt/grammar/')) return grammarList(h.slice(13) === 'n4' ? 'n4' : 'n5'), true;
-    if (h.startsWith('jlpt/vocab/')) return vocab(h.slice(11) === 'n4' ? 'n4' : 'n5'), true;
+    if (h.startsWith('jlpt/vocab/')) { const l = h.slice(11); return vocab(VLEVELS.includes(l) ? l : 'n5'), true; }
     if (h.startsWith('jlpt/g/') && GRAMMAR.some(g => g.id === h.slice(7))) return gpoint(h.slice(7)), true;
     return false;
   }

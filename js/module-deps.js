@@ -40,6 +40,7 @@ export const DEPS = {
     "kanji-n4.js",
     "kanji-readings.js",
     "vocab-data.js",
+    "vocab-life.js",
     "vocab-n4.js",
     "vocab-n5.js"
   ],
@@ -59,6 +60,7 @@ export const DEPS = {
     "kanji-n4.js",
     "kanji-readings.js",
     "vocab-data.js",
+    "vocab-life.js",
     "vocab-n4.js",
     "vocab-n5.js"
   ],

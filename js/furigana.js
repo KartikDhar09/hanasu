@@ -42,6 +42,8 @@ export function splitReading(chars, reading) {
 // lit renders the kana/punctuation stretches (default: escaped as-is); esc escapes kanji and readings.
 // Each line is aligned once and remembered: screens re-render often, and the vocabulary lists show hundreds of words.
 const memo = new Map();
+// For scripts/kanji-readings.mjs, which renders every line again after changing the readings table.
+export const forgetFurigana = () => memo.clear();
 export function furigana(jp, kana, esc, lit = esc, opts = {}) {
   const key = `${lit === esc ? 0 : 1}${opts.split === false ? 0 : 1}${jp}\u0000${kana}`;
   if (memo.has(key)) return memo.get(key);

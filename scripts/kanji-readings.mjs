@@ -35,7 +35,7 @@ export async function buildReadings(dic = {}) {
   const { CARDS, UNITS } = await import('../js/data.js');
   const { WORDS } = await import('../js/vocab-data.js');
   const { GRAMMAR } = await import('../js/jlpt-data.js');
-  const { furigana } = await import('../js/furigana.js');
+  const { furigana, forgetFurigana } = await import('../js/furigana.js');
   const hira = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
   const map = new Map();
   const add = (k, r) => { if (!r) return; (map.get(k) || map.set(k, new Set()).get(k)).add(r); };
@@ -57,14 +57,14 @@ export async function buildReadings(dic = {}) {
   }
   for (const k of [...map.keys()]) if (!used.has(k)) map.delete(k);
   const full = Object.fromEntries([...map].map(([k, v]) => [k, [...v].filter(Boolean).sort().join(',')]));
-  return minimise(full, pairs, furigana);
+  return minimise(full, pairs, furigana, forgetFurigana);
 }
 
 // Ships only the readings some word in the content actually uses, then checks every line renders exactly as with
 // the full table (a smaller table could make an ambiguous word look unambiguous); kanji in any differing line keep all readings.
-async function minimise(full, pairs, furigana) {
+async function minimise(full, pairs, furigana, forget) {
   const mod = await import('../js/kanji-readings.js');
-  const render = table => { Object.keys(mod.READINGS).forEach(k => delete mod.READINGS[k]); Object.assign(mod.READINGS, table);
+  const render = table => { Object.keys(mod.READINGS).forEach(k => delete mod.READINGS[k]); Object.assign(mod.READINGS, table); forget();
     return pairs.map(([jp, kana]) => furigana(jp, kana, s => s) || ''); };
   const want = render(full);
   const keep = {};
@@ -79,10 +79,10 @@ async function minimise(full, pairs, furigana) {
     for (const jp of bad) for (const ch of jp.match(/\p{Script=Han}/gu) || []) if (full[ch]) small[ch] = full[ch].split(',');
   }
   const out = Object.fromEntries(Object.entries(small).filter(([, v]) => v.length).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, v.join(',')]));
-  Object.keys(mod.READINGS).forEach(k => delete mod.READINGS[k]); Object.assign(mod.READINGS, out);
+  Object.keys(mod.READINGS).forEach(k => delete mod.READINGS[k]); Object.assign(mod.READINGS, out); forget();
   const final = pairs.map(([jp, kana]) => furigana(jp, kana, s => s) || '');
   const diff = final.filter((h, i) => h !== want[i]).length;
-  if (diff) throw new Error(`${diff} lines differ after minimising`);
+  if (diff) throw new Error(`${diff} lines differ after minimising: ${pairs.filter((p, i) => final[i] !== want[i]).map(p => p[0]).join(" ")}`);
   return out;
 }
 const VOICED = { か: 'が', き: 'ぎ', く: 'ぐ', け: 'げ', こ: 'ご', さ: 'ざ', し: 'じ', す: 'ず', せ: 'ぜ', そ: 'ぞ', た: 'だ', ち: 'ぢ', つ: 'づ', て: 'で', と: 'ど', は: 'ば', ひ: 'び', ふ: 'ぶ', へ: 'べ', ほ: 'ぼ' };

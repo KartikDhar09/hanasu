@@ -151,6 +151,7 @@ function home() {
       <div class="quick">
         <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
         <a href="#jlpt" class="qlink"><span>🎓</span>JLPT course</a>
+        <a href="#jlpt/vocab/life" class="qlink"><span>🏢</span>Life &amp; work words</a>
       </div>
     </section>
     ${TRACKS.map(t => `

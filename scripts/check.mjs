@@ -182,6 +182,7 @@ for (const lv of ['n5', 'n4']) if (V.WORDS.filter(w => w.level === lv).length < 
 if (V.WORDS.filter(w => w.level === 'n5').length < 650) fail('N5 vocabulary should be the full list (650+ words)');
 { const ks = V.WORDS.map(w => w.jp + '|' + w.kana); if (new Set(ks).size !== ks.length) fail('a word is listed twice'); }
 if (V.WORDS.filter(w => w.level === 'n4').length < 550) fail('N4 vocabulary should be the full list (550+ words)');
+if (V.WORDS.filter(w => w.level === 'life').length < 300) fail('Life & work vocabulary should have 300+ words');
 for (const k of KANJI_LIST) if (!k.pic || !k.hint) fail(`kanji ${k.ch}: missing picture hint`);
 
 // 5f. Reading and listening.

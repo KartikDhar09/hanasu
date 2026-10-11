@@ -122,3 +122,8 @@ export function matchScore(heard, jp, kana, extra = []) {
 }
 
 export const PASS = 0.75;
+
+// Words the app teaches with two readings (十分 じゅうぶん "enough" / じゅっぷん "ten minutes"). A clip is named
+// after the written line, so these are spoken from their kana instead. check.mjs keeps this list complete.
+export const TWO_READINGS = new Set(['十分', '市場', '止める', '空く', '開く']);
+export const sayable = (jp, kana) => TWO_READINGS.has(jp) ? kana : jp;

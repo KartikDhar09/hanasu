@@ -5,6 +5,7 @@ import { prefetchClip } from './clips.js';
 import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
+import { sayable } from './core.js';
 
 const ALL_PARTICLES = PARTICLES.map(p => p.p);
 const plain = s => s.replace(/[[\]]/g, '');
@@ -252,7 +253,7 @@ export function initStudy(ctx) {
         ${k.on ? `<div><span class="pill">On</span> <span lang="ja">${k.on}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(k.on.replace(/[()]/g, '').replace(/・/g, ' · '))}</small>` : ''}</div>` : ''}
         ${k.kun ? `<div><span class="pill">Kun</span> <span lang="ja">${k.kun}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(k.kun.replace(/[()]/g, '').replace(/・/g, ' · '))}</small>` : ''}</div>` : ''}
       </div>
-      <ul class="phrases">${k.ex.map(e => `<li class="ex" data-act="say-text" data-arg="${esc(e[0])}">
+      <ul class="phrases">${k.ex.map(e => `<li class="ex" data-act="say-text" data-arg="${esc(sayable(e[0], e[1]))}">
         <div class="jp" lang="ja">${esc(e[0])} <span class="kana-inline">${esc(e[1])}</span></div>${ro(e[2])}
         <div class="en">${esc(e[3])}</div>${hg(e[4])}</li>`).join('')}</ul>
     </div>`;

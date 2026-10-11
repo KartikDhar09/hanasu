@@ -383,6 +383,15 @@ test('fill replaces placeholders', () => {
   assert.equal(core.fill('{name}です。{country}から', p), 'スミスです。中国から');
   assert.equal(core.fill('{countryKana}から {nameRo}', p), 'ちゅうごくから Sumisu');
 });
+test('words taught with two readings are spoken from their kana', () => {
+  // One clip per written line, so a word with two readings (十分 じゅうぶん / じゅっぷん) must be in TWO_READINGS.
+  const seen = new Map(), two = new Set();
+  for (const [jp, kana] of [...V.WORDS.map(w => [w.jp, w.kana]), ...KANJI_LIST.flatMap(k => k.ex.map(e => [e[0], e[1]]))]) {
+    if (seen.has(jp) && seen.get(jp) !== kana) two.add(jp);
+    seen.set(jp, kana);
+  }
+  assert.deepEqual([...two].sort(), [...core.TWO_READINGS].sort());
+});
 test('speech matching accepts kanji, kana, katakana and digits', () => {
   assert.ok(core.matchScore(['おはようございます'], 'おはようございます。', 'おはようございます。') === 1);
   assert.ok(core.matchScore(['9時です'], '九時です。', 'くじです。') >= core.PASS);

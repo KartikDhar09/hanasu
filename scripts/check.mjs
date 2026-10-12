@@ -233,6 +233,22 @@ for (const lv of ['n5', 'n4']) {
   for (const [t, n] of Object.entries(have)) if (need[t] && n < need[t]) fail(`${lv} full mock: ${t} needs ${need[t]}, bank has ${n}`);
 }
 
+// 5f3. Counters: 10 readings in kana, a way to ask, examples that use the counter.
+const CN = await import('../js/counters-data.js');
+if (new Set(CN.COUNTERS.map(c => c.id)).size !== CN.COUNTERS.length) fail('duplicate counter ids');
+for (const c of CN.COUNTERS) {
+  const where = `counter ${c.c}`;
+  if (!CN.COUNTER_GROUPS.some(g => g.id === c.group) || !['n5', 'n4'].includes(c.level)) fail(`${where}: bad group or level`);
+  if (c.n.length !== 10 || !c.n.every(r => /^[ぁ-ゖー]+$/.test(r))) fail(`${where}: needs 10 readings in hiragana`);
+  if (!/^[ぁ-ゖ]+$/.test(c.ask[1]) || !c.use || !LATIN.test(c.useHg) || !LATIN.test(c.hg) || c.items.length < 1) fail(`${where}: needs ask (kana), use, Hinglish and items`);
+  if (c.ex.length < 2) fail(`${where}: needs 2 examples`);
+  for (const e of c.ex) {
+    if (e.length !== 5 || !LATIN.test(e[4]) || /[ぁ-ゖ]/.test(e[1].replace(/[ぁ-ゖ、。！？ー]/g, '')) === false && /[一-龯]/.test(e[1])) fail(`${where}: example needs [jp, kana, romaji, en, hinglish]: ${e[0]}`);
+    if (!e[0].includes(c.c) && !c.nums?.some(x => e[0].includes(x)) && !e[0].includes(c.ask[0])) fail(`${where}: example doesn't use the counter: ${e[0]}`);
+    romajiOk(e[2], where);
+  }
+}
+
 // 5g. Sentence builder: every pattern × every allowed slot builds a clean sentence.
 for (const p of SP.PATTERNS) {
   for (const g of [...p.x, ...(p.y || [])]) if (!SP.SLOTS[g]) fail(`pattern ${p.id}: unknown slot group ${g}`);

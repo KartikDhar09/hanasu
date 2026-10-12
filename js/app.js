@@ -680,7 +680,7 @@ function loadSection(name) {
 }
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
-  : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes' : null;
+  : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -696,8 +696,8 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 async function route() {
   const h = location.hash.slice(1);
   Object.values(mods).forEach(m => m.clear());
-  const m = /^(speak|particle|verb|grammar|kanji|jlpt|write)/.exec(h)?.[1];
-  const tab = m === 'particle' || m === 'verb' ? 'grammar' : m || 'phrases';
+  const m = /^(speak|particle|verb|counter|grammar|kanji|jlpt|write)/.exec(h)?.[1];
+  const tab = ['particle', 'verb', 'counter'].includes(m) ? 'grammar' : m || 'phrases';
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   // Home renders straight away; every other screen needs the phrase data first.
   if (!h) return home();

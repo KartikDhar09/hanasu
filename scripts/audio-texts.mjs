@@ -32,6 +32,9 @@ export async function audioTexts() {
   for (const x of WORDS) add(n, sayable(x.jp, x.kana));
   for (const g of GRAMMAR) for (const e of g.ex) add(n, e[0]);
   for (const p of PARTICLES) for (const e of p.ex || p.examples || []) add(n, e[0]);
+  // Counters: the 1–10 readings and "how many?" are spoken from kana; examples as written.
+  const { COUNTERS } = await import('../js/counters-data.js');
+  for (const c of COUNTERS) { c.n.forEach(r => add(n, r)); add(n, c.ask[1]); c.ex.forEach(e => add(n, e[0])); }
   for (const k of KANJI) for (const e of k.ex || []) add(n, sayable(e[0], e[1]));
   for (const v of VERBS) { add(n, v.jp); if (v.ex) add(n, v.ex[0]); for (const form of Object.values(conjugate(v))) add(n, form[0]); }
   for (const g of SP.PRONUNCIATION) for (const pair of g.pairs) for (const x of pair) add(n, x[0]);
@@ -76,6 +79,7 @@ export async function audioKana() {
   for (const x of WORDS) put(x.jp, x.kana);
   for (const g of GRAMMAR) for (const e of g.ex) put(e[0], e[1]);
   for (const p of PARTICLES) for (const e of p.examples) put(e[0], e[1]);
+  for (const c of (await import('../js/counters-data.js')).COUNTERS) for (const e of c.ex) put(e[0], e[1]);
   for (const k of KANJI) for (const e of k.ex || []) put(e[0], e[1]);
   const opts = groups => groups.flatMap(g => SP.SLOTS[g].items);
   for (const p of SP.PATTERNS) for (const x of opts(p.x)) for (const y of p.y ? opts(p.y) : [null]) { const l = SP.buildSentence(p, x, y); put(l[0], l[1]); }

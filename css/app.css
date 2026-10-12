@@ -355,6 +355,16 @@ details.answers .phrases { margin-top: 8px; }
 
 /* ---------- Grammar: particles, verbs ---------- */
 .pgrid { display: grid; gap: 8px; }
+.ctable { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.ccell { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); min-width: 0; }
+.ccell b { font-size: 1.05rem; }
+.ccell span, .ccell small { font-size: .78rem; overflow-wrap: anywhere; text-align: center; }
+.ccell small { color: var(--muted); }
+.ccell.irr { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.ccell.irr span { color: var(--accent); font-weight: 700; }
+.irr-key { color: var(--accent); font-weight: 700; }
+.citems { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.ask { align-items: center; gap: 8px; }
 .pcard { display: grid; grid-template-columns: minmax(52px, auto) 1fr auto; align-items: center; gap: 12px; text-align: left; padding: 12px;
   background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
 .pch { font-family: var(--jp); font-size: 1.5rem; font-weight: 700; color: var(--accent); text-align: center; white-space: nowrap; padding: 0 4px; }

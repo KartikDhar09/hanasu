@@ -1,4 +1,4 @@
-// Particles, Verbs and Kanji sections. Shared helpers come from app.js via ctx.
+// Particles, Verbs, Counters and Kanji sections. Shared helpers come from app.js via ctx.
 import { PARTICLES, PARTICLES_INTRO, CONFUSABLE } from './particles-data.js';
 import { furigana, markBrackets } from './furigana.js';
 import { prefetchClip } from './clips.js';
@@ -6,6 +6,7 @@ import { VERBS, GROUPS, TIPS } from './verbs-data.js';
 import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
 import { sayable, sameMeaning } from './core.js';
+import { COUNTERS, COUNTER_GROUPS, COUNTER_INTRO, NUMBERS, NUMBER_KANJI } from './counters-data.js';
 
 const ALL_PARTICLES = PARTICLES.map(p => p.p);
 const plain = s => s.replace(/[[\]]/g, '');
@@ -42,6 +43,7 @@ export function initStudy(ctx) {
       <div class="speak-grid">
         <button class="scard" data-act="particles"><span lang="ja" class="pch">は</span><b>Particles</b><small>${PARTICLES.length} little words that glue sentences together: は, を, に, で…</small></button>
         <button class="scard" data-act="verbs"><span>🏃</span><b>Verbs</b><small>${VERBS.length} verbs with every form: ます, て, ない, た…</small></button>
+        <button class="scard" data-act="counters"><span lang="ja" class="pch">本</span><b>Counters</b><small>${COUNTERS.length} ways to count: 本, 枚, 人, 個… with the tricky sound changes</small></button>
       </div>`);
   }
 
@@ -373,6 +375,108 @@ export function initStudy(ctx) {
     </div>`);
   }
 
+  // ================= Counters =================
+  // Readings 1–10; a reading that isn't simply "number + counter" is a sound change, and is highlighted.
+  const cNum = (c, i) => c.nums?.[i] || NUMBER_KANJI[i] + c.c;
+  const irregular = (c, i) => c.n[i] !== NUMBERS[i] + c.kana;
+
+  function counters() {
+    ctx.clearSess(); st = null;
+    render(`
+      <div class="head">${back('grammar')}<h1>Counters <span lang="ja" class="accent">助数詞</span></h1></div>
+      <div class="card left"><p>${esc(COUNTER_INTRO.en)}</p>${hg(COUNTER_INTRO.hg)}
+        <div class="note">💡 From 11 on: じゅう + the 1–9 reading (十一本 じゅういっぽん, 十三本 じゅうさんぼん). Ask “how many” with 何 + counter (何本 なんぼん).</div></div>
+      <button class="btn primary big" data-act="cquiz" data-arg="">🎯 Counter quiz</button>
+      ${COUNTER_GROUPS.map(g => `<h2 class="sec">${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
+        <div class="pgrid">${COUNTERS.filter(c => c.group === g.id).map(c => `<button class="pcard" data-act="counter" data-arg="${c.id}">
+          <span class="pch" lang="ja">${c.c}</span>
+          <span class="pt"><b>${c.pic} ${esc(c.title)}</b><small lang="ja">${c.kana} · ${c.level.toUpperCase()}</small></span>
+        </button>`).join('')}</div>`).join('')}`);
+  }
+
+  function counter(id) {
+    ctx.clearSess(); st = null;
+    const c = COUNTERS.find(x => x.id === id);
+    const cell = i => `<button class="ccell${irregular(c, i) ? ' irr' : ''}" data-act="say-text" data-arg="${c.n[i]}">
+      <b lang="ja">${cNum(c, i)}</b><span lang="ja">${c.n[i]}</span>${S().settings.romaji ? `<small>${toRomaji(c.n[i])}</small>` : ''}</button>`;
+    render(`
+      <div class="head">${back('counters')}<h1><span lang="ja" class="accent">${c.c}</span> ${esc(c.title)}</h1></div>
+      <p class="muted sub"><span lang="ja">${c.kana}</span> · ${toRomaji(c.kana)} · ${c.level.toUpperCase()}</p>
+      <div class="card left">
+        <p>${esc(c.use)}</p>${hg(c.useHg)}
+        <div class="citems">${c.items.map(([pic, en]) => `<span class="pill">${pic} ${esc(en)}</span>`).join(' ')}</div>
+        <div class="row ask"><span>How many? </span><button class="btn small" data-act="say-text" data-arg="${c.ask[1]}"><span lang="ja">${c.ask[0]}</span>${c.ask[0] !== c.ask[1] ? ` <small lang="ja">${c.ask[1]}</small>` : ''} 🔊</button></div>
+      </div>
+      <h2 class="sec">1 to 10 <small class="muted">tap to hear · <span class="irr-key">highlighted</span> = sound change</small></h2>
+      <div class="ctable">${c.n.map((_, i) => cell(i)).join('')}</div>
+      <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
+      <ul class="phrases">${c.ex.map((e, i) => example(e, i)).join('')}</ul>
+      <button class="btn primary big" data-act="cquiz" data-arg="${c.id}">🎯 Practise ${c.c}</button>`);
+  }
+
+  // Wrong readings people actually say: the plain "number + counter", or the wrong sound change.
+  const VOICE = { か: 'が', き: 'ぎ', く: 'ぐ', け: 'げ', こ: 'ご', さ: 'ざ', し: 'じ', す: 'ず', せ: 'ぜ', そ: 'ぞ', た: 'だ', ち: 'ぢ', つ: 'づ', て: 'で', と: 'ど', は: 'ば', ひ: 'び', ふ: 'ぶ', へ: 'べ', ほ: 'ぼ' };
+  const HALFV = { は: 'ぱ', ひ: 'ぴ', ふ: 'ぷ', へ: 'ぺ', ほ: 'ぽ' };
+  function readingDistractors(c, i) {
+    const k = c.kana, num = NUMBERS[i], short = num.replace(/[ちくつ]$/, 'っ').replace(/^じゅう$/, 'じゅっ');
+    const heads = [k, VOICE[k[0]] ? VOICE[k[0]] + k.slice(1) : k, HALFV[k[0]] ? HALFV[k[0]] + k.slice(1) : k];
+    const near = new Set(shuffle([...heads.map(h => num + h), ...heads.map(h => short + h)]));
+    const far = shuffle(COUNTERS.filter(o => o.kana !== c.kana).map(o => o.n[i]));
+    return [...new Set([...near, ...far])].filter(x => x !== c.n[i]).slice(0, 3);
+  }
+  // Counters that are also right for the same thing, so they're never offered as wrong answers.
+  const ALSO_RIGHT = { nin: ['mei'], mei: ['nin'], mai: ['chaku'], chaku: ['mai'], kenn: ['tsuu'], tsuu: ['kenn'] };
+  const alsoRight = (c, o) => (ALSO_RIGHT[c.id] || []).includes(o.id) || (c.group === 'things' && o.id === 'tsu') || (c.id === 'tsu' && o.group === 'things');
+
+  function cquiz(id) {
+    const pool = id ? COUNTERS.filter(c => c.id === id) : COUNTERS;
+    const qs = [];
+    // How do you read it? (sound changes first)
+    for (const c of pool) for (let i = 0; i < 10; i++) qs.push({ type: 'read', c, i, w: irregular(c, i) ? 3 : 1 });
+    const reads = shuffle(qs.flatMap(q => Array(q.w).fill(q))).filter((q, k, a) => a.findIndex(x => x.c === q.c && x.i === q.i) === k).slice(0, id ? 8 : 5)
+      .map(q => ({ ...q, right: q.c.n[q.i], options: shuffle([q.c.n[q.i], ...readingDistractors(q.c, q.i)]) }));
+    // Which counter? (whole-app quiz only)
+    const which = id ? [] : shuffle(COUNTERS.flatMap(c => c.items.map(it => ({ c, it })))).slice(0, 5).map(({ c, it }) => {
+      const n = 2 + Math.floor(Math.random() * 3);
+      const wrong = shuffle(COUNTERS.filter(o => o !== c && !alsoRight(c, o) && o.kana !== c.kana)).slice(0, 3);
+      return { type: 'which', c, it, n, right: c.c, options: shuffle([c, ...wrong]).map(o => o.c) };
+    });
+    st = { kind: 'cquiz', id, qs: shuffle([...reads, ...which]), i: 0, right: 0 };
+    ctx.setSess(st);
+    cquizQ();
+  }
+
+  function cquizQ() {
+    const q = st.qs[st.i];
+    if (!q) return quizDone(`Counter quiz: ${st.right}/${st.qs.length}`, st.id ? 'counter' : 'counters', st.id || '');
+    st.answered = false;
+    const prompt = q.type === 'read'
+      ? `<span class="tag alt">How do you read it?</span><div class="kbig" lang="ja">${cNum(q.c, q.i)}</div><div class="muted">${q.c.pic} ${esc(q.c.title)}</div>`
+      : `<span class="tag alt">Which counter?</span><div class="wpic huge">${q.it[0].repeat(q.n)}</div><div class="prompt">${q.n} × ${esc(q.it[1])}</div>${q.it[2] !== q.it[1] ? hg(q.it[2], 'prompt-hi') : ''}`;
+    render(`
+      <div class="head">${back(st.id ? 'counter' : 'counters', st.id || '')}<div class="grow">${bar(st.i, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
+      <div class="card">${prompt}</div>
+      <div class="choices four">${q.options.map(o => `<button class="choice center" data-act="canswer" data-arg="${esc(o)}"><span lang="ja" class="pch-sm">${esc(o)}</span></button>`).join('')}</div>
+      <div class="actions" id="actions"></div>`);
+  }
+
+  function canswer(o) {
+    if (st.answered) return;
+    st.answered = true;
+    const q = st.qs[st.i], ok = o === q.right;
+    if (ok) st.right++;
+    document.querySelectorAll('.choice').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.arg === q.right) b.classList.add('right'); else if (b.dataset.arg === o) b.classList.add('wrong');
+    });
+    const c = q.c, idx = q.type === 'read' ? q.i : q.n - 1, say = c.n[idx];
+    document.getElementById('actions').innerHTML = `
+      <div class="card compact left"><b lang="ja">${cNum(c, idx)}</b> <span lang="ja">${say}</span>${S().settings.romaji ? ` <small class="ro">${toRomaji(say)}</small>` : ''}
+        <div class="muted small"><span lang="ja">${c.c}</span> · ${esc(c.title)}${!ok && q.type === 'read' && irregular(c, q.i) ? ' · a sound change: not just number + counter' : ''}</div></div>
+      <button class="btn primary big" data-act="cnext">${st.i + 1 < st.qs.length ? 'Next' : 'See score'}</button>`;
+    speak(say);
+  }
+
   const actions = {
     grammar: () => ctx.go('grammar'),
     particles: () => ctx.go('particles'),
@@ -394,6 +498,11 @@ export function initStudy(ctx) {
     kquiz: () => kquiz(),
     kanswer: o => kanswer(o),
     knext: () => { st.i++; kquizQ(); },
+    counters: () => ctx.go('counters'),
+    counter: id => ctx.go('counter/' + id),
+    cquiz: id => cquiz(id),
+    canswer: o => canswer(o),
+    cnext: () => { st.i++; cquizQ(); },
     'say-text': t => speak(t),
   };
 
@@ -402,6 +511,8 @@ export function initStudy(ctx) {
     if (h === 'grammar') return grammarHub(), true;
     if (h === 'particles') return particles(), true;
     if (h.startsWith('particle/') && PARTICLES.some(p => p.id === h.slice(9))) return particle(h.slice(9)), true;
+    if (h === 'counters') return counters(), true;
+    if (h.startsWith('counter/') && COUNTERS.some(c => c.id === h.slice(8))) return counter(h.slice(8)), true;
     if (h === 'verbs') return verbs(), true;
     if (h.startsWith('verb/') && VERBS[+h.slice(5)]) return verb(h.slice(5)), true;
     if (h === 'kanji') return kanji(), true;
@@ -416,6 +527,7 @@ export function initStudy(ctx) {
     if (st.kind === 'pquiz') pquizQ();
     else if (st.kind === 'vquiz') vquizQ();
     else if (st.kind === 'kquiz') kquizQ();
+    else if (st.kind === 'cquiz') cquizQ();
     else kcard();
     return true;
   }

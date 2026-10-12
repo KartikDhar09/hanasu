@@ -9,6 +9,7 @@ export const DEPS = {
   ],
   study: [
     "conjugate.js",
+    "counters-data.js",
     "furigana.js",
     "kanji-data.js",
     "kanji-n4.js",

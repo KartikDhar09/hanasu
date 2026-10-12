@@ -2,7 +2,9 @@
 // Run the engine first (it listens only on this Mac):  ~/tools/voicevox/macos-arm64/run --host 127.0.0.1 --port 50021
 // Then:  node scripts/make-audio.mjs        (only new lines are recorded; clips for removed lines are deleted)
 //        node scripts/make-audio.mjs --all  (re-records every clip; bump AUDIO in sw.js so phones fetch the new ones)
-//        node scripts/make-audio.mjs --fix-readings  (re-records clips the engine reads differently from the app's kana)
+//        node scripts/make-audio.mjs --fix-readings  (re-records clips the engine reads differently from the app's kana; one-off, since
+//                                                   new clips get the same fix when recorded)
+//        node scripts/make-audio.mjs --check-readings  (records nothing new beyond missing clips; reports any line still misread)
 // Voices (credit required, shown in Settings): n = VOICEVOX:四国めたん, f = VOICEVOX:冥鳴ひまり, m = VOICEVOX:青山龍星.
 import { mkdirSync, existsSync, readdirSync, rmSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -18,6 +20,7 @@ const BITRATE = '32000';
 const LEAD = 0.4; // seconds of silence before the voice (js/clips.js LEAD_SKIP must stay below this)
 const ALL = process.argv.includes('--all'); // re-record every clip, e.g. after changing LEAD
 const FIX = process.argv.includes('--fix-readings'); // re-record clips whose kanji the engine reads differently from the app
+const CHECK = process.argv.includes('--check-readings'); // only report readings that can't be matched; records nothing
 const ROOT = new URL('../', import.meta.url).pathname;
 const tmp = mkdtempSync(join(tmpdir(), 'hanasu-audio-'));
 
@@ -122,6 +125,7 @@ for (const [who, lines] of Object.entries(texts)) {
 rmSync(tmp, { recursive: true, force: true });
 // Lines whose reading couldn't be matched to the app's kana even with the kanji swapped out: listen to these.
 const unresolved = [];
-for (const t of new Set(Object.values(texts).flat())) if (KANA.has(normalizeLine(t)) && (FIX || ALL) && (await settle(normalizeLine(t))).how === 'unresolved') unresolved.push(t);
+for (const t of new Set(Object.values(texts).flat())) if (KANA.has(normalizeLine(t)) && (FIX || ALL || CHECK) && (await settle(normalizeLine(t))).how === 'unresolved') unresolved.push(t);
 if (unresolved.length) console.log(`reading still differs from the app's kana (check by ear): ${unresolved.join(' | ')}`);
+else if (FIX || ALL || CHECK) console.log('readings: every line with app kana is read as written');
 console.log(`done: ${made} recorded, ${kept} already there, ${removed} removed`);

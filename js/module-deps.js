@@ -93,5 +93,22 @@ export const DEPS = {
     "vocab-life.js",
     "vocab-n4.js",
     "vocab-n5.js"
+  ],
+  search: [
+    "conjugate.js",
+    "corp-more.js",
+    "counters-data.js",
+    "data.js",
+    "grammar-n4.js",
+    "grammar-n5.js",
+    "jlpt-data.js",
+    "kanji-data.js",
+    "kanji-n4.js",
+    "particles-data.js",
+    "search.js",
+    "vocab-data.js",
+    "vocab-life.js",
+    "vocab-n4.js",
+    "vocab-n5.js"
   ]
 };

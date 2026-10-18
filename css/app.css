@@ -135,6 +135,10 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .row { display: flex; gap: 10px; margin-top: 10px; }
 .row > .btn { flex: 1; }
 .row.center { justify-content: center; }
+.srow { display: flex; align-items: center; gap: 8px; }
+.sbody { flex: 1; min-width: 0; }
+.sopen { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2); color: var(--ink); text-decoration: none; font-size: 1.3rem; }
+a.gear { text-decoration: none; }
 .row.center > .btn { flex: 0 0 auto; }
 
 /* ---------- Home ---------- */

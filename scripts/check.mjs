@@ -669,6 +669,26 @@ test('passing a full mock completes that exam level in the JLPT path (and only m
   assert.match(exam, /full = st\.mode !== 'quick'/, 'quick mocks never count');
 });
 
+const SEARCH = await import('../js/search.js');
+test('search finds things by Japanese, kana, romaji (with or without long-vowel marks), English and Hinglish', () => {
+  const has = (q, kind, pred) => assert.ok(SEARCH.search(q, 50)[kind].some(pred), `“${q}” should find a ${kind}`);
+  has('arigatou', 'phrase', e => e.title === 'ありがとうございます。');
+  has('ありがとう', 'phrase', e => e.title === 'ありがとうございます。');
+  has('アリガトウ', 'phrase', e => e.title === 'ありがとうございます。');
+  has('eki', 'word', e => e.title === '駅');
+  has('station', 'word', e => e.title === '駅');
+  has('paani', 'word', e => e.title === '水');
+  has('日', 'kanji', e => e.title === '日');
+  has('てください', 'grammar', e => e.go === 'jlpt/g/tekudasai');
+  has('wa', 'particle', e => e.title === 'は');
+  has('本', 'counter', e => e.title === '本');
+  has('greetings', 'unit', e => e.go === 'unit/greet');
+  const top = SEARCH.search('water').word[0];
+  assert.equal(top.title, '水', 'exact English match ranks first');
+  assert.equal(SEARCH.search('zzqxv').total, 0);
+  assert.equal(SEARCH.search('   ').total, undefined, 'empty query searches nothing');
+});
+
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));
   process.exit(1);

@@ -6,18 +6,19 @@ import { watchVisible, prefetchClip, constrained } from './clips.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 
 // ---------- State ----------
-// Nothing about the learner is stored: no name, progress, streak or scores.
-// Only display settings are saved, so the app looks the same next time.
+// Nothing about the learner is stored: no name, scores or streak. Saved: display settings, so the app looks the
+// same next time, and the level reached in each path (the user chose this; a number per path, nothing else).
 const KEY = 'hanasu-v1';
 const DEFAULTS = { settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' } };
+const PATH_IDS = ['jlpt'];
 let S = load();
 
 function load() {
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(KEY)); } catch (_) { /* unreadable: start fresh */ }
-  const state = sanitize({ settings: { ...DEFAULTS.settings, ...(saved && saved.settings) } });
-  // Older versions stored progress and a profile; keep only the settings and drop the rest.
-  if (saved && Object.keys(saved).some(k => k !== 'settings')) save(state);
+  const state = sanitize({ settings: { ...DEFAULTS.settings, ...(saved && saved.settings) }, path: { ...(saved && saved.path) } });
+  // Older versions stored progress and a profile; keep only the settings and path levels and drop the rest.
+  if (saved && Object.keys(saved).some(k => k !== 'settings' && k !== 'path')) save(state);
   return state;
 }
 // Saved values that end up in page markup are forced back to known-safe shapes.
@@ -26,11 +27,12 @@ function sanitize(s) {
   s.settings.rate = num(s.settings.rate, 0.5, 1.5, DEFAULTS.settings.rate);
   s.settings.voice = typeof s.settings.voice === 'string' ? s.settings.voice : '';
   for (const k of ['romaji', 'kana', 'hindi', 'casual']) s.settings[k] = s.settings[k] !== false;
+  s.path = Object.fromEntries(PATH_IDS.map(p => [p, Math.round(num(s.path?.[p], 0, 99, 0))]));
   return s;
 }
 
 function save(state = S) {
-  try { localStorage.setItem(KEY, JSON.stringify({ settings: state.settings })); } catch (_) { /* private mode: settings just won't persist */ }
+  try { localStorage.setItem(KEY, JSON.stringify({ settings: state.settings, path: state.path })); } catch (_) { /* private mode: settings just won't persist */ }
 }
 
 let UNITS = [], CARDS = [], COUNTRIES = [];
@@ -161,8 +163,8 @@ function home() {
       <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${PHRASE_COUNT} phrases in ${UNIT_INDEX.length} units, each with flashcards, speaking practice, a quiz and a role-play.</span></div>
       <button class="btn primary big" data-act="learn" data-arg="${UNIT_INDEX[0].id}">Start: ${esc(UNIT_INDEX[0].title)}</button>
       <div class="quick">
+        <a href="#path/jlpt" class="qlink"><span>🪜</span>JLPT path, level by level</a>
         <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
-        <a href="#jlpt" class="qlink"><span>🎓</span>JLPT course</a>
         <a href="#jlpt/vocab/life" class="qlink"><span>🏢</span>Life &amp; work words</a>
       </div>
     </section>
@@ -528,7 +530,7 @@ function openSettings() {
         <button role="tab" id="t-credits" aria-controls="p-credits" aria-selected="false" data-act="settings-tab" data-arg="credits">🙏 Credits</button>
       </div>
       <section id="p-prefs" role="tabpanel" aria-labelledby="t-prefs" class="panel-tab">
-        <p class="muted small">Only these display settings are saved on this device. Nothing about you or your progress is stored.</p>
+        <p class="muted small">Only these display settings and the level you reach in each path are saved, on this device only. No scores, history or anything else about you.</p>
         <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
         <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
         <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
@@ -667,9 +669,15 @@ const LOADERS = {
     ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true), waysOf, waysSlot,
   })),
   jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
+  path: () => import('./path.js').then(m => m.initPath({
+    ...shared(), run,
+    level: p => S.path[p] || 0,
+    // A passed test only ever moves you forward; force is for "start again".
+    setLevel: (p, n, force) => { if (PATH_IDS.includes(p) && (force || n > (S.path[p] || 0))) { S.path[p] = n; save(); } },
+  })),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
   exam: () => import('./exam.js').then(m => m.initExam({
-    ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
+    ...shared(), mockPassed: lv => loadSection('path').then(m => m.mockPassed(lv)), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
 };
 const mods = {};      // initialised modules
@@ -680,7 +688,8 @@ function loadSection(name) {
 }
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
-  : /^jlpt/.test(h) ? 'jlpt' : /^(particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes' : null;
+  : /^jlpt/.test(h) ? 'jlpt' : /^(study|particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes'
+  : /^path\//.test(h) ? 'path' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -696,9 +705,11 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 async function route() {
   const h = location.hash.slice(1);
   Object.values(mods).forEach(m => m.clear());
-  const m = /^(speak|particle|verb|counter|grammar|kanji|jlpt|write)/.exec(h)?.[1];
-  const tab = ['particle', 'verb', 'counter'].includes(m) ? 'grammar' : m || 'phrases';
-  document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
+  const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|path\/\w+)/.exec(h)?.[1];
+  const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
+  const tabs = [...document.querySelectorAll('#tabs a')];
+  const on = tabs.some(a => a.dataset.tab === tab) ? tab : 'phrases'; // unknown links fall back to home
+  tabs.forEach(a => a.classList.toggle('on', a.dataset.tab === on));
   // Home renders straight away; every other screen needs the phrase data first.
   if (!h) return home();
   // The section and the phrase data load side by side, not one after the other.

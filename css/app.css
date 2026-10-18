@@ -473,6 +473,29 @@ details.answers .phrases { margin-top: 8px; }
 .ptile b { font-size: 1.3rem; }
 .ptile small { color: var(--muted); font-size: .78rem; text-align: center; }
 
+/* ---------- Paths (level by level) ---------- */
+.pnow { display: grid; gap: 6px; }
+.pnow .tag { justify-self: start; margin: 0; }
+.pnow p { margin: 0 0 4px; }
+.levels li.now button { border-color: var(--accent); }
+.levels li.now .pico { background: var(--accent-soft); }
+.ltitle { margin: 4px 0 0; font-size: 1.25rem; }
+.goal { border-color: var(--accent); margin-top: 12px; }
+.goal p { margin: 6px 0 0; }
+.steps .ptext small, .prow .ptext small { margin-bottom: 0; }
+.pstep { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: center; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.psub { font-size: 1rem; margin: 18px 0 2px; }
+.psub + p { margin: 0 0 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { min-height: 36px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--ink); font-size: .9rem; }
+.chip b { color: var(--accent); }
+.note.ok { background: var(--ok-soft); }
+.ltest { display: grid; gap: 10px; }
+.ltest p { margin: 0; }
+.big-en { font-size: 1.15rem; font-weight: 600; margin: 6px 0; }
+.preset { margin-top: 16px; }
+.inline-link { color: var(--accent); font-weight: 600; }
+
 /* ---------- JLPT ---------- */
 .seg { display: grid; grid-auto-flow: column; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; }
 .seg button { border: 0; background: none; padding: 8px; border-radius: 9px; font-weight: 600; color: var(--muted); }

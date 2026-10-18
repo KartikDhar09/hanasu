@@ -34,16 +34,24 @@ export function initStudy(ctx) {
     </li>`;
   }
 
-  // ================= Grammar hub =================
-  function grammarHub() {
+  // ================= Study hub: grammar, kanji and stroke order =================
+  function studyHub() {
     ctx.clearSess(); st = null;
     render(`
-      <h1 class="page">Grammar <span lang="ja">文法</span></h1>
+      <h1 class="page">Study <span lang="ja">勉強</span></h1>
+      <p class="muted">Not sure where to start? The <a class="inline-link" href="#path/jlpt">🪜 N5·N4 path</a> tells you what to study, in order.</p>
+      <h2 class="sec">Grammar <span lang="ja">文法</span></h2>
       <div class="intro">${esc(PARTICLES_INTRO.en)}${hg(PARTICLES_INTRO.hg, 'hi intro-hg')}</div>
       <div class="speak-grid">
         <button class="scard" data-act="particles"><span lang="ja" class="pch">は</span><b>Particles</b><small>${PARTICLES.length} little words that glue sentences together: は, を, に, で…</small></button>
         <button class="scard" data-act="verbs"><span>🏃</span><b>Verbs</b><small>${VERBS.length} verbs with every form: ます, て, ない, た…</small></button>
         <button class="scard" data-act="counters"><span lang="ja" class="pch">本</span><b>Counters</b><small>${COUNTERS.length} ways to count: 本, 枚, 人, 個… with the tricky sound changes</small></button>
+        <button class="scard" data-act="jlpt-grammar" data-arg="n5"><span>📘</span><b>Grammar points</b><small>Every N5 and N4 pattern with examples (in the JLPT tab)</small></button>
+      </div>
+      <h2 class="sec">Kanji <span lang="ja">漢字</span></h2>
+      <div class="speak-grid">
+        <button class="scard" data-act="kanji"><span lang="ja" class="pch">漢</span><b>Kanji</b><small>${KANJI.length} N5 and N4 kanji with readings, examples, flashcards and a quiz</small></button>
+        <button class="scard" data-act="stroke-tab"><span>✍️</span><b>Stroke order</b><small>Watch every kanji drawn stroke by stroke</small></button>
       </div>`);
   }
 
@@ -51,7 +59,7 @@ export function initStudy(ctx) {
   function particles() {
     ctx.clearSess(); st = null;
     render(`
-      <div class="head">${back('grammar')}<h1>Particles <span lang="ja" class="accent">助詞</span></h1></div>
+      <div class="head">${back('study')}<h1>Particles <span lang="ja" class="accent">助詞</span></h1></div>
       <button class="btn primary big" data-act="pquiz" data-arg="">🎯 Mixed particle quiz</button>
       <div class="pgrid">
         ${PARTICLES.map(p => `<button class="pcard" data-act="particle" data-arg="${p.id}">
@@ -131,7 +139,7 @@ export function initStudy(ctx) {
   function verbs() {
     ctx.clearSess(); st = null;
     render(`
-      <div class="head">${back('grammar')}<h1>Verbs <span lang="ja" class="accent">動詞</span></h1></div>
+      <div class="head">${back('study')}<h1>Verbs <span lang="ja" class="accent">動詞</span></h1></div>
       <div class="groups">${GROUPS.map(g => `<div class="card left group g${g.id}">
         <b>${esc(g.name)}</b> <span class="muted" lang="ja">${g.jp}</span>
         <p>${esc(g.how)}</p>${hg(g.hg)}</div>`).join('')}</div>
@@ -232,7 +240,7 @@ export function initStudy(ctx) {
   function kanji() {
     ctx.clearSess(); st = null;
     render(`
-      <h1 class="page">Kanji <span lang="ja">漢字</span></h1>
+      <div class="head">${back('study')}<h1>Kanji <span lang="ja">漢字</span></h1></div>
       <details class="fold"><summary>💡 How kanji work</summary><div class="fold-body">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div></details>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === klevel() ? 'on' : ''}" data-act="kanji-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
       <div class="row">
@@ -383,7 +391,7 @@ export function initStudy(ctx) {
   function counters() {
     ctx.clearSess(); st = null;
     render(`
-      <div class="head">${back('grammar')}<h1>Counters <span lang="ja" class="accent">助数詞</span></h1></div>
+      <div class="head">${back('study')}<h1>Counters <span lang="ja" class="accent">助数詞</span></h1></div>
       <div class="card left"><p>${esc(COUNTER_INTRO.en)}</p>${hg(COUNTER_INTRO.hg)}
         <div class="note">💡 From 11 on: じゅう + the 1–9 reading (十一本 じゅういっぽん, 十三本 じゅうさんぼん). Ask “how many” with 何 + counter (何本 なんぼん).</div></div>
       <button class="btn primary big" data-act="cquiz" data-arg="">🎯 Counter quiz</button>
@@ -478,7 +486,8 @@ export function initStudy(ctx) {
   }
 
   const actions = {
-    grammar: () => ctx.go('grammar'),
+    grammar: () => ctx.go('study'),
+    study: () => ctx.go('study'),
     particles: () => ctx.go('particles'),
     particle: id => ctx.go('particle/' + id),
     pquiz: id => pquiz(id),
@@ -508,7 +517,7 @@ export function initStudy(ctx) {
 
   // Returns true when the hash belongs to this module.
   function route(h) {
-    if (h === 'grammar') return grammarHub(), true;
+    if (h === 'study' || h === 'grammar') return studyHub(), true;
     if (h === 'particles') return particles(), true;
     if (h.startsWith('particle/') && PARTICLES.some(p => p.id === h.slice(9))) return particle(h.slice(9)), true;
     if (h === 'counters') return counters(), true;

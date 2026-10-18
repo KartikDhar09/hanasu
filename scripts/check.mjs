@@ -277,14 +277,16 @@ test('.vercelignore publishes only app files', () => {
   assert.equal(lines[0], '/*', 'must start by ignoring everything');
   for (const bad of ['scripts', '.github', 'README.md', 'package.json']) assert.ok(!lines.some(l => l.includes(bad)), `${bad} must stay private`);
 });
-test('nothing but display settings is stored', () => {
+test('nothing but display settings and path levels is stored', () => {
   for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) {
     const src = readFileSync('js/' + f, 'utf8');
     if (f !== 'app.js') assert.ok(!/localStorage|indexedDB|sessionStorage|document\.cookie/.test(src), `${f} touches storage`);
     assert.ok(!/practised\(|bumpStreak|quizBest|kanjiProgress|vocabProgress|readBest|listenDone|S\(\)\.(progress|spoken|mocks|intro|builder|jlptLevel)/.test(src), `${f} still tracks the learner`);
   }
   const app = readFileSync('js/app.js', 'utf8');
-  assert.match(app, /JSON\.stringify\(\{ settings: state\.settings \}\)/);
+  // Saved: display settings and one level number per path (the user's choice, 2026-10-18). Nothing else.
+  assert.match(app, /JSON\.stringify\(\{ settings: state\.settings, path: state\.path \}\)/);
+  assert.match(app, /s\.path = Object\.fromEntries\(PATH_IDS\.map\(p => \[p, Math\.round\(num\(/, 'path levels are sanitised to numbers');
 });
 const clipsMod = await import('../js/clips.js');
 const spoken = await (await import('./audio-texts.mjs')).audioTexts();
@@ -486,6 +488,76 @@ test('mock scoring matches JLPT pass rules', () => {
   const n4 = EX.scoreMock([...mk('vocab', 10, 5), ...mk('grammar', 10, 5), ...mk('reading', 4, 2), ...mk('listening', 4, 2)], 'n4');
   assert.deepEqual([n4.total, n4.passed], [90, true]);
 });
+
+// ---------- Paths: levels, coverage, level tests ----------
+const PATHMOD = await import('../js/path.js');
+{
+  const KG = (await import('../js/kanji-data.js')).ALL_KANJI_GROUPS;
+  const { UNIT_INDEX: UI } = await import('../js/units-index.js');
+  const allJs = readdirSync('js').filter(f => f.endsWith('.js')).map(f => readFileSync('js/' + f, 'utf8')).join('\n');
+  const ACTIONS = new Set([...allJs.matchAll(/^\s+'?([a-z][a-z0-9-]*)'?: (?:\([^)]*\)|[a-z]+) =>/gm)].map(m => m[1]));
+  const HASH = /^#(unit\/[\w-]+|particles?(\/\w+)?|verbs|counters|kanji(\/n4)?|write|study|speak(\/\w+)?|jlpt(\/(kana|grammar\/n[45]|vocab\/(n5|n4|life)|reading\/n[45]|listening\/n[45]|mock\/n[45]))?|path\/\w+)$/;
+  const JP = /[ぁ-ゖァ-ヺ一-龯々]/, NOJP = /^[^ぁ-ゖァ-ヺ一-龯々]*$/;
+  const KANA = /^[ぁ-ゖァ-ヺー、。！？「」・\[\] 　]+$/;
+  for (const [pid, P] of Object.entries(PATHMOD.PATHS)) {
+    const seen = { particles: new Map(), grammar: new Map(), kanji: new Map(), vocab: new Map(), units: new Map() };
+    if (new Set(P.levels.map(l => l.id)).size !== P.levels.length) fail(`path ${pid}: duplicate level ids`);
+    if (!LATIN.test(P.intro.hg)) fail(`path ${pid}: intro Hinglish`);
+    for (const l of P.levels) {
+      const at = `path ${pid}/${l.id}`;
+      for (const k of ['icon', 'title', 'part', 'time', 'goal', 'tip']) if (!l[k]) fail(`${at}: missing ${k}`);
+      for (const k of ['goalHg', 'tipHg']) if (!LATIN.test(l[k] || '')) fail(`${at}: ${k} must be Roman-letter Hinglish`);
+      if (l.steps.length < 3 || l.daily.length < 3) fail(`${at}: needs 3+ steps and 3+ daily items`);
+      for (const [icon, title, how, t] of l.steps) {
+        if (!icon || !title || !how) fail(`${at}: step missing text`);
+        if (t && !(t.startsWith('#') ? HASH.test(t) : ACTIONS.has(t.split(':')[0]))) fail(`${at}: step target ${t} doesn't exist`);
+        if (t?.startsWith('#unit/') && !UI.some(u => u.id === t.slice(6))) fail(`${at}: no unit ${t}`);
+      }
+      for (const [kind, ids] of Object.entries(l.study || {})) {
+        const exists = { particles: id => PARTICLES.some(x => x.id === id), grammar: id => J.GRAMMAR.some(g => g.id === id),
+          kanji: id => KG.some(g => g.id === id), vocab: id => V.VOCAB.some(t => t.id === id), units: id => UI.some(u => u.id === id) }[kind];
+        if (!exists) { fail(`${at}: unknown study kind ${kind}`); continue; }
+        for (const id of ids) {
+          if (!exists(id)) fail(`${at}: ${kind} ${id} doesn't exist`);
+          if (seen[kind].has(id)) fail(`${at}: ${kind} ${id} is already in ${seen[kind].get(id)}`);
+          seen[kind].set(id, l.id);
+        }
+      }
+      const T = l.test;
+      if (T.mock) { if (!['n5', 'n4'].includes(T.mock)) fail(`${at}: bad mock`); continue; }
+      if (!(T.pass >= 60 && T.pass <= 100)) fail(`${at}: pass mark`);
+      const qs = PATHMOD.parseQs(T.qs);
+      if ((T.n || 0) + qs.length < 15) fail(`${at}: level test needs 15+ questions`);
+      if (T.kana && !['hira', 'kata'].includes(T.kana)) fail(`${at}: kana must be hira or kata`);
+      qs.forEach((q, i) => {
+        const w = `${at} q${i + 1} (${q.t})`;
+        if (q.bad) return fail(`${w}: unknown question type: ${q.bad}`);
+        if (!q.right || q.wrong.length !== 3) return fail(`${w}: needs a right answer and exactly 3 wrong ones`);
+        const opts = [q.right, ...q.wrong];
+        if (new Set(opts).size !== 4 || opts.some(o => !o.trim())) fail(`${w}: options must be 4 different, non-empty`);
+        if (q.t === 'g') {
+          if ((q.jp.match(/\[/g) || []).length !== 1 || (q.kana.match(/\[/g) || []).length !== 1) fail(`${w}: mark the answer once in both lines`);
+          if (!KANA.test(q.kana.replace(/[A-Za-zＡ-Ｚ０-９]/g, ''))) fail(`${w}: kana line has kanji: ${q.kana}`);
+          if (!NOJP.test(q.en)) fail(`${w}: English has Japanese`);
+        }
+        if (q.t === 'r' && !opts.every(o => KANA.test(o))) fail(`${w}: readings must be kana`);
+        if ((q.t === 'm' || q.t === 'l') && !opts.every(o => NOJP.test(o))) fail(`${w}: meanings must be English`);
+        if ((q.t === 'w' || q.t === 'p') && !opts.every(o => JP.test(o))) fail(`${w}: options must be Japanese`);
+        if (q.t === 'w' && !NOJP.test(q.en)) fail(`${w}: English has Japanese`);
+        if (['g', 'r', 'm', 'l'].includes(q.t) && !JP.test(q.jp)) fail(`${w}: no Japanese`);
+      });
+    }
+    if (pid === 'jlpt') {
+      const need = { particles: PARTICLES.map(x => x.id), grammar: J.GRAMMAR.map(g => g.id), kanji: KG.map(g => g.id),
+        vocab: V.VOCAB.filter(t => t.level !== 'life').map(t => t.id) };
+      for (const [kind, ids] of Object.entries(need)) {
+        const missing = ids.filter(id => !seen[kind].has(id));
+        if (missing.length) fail(`path jlpt: ${missing.length} ${kind} not in any level: ${missing.slice(0, 8).join(', ')}`);
+      }
+      for (const lv of ['n5', 'n4']) if (!P.levels.some(l => l.test.mock === lv)) fail(`path jlpt: no level ends with the ${lv} mock`);
+    }
+  }
+}
 
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));

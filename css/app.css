@@ -495,6 +495,10 @@ details.answers .phrases { margin-top: 8px; }
 .big-en { font-size: 1.15rem; font-weight: 600; margin: 6px 0; }
 .preset { margin-top: 16px; }
 .inline-link { color: var(--accent); font-weight: 600; }
+.drill-rounds { display: flex; gap: 6px; justify-content: center; margin: 14px 0 4px; }
+.drill-clock { font-size: 3.6rem; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; margin: 6px 0 10px; }
+.row.center { justify-content: center; }
+.card .result { margin-top: 10px; }
 
 /* ---------- JLPT ---------- */
 .seg { display: grid; grid-auto-flow: column; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; }

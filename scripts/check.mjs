@@ -494,13 +494,14 @@ const PATHMOD = await import('../js/path.js');
 {
   const KG = (await import('../js/kanji-data.js')).ALL_KANJI_GROUPS;
   const { UNIT_INDEX: UI } = await import('../js/units-index.js');
+  const QA_LIST = (await import('../js/speaking-data.js')).QA;
   const allJs = readdirSync('js').filter(f => f.endsWith('.js')).map(f => readFileSync('js/' + f, 'utf8')).join('\n');
   const ACTIONS = new Set([...allJs.matchAll(/^\s+'?([a-z][a-z0-9-]*)'?: (?:\([^)]*\)|[a-z]+) =>/gm)].map(m => m[1]));
   const HASH = /^#(unit\/[\w-]+|particles?(\/\w+)?|verbs|counters|kanji(\/n4)?|write|study|speak(\/\w+)?|jlpt(\/(kana|grammar\/n[45]|vocab\/(n5|n4|life)|reading\/n[45]|listening\/n[45]|mock\/n[45]))?|path\/\w+)$/;
   const JP = /[ぁ-ゖァ-ヺ一-龯々]/, NOJP = /^[^ぁ-ゖァ-ヺ一-龯々]*$/;
   const KANA = /^[ぁ-ゖァ-ヺー、。！？「」・\[\] 　]+$/;
   for (const [pid, P] of Object.entries(PATHMOD.PATHS)) {
-    const seen = { particles: new Map(), grammar: new Map(), kanji: new Map(), vocab: new Map(), units: new Map() };
+    const seen = { particles: new Map(), grammar: new Map(), kanji: new Map(), vocab: new Map(), units: new Map(), qa: new Map() };
     if (new Set(P.levels.map(l => l.id)).size !== P.levels.length) fail(`path ${pid}: duplicate level ids`);
     if (!LATIN.test(P.intro.hg)) fail(`path ${pid}: intro Hinglish`);
     for (const l of P.levels) {
@@ -514,6 +515,7 @@ const PATHMOD = await import('../js/path.js');
         if (t?.startsWith('#unit/') && !UI.some(u => u.id === t.slice(6))) fail(`${at}: no unit ${t}`);
       }
       for (const [kind, ids] of Object.entries(l.study || {})) {
+        if (kind === 'qa') continue; // checked below
         const exists = { particles: id => PARTICLES.some(x => x.id === id), grammar: id => J.GRAMMAR.some(g => g.id === id),
           kanji: id => KG.some(g => g.id === id), vocab: id => V.VOCAB.some(t => t.id === id), units: id => UI.some(u => u.id === id) }[kind];
         if (!exists) { fail(`${at}: unknown study kind ${kind}`); continue; }
@@ -523,8 +525,34 @@ const PATHMOD = await import('../js/path.js');
           seen[kind].set(id, l.id);
         }
       }
+      for (const k of PATHMOD.parseKit(l.kit)) {
+        if (!JP.test(k.jp) || !KANA.test(k.kana.replace(/[〜～…]/g, '')) || !k.ro || !k.en || !LATIN.test(k.hg || '')) fail(`${at}: key phrase "${k.jp}" needs jp|kana|romaji|English|Hinglish`);
+      }
+      for (const m of l.missions || []) if (!m.trim()) fail(`${at}: empty mission`);
+      for (const d of l.drill || []) if (d.length !== 3 || !LATIN.test(d[1]) || !JP.test(d[2])) fail(`${at}: drill topic needs [English, Hinglish, Japanese hints]`);
+      for (const n of l.study?.qa || []) if (!QA_LIST[n]) fail(`${at}: no QA ${n}`); else if (seen.qa.has(n)) fail(`${at}: QA ${n} already in ${seen.qa.get(n)}`); else seen.qa.set(n, l.id);
       const T = l.test;
       if (T.mock) { if (!['n5', 'n4'].includes(T.mock)) fail(`${at}: bad mock`); continue; }
+      if (T.speak) {
+        const items = PATHMOD.parseSpeak(T.speak);
+        if (items.length < 10) fail(`${at}: speaking test needs 10+ items`);
+        const taught = new Set(P.levels.slice(0, P.levels.indexOf(l) + 1).flatMap(x => x.study?.units || []));
+        items.forEach((x, n) => {
+          const w = `${at} speak ${n + 1} (${x.t})`;
+          if (x.bad) return fail(`${w}: unknown item: ${x.bad}`);
+          if (x.t === 'u') {
+            const c = CARDS.find(c => c.id === x.card);
+            if (!c) return fail(`${w}: no phrase ${x.card}`);
+            if (!taught.has(c.unit)) fail(`${w}: ${x.card} is from a unit not taught by this level`);
+            if (/\{name\}/.test(c.jp)) fail(`${w}: ${x.card} contains the learner's name, which the mic can't match`);
+          } else {
+            if (!JP.test(x.jp) || !KANA.test(x.kana.replace(/[〜～…]/g, '')) || !x.ro || !x.en) fail(`${w}: needs jp, kana, romaji, English`);
+            for (const a of x.alts || []) if (!JP.test(a)) fail(`${w}: alternative "${a}" isn't Japanese`);
+          }
+          if (x.t !== 'a' && (!x.say || !NOJP.test(x.say.replace(/“[^”]*”/g, '')))) fail(`${w}: situation must be in English`);
+        });
+        continue;
+      }
       if (!(T.pass >= 60 && T.pass <= 100)) fail(`${at}: pass mark`);
       const qs = PATHMOD.parseQs(T.qs);
       if ((T.n || 0) + qs.length < 15) fail(`${at}: level test needs 15+ questions`);
@@ -556,8 +584,34 @@ const PATHMOD = await import('../js/path.js');
       }
       for (const lv of ['n5', 'n4']) if (!P.levels.some(l => l.test.mock === lv)) fail(`path jlpt: no level ends with the ${lv} mock`);
     }
+    if (pid === 'talk') {
+      const missingU = UI.map(u => u.id).filter(id => !seen.units.has(id));
+      if (missingU.length) fail(`path talk: units not in any level: ${missingU.join(', ')}`);
+      const missingQ = QA_LIST.map((_, n) => n).filter(n => !seen.qa.has(n));
+      if (missingQ.length) fail(`path talk: Q&A questions not in any level: ${missingQ.join(', ')}`);
+      if (!P.levels.every(l => l.test.speak)) fail('path talk: every level needs a speaking test');
+    }
   }
 }
+
+test('speaking-path tests: each target and its alternatives pass the mic check; no item accepts another item’s answer', () => {
+  core.useReadings(readingsMod.READINGS);
+  const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
+  const f = t => core.fill(t, P);
+  for (const l of PATHMOD.PATHS.talk.levels) {
+    const items = PATHMOD.parseSpeak(l.test.speak).map(x => {
+      if (x.t !== 'u') return { ...x, alts: (x.alts || []).map(a => [a]) };
+      const c = CARDS.find(c => c.id === x.card), w = WAYS_ALL.get(x.card);
+      const alts = w ? [...(w.biz && w.biz !== 'same' ? [w.biz] : []), ...w.alt].map(a => [f(a.jp), f(a.kana)]) : [];
+      return { ...x, jp: f(c.jp), kana: f(c.kana), alts: [...(c.casual ? [[f(c.casual.jp), f(c.casual.kana)]] : []), ...alts] };
+    });
+    for (const q of items) {
+      const sc = h => core.matchScore([h], q.jp, q.kana, q.alts.flat());
+      for (const h of [q.jp, q.kana, ...q.alts.map(a => a[0])]) assert.ok(sc(h) >= core.PASS, `${l.id}: “${h}” should pass for ${q.jp}`);
+      for (const o of items) if (o !== q) assert.ok(sc(o.jp) < core.PASS, `${l.id}: ${q.jp} also accepts ${o.jp}`);
+    }
+  }
+});
 
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));

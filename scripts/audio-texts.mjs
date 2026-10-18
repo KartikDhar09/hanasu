@@ -87,10 +87,7 @@ export async function audioKana() {
   for (const k of KANJI) for (const e of k.ex || []) put(e[0], e[1]);
   const opts = groups => groups.flatMap(g => SP.SLOTS[g].items);
   for (const p of SP.PATTERNS) for (const x of opts(p.x)) for (const y of p.y ? opts(p.y) : [null]) { const l = SP.buildSentence(p, x, y); put(l[0], l[1]); }
-  const { PATHS, parseQs } = await import('../js/path.js');
-  for (const P of Object.values(PATHS)) for (const l of P.levels) for (const q of parseQs(l.test.qs)) {
-    if (q.t === 'g' || q.t === 'm' || q.t === 'l') put(q.jp, q.kana); else if (q.t === 'r') put(q.jp, q.right);
-  }
+  for (const [jp, kana] of (await import('../js/path.js')).pathKana()) put(jp, kana);
   return out;
 }
 

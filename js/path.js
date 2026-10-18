@@ -1,6 +1,9 @@
 // Path tabs: step-by-step levels, each ending in a level test. The only thing saved is the level reached in
 // each path (app.js stores it); test scores are shown, never kept.
 import { PATH_JLPT, PATH_JLPT_INTRO } from './path-jlpt.js';
+import { PATH_TALK, PATH_TALK_INTRO } from './path-talk.js';
+import { QA } from './speaking-data.js';
+import { furigana } from './furigana.js';
 import { GRAMMAR } from './jlpt-data.js';
 import { ALL_KANJI_GROUPS } from './kanji-data.js';
 import { VOCAB } from './vocab-data.js';
@@ -8,11 +11,12 @@ import { PARTICLES } from './particles-data.js';
 import { UNIT_INDEX } from './units-index.js';
 import { ALL_KANA } from './jlpt.js';
 import { toRomaji } from './conjugate.js';
-import { sayable } from './core.js';
+import { sayable, PASS } from './core.js';
 import { prefetchClip } from './clips.js';
 
 export const PATHS = {
   jlpt: { levels: PATH_JLPT, intro: PATH_JLPT_INTRO, title: 'Path to JLPT N5 & N4', icon: '🪜', short: 'JLPT path' },
+  talk: { levels: PATH_TALK, intro: PATH_TALK_INTRO, title: 'Path to speaking fluently', icon: '🗣️', short: 'Speaking path' },
 };
 
 const plain = s => s.replace(/[[\]]/g, '');
@@ -32,12 +36,38 @@ export function parseQs(text = '') {
   });
 }
 
+// Speaking-test items (format in path-talk.js).
+export function parseSpeak(text = '') {
+  return text.trim().split('\n').filter(Boolean).map(line => {
+    const f = line.split('|'), t = f[0];
+    if (t === 'u') return { t, say: f[1], card: f[2] };
+    if (t === 's') return { t, say: f[1], jp: f[2], kana: f[3], ro: f[4], en: f[5], alts: (f[6] || '').split(';').filter(Boolean) };
+    if (t === 'a') return { t, jp: f[1], kana: f[2], ro: f[3], en: f[4] };
+    return { t, bad: line };
+  });
+}
+// Key phrases: jp|kana|romaji|English|Hinglish.
+export const parseKit = (text = '') => text.trim().split('\n').filter(Boolean).map(l => { const [jp, kana, ro, en, hg] = l.split('|'); return { jp, kana, ro, en, hg }; });
+
 // What each question plays once answered (l plays before). These lines are recorded as clips.
 export const spokenOf = q => q.t === 'g' ? plain(q.jp) : q.t === 'r' ? sayable(q.jp, q.right)
   : q.t === 'm' || q.t === 'l' ? sayable(q.jp, q.kana) : q.t === 'w' ? q.right : null;
 
+// Every line the paths play: test answers, key phrases, new speaking-test lines (unit phrases are voiced already).
 export function pathSpoken() {
-  return Object.values(PATHS).flatMap(p => p.levels.flatMap(l => parseQs(l.test.qs).map(spokenOf))).filter(Boolean);
+  return Object.values(PATHS).flatMap(p => p.levels.flatMap(l => [
+    ...parseQs(l.test.qs).map(spokenOf),
+    ...parseKit(l.kit).map(k => k.jp),
+    ...parseSpeak(l.test.speak).filter(x => x.t !== 'u').map(x => x.jp),
+  ])).filter(Boolean);
+}
+// [jp, kana] for every path line that has a written reading (lets make-audio check how the voice reads it).
+export function pathKana() {
+  return Object.values(PATHS).flatMap(p => p.levels.flatMap(l => [
+    ...parseQs(l.test.qs).flatMap(q => q.t === 'g' || q.t === 'm' || q.t === 'l' ? [[q.jp, q.kana]] : q.t === 'r' ? [[q.jp, q.right]] : []),
+    ...parseKit(l.kit).map(k => [k.jp, k.kana]),
+    ...parseSpeak(l.test.speak).filter(x => x.t !== 'u').map(x => [x.jp, x.kana]),
+  ]));
 }
 
 export function initPath(ctx) {
@@ -99,16 +129,29 @@ export function initPath(ctx) {
       .map(t => row(esc(t.icon), esc(t.title), `${t.words.length} words · flashcards`, 'vlearn:' + t.id));
     const units = (sd.units || []).map(uid => UNIT_INDEX.find(u => u.id === uid))
       .map(u => row(esc(u.icon), esc(u.title), `${esc(u.jp)} · ${u.n} phrases`, '#unit/' + u.id));
+    const qa = (sd.qa || []).map(n => `<button class="chip" ${target('qa:' + n)}>${esc(QA[n].pic)} <span lang="ja">${esc(QA[n].q[0])}</span></button>`);
+    const kit = parseKit(l.kit).map(k => {
+      const furi = S().settings.kana ? furigana(k.jp, k.kana, esc) : null;
+      return `<li class="ex" data-act="say-text" data-arg="${esc(k.jp)}"><div class="jp" lang="ja">${furi || esc(k.jp)}</div>
+        ${S().settings.kana && !furi && k.kana !== k.jp ? `<div class="kana" lang="ja">${esc(k.kana)}</div>` : ''}
+        ${S().settings.romaji ? `<div class="ro">${esc(k.ro)}</div>` : ''}<div class="en">${esc(k.en)}</div>${hg(k.hg)}</li>`;
+    });
     const content = [
       sec('Particles', 'Open each one, play the examples, say them aloud.', chips(particles)),
       sec(`Grammar points · ${grammar.length}`, 'In this order. Pattern, examples aloud, then the meaning with the English covered.', chips(grammar)),
       sec('Kanji', 'Flashcards for each group (12 at a time) until you know them all.', rows(kanji)),
       sec('Vocabulary', 'Flashcards, 12 at a time. Say each word aloud before turning the card.', rows(vocab)),
+      sec('Key phrases', 'Tap to hear. Say each one three times, then cover the Japanese and say it from the English.', kit.length ? `<ul class="phrases">${kit.join('')}</ul>` : ''),
       sec('Phrase units', 'Learn → Speak → Quiz → Role-play.', rows(units)),
+      sec('Questions to answer', 'Play the question, answer out loud in your own words, then compare with the examples.', chips(qa)),
     ].join('');
+    const missions = l.missions?.length ? `<h2 class="sec">Missions with real people</h2>
+      <p class="muted small">The app can’t do these for you, and they matter most. Nothing is recorded.</p>
+      <ul class="tips">${l.missions.map(m => `<li>🎯 ${esc(m)}</li>`).join('')}</ul>` : '';
+    const drill = l.drill ? `<button class="btn big" data-act="path-drill" data-arg="${p}.${l.id}">⏱ 4/3/2 talking drill · ${l.drill.length} topics</button>` : '';
 
     const T = l.test;
-    const qn = T.mock ? 0 : (T.n || 0) + parseQs(T.qs).length;
+    const qn = T.mock ? 0 : (T.n || 0) + parseQs(T.qs).length + parseSpeak(T.speak).length;
     const nextTitle = P.levels[i + 1]?.title;
     render(`
       <div class="head">${back('path-home', p)}<h1>Level ${i + 1} <small class="muted">of ${P.levels.length}</small></h1><span class="pill">${esc(l.part)}</span></div>
@@ -122,6 +165,7 @@ export function initPath(ctx) {
         ? `<li><button ${target(t)}><span class="pico" lang="ja">${esc(icon)}</span><span class="ptext"><b>${n + 1}. ${esc(title)}</b><small>${esc(how)}</small></span><span class="count">›</span></button></li>`
         : `<li><div class="pstep"><span class="pico" lang="ja">${esc(icon)}</span><span class="ptext"><b>${n + 1}. ${esc(title)}</b><small>${esc(how)}</small></span></div></li>`).join('')}</ol>
       ${content ? `<h2 class="sec">Everything in this level</h2>${content}` : ''}
+      ${missions}${drill}
       <h2 class="sec">A day at this level</h2>
       <ul class="tips">${l.daily.map(d => `<li>☀️ ${esc(d)}</li>`).join('')}</ul>
       <div class="note">💡 ${esc(l.tip)}${hg(l.tipHg)}</div>
@@ -129,6 +173,8 @@ export function initPath(ctx) {
       <div class="card left ltest">${T.mock
         ? `<p>Pass the full-length ${T.mock.toUpperCase()} mock test in the JLPT tab: three papers with their own clocks, scored like the real exam. Passing it completes this level${nextTitle ? `, and level ${i + 2} opens` : ''}.</p>
            <button class="btn primary big" data-act="ex-mock" data-arg="${T.mock}">🏁 Full ${T.mock.toUpperCase()} mock test</button>`
+        : T.speak ? `<p>${qn} things to say into the microphone · pass with ${T.pass}% or more.${nextTitle ? ` Level ${i + 2} (${esc(nextTitle)}) opens when you pass.` : ''} The business, casual and other ways taught in the app also count.${ctx.canListen() ? '' : ' This browser can’t check speech, so you’ll compare with the answer and mark yourself.'}</p>
+           <button class="btn primary big" data-act="path-speak" data-arg="${p}.${l.id}">🎤 Start the speaking test</button>`
         : `<p>${qn} questions · pass with ${T.pass}% or more.${nextTitle ? ` Level ${i + 2} (${esc(nextTitle)}) opens when you pass.` : ''} Nothing is recorded but the level you reach.</p>
            <button class="btn primary big" data-act="path-test" data-arg="${p}.${l.id}">📝 Start the level test</button>`}
       </div>`);
@@ -151,7 +197,7 @@ export function initPath(ctx) {
 
   function startTest(p, id) {
     const i = find(p, id), l = PATHS[p].levels[i];
-    st = { p, i, id, qs: build(l), n: 0, right: 0, missed: [], answered: false };
+    st = { kind: 'quiz', p, i, id, qs: build(l), n: 0, right: 0, missed: [], answered: false };
     testQ();
   }
 
@@ -206,7 +252,8 @@ export function initPath(ctx) {
     const before = ctx.level(p);
     if (passed) ctx.setLevel(p, i + 1);
     const next = P.levels[i + 1];
-    const show = q => q.t === 'w' ? q.en : q.t === 'g' ? plain(q.jp) : q.t === 'p' ? q.q : q.jp;
+    const show = q => q.say || (q.t === 'w' ? q.en : q.t === 'g' ? plain(q.jp) : q.t === 'p' ? q.q : q.jp);
+    const answerOf = q => (q.say || q.t === 'a') ? q.jp : q.right;
     render(`<div class="done">
       <div class="big-emoji">${passed ? '🎉' : '💪'}</div>
       <h1>${score}% · ${passed ? 'Level passed!' : 'Not yet'}</h1>
@@ -214,12 +261,118 @@ export function initPath(ctx) {
       ${passed && next ? `<p>${before > i ? 'You’d already passed this level.' : `Level ${i + 2} is open: <b>${esc(next.title)}</b>.`}</p>
         <button class="btn primary big" data-act="path-level" data-arg="${p}.${next.id}">Go to level ${i + 2}</button>`
         : passed ? '<p>🎓 That was the last level of this path.</p>'
-        : `<p class="muted">Go back over the steps for the questions you missed, then try again. A new mix of questions comes each time.</p>
-        <button class="btn primary big" data-act="path-test" data-arg="${p}.${l.id}">Try again</button>`}
+        : `<p class="muted">Go back over the steps for the ones you missed, then try again. They come in a new order each time.</p>
+        <button class="btn primary big" data-act="${l.test.speak ? 'path-speak' : 'path-test'}" data-arg="${p}.${l.id}">Try again</button>`}
       ${missed.length ? `<details class="answers"><summary>Review ${missed.length} missed</summary><ul class="phrases">${missed.map(q => `<li><span lang="ja">${esc(show(q))}</span>
-        <div>✓ <span lang="ja">${esc(q.right)}</span></div></li>`).join('')}</ul></details>` : ''}
+        <div>✓ <span lang="ja">${esc(answerOf(q))}</span></div></li>`).join('')}</ul></details>` : ''}
       <button class="btn" data-act="path-level" data-arg="${p}.${l.id}">Back to level ${i + 1}</button>
     </div>`);
+  }
+
+  // ================= Speaking test =================
+  async function startSpeak(p, id) {
+    const i = find(p, id), l = PATHS[p].levels[i];
+    const items = await Promise.all(shuffle(parseSpeak(l.test.speak)).map(async x => {
+      if (x.t !== 'u') return { ...x, alts: x.alts?.map(a => [a]) || [] };
+      const c = await ctx.card(x.card);
+      return { ...x, jp: c.jp, kana: c.kana, ro: c.ro, en: c.en, casual: c.casual, alts: c.alts };
+    }));
+    st = { kind: 'speak', p, i, id, qs: items, n: 0, right: 0, missed: [], fails: 0 };
+    speakQ();
+  }
+
+  function speakQ() {
+    const q = st.qs[st.n];
+    if (!q) return testDone();
+    Object.assign(st, { passed: false, revealed: false });
+    const prompt = q.t === 'a'
+      ? `<span class="tag alt">Read this aloud</span><div class="jp big-jp" lang="ja">${esc(q.jp)}</div>${S().settings.romaji ? `<div class="ro">${esc(q.ro)}</div>` : ''}`
+      : `<span class="tag alt">Say it in Japanese</span><div class="big-en">${esc(q.say)}</div>`;
+    render(`
+      <div class="head">${back('path-level', `${st.p}.${st.id}`)}<div class="grow">${bar(st.n, st.qs.length)}</div><span class="muted">${st.right} ✓</span></div>
+      <div class="card">${prompt}<div class="result" id="result"></div></div>
+      <div class="actions" id="actions">
+        ${ctx.canListen() ? '<button class="btn primary big mic" id="mic" data-act="path-mic">🎤 Speak</button>' : ''}
+        <div class="row"><button class="btn" data-act="path-reveal">👀 Show answer</button><button class="btn ghost" id="snext" data-act="path-snext">Skip</button></div>
+      </div>
+      <div id="answer"></div>`);
+    if (q.jp) prefetchClip(q.jp);
+  }
+
+  async function mic() {
+    const q = st.qs[st.n], at = st.n;
+    const score = await ctx.record(q, document.getElementById('result'), document.getElementById('mic'));
+    if (!st || st.n !== at) return;
+    if (score == null) { st.fails++; if (st.revealed) reveal(); return; }
+    if (score >= PASS && !st.revealed && !st.passed) {
+      st.passed = true;
+      document.getElementById('snext').textContent = 'Next';
+      document.getElementById('snext').className = 'btn primary';
+    }
+  }
+
+  function reveal() {
+    const q = st.qs[st.n];
+    st.revealed = true;
+    const furi = S().settings.kana ? furigana(q.jp, q.kana, esc) : null;
+    const others = [q.casual?.jp, ...(q.alts || []).map(a => a[0])].filter(Boolean);
+    const selfGrade = !st.passed && (!ctx.canListen() || st.fails > 0);
+    document.getElementById('answer').innerHTML = `<div class="card compact left">
+      <div class="jp big-jp" lang="ja" data-act="say-text" data-arg="${esc(q.jp)}">${furi || esc(q.jp)} 🔊</div>
+      ${S().settings.kana && !furi && q.kana !== q.jp ? `<div class="kana" lang="ja">${esc(q.kana)}</div>` : ''}
+      ${S().settings.romaji ? `<div class="ro">${esc(q.ro)}</div>` : ''}<div class="en">${esc(q.en)}</div>
+      ${others.length ? `<div class="note">Also OK: <span lang="ja">${others.slice(0, 3).map(esc).join(' · ')}</span></div>` : ''}
+      ${st.passed ? '' : `<p class="muted small">${selfGrade ? 'Say it out loud now, then mark yourself honestly.' : 'Showing the answer makes this one practice: say it along with the voice.'}</p>`}
+      ${selfGrade ? '<div class="row"><button class="btn primary" data-act="path-self" data-arg="1">✓ I said it right</button><button class="btn" data-act="path-self" data-arg="0">✗ Not yet</button></div>' : ''}
+    </div>`;
+    speak(q.jp);
+  }
+
+  function nextSpeak(ok) {
+    const q = st.qs[st.n];
+    if (ok) st.right++; else st.missed.push(q);
+    st.n++; speakQ(); window.scrollTo(0, 0);
+  }
+
+  // ================= 4/3/2 drill =================
+  const ROUNDS = [240, 180, 120];
+  let timer = null;
+  const stopTimer = () => { clearInterval(timer); timer = null; };
+  const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+  function drill(p, id, topic) {
+    stopTimer();
+    const l = PATHS[p].levels[find(p, id)];
+    const t = topic ?? Math.floor(Math.random() * l.drill.length);
+    st = { kind: 'drill', p, id, t, round: 0, left: ROUNDS[0] };
+    drillView();
+  }
+
+  function drillView() {
+    const l = PATHS[st.p].levels[find(st.p, st.id)], [title, thg, hints] = l.drill[st.t];
+    const done = st.round >= ROUNDS.length;
+    render(`
+      <div class="head">${back('path-level', `${st.p}.${st.id}`)}<h1>4/3/2 drill</h1></div>
+      <p class="muted small">Tell the same story three times: 4 minutes, then 3, then 2. Don’t stop to fix mistakes: keep talking. Each round, say it faster and smoother.</p>
+      <div class="card left"><span class="tag">Topic</span><b>${esc(title)}</b>${hg(thg)}<div class="note">Ideas: <span lang="ja">${esc(hints)}</span></div></div>
+      <div class="drill-rounds">${ROUNDS.map((r, n) => `<span class="pill ${n < st.round ? 'g2' : n === st.round ? 'g1' : ''}">${n < st.round ? '✓ ' : ''}${mmss(r)}</span>`).join('')}</div>
+      ${done ? `<div class="done"><div class="big-emoji">🎉</div><h1>Three rounds done</h1><p class="muted">Tomorrow, try a new topic. When the 2-minute round feels easy, you own that topic.</p></div>`
+        : `<div class="drill-clock" id="clock" role="timer" aria-live="off">${mmss(st.left)}</div>
+           <div class="row center"><button class="btn primary big" id="dgo" data-act="path-drill-go">${timer ? '⏸ Pause' : st.left < ROUNDS[st.round] ? '▶ Resume' : '▶ Start round ' + (st.round + 1)}</button></div>`}
+      <div class="row"><button class="btn small ghost" data-act="path-drill-topic">🔀 Another topic</button>${done ? '<button class="btn small" data-act="path-drill-again">↺ Same topic again</button>' : ''}</div>`);
+  }
+
+  function drillGo() {
+    if (!st || st.kind !== 'drill') return;
+    if (timer) { stopTimer(); return drillView(); }
+    timer = setInterval(() => {
+      if (!st || st.kind !== 'drill') return stopTimer();
+      st.left--;
+      const el = document.getElementById('clock');
+      if (el) el.textContent = mmss(Math.max(0, st.left));
+      if (st.left <= 0) { stopTimer(); st.round++; st.left = ROUNDS[st.round] || 0; drillView(); if (navigator.vibrate) navigator.vibrate(300); }
+    }, 1000);
+    drillView();
   }
 
   // Called when a full mock test is passed: completes the level whose test is that mock.
@@ -235,13 +388,22 @@ export function initPath(ctx) {
     'path-home': p => ctx.go('path/' + (PATHS[p] ? p : 'jlpt')),
     'path-level': arg => { const a = split(arg); if (a) ctx.go(`path/${a[0]}/${a[1]}`); },
     'path-test': arg => { const a = split(arg); if (a) startTest(...a); },
-    'path-answer': i => answer(i),
-    'path-next': () => { st.n++; testQ(); window.scrollTo(0, 0); },
+    'path-answer': i => st?.kind === 'quiz' && answer(i),
+    'path-next': () => { if (st?.kind !== 'quiz') return; st.n++; testQ(); window.scrollTo(0, 0); },
     'path-go': t => {
       if (t.startsWith('#')) return ctx.go(t.slice(1));
       const [act, ...rest] = t.split(':');
       ctx.run(act, rest.join(':'));
     },
+    'path-speak': arg => { const a = split(arg); if (a) startSpeak(...a); },
+    'path-mic': () => st?.kind === 'speak' && mic(),
+    'path-reveal': () => st?.kind === 'speak' && reveal(),
+    'path-self': ok => st?.kind === 'speak' && nextSpeak(ok === '1'),
+    'path-snext': () => st?.kind === 'speak' && nextSpeak(st.passed),
+    'path-drill': arg => { const a = split(arg); if (a && PATHS[a[0]].levels[find(...a)].drill) drill(...a); },
+    'path-drill-go': () => drillGo(),
+    'path-drill-topic': () => { if (st?.kind === 'drill') { const n = PATHS[st.p].levels[find(st.p, st.id)].drill.length; drill(st.p, st.id, (st.t + 1) % n); } },
+    'path-drill-again': () => { if (st?.kind === 'drill') drill(st.p, st.id, st.t); },
     'path-reset': p => {
       if (PATHS[p] && confirm('Start this path again from level 1? Your other path is not affected.')) { ctx.setLevel(p, 0, true); overview(p); }
     },
@@ -257,9 +419,9 @@ export function initPath(ctx) {
 
   function rerender() {
     if (!st) return false;
-    testQ();
+    if (st.kind === 'speak') speakQ(); else if (st.kind === 'drill') drillView(); else testQ();
     return true;
   }
 
-  return { actions, route, rerender, mockPassed, clear() { st = null; } };
+  return { actions, route, rerender, mockPassed, clear() { st = null; stopTimer(); } };
 }

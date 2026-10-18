@@ -28,7 +28,7 @@ export function initStrokes(ctx) {
   function grid() {
     ctx.clearSess(); st = null;
     render(`
-      <h1 class="page">Stroke order <span lang="ja">書き順</span></h1>
+      <div class="head">${back('study')}<h1>Stroke order <span lang="ja">書き順</span></h1></div>
       <div class="intro">Kanji are written in a fixed order: top to bottom, left to right, horizontal before vertical. Pick a kanji to watch it drawn stroke by stroke.${S().settings.hindi ? '<div class="hi intro-hg" lang="hi-Latn">Har kanji ka likhne ka ek tarika hai. Dekho aur seekho.</div>' : ''}</div>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === level ? 'on' : ''}" data-act="stroke-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
       ${ALL_KANJI_GROUPS.filter(g => g.level === level).map(g => `

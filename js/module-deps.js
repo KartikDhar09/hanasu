@@ -70,5 +70,26 @@ export const DEPS = {
     "kanji-data.js",
     "kanji-n4.js",
     "strokes.js"
+  ],
+  path: [
+    "conjugate.js",
+    "exam-data.js",
+    "exam-listen.js",
+    "exam-more.js",
+    "furigana.js",
+    "grammar-n4.js",
+    "grammar-n5.js",
+    "jlpt-data.js",
+    "jlpt.js",
+    "kanji-data.js",
+    "kanji-n4.js",
+    "kanji-readings.js",
+    "particles-data.js",
+    "path-jlpt.js",
+    "path.js",
+    "vocab-data.js",
+    "vocab-life.js",
+    "vocab-n4.js",
+    "vocab-n5.js"
   ]
 };

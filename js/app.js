@@ -632,6 +632,8 @@ document.addEventListener('click', e => {
   if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
   // Opening a "more ways" fold inside a tappable row shouldn't also play the row.
   if (e.target.closest('summary') && e.target.closest('[data-act]')?.contains(e.target.closest('summary'))) return;
+  // A link inside a tappable row opens its page without also running the row (e.g. search results).
+  if (e.target.closest('a[href^="#"]') && e.target.closest('[data-act]')?.contains(e.target.closest('a'))) return;
   const el = e.target.closest('[data-act]');
   if (el) { run(el.dataset.act, el.dataset.arg); return; }
   if (e.target.id === 'sheet') e.target.hidden = true;
@@ -681,6 +683,7 @@ const LOADERS = {
     setLevel: (p, n, force) => { if (PATH_IDS.includes(p) && (force || n > (S.path[p] || 0))) { S.path[p] = n; save(); } },
   })),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
+  search: () => import('./search.js').then(m => m.initSearch(shared())),
   exam: () => import('./exam.js').then(m => m.initExam({
     ...shared(), mockPassed: lv => loadSection('path').then(m => m.mockPassed(lv)), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
@@ -694,7 +697,7 @@ function loadSection(name) {
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
   : /^jlpt/.test(h) ? 'jlpt' : /^(study|particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes'
-  : /^path\//.test(h) ? 'path' : null;
+  : /^path\//.test(h) ? 'path' : h === 'search' ? 'search' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -713,7 +716,7 @@ async function route() {
   const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|path\/\w+)/.exec(h)?.[1];
   const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
   const tabs = [...document.querySelectorAll('#tabs a')];
-  const on = tabs.some(a => a.dataset.tab === tab) ? tab : 'phrases'; // unknown links fall back to home
+  const on = tabs.some(a => a.dataset.tab === tab) ? tab : h === 'search' ? '' : 'phrases'; // unknown links fall back to home
   tabs.forEach(a => a.classList.toggle('on', a.dataset.tab === on));
   // Home renders straight away; every other screen needs the phrase data first.
   if (!h) return home();

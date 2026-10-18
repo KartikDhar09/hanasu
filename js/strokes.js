@@ -1,7 +1,16 @@
-// Strokes tab: stroke order for every N5/N4 kanji. Watch the strokes drawn in order and step through them one at
+// Stroke order for every N5/N4 kanji and the 46 basic hiragana and katakana. Watch the strokes drawn in order and step through them one at
 // a time. Stroke data: KanjiVG (CC BY-SA 3.0), one small file per kanji in
 // /strokes, made by scripts/strokes.mjs and loaded only when that kanji is opened.
 import { KANJI, ALL_KANJI_GROUPS } from './kanji-data.js';
+import { KANA_ROWS, BASIC_HIRA, BASIC_KATA, toKata } from './kana-data.js';
+import { toRomaji } from './conjugate.js';
+
+// Kana as stroke-order entries: the romaji is the meaning line.
+const KANA = { hira: BASIC_HIRA, kata: BASIC_KATA };
+const scriptOf = ch => BASIC_HIRA.includes(ch) ? 'hira' : BASIC_KATA.includes(ch) ? 'kata' : null;
+const kanaRomaji = ch => { const r = toRomaji(ch.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60))); return ch === 'を' || ch === 'ヲ' ? 'o (wo)' : r; };
+const LEVELS = ['n5', 'n4', 'hira', 'kata'];
+const LABEL = { n5: 'N5', n4: 'N4', hira: 'ひらがな', kata: 'カタカナ' };
 
 const SVG = 'http://www.w3.org/2000/svg';
 const SAFE_PATH = /^[MmCcSsLlHhVvZz0-9.,\s-]+$/;
@@ -29,9 +38,12 @@ export function initStrokes(ctx) {
     ctx.clearSess(); st = null;
     render(`
       <div class="head">${back('study')}<h1>Stroke order <span lang="ja">書き順</span></h1></div>
-      <div class="intro">Kanji are written in a fixed order: top to bottom, left to right, horizontal before vertical. Pick a kanji to watch it drawn stroke by stroke.${S().settings.hindi ? '<div class="hi intro-hg" lang="hi-Latn">Har kanji ka likhne ka ek tarika hai. Dekho aur seekho.</div>' : ''}</div>
-      <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === level ? 'on' : ''}" data-act="stroke-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
-      ${ALL_KANJI_GROUPS.filter(g => g.level === level).map(g => `
+      <div class="intro">Kanji and kana are written in a fixed order: top to bottom, left to right, horizontal before vertical. Pick one to watch it drawn stroke by stroke.${S().settings.hindi ? '<div class="hi intro-hg" lang="hi-Latn">Har kanji aur kana ka likhne ka ek tarika hai. Dekho aur seekho.</div>' : ''}</div>
+      <div class="seg">${LEVELS.map(l => `<button class="${l === level ? 'on' : ''}" data-act="stroke-level" data-arg="${l}"${l.length === 4 ? ' lang="ja"' : ''}>${LABEL[l]}</button>`).join('')}</div>
+      ${KANA[level] ? `<p class="muted small">${level === 'hira' ? 'Hiragana' : 'Katakana'}: the 46 basic shapes. Voiced sounds (が, ぱ…) are the same shapes with the two dots or the small circle added last, top right.</p>
+        <div class="kchart">${KANA_ROWS.map(r => r.split('').map(ch => ch === '・' ? '<span class="kcell empty"></span>'
+          : `<button class="kcell" data-act="stroke-open" data-arg="${level === 'kata' ? toKata(ch) : ch}"><b lang="ja">${level === 'kata' ? toKata(ch) : ch}</b><small>${kanaRomaji(ch)}</small></button>`).join('')).join('')}</div>`
+      : ALL_KANJI_GROUPS.filter(g => g.level === level).map(g => `
         <h2 class="sec">${g.icon} ${esc(g.title)}</h2>
         <div class="kgrid">${g.kanji.map(k => `<button class="ktile" data-act="stroke-open" data-arg="${k[0]}" aria-label="${esc(k[0])}: ${esc(k[3])}">
           <span lang="ja">${k[0]}</span><small>${esc(k[3].split(' /')[0])}</small></button>`).join('')}</div>`).join('')}`);
@@ -39,16 +51,18 @@ export function initStrokes(ctx) {
 
   // ================= One kanji =================
   async function one(ch) {
-    const k = KANJI.find(x => x.ch === ch);
+    const script = scriptOf(ch);
+    const k = script ? { ch, level: script, en: kanaRomaji(ch), kana: true } : KANJI.find(x => x.ch === ch);
     if (!k) return grid();
     ctx.clearSess();
     st = { ch, data: null, step: 0, numbers: true, playing: 0 };
-    const list = KANJI.filter(x => x.level === k.level), i = list.indexOf(k);
+    level = k.level;
+    const list = script ? KANA[script].map(c => ({ ch: c })) : KANJI.filter(x => x.level === k.level), i = list.findIndex(x => x.ch === ch);
     render(`
-      <div class="head">${back('stroke-tab')}<h1>Stroke order</h1><span class="pill">${k.level.toUpperCase()}</span></div>
+      <div class="head">${back('stroke-tab')}<h1>Stroke order</h1><span class="pill" lang="ja">${k.kana ? LABEL[k.level] : k.level.toUpperCase()}</span></div>
       <div class="card stroke-card">
         <div class="kmean">${esc(k.en)}</div>
-        <div class="muted small" lang="ja">${esc([k.on, k.kun].filter(Boolean).join(' · '))}</div>
+        <div class="muted small" lang="ja">${k.kana ? (k.level === 'hira' ? 'ひらがな · hiragana' : 'カタカナ · katakana') : esc([k.on, k.kun].filter(Boolean).join(' · '))}</div>
         <div class="board" id="board" aria-label="Stroke order of ${esc(k.ch)}" role="img">
           <svg viewBox="0 0 109 109" id="strokes" aria-hidden="true"><path class="guide-line" d="M54.5 0V109M0 54.5H109"/></svg>
         </div>
@@ -60,7 +74,7 @@ export function initStrokes(ctx) {
         </div>
         <div class="row center">
           <button class="btn small ghost" data-act="stroke-numbers" id="nums">🔢 Hide numbers</button>
-          <button class="btn small ghost" data-act="kanji-one" data-arg="${esc(k.ch)}">漢 Kanji page</button>
+          ${k.kana ? `<button class="btn small ghost" data-act="say-text" data-arg="${esc(k.ch)}">🔊 Hear it</button>` : `<button class="btn small ghost" data-act="kanji-one" data-arg="${esc(k.ch)}">漢 Kanji page</button>`}
         </div>
       </div>
       <div class="row">
@@ -149,7 +163,7 @@ export function initStrokes(ctx) {
 
   const actions = {
     'stroke-tab': () => ctx.go('write'),
-    'stroke-level': l => { level = l === 'n4' ? 'n4' : 'n5'; grid(); },
+    'stroke-level': l => { level = LEVELS.includes(l) ? l : 'n5'; grid(); },
     'stroke-open': ch => ch && ctx.go('write/' + ch),
     'stroke-play': () => (st?.isPlaying ? (stop(), draw()) : play()),
     'stroke-prev': () => stepBy(-1),
@@ -159,6 +173,7 @@ export function initStrokes(ctx) {
 
   function route(h) {
     if (h === 'write') return grid(), true;
+    if (h === 'write/hira' || h === 'write/kata') { level = h.slice(6); return grid(), true; }
     if (h.startsWith('write/')) { try { one(decodeURIComponent(h.slice(6))); } catch (_) { grid(); } return true; }
     return false;
   }

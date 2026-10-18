@@ -135,6 +135,10 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .row { display: flex; gap: 10px; margin-top: 10px; }
 .row > .btn { flex: 1; }
 .row.center { justify-content: center; }
+.srow { display: flex; align-items: center; gap: 8px; }
+.sbody { flex: 1; min-width: 0; }
+.sopen { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2); color: var(--ink); text-decoration: none; font-size: 1.3rem; }
+a.gear { text-decoration: none; }
 .row.center > .btn { flex: 0 0 auto; }
 
 /* ---------- Home ---------- */
@@ -495,6 +499,10 @@ details.answers .phrases { margin-top: 8px; }
 .big-en { font-size: 1.15rem; font-weight: 600; margin: 6px 0; }
 .preset { margin-top: 16px; }
 .inline-link { color: var(--accent); font-weight: 600; }
+.drill-rounds { display: flex; gap: 6px; justify-content: center; margin: 14px 0 4px; }
+.drill-clock { font-size: 3.6rem; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; margin: 6px 0 10px; }
+.row.center { justify-content: center; }
+.card .result { margin-top: 10px; }
 
 /* ---------- JLPT ---------- */
 .seg { display: grid; grid-auto-flow: column; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; }

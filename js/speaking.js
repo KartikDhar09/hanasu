@@ -30,6 +30,7 @@ export function initSpeaking(ctx) {
     render(`
       <h1 class="page">Speak <span lang="ja">話す</span></h1>
       <div class="intro">Speaking is a skill, like cricket: you get better by doing it out loud, every day. Use headphones, speak at normal volume, and copy the rhythm.${hg('Roz zor se bolo. Sunte raho, copy karo, phir khud bolo.', 'hi intro-hg')}</div>
+      <p class="muted">Want a plan? The <a class="inline-link" href="#path/talk">🗣️ Fluent path</a> takes you level by level, with a speaking test at the end of each.</p>
       <div class="speak-grid">
         <button class="scard" data-act="shadow-random"><span>🔁</span><b>Shadow 10 phrases</b><small>Listen, repeat, get a score. A random mix from every unit.</small></button>
         <button class="scard" data-act="qa" data-arg="0"><span>💬</span><b>Answer questions</b><small>Real questions people ask you. Answer out loud.</small></button>

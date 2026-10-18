@@ -1,8 +1,9 @@
-// Builds strokes/<hex>.json for every kanji in the app: the strokes in writing order, from KanjiVG
+// Builds strokes/<hex>.json for every kanji in the app and the 46 basic hiragana and katakana: the strokes in writing order, from KanjiVG
 // (© Ulrich Apel and contributors, CC BY-SA 3.0, https://kanjivg.tagaini.net). Each file is
 // { p: [SVG path per stroke], n: [[x, y] position of each stroke number] } on a 109 × 109 grid.
 // Run: download kanjivg-*-main.zip from github.com/KanjiVG/kanjivg/releases, unzip it, then
 //      node scripts/strokes.mjs path/to/kanji        (the folder of 0xxxx.svg files)
+//      add --only-missing to keep existing files (e.g. when a newer KanjiVG release is used just for new characters)
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -22,14 +23,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const src = process.argv[2];
   if (!src) { console.error('usage: node scripts/strokes.mjs path/to/kanjivg/kanji'); process.exit(1); }
   const { KANJI } = await import('../js/kanji-data.js');
+  const { BASIC_HIRA, BASIC_KATA } = await import('../js/kana-data.js');
+  const onlyMissing = process.argv.includes('--only-missing');
+  const chars = [...KANJI.map(k => k.ch), ...BASIC_HIRA, ...BASIC_KATA];
   const root = new URL('../', import.meta.url).pathname;
   mkdirSync(join(root, 'strokes'), { recursive: true });
-  const want = new Set(KANJI.map(k => strokeFile(k.ch)));
+  const want = new Set(chars.map(strokeFile));
   let n = 0, missing = [];
-  for (const k of KANJI) {
-    const f = join(src, strokeFile(k.ch).replace('strokes/', '').replace('.json', '.svg'));
-    if (!existsSync(f)) { missing.push(k.ch); continue; }
-    writeFileSync(join(root, strokeFile(k.ch)), JSON.stringify(parseKanjiVG(readFileSync(f, 'utf8'))));
+  for (const ch of chars) {
+    if (onlyMissing && existsSync(join(root, strokeFile(ch)))) continue;
+    const f = join(src, strokeFile(ch).replace('strokes/', '').replace('.json', '.svg'));
+    if (!existsSync(f)) { missing.push(ch); continue; }
+    writeFileSync(join(root, strokeFile(ch)), JSON.stringify(parseKanjiVG(readFileSync(f, 'utf8'))));
     n++;
   }
   for (const f of readdirSync(join(root, 'strokes'))) if (!want.has(`strokes/${f}`)) rmSync(join(root, 'strokes', f));

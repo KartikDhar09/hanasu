@@ -8,13 +8,8 @@ import { toRomaji } from './conjugate.js';
 import { furigana, markBrackets } from './furigana.js';
 import { prefetchClip } from './clips.js';
 
-// Gojūon chart; ・ is an empty cell.
-export const KANA_ROWS = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や・ゆ・よ', 'らりるれろ', 'わ・・・を', 'ん・・・・'];
-export const DAKUTEN_ROWS = ['がぎぐげご', 'ざじずぜぞ', 'だぢづでど', 'ばびぶべぼ', 'ぱぴぷぺぽ'];
-export const COMBO_ROWS = ['きゃきゅきょ', 'しゃしゅしょ', 'ちゃちゅちょ', 'にゃにゅにょ', 'ひゃひゅひょ', 'みゃみゅみょ', 'りゃりゅりょ', 'ぎゃぎゅぎょ', 'じゃじゅじょ', 'びゃびゅびょ', 'ぴゃぴゅぴょ'];
-const toKata = s => s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
-const combos = row => row.match(/.[ゃゅょ]/g);
-export const ALL_KANA = [...KANA_ROWS, ...DAKUTEN_ROWS].join('').replace(/・/g, '').split('').concat(COMBO_ROWS.flatMap(combos));
+import { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA, toKata, combos } from './kana-data.js';
+export { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA };
 
 // Splits a sentence into pieces at particle boundaries, for the ★ word-order drill.
 // A particle only ends a piece when the next character isn't hiragana (so はい, もう stay whole).
@@ -177,11 +172,11 @@ export function initJlpt(ctx) {
         <p class="left-text">${esc(g.explain)}</p>
       </div>
       <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
-      <ul class="phrases">${g.ex.map(e => { const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null; return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
+      <ul class="phrases">${g.ex.map((e, j) => { const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null; return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
         <div class="jp" lang="ja">${furi || mark(e[0])}</div>
         ${S().settings.kana && !furi ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
         ${S().settings.romaji ? `<div class="ro">${esc(plain(e[2]))}</div>` : ''}
-        <div class="en">${esc(e[3])}</div>${hg(e[4])}</li>`; }).join('')}</ul>
+        <div class="en">${esc(e[3])}</div>${hg(e[4])}${ctx.waysSlot(`g${g.level[1]}:${g.id}:${j}`)}</li>`; }).join('')}</ul>
       <button class="btn primary big" data-act="gquiz" data-arg="${g.level}.${g.id}">✏️ Practise this</button>
       <div class="row">
         <button class="btn" data-act="gpoint" data-arg="${list[i - 1]?.id || ''}" ${i ? '' : 'disabled'}>‹ Prev</button>

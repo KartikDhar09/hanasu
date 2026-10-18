@@ -403,7 +403,7 @@ export const LIFE_TOPICS = [
 割り勘|わりかん|splitting the bill|bill baant lena|💴
 おごる|おごる|to treat (someone)|treat dena|🎁
 持ち帰り|もちかえり|takeaway|parcel / takeaway|🥡
-店内|てんない|eating in|dukaan ke andar|🍽️
+店内|てんない|in the shop (eating in)|dukaan ke andar|🍽️
 飲み会|のみかい|drinking party (work)|office ki drinks party|🍻
 歓迎会|かんげいかい|welcome party|swaagat party|🎉
 送別会|そうべつかい|farewell party|vidaai party|👋

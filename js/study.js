@@ -296,7 +296,8 @@ export function initStudy(ctx) {
     const k = st.queue[st.i];
     if (!k) { return quizDone(`${st.done} kanji practised`, 'kanji', ''); }
     st.revealed = false;
-    prefetchClip(k.ex?.[0]?.[0]); prefetchClip(st.queue[st.i + 1]?.ex?.[0]?.[0]);
+    const ex0 = x => x?.ex?.[0] && sayable(x.ex[0][0], x.ex[0][1]);
+    prefetchClip(ex0(k)); prefetchClip(ex0(st.queue[st.i + 1]));
     render(`
       <div class="head">${back('kanji')}<div class="grow">${bar(st.i, st.queue.length)}</div><span class="muted">${st.i + 1}/${st.queue.length}</span></div>
       <div class="card">
@@ -314,7 +315,7 @@ export function initStudy(ctx) {
     document.getElementById('actions').innerHTML = `<div class="grades two">
       <button class="btn again" data-act="kgrade" data-arg="again">Again later</button>
       <button class="btn good" data-act="kgrade" data-arg="ok">Got it</button></div>`;
-    speak(st.queue[st.i].ex[0][0]);
+    speak(sayable(st.queue[st.i].ex[0][0], st.queue[st.i].ex[0][1]));
   }
 
   function kgrade(g) {
@@ -369,7 +370,7 @@ export function initStudy(ctx) {
     document.getElementById('actions').innerHTML = `
       ${ok ? '' : `<div class="card compact">${kanjiDetail(q.k, 'no-big')}</div>`}
       <button class="btn primary big" data-act="knext">${st.i + 1 < st.qs.length ? 'Next' : 'See score'}</button>`;
-    speak(q.type === 'meaning' ? q.k.ex[0][0] : q.word[0]);
+    speak(q.type === 'meaning' ? sayable(q.k.ex[0][0], q.k.ex[0][1]) : sayable(q.word[0], q.word[1]));
   }
 
   // ================= Shared =================

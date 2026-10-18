@@ -84,7 +84,7 @@ l|もう一度お願いします。|もういちどおねがいします。|One 
     tipHg: 'Tareekhein ulti-seedhi hain: inko gaane ki tarah yaad karo.',
     study: {
       particles: ['wa', 'no', 'mo', 'ka', 'ya', 'to'],
-      grammar: ['desu', 'formalneg', 'deshita', 'kosoado', 'aru', 'counters', 'tachi', 'momo'],
+      grammar: ['desu', 'formalneg', 'deshita', 'kosoado', 'aru', 'counters', 'tachi', 'momo', 'o-go'],
       kanji: ['num', 'time'],
       vocab: ['n5-numbers', 'n5-calendar', 'n5-clock', 'n5-kosoado', 'n5-people', 'n5-family2'],
       units: ['intro', 'time'],
@@ -126,7 +126,7 @@ w|What time is it now?|今、何時ですか。|今、何曜日ですか。|今�
     tipHg: 'Particle he ko “e” aur wo ko “o” padhte hain.',
     study: {
       particles: ['o', 'ni', 'de', 'e', 'kara', 'made'],
-      grammar: ['masu', 'mashita', 'masenka', 'mashou', 'mashouka', 'nipurpose', 'issho', 'freq', 'goro', 'gurai', 'ka-or', 'nanimo'],
+      grammar: ['masu', 'mashita', 'masenka', 'mashou', 'mashouka', 'nipurpose', 'issho', 'freq', 'goro', 'gurai', 'ka-or', 'nanimo', 'wokudasai'],
       kanji: ['people', 'place'],
       vocab: ['n5-verbs', 'n5-places', 'n5-places2', 'n5-transport', 'n5-transport2', 'n5-position', 'n5-time'],
       units: ['way', 'shop'],
@@ -168,7 +168,7 @@ w|Let’s go together.|一緒に行きましょう。|一緒に行きました�
     tipHg: '“samui deshita” galat hai: “samukatta desu” sahi hai.',
     study: {
       particles: ['ga', 'yori', 'ne', 'yo'],
-      grammar: ['iadj', 'naadj', 'adjnoun', 'suki', 'hoshii', 'tai', 'takunai', 'yori', 'ichiban', 'dochira', 'adverb', 'kute', 'amari', 'zenzen', 'waga', 'ga-but'],
+      grammar: ['iadj', 'naadj', 'adjnoun', 'suki', 'hoshii', 'tai', 'takunai', 'yori', 'ichiban', 'dochira', 'adverb', 'kute', 'amari', 'zenzen', 'waga', 'ga-but', 'demo-but'],
       kanji: ['nature', 'adj'],
       vocab: ['n5-adj', 'n5-iadj', 'n5-naadj', 'n5-food', 'n5-food2', 'n5-clothes', 'n5-hobbies'],
       units: ['food', 'plans'],
@@ -247,7 +247,7 @@ w|Please don’t forget.|忘れないでください。|忘れてください。
     tip: 'A describing sentence goes before the noun, in plain form: 昨日買った本 (the book I bought yesterday). No です or ます inside it.',
     tipHg: 'Noun ko describe karne wala hissa pehle aata hai, plain form mein.',
     study: {
-      grammar: ['plain', 'naide', 'mae', 'toki', 'tari', 'relative', 'no-one', 'kara-because', 'kedo', 'deshou', 'toiu', 'dake', 'shika', 'madeni', 'chuu', 'nanika', 'donna', 'why'],
+      grammar: ['plain', 'naide', 'mae', 'toki', 'tari', 'relative', 'no-one', 'kara-because', 'kedo', 'deshou', 'toiu', 'dake', 'shika', 'madeni', 'chuu', 'nanika', 'donna', 'why', 'douyatte', 'naa'],
       kanji: ['n5-school2'],
       vocab: ['n5-more'],
     },
@@ -305,7 +305,7 @@ p|わたしは毎朝六時に起きます。シャワーをあびて、パンを
     tip: 'N4 includes everything in N5. Keep one N5 quiz a week in your routine.',
     tipHg: 'N4 mein poora N5 bhi aata hai: hafte mein ek N5 quiz karte raho.',
     study: {
-      grammar: ['dekiru', 'potential', 'takotogaaru', 'kotogaaru', 'tsumori', 'volitional', 'yotei', 'toomou', 'itteita', 'kamo', 'darou', 'kana-wonder', 'houga', 'taradou', 'nakereba', 'naitoikenai', 'nakutemo', 'kamawanai', 'ndesu'],
+      grammar: ['dekiru', 'potential', 'takotogaaru', 'kotogaaru', 'tsumori', 'volitional', 'yotei', 'toomou', 'itteita', 'kamo', 'darou', 'kana-wonder', 'houga', 'taradou', 'nakereba', 'naitoikenai', 'nakutemo', 'kamawanai', 'ndesu', 'hitsuyou', 'teyokatta', 'tesumimasen', 'taraiidesuka', 'kai', 'kashira'],
       kanji: ['n4-work', 'n4-life', 'n4-move'],
       vocab: ['n4-work', 'n4-life', 'n4-verbs', 'n4-time3', 'n4-study2', 'n4-tech'],
       units: ['o-greet', 'o-intro', 'o-ask', 'o-task'],
@@ -345,7 +345,7 @@ w|You’d better ask the teacher.|先生に聞いたほうがいいですよ。|
     tip: 'と is for things that always happen (press → opens); it can’t end in a request. 駅に着いたら電話してください is right; 着くと電話してください is wrong.',
     tipHg: '“to” ke baad request nahi aati: wahan “tara” use karo.',
     study: {
-      grammar: ['tara', 'ba', 'to-cond', 'nara', 'temo', 'nagara', 'aida', 'uchini', 'tokoro', 'bakari-just', 'hajimeru', 'tsuzukeru', 'dasu', 'teshimau', 'teoku', 'temiru', 'tearu', 'teikukuru', 'mama', 'shi', 'node', 'nakute', 'naide-without', 'zuni', 'bayokatta', 'toii'],
+      grammar: ['tara', 'ba', 'to-cond', 'nara', 'temo', 'nagara', 'aida', 'uchini', 'tokoro', 'bakari-just', 'hajimeru', 'tsuzukeru', 'dasu', 'teshimau', 'teoku', 'temiru', 'tearu', 'teikukuru', 'mama', 'shi', 'node', 'nakute', 'naide-without', 'zuni', 'bayokatta', 'toii', 'teita', 'jidoushi', 'nakanaka', 'sonnani', 'dakede', 'oki', 'toka'],
       kanji: ['n4-world', 'n4-people2', 'n4-food2'],
       vocab: ['n4-health', 'n4-feelings', 'n4-people3', 'n4-home3', 'n4-town2', 'n4-travel2', 'n4-food4'],
       units: ['o-sorry', 'o-phone'],
@@ -387,7 +387,7 @@ w|It’s started to rain.|雨が降り出しました。|雨が降り続けま�
     tip: 'Passive often means you were troubled by it: 雨に降られた (I got rained on). That’s why it’s used for complaints.',
     tipHg: 'Passive aksar “mere saath bura hua” ke liye hota hai.',
     study: {
-      grammar: ['giving', 'tehoshii', 'garu', 'passive', 'causative', 'causpass', 'youninaru', 'younisuru', 'youni', 'youniiu', 'tameni', 'noni', 'noni-for', 'sugiru', 'yasui', 'sa', 'nominal', 'kotonisuru', 'kotoninaru', 'kadouka', 'embedq', 'hodo', 'mo-emph', 'bakari-only', 'zutsu', 'imperative', 'na-prohib', 'nasai'],
+      grammar: ['giving', 'tehoshii', 'garu', 'passive', 'causative', 'causpass', 'youninaru', 'younisuru', 'youni', 'youniiu', 'tameni', 'noni', 'noni-for', 'sugiru', 'yasui', 'sa', 'nominal', 'kotonisuru', 'kotoninaru', 'kadouka', 'embedq', 'hodo', 'mo-emph', 'bakari-only', 'zutsu', 'imperative', 'na-prohib', 'nasai', 'zurai', 'gari', 'gasuru', 'nimieru', 'nikigatsuku', 'karatsukuru', 'youna', 'nowada', 'tte'],
       kanji: ['n4-describe2', 'n4-actions2', 'n4-society'],
       vocab: ['n4-verbs3', 'n4-iadj3', 'n4-naadj3', 'n4-adverbs2', 'n4-katakana3', 'n4-shopping', 'n4-culture', 'n4-health3', 'n4-nature3'],
       units: ['o-meet', 'o-life'],
@@ -429,7 +429,7 @@ w|Please make sure you don’t forget.|忘れないようにしてください�
     tip: 'At work, keigo goes up to the customer and other companies even about your own boss: 部長の田中は今おりません (humble, about your own boss, to an outsider).',
     tipHg: 'Bahar ke logon se baat karte waqt apne boss ke liye bhi humble form.',
     study: {
-      grammar: ['sou-look', 'sou-hear', 'mitai', 'rashii', 'hazu', 'niyoruto', 'okininaru', 'osuru', 'sonkeigo', 'kenjougo', 'rareru-respect', 'itadakeru', 'sasete', 'baai'],
+      grammar: ['sou-look', 'sou-hear', 'mitai', 'rashii', 'hazu', 'niyoruto', 'okininaru', 'osuru', 'sonkeigo', 'kenjougo', 'rareru-respect', 'itadakeru', 'sasete', 'baai', 'hazuganai', 'tokiita', 'toiukoto', 'toiwareteiru', 'janaika', 'okudasai', 'toittemoii', 'teyaru'],
       kanji: ['n4-nature4', 'n4-places3', 'n4-describe3', 'n4-actions3'],
       vocab: ['n4-keigo', 'n4-work3', 'n4-work4', 'n4-life4', 'n4-people4', 'n4-verbs4', 'n4-words4', 'n4-society2'],
       units: ['c-ask', 'c-check'],

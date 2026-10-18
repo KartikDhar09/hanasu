@@ -318,19 +318,23 @@ test('text colours meet WCAG AA contrast (4.5:1) in light and dark themes', () =
   }
 });
 if (readFileSync('js/module-deps.js', 'utf8') !== (await import('./module-deps.mjs')).buildDeps()) fail('js/module-deps.js is out of date: run node scripts/module-deps.mjs');
-test('every kanji has stroke-order data with only drawing commands (run scripts/strokes.mjs)', () => {
+const KANA_MOD = await import('../js/kana-data.js');
+test('every kanji and basic kana has stroke-order data with only drawing commands (run scripts/strokes.mjs)', () => {
   const { strokeFile } = strokeMod;
-  for (const k of KANJI_LIST) {
-    const f = strokeFile(k.ch);
-    assert.ok(existsSync(f), `no stroke data for ${k.ch}`);
+  const chars = [...KANJI_LIST.map(k => k.ch), ...KANA_MOD.BASIC_HIRA, ...KANA_MOD.BASIC_KATA];
+  assert.equal(KANA_MOD.BASIC_HIRA.length, 46, '46 basic hiragana');
+  for (const ch of chars) {
+    const f = strokeFile(ch);
+    assert.ok(existsSync(f), `no stroke data for ${ch}`);
     const d = JSON.parse(readFileSync(f, 'utf8'));
-    assert.ok(d.p.length > 0 && d.p.every(p => /^[MmCcSsLlHhVvZz0-9.,\s-]+$/.test(p)), `bad stroke data for ${k.ch}`);
+    assert.ok(d.p.length > 0 && d.p.every(p => /^[MmCcSsLlHhVvZz0-9.,\s-]+$/.test(p)), `bad stroke data for ${ch}`);
   }
-  assert.equal(readdirSync('strokes').length, KANJI_LIST.length, 'stroke files for kanji the app no longer has');
+  assert.equal(readdirSync('strokes').length, chars.length, 'stroke files for characters the app no longer has');
 });
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
 const WAYS_TRACKS = ['n5', 'office', 'corp'];
 const DLG_TRACKS = ['n5', 'office', 'corp']; // role-play lines done so far
+const GRAMMAR_WAYS = ['n5', 'n4']; // grammar levels done so far
 test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
   const WAYS = WAYS_ALL;
   const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
@@ -342,8 +346,10 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   const QAW = new Map(SP.QA.flatMap((q, i) => q.a.map((x, j) => [`qa:${i}:${j}`, { jp: x[0] }])));
   // Particle examples: pt:<particle id>:<example>; the main line's [brackets] are dropped for comparison.
   const PTW = new Map(PARTICLES.flatMap(p => p.examples.map((x, j) => [`pt:${p.id}:${j}`, { jp: x[0].replace(/[[\]]/g, '') }])));
+  // Grammar examples: g5:/g4:<grammar id>:<example>.
+  const GRW = new Map(J.GRAMMAR.filter(g => GRAMMAR_WAYS.includes(g.level)).flatMap(g => g.ex.map((x, j) => [`g${g.level[1]}:${g.id}:${j}`, { jp: x[0].replace(/[[\]]/g, ''), g, keep: /\[(.+?)\]/.exec(x[0])[1] }])));
   for (const [id, w] of WAYS) {
-    const c = CARDS.find(x => x.id === id) || DLG.get(id) || QAW.get(id) || PTW.get(id);
+    const c = CARDS.find(x => x.id === id) || DLG.get(id) || QAW.get(id) || PTW.get(id) || GRW.get(id);
     assert.ok(c, `ways for unknown phrase, role-play line or Q&A answer ${id}`);
     assert.ok(w.biz, `${id}: no business version (use b= if it's already right for work)`);
     assert.ok(w.alt.length >= 2 && w.alt.length <= 3, `${id}: ${w.alt.length} other ways (want 2–3)`);
@@ -366,6 +372,40 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   assert.ok(!missingQa.length, `Q&A answers without other ways: ${missingQa.join(', ')}`);
   const missingPt = [...PTW.keys()].filter(id => !WAYS.has(id));
   assert.ok(!missingPt.length, `particle examples without other ways: ${missingPt.join(', ')}`);
+  const missingGr = [...GRW.keys()].filter(id => !WAYS.has(id));
+  assert.ok(!missingGr.length, `grammar examples without other ways: ${missingGr.slice(0, 10).join(', ')}`);
+  // Grammar versions keep the pattern being taught: the [bracketed] words, or for points whose brackets hold
+  // ordinary words (an adjective, a noun), a check of the pattern itself.
+  const PATTERN = {
+    iadj: /い(です|ね|よ)|かった|くない/, naadj: /な[一-龯ぁ-ゖァ-ヺ]|じゃない|ではありません|じゃなかった/, adjnoun: /[いな]([一-龯ァ-ヺ]|かばん)/,
+    relative: /(る|た|だ|ている|ない)[一-龯ァ-ヺ]|いる方|る方/, plain: /[うくぐすつぬぶむるだいた][？。]$/, 'no-one': /いのを|いのは/, momo: /も.*も/,
+    naru: /[くに]なり/, nisuru: /にし|にいたし/, kute: /くて|で[一-龯ぁ-ゖ]/, kata: /方/, chuu: /中/, tachi: /たち/,
+    counters: /何[人名枚本個台回階時冊杯匹]/, waga: /は.*が/, freq: /に.*回/, 'ka-or': /か/, formalneg: /くありません|ではありません/,
+    kosoado: /[こそあど](れ|の|こ|ちら)/, donna: /どんな|どう|いかが/, adverb: /く[^な]|に/, kusuru: /[くに]し/, why: /どうして|なぜ/,
+    nanika: /(何|どこ|誰)か/, nanimo: /(何|誰|どこ|どなた)(へ|に)?も/, desu: /です|でございます|じゃない|ではありません/,
+    deshita: /でした|じゃなかった|ではありませんでした/, tai: /たい/, teiru: /[てで](います|おります)/, temoii: /[てで]も(いい|よろしい)/, aru: /あります|います|ございます/, tari: /[たど]り/, ikaga: /(いかが|どう)ですか/,
+    // N4
+    potential: /(られ|[えけせてねべめれげ])(ます|ません|る|ない)|でき(ます|る)/, takotogaaru: /[ただ]ことが(あり|ござい)/, nakereba: /なければ|なきゃ/,
+    teshimau: /[てで]しま|ちゃ|じゃっ/, teoku: /[てで]おき/, temiru: /[てで]み/, giving: /くれ|もら|あげ|いただ|くださ/,
+    passive: /れ(ました|ます|た)/, causative: /せて/, ndesu: /んです|のです/, volitional: /[おこそとのほもろよ]うと思/,
+    mitai: /みたい|よう/, sa: /[一-龯]さ[はがにをで]/, causpass: /され|させられ/, okininaru: /お[一-龯]+[ぁ-ゖ]*になり|ご覧になり/,
+    osuru: /[おご][一-龯]+[ぁ-ゖ]*(し|いたし)ます/, sonkeigo: /いらっしゃ|召し上が|おっしゃ|ご覧|お待ちになって/, kenjougo: /伺|拝見|参り|存じ/,
+    sasete: /せて(ください|いただ)/, 'rareru-respect': /(られ|[かさたなまらわがば]れ)(ます|ました)/,
+    imperative: /([えけせてねべめれげ]|ろ|い)！/, hajimeru: /始め|終わ/, tsuzukeru: /続け/, garu: /がって/, teikukuru: /[てで](き|い|まいり)/,
+    tearu: /[てで](あり|ござい)/, darou: /だろう|でしょう/, 'mo-emph': /[一二三四五六七八九十百千]\S{0,4}も/, tokoro: /ところ/,
+    itteita: /と(言って|おっしゃって)/, kamawanai: /もかまいません/, toomou: /と思/, 'na-prohib': /[うくぐすつぬぶむる]な[！。]/,
+    'to-cond': /[うくぐすつぬぶむる]と、/, tara: /[ただ]ら/, ba: /ば/, nominal: /(の|こと)[がはで]|ことです/,
+    tehoshii: /ほしい|いただきたい/, embedq: /か、/, youniiu: /ように/, taradou: /[ただ]ら(どう|いかが)/, dekiru: /こと(が|は)でき/, nakutemo: /なくても/, sugiru: /すぎ/, yotei: /予定/,
+    younisuru: /ように(し|いたし)/, kotonisuru: /ことに(し|いたし)/, temo: /[てで]も/, niyoruto: /によると|によりますと|によれば/, kotogaaru: /ことが(あり|ござい)/, hoshii: /がほしい/, takunai: /たくない/, suki: /が(お)?(好き|上手)/,
+  };
+  const BIZ_FREE = new Set(['plain']); // the point is the casual form, so the business version can't keep it
+  const lost = [];
+  for (const [id, c] of GRW) {
+    const w = WAYS.get(id);
+    const lines = [...(w.biz === 'same' || BIZ_FREE.has(c.g.id) ? [] : [w.biz]), ...w.alt];
+    for (const l of lines) if (!(PATTERN[c.g.id] ? PATTERN[c.g.id].test(l.jp) : l.jp.includes(c.keep))) lost.push(`${id}: "${l.jp}" (${PATTERN[c.g.id] || c.keep})`);
+  }
+  assert.ok(!lost.length, `${lost.length} grammar versions don't keep the pattern:\n  ${lost.join('\n  ')}`);
   // Particle alternatives keep the particle being taught, so each is another example of it.
   for (const p of PARTICLES) for (let j = 0; j < p.examples.length; j++) {
     const w = WAYS.get(`pt:${p.id}:${j}`);
@@ -494,13 +534,14 @@ const PATHMOD = await import('../js/path.js');
 {
   const KG = (await import('../js/kanji-data.js')).ALL_KANJI_GROUPS;
   const { UNIT_INDEX: UI } = await import('../js/units-index.js');
+  const QA_LIST = (await import('../js/speaking-data.js')).QA;
   const allJs = readdirSync('js').filter(f => f.endsWith('.js')).map(f => readFileSync('js/' + f, 'utf8')).join('\n');
   const ACTIONS = new Set([...allJs.matchAll(/^\s+'?([a-z][a-z0-9-]*)'?: (?:\([^)]*\)|[a-z]+) =>/gm)].map(m => m[1]));
-  const HASH = /^#(unit\/[\w-]+|particles?(\/\w+)?|verbs|counters|kanji(\/n4)?|write|study|speak(\/\w+)?|jlpt(\/(kana|grammar\/n[45]|vocab\/(n5|n4|life)|reading\/n[45]|listening\/n[45]|mock\/n[45]))?|path\/\w+)$/;
+  const HASH = /^#(unit\/[\w-]+|particles?(\/\w+)?|verbs|counters|kanji(\/n4)?|write(\/(hira|kata))?|study|speak(\/\w+)?|jlpt(\/(kana|grammar\/n[45]|vocab\/(n5|n4|life)|reading\/n[45]|listening\/n[45]|mock\/n[45]))?|path\/\w+)$/;
   const JP = /[ぁ-ゖァ-ヺ一-龯々]/, NOJP = /^[^ぁ-ゖァ-ヺ一-龯々]*$/;
   const KANA = /^[ぁ-ゖァ-ヺー、。！？「」・\[\] 　]+$/;
   for (const [pid, P] of Object.entries(PATHMOD.PATHS)) {
-    const seen = { particles: new Map(), grammar: new Map(), kanji: new Map(), vocab: new Map(), units: new Map() };
+    const seen = { particles: new Map(), grammar: new Map(), kanji: new Map(), vocab: new Map(), units: new Map(), qa: new Map() };
     if (new Set(P.levels.map(l => l.id)).size !== P.levels.length) fail(`path ${pid}: duplicate level ids`);
     if (!LATIN.test(P.intro.hg)) fail(`path ${pid}: intro Hinglish`);
     for (const l of P.levels) {
@@ -514,6 +555,7 @@ const PATHMOD = await import('../js/path.js');
         if (t?.startsWith('#unit/') && !UI.some(u => u.id === t.slice(6))) fail(`${at}: no unit ${t}`);
       }
       for (const [kind, ids] of Object.entries(l.study || {})) {
+        if (kind === 'qa') continue; // checked below
         const exists = { particles: id => PARTICLES.some(x => x.id === id), grammar: id => J.GRAMMAR.some(g => g.id === id),
           kanji: id => KG.some(g => g.id === id), vocab: id => V.VOCAB.some(t => t.id === id), units: id => UI.some(u => u.id === id) }[kind];
         if (!exists) { fail(`${at}: unknown study kind ${kind}`); continue; }
@@ -523,8 +565,34 @@ const PATHMOD = await import('../js/path.js');
           seen[kind].set(id, l.id);
         }
       }
+      for (const k of PATHMOD.parseKit(l.kit)) {
+        if (!JP.test(k.jp) || !KANA.test(k.kana.replace(/[〜～…]/g, '')) || !k.ro || !k.en || !LATIN.test(k.hg || '')) fail(`${at}: key phrase "${k.jp}" needs jp|kana|romaji|English|Hinglish`);
+      }
+      for (const m of l.missions || []) if (!m.trim()) fail(`${at}: empty mission`);
+      for (const d of l.drill || []) if (d.length !== 3 || !LATIN.test(d[1]) || !JP.test(d[2])) fail(`${at}: drill topic needs [English, Hinglish, Japanese hints]`);
+      for (const n of l.study?.qa || []) if (!QA_LIST[n]) fail(`${at}: no QA ${n}`); else if (seen.qa.has(n)) fail(`${at}: QA ${n} already in ${seen.qa.get(n)}`); else seen.qa.set(n, l.id);
       const T = l.test;
       if (T.mock) { if (!['n5', 'n4'].includes(T.mock)) fail(`${at}: bad mock`); continue; }
+      if (T.speak) {
+        const items = PATHMOD.parseSpeak(T.speak);
+        if (items.length < 10) fail(`${at}: speaking test needs 10+ items`);
+        const taught = new Set(P.levels.slice(0, P.levels.indexOf(l) + 1).flatMap(x => x.study?.units || []));
+        items.forEach((x, n) => {
+          const w = `${at} speak ${n + 1} (${x.t})`;
+          if (x.bad) return fail(`${w}: unknown item: ${x.bad}`);
+          if (x.t === 'u') {
+            const c = CARDS.find(c => c.id === x.card);
+            if (!c) return fail(`${w}: no phrase ${x.card}`);
+            if (!taught.has(c.unit)) fail(`${w}: ${x.card} is from a unit not taught by this level`);
+            if (/\{name\}/.test(c.jp)) fail(`${w}: ${x.card} contains the learner's name, which the mic can't match`);
+          } else {
+            if (!JP.test(x.jp) || !KANA.test(x.kana.replace(/[〜～…]/g, '')) || !x.ro || !x.en) fail(`${w}: needs jp, kana, romaji, English`);
+            for (const a of x.alts || []) if (!JP.test(a)) fail(`${w}: alternative "${a}" isn't Japanese`);
+          }
+          if (x.t !== 'a' && (!x.say || !NOJP.test(x.say.replace(/“[^”]*”/g, '')))) fail(`${w}: situation must be in English`);
+        });
+        continue;
+      }
       if (!(T.pass >= 60 && T.pass <= 100)) fail(`${at}: pass mark`);
       const qs = PATHMOD.parseQs(T.qs);
       if ((T.n || 0) + qs.length < 15) fail(`${at}: level test needs 15+ questions`);
@@ -556,8 +624,70 @@ const PATHMOD = await import('../js/path.js');
       }
       for (const lv of ['n5', 'n4']) if (!P.levels.some(l => l.test.mock === lv)) fail(`path jlpt: no level ends with the ${lv} mock`);
     }
+    if (pid === 'talk') {
+      const missingU = UI.map(u => u.id).filter(id => !seen.units.has(id));
+      if (missingU.length) fail(`path talk: units not in any level: ${missingU.join(', ')}`);
+      const missingQ = QA_LIST.map((_, n) => n).filter(n => !seen.qa.has(n));
+      if (missingQ.length) fail(`path talk: Q&A questions not in any level: ${missingQ.join(', ')}`);
+      if (!P.levels.every(l => l.test.speak)) fail('path talk: every level needs a speaking test');
+    }
   }
 }
+
+test('speaking-path tests: each target and its alternatives pass the mic check; no item accepts another item’s answer', () => {
+  core.useReadings(readingsMod.READINGS);
+  const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
+  const f = t => core.fill(t, P);
+  for (const l of PATHMOD.PATHS.talk.levels) {
+    const items = PATHMOD.parseSpeak(l.test.speak).map(x => {
+      if (x.t !== 'u') return { ...x, alts: (x.alts || []).map(a => [a]) };
+      const c = CARDS.find(c => c.id === x.card), w = WAYS_ALL.get(x.card);
+      const alts = w ? [...(w.biz && w.biz !== 'same' ? [w.biz] : []), ...w.alt].map(a => [f(a.jp), f(a.kana)]) : [];
+      return { ...x, jp: f(c.jp), kana: f(c.kana), alts: [...(c.casual ? [[f(c.casual.jp), f(c.casual.kana)]] : []), ...alts] };
+    });
+    for (const q of items) {
+      const sc = h => core.matchScore([h], q.jp, q.kana, q.alts.flat());
+      for (const h of [q.jp, q.kana, ...q.alts.map(a => a[0])]) assert.ok(sc(h) >= core.PASS, `${l.id}: “${h}” should pass for ${q.jp}`);
+      for (const o of items) if (o !== q) assert.ok(sc(o.jp) < core.PASS, `${l.id}: ${q.jp} also accepts ${o.jp}`);
+    }
+  }
+});
+
+test('passing a full mock completes that exam level in the JLPT path (and only moves forward)', () => {
+  const levels = { jlpt: 2 }, calls = [];
+  const mod = PATHMOD.initPath({ S: () => ({ settings: {} }), esc: x => x, render() {}, speak() {}, shuffle: a => a, bar: () => '', back: () => '',
+    go() {}, clearSess() {}, run() {}, canListen: () => false, level: p => levels[p] || 0,
+    setLevel: (p, n) => { calls.push([p, n]); if (n > (levels[p] || 0)) levels[p] = n; } });
+  mod.mockPassed('n5');
+  const n5 = PATHMOD.PATHS.jlpt.levels.findIndex(l => l.test.mock === 'n5');
+  assert.deepEqual(calls, [['jlpt', n5 + 1]]);
+  assert.equal(levels.jlpt, n5 + 1);
+  mod.mockPassed('n4');
+  assert.equal(levels.jlpt, PATHMOD.PATHS.jlpt.levels.length, 'passing the N4 mock completes the path');
+  const exam = readFileSync('js/exam.js', 'utf8');
+  assert.match(exam, /if \(s\.passed && full\) ctx\.mockPassed\(lv\)/, 'exam.js reports a passed full mock');
+  assert.match(exam, /full = st\.mode !== 'quick'/, 'quick mocks never count');
+});
+
+const SEARCH = await import('../js/search.js');
+test('search finds things by Japanese, kana, romaji (with or without long-vowel marks), English and Hinglish', () => {
+  const has = (q, kind, pred) => assert.ok(SEARCH.search(q, 50)[kind].some(pred), `“${q}” should find a ${kind}`);
+  has('arigatou', 'phrase', e => e.title === 'ありがとうございます。');
+  has('ありがとう', 'phrase', e => e.title === 'ありがとうございます。');
+  has('アリガトウ', 'phrase', e => e.title === 'ありがとうございます。');
+  has('eki', 'word', e => e.title === '駅');
+  has('station', 'word', e => e.title === '駅');
+  has('paani', 'word', e => e.title === '水');
+  has('日', 'kanji', e => e.title === '日');
+  has('てください', 'grammar', e => e.go === 'jlpt/g/tekudasai');
+  has('wa', 'particle', e => e.title === 'は');
+  has('本', 'counter', e => e.title === '本');
+  has('greetings', 'unit', e => e.go === 'unit/greet');
+  const top = SEARCH.search('water').word[0];
+  assert.equal(top.title, '水', 'exact English match ranks first');
+  assert.equal(SEARCH.search('zzqxv').total, 0);
+  assert.equal(SEARCH.search('   ').total, undefined, 'empty query searches nothing');
+});
 
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));

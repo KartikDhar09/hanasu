@@ -10,7 +10,7 @@ import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVo
 // same next time, and the level reached in each path (the user chose this; a number per path, nothing else).
 const KEY = 'hanasu-v1';
 const DEFAULTS = { settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' } };
-const PATH_IDS = ['jlpt'];
+const PATH_IDS = ['jlpt', 'talk'];
 let S = load();
 
 function load() {
@@ -116,7 +116,7 @@ const note = c => c.note ? `<div class="note">💡 ${esc(c.note)}</div>` : '';
 // Rendered into an empty slot once that track's data has loaded, so the screen itself never waits for it.
 const waysSlot = id => `<div class="ways-slot" data-ways="${esc(id)}"></div>`;
 // A ways id is a phrase id (greet:0), a role-play line (dlg:greet:0), a Q&A answer (qa:0:1) or a particle example (pt:wa:0).
-const WAYS_PREFIX = { 'qa:': 'qa', 'pt:': 'particles' }; // parts with their own file, by id prefix
+const WAYS_PREFIX = { 'qa:': 'qa', 'pt:': 'particles', 'g5:': 'grammar-n5', 'g4:': 'grammar-n4' }; // parts with their own file, by id prefix
 const trackOfWays = id => WAYS_PREFIX[id.slice(0, 3)] || unitById(id.startsWith('dlg:') ? id.split(':')[1] : cardById(id)?.unit)?.track;
 function fillWays() {
   const slots = [...$app.querySelectorAll('.ways-slot:empty')];
@@ -164,7 +164,7 @@ function home() {
       <button class="btn primary big" data-act="learn" data-arg="${UNIT_INDEX[0].id}">Start: ${esc(UNIT_INDEX[0].title)}</button>
       <div class="quick">
         <a href="#path/jlpt" class="qlink"><span>🪜</span>JLPT path, level by level</a>
-        <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
+        <a href="#path/talk" class="qlink"><span>🗣️</span>Speaking path, level by level</a>
         <a href="#jlpt/vocab/life" class="qlink"><span>🏢</span>Life &amp; work words</a>
       </div>
     </section>
@@ -632,6 +632,8 @@ document.addEventListener('click', e => {
   if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
   // Opening a "more ways" fold inside a tappable row shouldn't also play the row.
   if (e.target.closest('summary') && e.target.closest('[data-act]')?.contains(e.target.closest('summary'))) return;
+  // A link inside a tappable row opens its page without also running the row (e.g. search results).
+  if (e.target.closest('a[href^="#"]') && e.target.closest('[data-act]')?.contains(e.target.closest('a'))) return;
   const el = e.target.closest('[data-act]');
   if (el) { run(el.dataset.act, el.dataset.arg); return; }
   if (e.target.id === 'sheet') e.target.hidden = true;
@@ -670,12 +672,18 @@ const LOADERS = {
   })),
   jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
   path: () => import('./path.js').then(m => m.initPath({
-    ...shared(), run,
+    ...shared(), run, canListen, record: recordAgainst,
+    // A unit phrase as a speaking target: its casual, business and other ways are accepted too.
+    card: async id => {
+      const v = view(cardById(id));
+      return { jp: v.jp, kana: v.kana, ro: v.ro, en: v.en, casual: v.casual, alts: await waysOf(id) };
+    },
     level: p => S.path[p] || 0,
     // A passed test only ever moves you forward; force is for "start again".
     setLevel: (p, n, force) => { if (PATH_IDS.includes(p) && (force || n > (S.path[p] || 0))) { S.path[p] = n; save(); } },
   })),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
+  search: () => import('./search.js').then(m => m.initSearch(shared())),
   exam: () => import('./exam.js').then(m => m.initExam({
     ...shared(), mockPassed: lv => loadSection('path').then(m => m.mockPassed(lv)), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
@@ -689,7 +697,7 @@ function loadSection(name) {
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
   : /^jlpt/.test(h) ? 'jlpt' : /^(study|particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes'
-  : /^path\//.test(h) ? 'path' : null;
+  : /^path\//.test(h) ? 'path' : h === 'search' ? 'search' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -708,7 +716,7 @@ async function route() {
   const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|path\/\w+)/.exec(h)?.[1];
   const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
   const tabs = [...document.querySelectorAll('#tabs a')];
-  const on = tabs.some(a => a.dataset.tab === tab) ? tab : 'phrases'; // unknown links fall back to home
+  const on = tabs.some(a => a.dataset.tab === tab) ? tab : h === 'search' ? '' : 'phrases'; // unknown links fall back to home
   tabs.forEach(a => a.classList.toggle('on', a.dataset.tab === on));
   // Home renders straight away; every other screen needs the phrase data first.
   if (!h) return home();

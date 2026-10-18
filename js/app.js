@@ -10,7 +10,7 @@ import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVo
 // same next time, and the level reached in each path (the user chose this; a number per path, nothing else).
 const KEY = 'hanasu-v1';
 const DEFAULTS = { settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' } };
-const PATH_IDS = ['jlpt'];
+const PATH_IDS = ['jlpt', 'talk'];
 let S = load();
 
 function load() {
@@ -164,7 +164,7 @@ function home() {
       <button class="btn primary big" data-act="learn" data-arg="${UNIT_INDEX[0].id}">Start: ${esc(UNIT_INDEX[0].title)}</button>
       <div class="quick">
         <a href="#path/jlpt" class="qlink"><span>🪜</span>JLPT path, level by level</a>
-        <a href="#speak" class="qlink"><span>🎤</span>Speak practice</a>
+        <a href="#path/talk" class="qlink"><span>🗣️</span>Speaking path, level by level</a>
         <a href="#jlpt/vocab/life" class="qlink"><span>🏢</span>Life &amp; work words</a>
       </div>
     </section>
@@ -670,7 +670,12 @@ const LOADERS = {
   })),
   jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
   path: () => import('./path.js').then(m => m.initPath({
-    ...shared(), run,
+    ...shared(), run, canListen, record: recordAgainst,
+    // A unit phrase as a speaking target: its casual, business and other ways are accepted too.
+    card: async id => {
+      const v = view(cardById(id));
+      return { jp: v.jp, kana: v.kana, ro: v.ro, en: v.en, casual: v.casual, alts: await waysOf(id) };
+    },
     level: p => S.path[p] || 0,
     // A passed test only ever moves you forward; force is for "start again".
     setLevel: (p, n, force) => { if (PATH_IDS.includes(p) && (force || n > (S.path[p] || 0))) { S.path[p] = n; save(); } },

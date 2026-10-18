@@ -9,7 +9,7 @@ import { ALL_KANJI_GROUPS } from './kanji-data.js';
 import { VOCAB } from './vocab-data.js';
 import { PARTICLES } from './particles-data.js';
 import { UNIT_INDEX } from './units-index.js';
-import { ALL_KANA } from './jlpt.js';
+import { ALL_KANA, toKata } from './kana-data.js';
 import { toRomaji } from './conjugate.js';
 import { sayable, PASS } from './core.js';
 import { prefetchClip } from './clips.js';
@@ -20,7 +20,6 @@ export const PATHS = {
 };
 
 const plain = s => s.replace(/[[\]]/g, '');
-const toKata = s => s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
 const hasKanji = s => /[一-龯々]/.test(s);
 
 // Authored level-test questions (format in path-jlpt.js). Right answer first.

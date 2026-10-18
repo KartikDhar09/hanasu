@@ -35,6 +35,7 @@ const FILES = {
   corp: () => import('./ways-corp.js').then(m => m.WAYS_CORP),
   qa: () => import('./ways-qa.js').then(m => m.WAYS_QA),
   particles: () => import('./ways-particles.js').then(m => m.WAYS_PARTICLES),
+  'grammar-n5': () => import('./ways-grammar-n5.js').then(m => m.WAYS_GRAMMAR_N5),
 };
 export const WAYS_PARTS = Object.keys(FILES);
 const cache = {};

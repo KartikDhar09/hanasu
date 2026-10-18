@@ -331,6 +331,7 @@ test('every kanji has stroke-order data with only drawing commands (run scripts/
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
 const WAYS_TRACKS = ['n5', 'office', 'corp'];
 const DLG_TRACKS = ['n5', 'office', 'corp']; // role-play lines done so far
+const GRAMMAR_WAYS = ['n5']; // grammar levels done so far
 test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
   const WAYS = WAYS_ALL;
   const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
@@ -342,8 +343,10 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   const QAW = new Map(SP.QA.flatMap((q, i) => q.a.map((x, j) => [`qa:${i}:${j}`, { jp: x[0] }])));
   // Particle examples: pt:<particle id>:<example>; the main line's [brackets] are dropped for comparison.
   const PTW = new Map(PARTICLES.flatMap(p => p.examples.map((x, j) => [`pt:${p.id}:${j}`, { jp: x[0].replace(/[[\]]/g, '') }])));
+  // Grammar examples: g5:<grammar id>:<example> (N4 to follow).
+  const GRW = new Map(J.GRAMMAR.filter(g => GRAMMAR_WAYS.includes(g.level)).flatMap(g => g.ex.map((x, j) => [`g${g.level[1]}:${g.id}:${j}`, { jp: x[0].replace(/[[\]]/g, ''), g, keep: /\[(.+?)\]/.exec(x[0])[1] }])));
   for (const [id, w] of WAYS) {
-    const c = CARDS.find(x => x.id === id) || DLG.get(id) || QAW.get(id) || PTW.get(id);
+    const c = CARDS.find(x => x.id === id) || DLG.get(id) || QAW.get(id) || PTW.get(id) || GRW.get(id);
     assert.ok(c, `ways for unknown phrase, role-play line or Q&A answer ${id}`);
     assert.ok(w.biz, `${id}: no business version (use b= if it's already right for work)`);
     assert.ok(w.alt.length >= 2 && w.alt.length <= 3, `${id}: ${w.alt.length} other ways (want 2–3)`);
@@ -366,6 +369,27 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   assert.ok(!missingQa.length, `Q&A answers without other ways: ${missingQa.join(', ')}`);
   const missingPt = [...PTW.keys()].filter(id => !WAYS.has(id));
   assert.ok(!missingPt.length, `particle examples without other ways: ${missingPt.join(', ')}`);
+  const missingGr = [...GRW.keys()].filter(id => !WAYS.has(id));
+  assert.ok(!missingGr.length, `grammar examples without other ways: ${missingGr.slice(0, 10).join(', ')}`);
+  // Grammar versions keep the pattern being taught: the [bracketed] words, or for points whose brackets hold
+  // ordinary words (an adjective, a noun), a check of the pattern itself.
+  const PATTERN = {
+    iadj: /い(です|ね|よ)|かった|くない/, naadj: /な[一-龯ぁ-ゖァ-ヺ]|じゃない|ではありません|じゃなかった/, adjnoun: /[いな]([一-龯ァ-ヺ]|かばん)/,
+    relative: /(る|た|だ|ている|ない)[一-龯ァ-ヺ]|いる方|る方/, plain: /[うくぐすつぬぶむるだいた][？。]$/, 'no-one': /いのを|いのは/, momo: /も.*も/,
+    naru: /[くに]なり/, nisuru: /にし|にいたし/, kute: /くて|で[一-龯ぁ-ゖ]/, kata: /方/, chuu: /中/, tachi: /たち/,
+    counters: /何[人名枚本個台回階時冊杯匹]/, waga: /は.*が/, freq: /に.*回/, 'ka-or': /か/, formalneg: /くありません|ではありません/,
+    kosoado: /[こそあど](れ|の|こ|ちら)/, donna: /どんな|どう|いかが/, adverb: /く[^な]|に/, kusuru: /[くに]し/, why: /どうして|なぜ/,
+    nanika: /(何|どこ|誰)か/, nanimo: /(何|誰|どこ|どなた)(へ|に)?も/, desu: /です|でございます|じゃない|ではありません/,
+    deshita: /でした|じゃなかった|ではありませんでした/, tai: /たい/, teiru: /[てで](います|おります)/, temoii: /[てで]も(いい|よろしい)/, aru: /あります|います|ございます/, tari: /[たど]り/, ikaga: /(いかが|どう)ですか/, hoshii: /がほしい/, takunai: /たくない/, suki: /が(お)?(好き|上手)/,
+  };
+  const BIZ_FREE = new Set(['plain']); // the point is the casual form, so the business version can't keep it
+  const lost = [];
+  for (const [id, c] of GRW) {
+    const w = WAYS.get(id);
+    const lines = [...(w.biz === 'same' || BIZ_FREE.has(c.g.id) ? [] : [w.biz]), ...w.alt];
+    for (const l of lines) if (!(PATTERN[c.g.id] ? PATTERN[c.g.id].test(l.jp) : l.jp.includes(c.keep))) lost.push(`${id}: "${l.jp}" (${PATTERN[c.g.id] || c.keep})`);
+  }
+  assert.ok(!lost.length, `${lost.length} grammar versions don't keep the pattern:\n  ${lost.join('\n  ')}`);
   // Particle alternatives keep the particle being taught, so each is another example of it.
   for (const p of PARTICLES) for (let j = 0; j < p.examples.length; j++) {
     const w = WAYS.get(`pt:${p.id}:${j}`);

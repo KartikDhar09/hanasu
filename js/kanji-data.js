@@ -95,7 +95,7 @@ export const KANJI_GROUPS = [
   ] },
   { id: 'action', title: 'Action kanji', hg: 'Kaam waale kanji (verbs)', icon: '🏃', kanji: [
     ['行', 'コウ・ギョウ', 'い(く)', 'go', 'jaana', [['行く', 'いく', 'iku', 'go', 'jaana'], ['銀行', 'ぎんこう', 'ginkō', 'bank', 'bank']]],
-    ['来', 'ライ', 'く(る)・き(ます)', 'come', 'aana', [['来る', 'くる', 'kuru', 'come', 'aana'], ['来週', 'らいしゅう', 'raishū', 'next week', 'agle hafte']]],
+    ['来', 'ライ', 'く(る)・き・こ', 'come', 'aana', [['来る', 'くる', 'kuru', 'come', 'aana'], ['来週', 'らいしゅう', 'raishū', 'next week', 'agle hafte']]],
     ['食', 'ショク', 'た(べる)', 'eat', 'khaana', [['食べる', 'たべる', 'taberu', 'eat', 'khaana'], ['食事', 'しょくじ', 'shokuji', 'meal', 'bhojan']]],
     ['飲', 'イン', 'の(む)', 'drink', 'peena', [['飲む', 'のむ', 'nomu', 'drink', 'peena'], ['飲み会', 'のみかい', 'nomikai', 'drinking party', 'office party']]],
     ['見', 'ケン', 'み(る)', 'see', 'dekhna', [['見る', 'みる', 'miru', 'see / watch', 'dekhna'], ['花見', 'はなみ', 'hanami', 'flower viewing', 'phool dekhna']]],

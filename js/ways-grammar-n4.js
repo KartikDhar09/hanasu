@@ -697,4 +697,244 @@ a|一日三ページずつ読みます。|いちにちさんページずつよ�
 b=
 a|毎日少しずつ勉強しています。|まいにちすこしずつべんきょうしています。|mainichi sukoshi zutsu benkyō shite imasu.|I’m studying a little every day.|Roz thoda thoda padh raha/rahi hoon.
 a|だんだん少しずつ暖かくなっています。|だんだんすこしずつあたたかくなっています。|dandan sukoshi zutsu atatakaku natte imasu.|It’s getting warmer bit by bit.|Dheere dheere garmi badh rahi hai.
+@g4:jidoushi:0
+b=
+a|電気が消えました。|でんきがきえました。|denki ga kiemashita.|The light went out.|Light bujh gayi.
+a|会議が始まりました。|かいぎがはじまりました。|kaigi ga hajimarimashita.|The meeting has started.|Meeting shuru ho gayi.
+@g4:jidoushi:1
+b|窓をお開けしましょうか。|まどをおあけしましょうか。|mado o o-ake shimashō ka?|Shall I open the window for you?|Kya main khidki khol doon?
+a|電気を消しました。|でんきをけしました。|denki o keshimashita.|I turned off the light.|Maine light band ki.
+a|会議を始めましょう。|かいぎをはじめましょう。|kaigi o hajimemashō.|Let’s start the meeting.|Meeting shuru karte hain.
+@g4:teyokatta:0
+b|日本に参ってよかったです。|にほんにまいってよかったです。|nihon ni maitte yokatta desu.|I’m glad I came to Japan. (humble)|Achha hua ki main Japan aaya/aayi.
+a|この会社に入ってよかったです。|このかいしゃにはいってよかったです。|kono kaisha ni haitte yokatta desu.|I’m glad I joined this company.|Achha hua ki yeh company join ki.
+a|日本語を勉強してよかったです。|にほんごをべんきょうしてよかったです。|nihongo o benkyō shite yokatta desu.|I’m glad I studied Japanese.|Achha hua ki Japanese seekhi.
+@g4:teyokatta:1
+b=
+a|傘を持ってきてよかった。|かさをもってきてよかった。|kasa o motte kite yokatta.|Glad I brought an umbrella.|Achha hua chhaata le aaya/aayi.
+a|早く出てよかった。|はやくでてよかった。|hayaku dete yokatta.|Glad I left early.|Achha hua jaldi nikal gaye.
+@g4:zurai:0
+b|部長には申し上げづらいです。|ぶちょうにはもうしあげづらいです。|buchō ni wa mōshiage zurai desu.|It’s hard to say to the manager. (humble)|Manager se kehna mushkil lagta hai.
+a|友達には頼みづらいです。|ともだちにはたのみづらいです。|tomodachi ni wa tanomi zurai desu.|It’s hard to ask a friend.|Dost se maangna mushkil lagta hai.
+a|この話は聞きづらいです。|このはなしはききづらいです。|kono hanashi wa kiki zurai desu.|This is hard to ask about.|Is baare mein poochhna mushkil lagta hai.
+@g4:zurai:1
+b=
+a|この字は読みづらいです。|このじはよみづらいです。|kono ji wa yomi zurai desu.|This writing is hard to read.|Yeh likhaavat padhna mushkil hai.
+a|このペンは書きづらいです。|このペンはかきづらいです。|kono pen wa kaki zurai desu.|This pen is hard to write with.|Is pen se likhna mushkil hai.
+@g4:oki:0
+b=
+a|二日おきに洗濯します。|ふつかおきにせんたくします。|futsuka oki ni sentaku shimasu.|I do the laundry every third day.|Main do din chhodkar kapde dhota/dhoti hoon.
+a|一週間おきに実家に電話します。|いっしゅうかんおきにじっかにでんわします。|isshūkan oki ni jikka ni denwa shimasu.|I call home every other week.|Main ek hafta chhodkar ghar phone karta/karti hoon.
+@g4:oki:1
+b|電車は五分おきに参ります。|でんしゃはごふんおきにまいります。|densha wa gofun oki ni mairimasu.|Trains come every five minutes. (announcement style)|Train har paanch minute mein aati hai.
+a|電車は五分おきに来ます。|でんしゃはごふんおきにきます。|densha wa gofun oki ni kimasu.|Trains come every five minutes.|Train har paanch minute mein aati hai.
+a|この薬は六時間おきに飲みます。|このくすりはろくじかんおきにのみます。|kono kusuri wa rokujikan oki ni nomimasu.|I take this medicine every six hours.|Yeh dawa har chhe ghante mein leta/leti hoon.
+@g4:toka:0
+b=
+a|週末は掃除とか洗濯とかをします。|しゅうまつはそうじとかせんたくとかをします。|shūmatsu wa sōji toka sentaku toka o shimasu.|At weekends I do things like cleaning and laundry.|Weekend pe safaai, kapde wagairah karta/karti hoon.
+a|京都とか奈良とかに行きたいです。|きょうととかならとかにいきたいです。|Kyōto toka Nara toka ni ikitai desu.|I want to go to places like Kyoto and Nara.|Main Kyoto, Nara jaisi jagah jaana chahta/chahti hoon.
+@g4:toka:1
+b=
+a|カレーとかラーメンとかが好きです。|カレーとかラーメンとかがすきです。|karē toka rāmen toka ga suki desu.|I like things like curry and ramen.|Mujhe curry, ramen wagairah pasand hain.
+a|ペンとかノートとかを買いました。|ペンとかノートとかをかいました。|pen toka nōto toka o kaimashita.|I bought things like pens and notebooks.|Maine pen, notebook wagairah khareede.
+@g4:nimieru:0
+b|田中さんはお若く見えます。|たなかさんはおわかくみえます。|Tanaka-san wa o-wakaku miemasu.|Tanaka-san looks young. (respectful)|Tanaka-san jawaan dikhte hain.
+a|この部屋は広く見えます。|このへやはひろくみえます。|kono heya wa hiroku miemasu.|This room looks spacious.|Yeh kamra bada dikhta hai.
+a|今日は疲れて見えますね。|きょうはつかれてみえますね。|kyō wa tsukarete miemasu ne.|You look tired today.|Aaj aap thake hue dikh rahe hain.
+@g4:nimieru:1
+b=
+a|あの人は学生に見えます。|あのひとはがくせいにみえます。|ano hito wa gakusei ni miemasu.|That person looks like a student.|Woh student lagta hai.
+a|この絵は写真に見えます。|このえはしゃしんにみえます。|kono e wa shashin ni miemasu.|This painting looks like a photo.|Yeh painting photo jaisi lagti hai.
+@g4:nikigatsuku:0
+b|誤りに気がつきました。申し訳ありません。|あやまりにきがつきました。もうしわけありません。|ayamari ni ki ga tsukimashita. mōshiwake arimasen.|I noticed an error. I’m very sorry.|Mujhe galti ka pata chala. Maafi chahta/chahti hoon.
+a|メールに気がつきませんでした。|メールにきがつきませんでした。|mēru ni ki ga tsukimasen deshita.|I didn’t notice the email.|Mujhe email ka pata nahi chala.
+a|雨に気がつきました。|あめにきがつきました。|ame ni ki ga tsukimashita.|I noticed it was raining.|Mujhe baarish ka pata chala.
+@g4:nikigatsuku:1
+b=
+a|鍵がないことに気がつきました。|かぎがないことにきがつきました。|kagi ga nai koto ni ki ga tsukimashita.|I noticed my key was missing.|Mujhe pata chala ki chaabi nahi hai.
+a|間違えたことに気がつきました。|まちがえたことにきがつきました。|machigaeta koto ni ki ga tsukimashita.|I realised I’d made a mistake.|Mujhe ehsaas hua ki galti ho gayi.
+@g4:hazuganai:0
+b=
+a|彼がそんなことを言うはずがありません。|かれがそんなことをいうはずがありません。|kare ga sonna koto o iu hazu ga arimasen.|There’s no way he would say that.|Woh aisa keh hi nahi sakta.
+a|田中さんが忘れるはずがありません。|たなかさんがわすれるはずがありません。|Tanaka-san ga wasureru hazu ga arimasen.|There’s no way Tanaka-san would forget.|Tanaka-san bhool hi nahi sakte.
+@g4:hazuganai:1
+b|そのようなことはあるはずがございません。|そのようなことはあるはずがございません。|sono yō na koto wa aru hazu ga gozaimasen.|That cannot possibly be the case. (very polite)|Aisa ho hi nahi sakta.
+a|そんなに簡単なはずがない。|そんなにかんたんなはずがない。|sonna ni kantan na hazu ga nai.|It can’t possibly be that easy.|Itna aasaan ho hi nahi sakta.
+a|彼が知らないはずがない。|かれがしらないはずがない。|kare ga shiranai hazu ga nai.|He can’t possibly not know.|Use pata na ho, aisa ho hi nahi sakta.
+@g4:tokiita:0
+b|田中さんがご結婚なさったと伺いました。|たなかさんがごけっこんなさったとうかがいました。|Tanaka-san ga go-kekkon nasatta to ukagaimashita.|I heard Tanaka-san got married. (humble)|Maine suna ki Tanaka-san ki shaadi ho gayi.
+a|山田さんが入院したと聞きました。|やまださんがにゅういんしたとききました。|Yamada-san ga nyūin shita to kikimashita.|I heard Yamada-san went into hospital.|Maine suna Yamada-san hospital mein bharti hain.
+a|部長が来月辞めると聞きました。|ぶちょうがらいげつやめるとききました。|buchō ga raigetsu yameru to kikimashita.|I heard the manager is leaving next month.|Maine suna manager agle mahine chhod rahe hain.
+@g4:tokiita:1
+b=
+a|あの映画はおもしろいと聞きました。|あのえいがはおもしろいとききました。|ano eiga wa omoshiroi to kikimashita.|I heard that film is good.|Maine suna woh film achhi hai.
+a|明日は雨だと聞きました。|あしたはあめだとききました。|ashita wa ame da to kikimashita.|I heard it’ll rain tomorrow.|Maine suna kal baarish hogi.
+@g4:toiukoto:0
+b=
+a|会議が中止になったということを知りませんでした。|かいぎがちゅうしになったということをしりませんでした。|kaigi ga chūshi ni natta to iu koto o shirimasen deshita.|I didn’t know the meeting had been cancelled.|Mujhe pata nahi tha ki meeting cancel ho gayi.
+a|大切なのは続けるということです。|たいせつなのはつづけるということです。|taisetsu na no wa tsuzukeru to iu koto desu.|What matters is keeping going.|Zaroori baat hai lage rehna.
+@g4:toiukoto:1
+b|つまり、会議は延期ということでよろしいでしょうか。|つまり、かいぎはえんきということでよろしいでしょうか。|tsumari, kaigi wa enki to iu koto de yoroshii deshō ka?|So, may I take it the meeting is postponed?|To kya meeting aage badh gayi hai?
+a|つまり、明日は休みということですか。|つまり、あしたはやすみということですか。|tsumari, ashita wa yasumi to iu koto desu ka?|So it means tomorrow is a day off?|Matlab kal chhutti hai?
+a|つまり、もう間に合わないということですか。|つまり、もうまにあわないということですか。|tsumari, mō maniawanai to iu koto desu ka?|So it means we won’t make it in time?|Matlab ab samay par nahi hoga?
+@g4:toiwareteiru:0
+b=
+a|京都は日本の心だと言われています。|きょうとはにほんのこころだといわれています。|Kyōto wa nihon no kokoro da to iwarete imasu.|Kyoto is said to be the heart of Japan.|Kaha jaata hai Kyoto Japan ka dil hai.
+a|日本の電車は世界一正確だと言われています。|にほんのでんしゃはせかいいちせいかくだといわれています。|nihon no densha wa sekai’ichi seikaku da to iwarete imasu.|Japan’s trains are said to be the most punctual in the world.|Kaha jaata hai Japan ki train duniya mein sabse samay-paaband hai.
+@g4:toiwareteiru:1
+b=
+a|早寝早起きは体にいいと言われています。|はやねはやおきはからだにいいといわれています。|hayane hayaoki wa karada ni ii to iwarete imasu.|Early to bed, early to rise is said to be healthy.|Kaha jaata hai jaldi sona-uthna sehat ke liye achha hai.
+a|お茶は体にいいと言われています。|おちゃはからだにいいといわれています。|o-cha wa karada ni ii to iwarete imasu.|Tea is said to be good for you.|Kaha jaata hai chai sehat ke liye achhi hai.
+@g4:tte:0
+b|田中さんは本日お休みだそうです。|たなかさんはほんじつおやすみだそうです。|Tanaka-san wa honjitsu o-yasumi da sō desu.|I hear Tanaka-san is off today. (polite)|Suna hai Tanaka-san aaj chhutti par hain.
+a|山田さん、遅れるって。|やまださん、おくれるって。|Yamada-san, okureru tte.|Yamada-san says they’ll be late.|Yamada-san keh rahe hain late honge.
+a|明日は雨だって。|あしたはあめだって。|ashita wa ame da tte.|They say it’ll rain tomorrow.|Kehte hain kal baarish hogi.
+@g4:tte:1
+b|「積ん読」とはどういう意味でしょうか。|「つんどく」とはどういういみでしょうか。|“tsundoku” to wa dō iu imi deshō ka?|What does “tsundoku” mean? (polite)|“Tsundoku” ka kya matlab hai?
+a|「お疲れ様」って、どういう意味ですか。|「おつかれさま」って、どういういみですか。|“otsukaresama” tte, dō iu imi desu ka?|What does “otsukaresama” mean?|“Otsukaresama” ka matlab kya hai?
+a|日本の夏って、暑いですね。|にほんのなつって、あついですね。|nihon no natsu tte, atsui desu ne.|Japanese summers are hot, aren’t they?|Japan ki garmi bahut tez hai, hai na?
+@g4:youna:0
+b=
+a|雪のような白さです。|ゆきのようなしろさです。|yuki no yō na shirosa desu.|It’s white like snow.|Barf jaisa safed hai.
+a|子どものような笑顔です。|こどものようなえがおです。|kodomo no yō na egao desu.|A smile like a child’s.|Bachche jaisi muskaan hai.
+@g4:youna:1
+b=
+a|京都みたいな古い町が好きです。|きょうとみたいなふるいまちがすきです。|Kyōto mitai na furui machi ga suki desu.|I like old towns like Kyoto.|Mujhe Kyoto jaise purane shehar pasand hain.
+a|田中さんみたいな人になりたいです。|たなかさんみたいなひとになりたいです。|Tanaka-san mitai na hito ni naritai desu.|I want to be someone like Tanaka-san.|Main Tanaka-san jaisa banna chahta/chahti hoon.
+@g4:dakede:0
+b=
+a|見ているだけで楽しいです。|みているだけでたのしいです。|mite iru dake de tanoshii desu.|Just watching is fun.|Sirf dekhne mein mazaa aata hai.
+a|聞くだけでおなかがすきます。|きくだけでおなかがすきます。|kiku dake de onaka ga sukimasu.|Just hearing about it makes me hungry.|Sirf sunne se bhookh lag jaati hai.
+@g4:dakede:1
+b|こちらのボタンを押すだけでご利用いただけます。|こちらのボタンをおすだけでごりよういただけます。|kochira no botan o osu dake de go-riyō itadakemasu.|You can use it simply by pressing this button.|Sirf yeh button dabaakar use kar sakte hain.
+a|名前を書くだけでいいです。|なまえをかくだけでいいです。|namae o kaku dake de ii desu.|Just writing your name is enough.|Sirf naam likhna kaafi hai.
+a|スマホだけで払えます。|スマホだけではらえます。|sumaho dake de haraemasu.|You can pay with just your phone.|Sirf phone se pay kar sakte hain.
+@g4:janaika:0
+b|こちらの方がよろしいのではないでしょうか。|こちらのほうがよろしいのではないでしょうか。|kochira no hō ga yoroshii no de wa nai deshō ka?|Wouldn’t this be better? (polite)|Kya yeh behtar nahi hoga?
+a|明日の方がいいんじゃないですか。|あしたのほうがいいんじゃないですか。|ashita no hō ga ii n ja nai desu ka?|Wouldn’t tomorrow be better?|Kal behtar nahi hoga kya?
+a|もう終わったんじゃないですか。|もうおわったんじゃないですか。|mō owatta n ja nai desu ka?|Hasn’t it already finished?|Khatam nahi ho gaya kya?
+@g4:janaika:1
+b=
+a|少し遅いのではないでしょうか。|すこしおそいのではないでしょうか。|sukoshi osoi no de wa nai deshō ka?|Isn’t it a little late?|Thodi der nahi ho gayi kya?
+a|それは難しいのではないでしょうか。|それはむずかしいのではないでしょうか。|sore wa muzukashii no de wa nai deshō ka?|Wouldn’t that be difficult?|Kya yeh mushkil nahi hoga?
+@g4:hitsuyou:0
+b|パスポートが必要でございます。|パスポートがひつようでございます。|pasupōto ga hitsuyō de gozaimasu.|A passport is required. (very polite)|Passport zaroori hai.
+a|印鑑が必要です。|いんかんがひつようです。|inkan ga hitsuyō desu.|A personal seal is needed.|Inkan (mohar) zaroori hai.
+a|在留カードが必要です。|ざいりゅうカードがひつようです。|zairyū kādo ga hitsuyō desu.|Your residence card is needed.|Residence card zaroori hai.
+@g4:hitsuyou:1
+b|事前に予約していただく必要がございます。|じぜんによやくしていただくひつようがございます。|jizen ni yoyaku shite itadaku hitsuyō ga gozaimasu.|You will need to book in advance. (very polite)|Pehle se booking karni zaroori hai.
+a|書類を出す必要があります。|しょるいをだすひつようがあります。|shorui o dasu hitsuyō ga arimasu.|You need to submit the documents.|Documents jama karne zaroori hain.
+a|毎年更新する必要があります。|まいとしこうしんするひつようがあります。|maitoshi kōshin suru hitsuyō ga arimasu.|You need to renew it every year.|Har saal renew karna zaroori hai.
+@g4:gasuru:0
+b=
+a|カレーのにおいがします。|カレーのにおいがします。|karē no nioi ga shimasu.|It smells of curry.|Curry ki khushboo aa rahi hai.
+a|甘い味がします。|あまいあじがします。|amai aji ga shimasu.|It tastes sweet.|Meetha swaad aa raha hai.
+@g4:gasuru:1
+b=
+a|外で人の声がします。|そとでひとのこえがします。|soto de hito no koe ga shimasu.|I can hear people’s voices outside.|Bahar logon ki awaaz aa rahi hai.
+a|雨の音がします。|あめのおとがします。|ame no oto ga shimasu.|I can hear the rain.|Baarish ki awaaz aa rahi hai.
+@g4:gari:0
+b=
+a|妻は暑がりです。|つまはあつがりです。|tsuma wa atsugari desu.|My wife feels the heat easily.|Meri patni ko jaldi garmi lagti hai.
+a|田中さんは寒がりですね。|たなかさんはさむがりですね。|Tanaka-san wa samugari desu ne.|Tanaka-san really feels the cold, doesn’t she?|Tanaka-san ko jaldi thand lagti hai, hai na?
+@g4:gari:1
+b=
+a|息子は恥ずかしがりです。|むすこははずかしがりです。|musuko wa hazukashigari desu.|My son is shy.|Mera beta sharmeela hai.
+a|うちの犬は怖がりです。|うちのいぬはこわがりです。|uchi no inu wa kowagari desu.|Our dog scares easily.|Hamara kutta jaldi dar jaata hai.
+@g4:kashira:0
+b=
+a|田中さん、来るかしら。|たなかさん、くるかしら。|Tanaka-san, kuru kashira.|I wonder if Tanaka-san will come.|Pata nahi Tanaka-san aayengi ya nahi.
+a|間に合うかしら。|まにあうかしら。|maniau kashira.|I wonder if we’ll make it.|Pata nahi samay par pahunchenge ya nahi.
+@g4:kashira:1
+b=
+a|この服、似合うかしら。|このふく、にあうかしら。|kono fuku, niau kashira.|I wonder if these clothes suit me.|Pata nahi yeh kapde mujh par jachenge ya nahi.
+a|どこに置いたかしら。|どこにおいたかしら。|doko ni oita kashira.|I wonder where I put it.|Pata nahi kahan rakha.
+@g4:kai:0
+b=
+a|大丈夫かい？|だいじょうぶかい？|daijōbu kai?|Are you all right?|Theek ho?
+a|もう食べたかい？|もうたべたかい？|mō tabeta kai?|Have you eaten yet?|Kha liya?
+@g4:kai:1
+b=
+a|一人で行くのかい？|ひとりでいくのかい？|hitori de iku no kai?|Are you going alone?|Akele ja rahe ho?
+a|本当に辞めるのかい？|ほんとうにやめるのかい？|hontō ni yameru no kai?|Are you really quitting?|Sach mein chhod rahe ho?
+@g4:karatsukuru:0
+b=
+a|チーズは牛乳から作ります。|チーズはぎゅうにゅうからつくります。|chīzu wa gyūnyū kara tsukurimasu.|Cheese is made from milk.|Cheese doodh se banta hai.
+a|紙は木から作ります。|かみはきからつくります。|kami wa ki kara tsukurimasu.|Paper is made from wood.|Kaagaz lakdi se banta hai.
+@g4:karatsukuru:1
+b=
+a|この家は木で作られています。|このいえはきでつくられています。|kono ie wa ki de tsukurarete imasu.|This house is made of wood.|Yeh ghar lakdi se bana hai.
+a|このかばんは革で作りました。|このかばんはかわでつくりました。|kono kaban wa kawa de tsukurimashita.|This bag is made of leather.|Yeh bag chamde se bana hai.
+@g4:nakanaka:0
+b=
+a|電車がなかなか来ません。|でんしゃがなかなかきません。|densha ga nakanaka kimasen.|The train just won’t come.|Train aa hi nahi rahi.
+a|返事がなかなか来ません。|へんじがなかなかきません。|henji ga nakanaka kimasen.|The reply just isn’t coming.|Jawaab aa hi nahi raha.
+@g4:nakanaka:1
+b|なかなかうまく説明できず、申し訳ありません。|なかなかうまくせつめいできず、もうしわけありません。|nakanaka umaku setsumei dekizu, mōshiwake arimasen.|I’m sorry I can’t explain it well.|Maaf kijiye, theek se samjha nahi paa raha/rahi.
+a|なかなか眠れません。|なかなかねむれません。|nakanaka nemuremasen.|I just can’t get to sleep.|Neend aa hi nahi rahi.
+a|日本語がなかなか上手になりません。|にほんごがなかなかじょうずになりません。|nihongo ga nakanaka jōzu ni narimasen.|My Japanese just isn’t improving.|Meri Japanese sudhar hi nahi rahi.
+@g4:nowada:0
+b=
+a|一番行きたいのは北海道です。|いちばんいきたいのはほっかいどうです。|ichiban ikitai no wa Hokkaidō desu.|Where I most want to go is Hokkaido.|Main sabse zyada Hokkaido jaana chahta/chahti hoon.
+a|大変なのは漢字です。|たいへんなのはかんじです。|taihen na no wa kanji desu.|The hard part is the kanji.|Mushkil hissa kanji hai.
+@g4:nowada:1
+b|昨日いらっしゃったのは田中様です。|きのういらっしゃったのはたなかさまです。|kinō irasshatta no wa Tanaka-sama desu.|The person who came yesterday was Mr Tanaka. (respectful)|Kal jo aaye the woh Tanaka-sama the.
+a|電話をくれたのは山田さんです。|でんわをくれたのはやまださんです。|denwa o kureta no wa Yamada-san desu.|The one who called me was Yamada-san.|Mujhe phone karne wale Yamada-san the.
+a|この絵を描いたのは私の娘です。|このえをかいたのはわたしのむすめです。|kono e o kaita no wa watashi no musume desu.|The one who drew this picture is my daughter.|Yeh tasveer meri beti ne banaayi hai.
+@g4:okudasai:0
+b=
+a|こちらでお待ちください。|こちらでおまちください。|kochira de o-machi kudasai.|Please wait here.|Kripya yahan intezaar kijiye.
+a|どうぞお座りください。|どうぞおすわりください。|dōzo o-suwari kudasai.|Please have a seat.|Kripya baithiye.
+@g4:okudasai:1
+b=
+a|こちらにご署名ください。|こちらにごしょめいください。|kochira ni go-shomei kudasai.|Please sign here.|Kripya yahan hastaakshar kijiye.
+a|お気をつけてお帰りください。|おきをつけておかえりください。|o-ki o tsukete o-kaeri kudasai.|Please get home safely.|Dhyaan se ghar jaaiye.
+@g4:teita:0
+b=
+a|雨が降っていました。|あめがふっていました。|ame ga futte imashita.|It was raining.|Baarish ho rahi thi.
+a|田中さんを待っていました。|たなかさんをまっていました。|Tanaka-san o matte imashita.|I was waiting for Tanaka-san.|Main Tanaka-san ka intezaar kar raha/rahi tha/thi.
+@g4:teita:1
+b|以前は東京で働いておりました。|いぜんはとうきょうではたらいておりました。|izen wa Tōkyō de hataraite orimashita.|I previously worked in Tokyo. (humble)|Pehle main Tokyo mein kaam karta/karti tha/thi.
+a|学生のころ、毎日走っていました。|がくせいのころ、まいにちはしっていました。|gakusei no koro, mainichi hashitte imashita.|As a student, I ran every day.|Student the tab roz daudta/daudti tha/thi.
+a|前はたばこを吸っていました。|まえはたばこをすっていました。|mae wa tabako o sutte imashita.|I used to smoke.|Pehle main cigarette peeta/peeti tha/thi.
+@g4:tesumimasen:0
+b|遅くなって申し訳ありません。|おそくなってもうしわけありません。|osoku natte mōshiwake arimasen.|I’m very sorry for being late.|Der ke liye bahut maafi chahta/chahti hoon.
+a|連絡が遅くなってすみません。|れんらくがおそくなってすみません。|renraku ga osoku natte sumimasen.|Sorry for the late reply.|Der se jawaab dene ke liye maaf kijiye.
+a|急に休んですみません。|きゅうにやすんですみません。|kyū ni yasunde sumimasen.|Sorry for taking the day off suddenly.|Achaanak chhutti lene ke liye maaf kijiye.
+@g4:tesumimasen:1
+b|お待たせして申し訳ございません。|おまたせしてもうしわけございません。|o-matase shite mōshiwake gozaimasen.|I’m terribly sorry to have kept you waiting.|Intezaar karwaane ke liye bahut maafi.
+a|夜遅くに電話してすみません。|よるおそくにでんわしてすみません。|yoru osoku ni denwa shite sumimasen.|Sorry for calling so late at night.|Raat ko der se phone karne ke liye maaf kijiye.
+a|ご迷惑をおかけしてすみません。|ごめいわくをおかけしてすみません。|go-meiwaku o okake shite sumimasen.|Sorry for the trouble.|Takleef dene ke liye maaf kijiye.
+@g4:teyaru:0
+b=
+a|花に水をやりました。|はなにみずをやりました。|hana ni mizu o yarimashita.|I watered the flowers.|Maine phoolon ko paani diya.
+a|猫にえさを買ってやりました。|ねこにえさをかってやりました。|neko ni esa o katte yarimashita.|I bought food for the cat.|Maine billi ke liye khaana khareeda.
+@g4:teyaru:1
+b=
+a|息子に自転車を直してやりました。|むすこにじてんしゃをなおしてやりました。|musuko ni jitensha o naoshite yarimashita.|I fixed my son’s bike for him.|Maine bete ki cycle theek kar di.
+a|妹に本を読んでやりました。|いもうとにほんをよんでやりました。|imōto ni hon o yonde yarimashita.|I read a book to my little sister.|Maine chhoti behen ko kitaab padhkar sunaayi.
+@g4:toittemoii:0
+b=
+a|彼は私の兄と言ってもいいです。|かれはわたしのあにといってもいいです。|kare wa watashi no ani to itte mo ii desu.|You could say he’s like a brother to me.|Keh sakte hain woh mere bade bhai jaise hain.
+a|この店は町で一番と言ってもいいです。|このみせはまちでいちばんといってもいいです。|kono mise wa machi de ichiban to itte mo ii desu.|You could say this shop is the best in town.|Keh sakte hain yeh dukaan shehar mein sabse achhi hai.
+@g4:toittemoii:1
+b=
+a|準備はほとんどできたと言ってもいいです。|じゅんびはほとんどできたといってもいいです。|junbi wa hotondo dekita to itte mo ii desu.|You could say the preparations are almost done.|Keh sakte hain taiyaari lagbhag ho gayi.
+a|問題はほぼ解決したと言ってもいいです。|もんだいはほぼかいけつしたといってもいいです。|mondai wa hobo kaiketsu shita to itte mo ii desu.|You could say the problem is basically solved.|Keh sakte hain problem lagbhag hal ho gayi.
+@g4:taraiidesuka:0
+b|何をお持ちしたらよろしいですか。|なにをおもちしたらよろしいですか。|nani o o-mochi shitara yoroshii desu ka?|What should I bring? (humble)|Mujhe kya laana chahiye?
+a|何時に来たらいいですか。|なんじにきたらいいですか。|nanji ni kitara ii desu ka?|What time should I come?|Kitne baje aana chahiye?
+a|どこに置いたらいいですか。|どこにおいたらいいですか。|doko ni oitara ii desu ka?|Where should I put it?|Kahan rakhna chahiye?
+@g4:taraiidesuka:1
+b|どなたに伺ったらよろしいですか。|どなたにうかがったらよろしいですか。|donata ni ukagattara yoroshii desu ka?|Whom should I ask? (humble)|Kisse poochhna chahiye?
+a|どうしたらいいですか。|どうしたらいいですか。|dō shitara ii desu ka?|What should I do?|Kya karna chahiye?
+a|いつ出したらいいですか。|いつだしたらいいですか。|itsu dashitara ii desu ka?|When should I hand it in?|Kab jama karna chahiye?
+@g4:sonnani:0
+b|日本語はそれほど難しくありません。|にほんごはそれほどむずかしくありません。|nihongo wa sore hodo muzukashiku arimasen.|Japanese is not that difficult.|Japanese utni mushkil nahi hai.
+a|この仕事はそんなに大変じゃないです。|このしごとはそんなにたいへんじゃないです。|kono shigoto wa sonna ni taihen ja nai desu.|This job isn’t that tough.|Yeh kaam utna mushkil nahi hai.
+a|この店はそんなに高くないです。|このみせはそんなにたかくないです。|kono mise wa sonna ni takaku nai desu.|This shop isn’t that expensive.|Yeh dukaan utni mehngi nahi hai.
+@g4:sonnani:1
+b=
+a|今日はそんなに忙しくないです。|きょうはそんなにいそがしくないです。|kyō wa sonna ni isogashiku nai desu.|I’m not that busy today.|Aaj utna busy nahi hoon.
+a|駅はそんなに遠くないです。|えきはそんなにとおくないです。|eki wa sonna ni tōku nai desu.|The station isn’t that far.|Station utna door nahi hai.
 `;

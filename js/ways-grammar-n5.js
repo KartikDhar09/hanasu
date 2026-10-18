@@ -561,4 +561,44 @@ a|今日は忙しくありません。|きょうはいそがしくありませ�
 b=
 a|ここは駅ではありません。|ここはえきではありません。|koko wa eki de wa arimasen.|This isn’t the station.|Yeh station nahi hai.
 a|これは私の傘ではありません。|これはわたしのかさではありません。|kore wa watashi no kasa de wa arimasen.|This isn’t my umbrella.|Yeh mera chhaata nahi hai.
+@g5:douyatte:0
+b|駅まではどうやって行けばよろしいですか。|えきまではどうやっていけばよろしいですか。|eki made wa dō yatte ikeba yoroshii desu ka?|How should I get to the station? (polite)|Station kaise jaana chahiye?
+a|空港までどうやって行きますか。|くうこうまでどうやっていきますか。|kūkō made dō yatte ikimasu ka?|How do you get to the airport?|Airport kaise jaate hain?
+a|会社までどうやって来ていますか。|かいしゃまでどうやってきていますか。|kaisha made dō yatte kite imasu ka?|How do you come to work?|Office kaise aate ho?
+@g5:douyatte:1
+b|こちらはどうやって使えばよろしいでしょうか。|こちらはどうやってつかえばよろしいでしょうか。|kochira wa dō yatte tsukaeba yoroshii deshō ka?|How should this be used? (polite)|Ise kaise use karna chahiye?
+a|この漢字はどうやって読みますか。|このかんじはどうやってよみますか。|kono kanji wa dō yatte yomimasu ka?|How do you read this kanji?|Yeh kanji kaise padhte hain?
+a|これはどうやって作るんですか。|これはどうやってつくるんですか。|kore wa dō yatte tsukuru n desu ka?|How do you make this?|Yeh kaise banate hain?
+@g5:naa:0
+b=
+a|すごいなあ。|すごいなあ。|sugoi nā.|Amazing!|Kamaal hai!
+a|いい天気だなあ。|いいてんきだなあ。|ii tenki da nā.|What lovely weather!|Kitna achha mausam hai!
+@g5:naa:1
+b=
+a|日本の温泉に行きたいなあ。|にほんのおんせんにいきたいなあ。|nihon no onsen ni ikitai nā.|I wish I could go to a hot spring.|Kaash onsen ja paata/paati.
+a|もっと寝たいなあ。|もっとねたいなあ。|motto netai nā.|I wish I could sleep more.|Kaash aur so paata/paati.
+@g5:o-go:0
+b|お名前を伺ってもよろしいですか。|おなまえをうかがってもよろしいですか。|o-namae o ukagatte mo yoroshii desu ka?|May I ask your name?|Kya main aapka naam jaan sakta/sakti hoon?
+a|お仕事は何ですか。|おしごとはなんですか。|o-shigoto wa nan desu ka?|What is your job?|Aap kya kaam karte hain?
+a|お国はどちらですか。|おくにはどちらですか。|o-kuni wa dochira desu ka?|Which country are you from?|Aap kis desh se hain?
+@g5:o-go:1
+b|ご家族は何名様ですか。|ごかぞくはなんめいさまですか。|go-kazoku wa nanmei-sama desu ka?|How many are in your family? (very polite)|Aapke parivaar mein kitne log hain?
+a|ご出身はどちらですか。|ごしゅっしんはどちらですか。|go-shusshin wa dochira desu ka?|Where are you from originally?|Aap mool roop se kahan se hain?
+a|ご趣味は何ですか。|ごしゅみはなんですか。|go-shumi wa nan desu ka?|What are your hobbies?|Aapke shauk kya hain?
+@g5:wokudasai:0
+b|このケーキをお願いします。|このケーキをおねがいします。|kono kēki o onegai shimasu.|This cake, please. (polite)|Yeh cake dijiye please.
+a|このパンをください。|このパンをください。|kono pan o kudasai.|This bread, please.|Yeh bread dijiye.
+a|その赤いのをください。|そのあかいのをください。|sono akai no o kudasai.|That red one, please.|Woh laal wala dijiye.
+@g5:wokudasai:1
+b|お水を二つお願いします。|おみずをふたつおねがいします。|o-mizu o futatsu onegai shimasu.|Two waters, please. (polite)|Do paani dijiye please.
+a|コーヒーを一つください。|コーヒーをひとつください。|kōhī o hitotsu kudasai.|One coffee, please.|Ek coffee dijiye.
+a|切手を三枚ください。|きってをさんまいください。|kitte o sanmai kudasai.|Three stamps, please.|Teen daak ticket dijiye.
+@g5:demo-but:0
+b|日本語は難しいです。でも、とても楽しいです。|にほんごはむずかしいです。でも、とてもたのしいです。|nihongo wa muzukashii desu. demo, totemo tanoshii desu.|Japanese is hard. But it’s great fun.|Japanese mushkil hai. Lekin bahut mazedaar hai.
+a|仕事は大変です。でも、好きです。|しごとはたいへんです。でも、すきです。|shigoto wa taihen desu. demo, suki desu.|Work is tough. But I like it.|Kaam mushkil hai. Lekin pasand hai.
+a|この店は高いです。でも、おいしいです。|このみせはたかいです。でも、おいしいです。|kono mise wa takai desu. demo, oishii desu.|This place is expensive. But it’s good.|Yeh jagah mehngi hai. Lekin achhi hai.
+@g5:demo-but:1
+b|ぜひ伺いたいです。でも、その日は都合が悪いです。|ぜひうかがいたいです。でも、そのひはつごうがわるいです。|zehi ukagaitai desu. demo, sono hi wa tsugō ga warui desu.|I’d love to come. But that day doesn’t suit me.|Zaroor aana chahta/chahti hoon. Lekin us din mushkil hai.
+a|買いたいです。でも、お金がありません。|かいたいです。でも、おかねがありません。|kaitai desu. demo, o-kane ga arimasen.|I want to buy it. But I don’t have the money.|Khareedna chahta/chahti hoon. Lekin paise nahi hain.
+a|眠いです。でも、まだ寝られません。|ねむいです。でも、まだねられません。|nemui desu. demo, mada neraremasen.|I’m sleepy. But I can’t sleep yet.|Neend aa rahi hai. Lekin abhi so nahi sakta/sakti.
 `;

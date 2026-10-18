@@ -193,7 +193,7 @@ export const N5_TOPICS = [
 ラジオ|ラジオ|radio|radio|📻
 冷蔵庫|れいぞうこ|fridge|fridge|🧊
 電気|でんき|electricity / light|bijli / light|💡
-電灯|でんとう|lamp|batti|💡
+電灯|でんとう|electric light|batti|💡
 ストーブ|ストーブ|heater|heater|🔥
 箱|はこ|box|dabba|📦
 棚|たな|shelf|almaari / shelf|🗄️

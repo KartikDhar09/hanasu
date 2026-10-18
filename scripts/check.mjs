@@ -396,7 +396,11 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
     itteita: /と(言って|おっしゃって)/, kamawanai: /もかまいません/, toomou: /と思/, 'na-prohib': /[うくぐすつぬぶむる]な[！。]/,
     'to-cond': /[うくぐすつぬぶむる]と、/, tara: /[ただ]ら/, ba: /ば/, nominal: /(の|こと)[がはで]|ことです/,
     tehoshii: /ほしい|いただきたい/, embedq: /か、/, youniiu: /ように/, taradou: /[ただ]ら(どう|いかが)/, dekiru: /こと(が|は)でき/, nakutemo: /なくても/, sugiru: /すぎ/, yotei: /予定/,
-    younisuru: /ように(し|いたし)/, kotonisuru: /ことに(し|いたし)/, temo: /[てで]も/, niyoruto: /によると|によりますと|によれば/, kotogaaru: /ことが(あり|ござい)/, hoshii: /がほしい/, takunai: /たくない/, suki: /が(お)?(好き|上手)/,
+    younisuru: /ように(し|いたし)/, wokudasai: /ください|お願いします/, jidoushi: /[がを].*(開|閉|始|消|付|止|入)/, gari: /がり/,
+    okudasai: /[おご][一-龯]+[ぁ-ゖ]*ください/, teita: /[てで](いました|おりました|いた)/, nimieru: /見え/, teyaru: /[てで]?やり/,
+    youna: /ような|みたいな/, janaika: /じゃない(ですか|か)|ではない(でしょうか|か)/, hitsuyou: /必要/, tte: /って|とは|だそう/,
+    teyokatta: /[てで]よかった/, tesumimasen: /[てで](すみません|申し訳)/, taraiidesuka: /[ただ]ら(いい|よろしい)/, toka: /とか.*とか/,
+    tokiita: /と(聞き|伺い)/, karatsukuru: /(から|で)作/, sonnani: /そんなに|それほど/, nikigatsuku: /に気がつき/, hazuganai: /はずが(ない|ありません|ございません)/, kotonisuru: /ことに(し|いたし)/, temo: /[てで]も/, niyoruto: /によると|によりますと|によれば/, kotogaaru: /ことが(あり|ござい)/, hoshii: /がほしい/, takunai: /たくない/, suki: /が(お)?(好き|上手)/,
   };
   const BIZ_FREE = new Set(['plain']); // the point is the casual form, so the business version can't keep it
   const lost = [];

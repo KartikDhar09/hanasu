@@ -328,6 +328,17 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* New version ready: a pill at the top, clear of the tab bar and toasts. */
+.update {
+  position: fixed; left: 50%; top: calc(10px + env(safe-area-inset-top)); transform: translateX(-50%); z-index: 40;
+  display: flex; align-items: center; gap: 6px; width: max-content; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); padding: 5px 5px 5px 16px; border-radius: 999px; font-size: .9rem;
+  box-shadow: 0 6px 24px rgb(0 0 0 / .25);
+}
+.update span { flex: 1; min-width: 0; }
+.update button { font: inherit; font-weight: 600; border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; color: var(--bg); background: transparent; }
+.update .update-restart { background: color-mix(in srgb, var(--bg) 18%, transparent); }
+
 /* ---------- Forms, search, folds ---------- */
 .form { display: grid; gap: 10px; }
 .form label { display: grid; gap: 4px; font-weight: 600; font-size: .9rem; min-width: 0; }

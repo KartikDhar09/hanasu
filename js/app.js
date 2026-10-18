@@ -739,6 +739,37 @@ if (!constrained()) setTimeout(() => idle(() => loadAll(), { timeout: 3000 }), 2
 // The offline copy downloads every app file; start it once the page has loaded so it doesn't compete with the
 // first screen for bandwidth.
 if ('serviceWorker' in navigator) {
-  const register = () => setTimeout(() => idle(() => navigator.serviceWorker.register('/sw.js').catch(() => {})), 3000);
+  const register = () => setTimeout(() => idle(() => navigator.serviceWorker.register('/sw.js').then(watchForUpdates).catch(() => {})), 3000);
   if (document.readyState === 'complete') register(); else addEventListener('load', register, { once: true });
+}
+
+// A new release installs in the background and waits; this asks before switching to it, so a lesson or quiz
+// in progress is never reloaded away. Checked on launch, on coming back to the app, and hourly.
+function watchForUpdates(reg) {
+  const sw = navigator.serviceWorker;
+  // The first install has nothing older to replace.
+  const offer = w => { if (w && sw.controller) showUpdate(w); };
+  offer(reg.waiting);
+  reg.addEventListener('updatefound', () => {
+    const w = reg.installing;
+    w?.addEventListener('statechange', () => { if (w.state === 'installed') offer(w); });
+  });
+  let reloading = false;
+  sw.addEventListener('controllerchange', () => { if (!reloading && document.getElementById('update')?.dataset.restart) { reloading = true; location.reload(); } });
+  const check = () => { if (navigator.onLine && !reg.installing) reg.update().catch(() => {}); };
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+  setInterval(check, 60 * 60 * 1000);
+}
+
+function showUpdate(worker) {
+  document.getElementById('update')?.remove();
+  const el = document.createElement('div');
+  el.id = 'update'; el.className = 'update'; el.setAttribute('role', 'status');
+  el.innerHTML = '<span>A new version is ready</span><button class="update-later">Later</button><button class="update-restart">Restart</button>';
+  el.querySelector('.update-later').onclick = () => el.remove();
+  el.querySelector('.update-restart').onclick = e => {
+    el.dataset.restart = '1'; e.target.disabled = true; e.target.textContent = 'Restarting…';
+    worker.postMessage({ type: 'SKIP_WAITING' });
+  };
+  document.body.append(el);
 }

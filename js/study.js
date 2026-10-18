@@ -51,7 +51,7 @@ export function initStudy(ctx) {
       <h2 class="sec">Kanji <span lang="ja">漢字</span></h2>
       <div class="speak-grid">
         <button class="scard" data-act="kanji"><span lang="ja" class="pch">漢</span><b>Kanji</b><small>${KANJI.length} N5 and N4 kanji with readings, examples, flashcards and a quiz</small></button>
-        <button class="scard" data-act="stroke-tab"><span>✍️</span><b>Stroke order</b><small>Watch every kanji drawn stroke by stroke</small></button>
+        <button class="scard" data-act="stroke-tab"><span>✍️</span><b>Stroke order</b><small>Watch every kanji, hiragana and katakana drawn stroke by stroke</small></button>
       </div>`);
   }
 

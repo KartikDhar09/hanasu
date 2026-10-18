@@ -28,7 +28,7 @@ export const PATH_JLPT = [
     goalHg: 'Saare hiragana padh aur bol paoge. Yahi Japanese ki neev hai.',
     steps: [
       ['あ', 'Learn the basic chart, two rows a day', 'Open the hiragana chart. Tap each kana, listen, and say it back out loud three times. Day 1: あ and か rows. Day 2: さ and た. Day 3: な and は. Day 4: ま, や, ら. Day 5: わ, を, ん.', '#jlpt/kana'],
-      ['✍️', 'Write each one on paper', 'Writing by hand fixes the shape in memory. Write each new row five times while saying the sound.', ''],
+      ['✍️', 'Write each one on paper', 'Writing by hand fixes the shape in memory. Watch each kana’s stroke order first, then write each new row five times while saying the sound.', '#write/hira'],
       ['゛', 'Add the ゛ and ゜ sounds', 'Two dots make a sound voiced: か → が, さ → ざ, た → だ, は → ば. A small circle makes は → ぱ. Same shapes, so this takes one day.', '#jlpt/kana'],
       ['ゃ', 'Combinations and small っ', 'A small ゃ ゅ ょ joins the kana before it: き + ゃ = きゃ (kya). A small っ doubles the next sound: きって = kitte (stamp). Long vowels: おかあさん = okāsan.', '#jlpt/kana'],
       ['🎯', 'Hiragana quiz every day', 'Do the hiragana quiz until you score 90% or more twice in a row.', 'kana-quiz:hira'],
@@ -46,6 +46,7 @@ export const PATH_JLPT = [
     goalHg: 'Katakana padh paoge aur basic greetings, thank you, sorry bol paoge.',
     steps: [
       ['ア', 'Learn katakana the same way', 'Two rows a day, out loud. Katakana is for foreign words and names: インド (India), コーヒー (coffee). The long mark ー stretches the vowel.', '#jlpt/kana'],
+      ['✍️', 'Write them', 'Watch the stroke order of each katakana, then write every new row five times. シ/ツ and ソ/ン look alike: the stroke direction tells them apart.', '#write/kata'],
       ['☕', 'Katakana words', 'Flashcards for the katakana loanwords: most are English words you already know, so guess first, then check.', 'vlearn:n5-katakana'],
       ['🎯', 'Katakana quiz', 'Score 90% or more twice in a row.', 'kana-quiz:kata'],
       ['👋', 'Greetings and “I don’t understand”', 'In each unit below: Learn (flashcards) first, then Speak (say it, get checked), then the Quiz. These are the phrases you will use every single day.', ''],

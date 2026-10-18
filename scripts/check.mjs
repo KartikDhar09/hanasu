@@ -318,15 +318,18 @@ test('text colours meet WCAG AA contrast (4.5:1) in light and dark themes', () =
   }
 });
 if (readFileSync('js/module-deps.js', 'utf8') !== (await import('./module-deps.mjs')).buildDeps()) fail('js/module-deps.js is out of date: run node scripts/module-deps.mjs');
-test('every kanji has stroke-order data with only drawing commands (run scripts/strokes.mjs)', () => {
+const KANA_MOD = await import('../js/kana-data.js');
+test('every kanji and basic kana has stroke-order data with only drawing commands (run scripts/strokes.mjs)', () => {
   const { strokeFile } = strokeMod;
-  for (const k of KANJI_LIST) {
-    const f = strokeFile(k.ch);
-    assert.ok(existsSync(f), `no stroke data for ${k.ch}`);
+  const chars = [...KANJI_LIST.map(k => k.ch), ...KANA_MOD.BASIC_HIRA, ...KANA_MOD.BASIC_KATA];
+  assert.equal(KANA_MOD.BASIC_HIRA.length, 46, '46 basic hiragana');
+  for (const ch of chars) {
+    const f = strokeFile(ch);
+    assert.ok(existsSync(f), `no stroke data for ${ch}`);
     const d = JSON.parse(readFileSync(f, 'utf8'));
-    assert.ok(d.p.length > 0 && d.p.every(p => /^[MmCcSsLlHhVvZz0-9.,\s-]+$/.test(p)), `bad stroke data for ${k.ch}`);
+    assert.ok(d.p.length > 0 && d.p.every(p => /^[MmCcSsLlHhVvZz0-9.,\s-]+$/.test(p)), `bad stroke data for ${ch}`);
   }
-  assert.equal(readdirSync('strokes').length, KANJI_LIST.length, 'stroke files for kanji the app no longer has');
+  assert.equal(readdirSync('strokes').length, chars.length, 'stroke files for characters the app no longer has');
 });
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
 const WAYS_TRACKS = ['n5', 'office', 'corp'];
@@ -534,7 +537,7 @@ const PATHMOD = await import('../js/path.js');
   const QA_LIST = (await import('../js/speaking-data.js')).QA;
   const allJs = readdirSync('js').filter(f => f.endsWith('.js')).map(f => readFileSync('js/' + f, 'utf8')).join('\n');
   const ACTIONS = new Set([...allJs.matchAll(/^\s+'?([a-z][a-z0-9-]*)'?: (?:\([^)]*\)|[a-z]+) =>/gm)].map(m => m[1]));
-  const HASH = /^#(unit\/[\w-]+|particles?(\/\w+)?|verbs|counters|kanji(\/n4)?|write|study|speak(\/\w+)?|jlpt(\/(kana|grammar\/n[45]|vocab\/(n5|n4|life)|reading\/n[45]|listening\/n[45]|mock\/n[45]))?|path\/\w+)$/;
+  const HASH = /^#(unit\/[\w-]+|particles?(\/\w+)?|verbs|counters|kanji(\/n4)?|write(\/(hira|kata))?|study|speak(\/\w+)?|jlpt(\/(kana|grammar\/n[45]|vocab\/(n5|n4|life)|reading\/n[45]|listening\/n[45]|mock\/n[45]))?|path\/\w+)$/;
   const JP = /[ぁ-ゖァ-ヺ一-龯々]/, NOJP = /^[^ぁ-ゖァ-ヺ一-龯々]*$/;
   const KANA = /^[ぁ-ゖァ-ヺー、。！？「」・\[\] 　]+$/;
   for (const [pid, P] of Object.entries(PATHMOD.PATHS)) {

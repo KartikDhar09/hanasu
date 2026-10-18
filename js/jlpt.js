@@ -8,13 +8,8 @@ import { toRomaji } from './conjugate.js';
 import { furigana, markBrackets } from './furigana.js';
 import { prefetchClip } from './clips.js';
 
-// Gojūon chart; ・ is an empty cell.
-export const KANA_ROWS = ['あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの', 'はひふへほ', 'まみむめも', 'や・ゆ・よ', 'らりるれろ', 'わ・・・を', 'ん・・・・'];
-export const DAKUTEN_ROWS = ['がぎぐげご', 'ざじずぜぞ', 'だぢづでど', 'ばびぶべぼ', 'ぱぴぷぺぽ'];
-export const COMBO_ROWS = ['きゃきゅきょ', 'しゃしゅしょ', 'ちゃちゅちょ', 'にゃにゅにょ', 'ひゃひゅひょ', 'みゃみゅみょ', 'りゃりゅりょ', 'ぎゃぎゅぎょ', 'じゃじゅじょ', 'びゃびゅびょ', 'ぴゃぴゅぴょ'];
-const toKata = s => s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
-const combos = row => row.match(/.[ゃゅょ]/g);
-export const ALL_KANA = [...KANA_ROWS, ...DAKUTEN_ROWS].join('').replace(/・/g, '').split('').concat(COMBO_ROWS.flatMap(combos));
+import { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA, toKata, combos } from './kana-data.js';
+export { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA };
 
 // Splits a sentence into pieces at particle boundaries, for the ★ word-order drill.
 // A particle only ends a piece when the next character isn't hiragana (so はい, もう stay whole).

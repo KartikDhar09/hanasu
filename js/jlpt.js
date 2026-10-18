@@ -177,11 +177,11 @@ export function initJlpt(ctx) {
         <p class="left-text">${esc(g.explain)}</p>
       </div>
       <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
-      <ul class="phrases">${g.ex.map(e => { const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null; return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
+      <ul class="phrases">${g.ex.map((e, j) => { const furi = S().settings.kana ? furigana(e[0], e[1], esc, markBrackets(esc)) : null; return `<li class="ex" data-act="say-text" data-arg="${esc(plain(e[0]))}">
         <div class="jp" lang="ja">${furi || mark(e[0])}</div>
         ${S().settings.kana && !furi ? `<div class="kana" lang="ja">${mark(e[1])}</div>` : ''}
         ${S().settings.romaji ? `<div class="ro">${esc(plain(e[2]))}</div>` : ''}
-        <div class="en">${esc(e[3])}</div>${hg(e[4])}</li>`; }).join('')}</ul>
+        <div class="en">${esc(e[3])}</div>${hg(e[4])}${ctx.waysSlot(`g${g.level[1]}:${g.id}:${j}`)}</li>`; }).join('')}</ul>
       <button class="btn primary big" data-act="gquiz" data-arg="${g.level}.${g.id}">✏️ Practise this</button>
       <div class="row">
         <button class="btn" data-act="gpoint" data-arg="${list[i - 1]?.id || ''}" ${i ? '' : 'disabled'}>‹ Prev</button>

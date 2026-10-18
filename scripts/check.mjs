@@ -331,7 +331,7 @@ test('every kanji has stroke-order data with only drawing commands (run scripts/
 // "More ways to say it": tracks done so far (all will be covered when the batches finish).
 const WAYS_TRACKS = ['n5', 'office', 'corp'];
 const DLG_TRACKS = ['n5', 'office', 'corp']; // role-play lines done so far
-const GRAMMAR_WAYS = ['n5']; // grammar levels done so far
+const GRAMMAR_WAYS = ['n5', 'n4']; // grammar levels done so far
 test('every phrase has a business version and 2–3 other ways, with correct readings', () => {
   const WAYS = WAYS_ALL;
   const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
@@ -343,7 +343,7 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
   const QAW = new Map(SP.QA.flatMap((q, i) => q.a.map((x, j) => [`qa:${i}:${j}`, { jp: x[0] }])));
   // Particle examples: pt:<particle id>:<example>; the main line's [brackets] are dropped for comparison.
   const PTW = new Map(PARTICLES.flatMap(p => p.examples.map((x, j) => [`pt:${p.id}:${j}`, { jp: x[0].replace(/[[\]]/g, '') }])));
-  // Grammar examples: g5:<grammar id>:<example> (N4 to follow).
+  // Grammar examples: g5:/g4:<grammar id>:<example>.
   const GRW = new Map(J.GRAMMAR.filter(g => GRAMMAR_WAYS.includes(g.level)).flatMap(g => g.ex.map((x, j) => [`g${g.level[1]}:${g.id}:${j}`, { jp: x[0].replace(/[[\]]/g, ''), g, keep: /\[(.+?)\]/.exec(x[0])[1] }])));
   for (const [id, w] of WAYS) {
     const c = CARDS.find(x => x.id === id) || DLG.get(id) || QAW.get(id) || PTW.get(id) || GRW.get(id);
@@ -380,7 +380,20 @@ test('every phrase has a business version and 2–3 other ways, with correct rea
     counters: /何[人名枚本個台回階時冊杯匹]/, waga: /は.*が/, freq: /に.*回/, 'ka-or': /か/, formalneg: /くありません|ではありません/,
     kosoado: /[こそあど](れ|の|こ|ちら)/, donna: /どんな|どう|いかが/, adverb: /く[^な]|に/, kusuru: /[くに]し/, why: /どうして|なぜ/,
     nanika: /(何|どこ|誰)か/, nanimo: /(何|誰|どこ|どなた)(へ|に)?も/, desu: /です|でございます|じゃない|ではありません/,
-    deshita: /でした|じゃなかった|ではありませんでした/, tai: /たい/, teiru: /[てで](います|おります)/, temoii: /[てで]も(いい|よろしい)/, aru: /あります|います|ございます/, tari: /[たど]り/, ikaga: /(いかが|どう)ですか/, hoshii: /がほしい/, takunai: /たくない/, suki: /が(お)?(好き|上手)/,
+    deshita: /でした|じゃなかった|ではありませんでした/, tai: /たい/, teiru: /[てで](います|おります)/, temoii: /[てで]も(いい|よろしい)/, aru: /あります|います|ございます/, tari: /[たど]り/, ikaga: /(いかが|どう)ですか/,
+    // N4
+    potential: /(られ|[えけせてねべめれげ])(ます|ません|る|ない)|でき(ます|る)/, takotogaaru: /[ただ]ことが(あり|ござい)/, nakereba: /なければ|なきゃ/,
+    teshimau: /[てで]しま|ちゃ|じゃっ/, teoku: /[てで]おき/, temiru: /[てで]み/, giving: /くれ|もら|あげ|いただ|くださ/,
+    passive: /れ(ました|ます|た)/, causative: /せて/, ndesu: /んです|のです/, volitional: /[おこそとのほもろよ]うと思/,
+    mitai: /みたい|よう/, sa: /[一-龯]さ[はがにをで]/, causpass: /され|させられ/, okininaru: /お[一-龯]+[ぁ-ゖ]*になり|ご覧になり/,
+    osuru: /[おご][一-龯]+[ぁ-ゖ]*(し|いたし)ます/, sonkeigo: /いらっしゃ|召し上が|おっしゃ|ご覧|お待ちになって/, kenjougo: /伺|拝見|参り|存じ/,
+    sasete: /せて(ください|いただ)/, 'rareru-respect': /(られ|[かさたなまらわがば]れ)(ます|ました)/,
+    imperative: /([えけせてねべめれげ]|ろ|い)！/, hajimeru: /始め|終わ/, tsuzukeru: /続け/, garu: /がって/, teikukuru: /[てで](き|い|まいり)/,
+    tearu: /[てで](あり|ござい)/, darou: /だろう|でしょう/, 'mo-emph': /[一二三四五六七八九十百千]\S{0,4}も/, tokoro: /ところ/,
+    itteita: /と(言って|おっしゃって)/, kamawanai: /もかまいません/, toomou: /と思/, 'na-prohib': /[うくぐすつぬぶむる]な[！。]/,
+    'to-cond': /[うくぐすつぬぶむる]と、/, tara: /[ただ]ら/, ba: /ば/, nominal: /(の|こと)[がはで]|ことです/,
+    tehoshii: /ほしい|いただきたい/, embedq: /か、/, youniiu: /ように/, taradou: /[ただ]ら(どう|いかが)/, dekiru: /こと(が|は)でき/, nakutemo: /なくても/, sugiru: /すぎ/, yotei: /予定/,
+    younisuru: /ように(し|いたし)/, kotonisuru: /ことに(し|いたし)/, temo: /[てで]も/, niyoruto: /によると|によりますと|によれば/, kotogaaru: /ことが(あり|ござい)/, hoshii: /がほしい/, takunai: /たくない/, suki: /が(お)?(好き|上手)/,
   };
   const BIZ_FREE = new Set(['plain']); // the point is the casual form, so the business version can't keep it
   const lost = [];
@@ -635,6 +648,22 @@ test('speaking-path tests: each target and its alternatives pass the mic check; 
       for (const o of items) if (o !== q) assert.ok(sc(o.jp) < core.PASS, `${l.id}: ${q.jp} also accepts ${o.jp}`);
     }
   }
+});
+
+test('passing a full mock completes that exam level in the JLPT path (and only moves forward)', () => {
+  const levels = { jlpt: 2 }, calls = [];
+  const mod = PATHMOD.initPath({ S: () => ({ settings: {} }), esc: x => x, render() {}, speak() {}, shuffle: a => a, bar: () => '', back: () => '',
+    go() {}, clearSess() {}, run() {}, canListen: () => false, level: p => levels[p] || 0,
+    setLevel: (p, n) => { calls.push([p, n]); if (n > (levels[p] || 0)) levels[p] = n; } });
+  mod.mockPassed('n5');
+  const n5 = PATHMOD.PATHS.jlpt.levels.findIndex(l => l.test.mock === 'n5');
+  assert.deepEqual(calls, [['jlpt', n5 + 1]]);
+  assert.equal(levels.jlpt, n5 + 1);
+  mod.mockPassed('n4');
+  assert.equal(levels.jlpt, PATHMOD.PATHS.jlpt.levels.length, 'passing the N4 mock completes the path');
+  const exam = readFileSync('js/exam.js', 'utf8');
+  assert.match(exam, /if \(s\.passed && full\) ctx\.mockPassed\(lv\)/, 'exam.js reports a passed full mock');
+  assert.match(exam, /full = st\.mode !== 'quick'/, 'quick mocks never count');
 });
 
 if (errors.length) {

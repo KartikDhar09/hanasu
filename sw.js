@@ -1,7 +1,8 @@
 // Offline-first: app files are served from the cache instantly and refreshed in the background
-// (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and takes over on the
-// next open. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v4.16';
+// (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and waits: the app asks
+// "New version · Restart" (js/app.js), and Restart tells it to take over; otherwise it takes over once the app
+// is fully closed. Everything is same-origin, including the font. Bump CACHE on each release.
+const CACHE = 'hanasu-v4.17';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v3';
@@ -11,8 +12,11 @@ const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/units-inde
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
 });
+
+// Restart in the update prompt.
+self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });
 
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()

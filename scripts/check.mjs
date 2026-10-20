@@ -533,6 +533,37 @@ test('mock scoring matches JLPT pass rules', () => {
   assert.deepEqual([n4.total, n4.passed], [90, true]);
 });
 
+// ---------- Book tab (Nihongo Fun & Easy) ----------
+{
+  const BK = await import('../js/book-data.js');
+  const JPC = /[ぁ-ゖァ-ヺ一-龯々]/;
+  test('book pages are well-formed', () => {
+    const ids = BK.PAGES.map(p => p.id);
+    assert.equal(new Set(ids).size, ids.length, 'duplicate page ids');
+    for (const p of BK.PAGES) {
+      assert.ok(p.title && p.icon && p.sections.length, `${p.id}: missing title, icon or sections`);
+      if (p.n) assert.ok(p.jp && p.ro && p.topic && p.goals.length === 3, `unit ${p.n}: needs jp, romaji, topic and 3 goals`);
+      for (const s of p.sections) for (const b of s.blocks) {
+        const at = `${p.id} / ${s.h} / ${b.t}`;
+        if (b.t === 'words' || b.t === 'lines') for (const w of b.items) assert.ok(w.length >= 3 && w.every(x => typeof x === 'string' && x), `${at}: word needs jp, romaji, english`);
+        if (b.t === 'talk' || b.t === 'listen') for (const l of b.lines || b.script) {
+          assert.ok(l.length === 4 && JPC.test(l[1]) && l[2] && l[3], `${at}: line needs speaker, japanese, romaji, english: ${l[1]}`);
+          assert.ok(!/[ぁ-ゖ一-龯]/.test(l[2]) && !/[ぁ-ゖ一-龯]/.test(l[3]), `${at}: romaji/english column has Japanese: ${l[1]}`);
+        }
+        if (b.t === 'listen') assert.ok(b.options.length === 3 && b.answer >= 0 && b.answer < 3, `${at}: needs 3 options and a valid answer`);
+        if (b.t === 'role') assert.ok(b.a && b.b, `${at}: role needs A and B`);
+      }
+    }
+  });
+  test('book speech text drops marks and skips blanks', () => {
+    assert.equal(BK.spoken('〈ジョン〉さん、(1)お国は？'), 'ジョンさん、お国は？');
+    assert.equal(BK.spoken('はい、＿＿と＿＿がいます。'), null);
+    assert.equal(BK.spoken('茶色／ブラウン'), '茶色、ブラウン');
+    assert.equal(BK.spoken('私も好きです。／私はあまり好きじゃありません。'), '私も好きです。私はあまり好きじゃありません。');
+    assert.equal(BK.spoken('(お*)仕事'), 'お仕事');
+  });
+}
+
 // ---------- Paths: levels, coverage, level tests ----------
 const PATHMOD = await import('../js/path.js');
 {

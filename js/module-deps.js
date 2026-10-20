@@ -110,5 +110,9 @@ export const DEPS = {
     "vocab-life.js",
     "vocab-n4.js",
     "vocab-n5.js"
+  ],
+  book: [
+    "book-data.js",
+    "book.js"
   ]
 };

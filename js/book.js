@@ -1,0 +1,154 @@
+// Book tab: the Nihongo Fun & Easy textbook, page by page. Every Japanese line plays on tap; conversations and
+// listening scripts can play in full, each speaker in their own voice.
+import { BOOK_INFO, FRONT, UNITS, COMING, PAGES, spoken, sayOf, voiceOf } from './book-data.js';
+
+export function initBook(ctx) {
+  const { esc, render, back } = ctx;
+  const S = () => ctx.S();
+  let st = null;   // the open page: { id, say: [[text, who]], seqs: [[[text, who]]], quiz: [answer] }
+  let tok = 0;     // bumps to stop a conversation that is playing
+
+  const ro = t => S().settings.romaji && t ? `<div class="ro">${esc(t)}</div>` : '';
+  const sayIdx = (text, who = 'n') => { if (!text) return ''; st.say.push([text, who]); return ` data-act="bk-say" data-arg="${st.say.length - 1}"`; };
+
+  // ================= Contents =================
+  function hub() {
+    ctx.clearSess(); st = null; tok++;
+    const btn = (p, sub) => `<button class="unit" data-act="bk-open" data-arg="${p.id}">
+        <span class="icon">${p.icon}</span>
+        <span class="ut"><b>${esc(p.n ? `Unit ${p.n} · ${p.title}` : p.title)}</b><small>${esc(sub)}</small></span>
+      </button>`;
+    render(`
+      <h1 class="page">Book <span lang="ja">教科書</span></h1>
+      <div class="card left">
+        <b>${esc(BOOK_INFO.title)}</b>
+        <div class="muted">${esc(BOOK_INFO.sub)} · ${esc(BOOK_INFO.publisher)}</div>
+        <p class="muted">Every page of the book, unit by unit. Tap any Japanese to hear it.</p>
+      </div>
+      <h2 class="sec">Before you start</h2>
+      <div class="units">${FRONT.map(p => btn(p, p.jp)).join('')}</div>
+      <h2 class="sec">Units</h2>
+      <div class="units">
+        ${UNITS.map(u => btn(u, `${u.topic} · ${u.topicJp}`)).join('')}
+        ${COMING.map(([n, title, topic]) => `<div class="unit bk-soon"><span class="icon">⏳</span>
+          <span class="ut"><b>${esc(`Unit ${n} · ${title}`)}</b><small>${esc(topic)} · coming next</small></span></div>`).join('')}
+      </div>`);
+  }
+
+  // ================= One page (front matter or a unit) =================
+  function page(id) {
+    ctx.clearSess(); tok++;
+    const p = PAGES.find(x => x.id === id);
+    st = { id, say: [], seqs: [], quiz: [] };
+    const top = p.n ? `
+      <div class="card compact bk-key ex"${sayIdx(spoken(p.jp))}>
+        <span class="tag">Unit ${p.n} · ${esc(p.topic)} <span lang="ja">${esc(p.topicJp)}</span></span>
+        <div class="jp" lang="ja">${esc(p.jp)}</div>${ro(p.ro)}<div class="en">${esc(p.title)}</div>
+      </div>
+      <div class="card left"><b>Goals for Unit ${p.n}</b><ul class="bk-list">${p.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ul></div>` : '';
+    const i = PAGES.indexOf(p), prev = PAGES[i - 1], next = PAGES[i + 1];
+    render(`
+      <div class="head">${back('bk-home')}<h1>${esc(p.n ? `Unit ${p.n}` : p.title)}</h1>${p.jp && !p.n ? `<span class="pill" lang="ja">${esc(p.jp)}</span>` : ''}</div>
+      ${top}
+      ${p.sections.map((s, k) => `<details class="fold bk-sec"${p.sections.length === 1 || (!p.n && k === 0) ? ' open' : ''}>
+        <summary>${esc(s.h)}${s.sub ? ` <small class="muted">${esc(s.sub)}</small>` : ''}</summary>
+        <div class="bk-body">${s.blocks.map(block).join('')}</div>
+      </details>`).join('')}
+      <div class="row">
+        <button class="btn" data-act="bk-open" data-arg="${prev?.id || ''}" ${prev ? '' : 'disabled'}>‹ Prev</button>
+        <button class="btn" data-act="bk-open" data-arg="${next?.id || ''}" ${next ? '' : 'disabled'}>Next ›</button>
+      </div>`);
+  }
+
+  const word = w => `<button class="bk-w"${sayIdx(sayOf(w))}><b lang="ja">${esc(w[0])}</b>${ro(w[1])}<span class="en">${esc(w[2])}</span></button>`;
+  const line = w => `<li class="ex"${sayIdx(sayOf(w))}><div class="jp" lang="ja">${esc(w[0])}</div>${ro(w[1])}<div class="en">${esc(w[2])}</div></li>`;
+
+  // A conversation: the first speaker on the left, the next on the right, and so on.
+  function talk(lines, title = '') {
+    const sides = [];
+    const k = st.seqs.push(lines.map(l => [spoken(l[1]), voiceOf(l[0])]).filter(x => x[0])) - 1;
+    return `<div class="bk-talk">
+      ${title}<button class="btn bk-play" data-act="bk-play" data-arg="${k}">▶ Play conversation</button>
+      <div class="chat">${lines.map(l => {
+        if (!sides.includes(l[0])) sides.push(l[0]);
+        return `<div class="bubble ${sides.indexOf(l[0]) % 2 ? 'you' : 'them'}"${sayIdx(spoken(l[1]), voiceOf(l[0]))}>
+          <small class="who" lang="ja">${esc(l[0])}</small><div class="jp" lang="ja">${esc(l[1])}</div>${ro(l[2])}${l[3] ? `<div class="en">${esc(l[3])}</div>` : ''}</div>`;
+      }).join('')}</div></div>`;
+  }
+
+  function block(b) {
+    switch (b.t) {
+      case 'key': return `<div class="card compact bk-key ex"${sayIdx(spoken(b.jp))}><div class="jp" lang="ja">${esc(b.jp)}</div>${ro(b.ro)}<div class="en">${esc(b.en)}</div></div>`;
+      case 'h': return `<h3 class="bk-h">${esc(b.text)}</h3>`;
+      case 'p': return `<p class="bk-p">${esc(b.text)}</p>`;
+      case 'note': return `<div class="note">📝 ${esc(b.text)}</div>`;
+      case 'tip': return `<div class="note ok">💡 <b>Hanasu note:</b> ${esc(b.text)}</div>`;
+      case 'words': return `<div class="bk-words">${b.items.map(word).join('')}</div>`;
+      case 'lines': return `<ul class="phrases">${b.items.map(line).join('')}</ul>`;
+      case 'talk': return talk(b.lines);
+      case 'list': return `<ul class="bk-list">${b.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
+      case 'link': return `<a class="btn" href="${esc(b.href)}">${esc(b.text)}</a>`;
+      case 'subs': return `<h3 class="bk-h">Replace (1), (2)… with</h3>${b.sets.map((set, i) => `<div class="bk-subs"><span class="bk-n">${'①②③④'[i]}</span>
+        <div class="bk-words">${set.map(x => word([x[1], x[2], x[0]])).join('')}</div></div>`).join('')}`;
+      case 'table': return `<div class="bk-table"><table><thead><tr>${b.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+        <tbody>${b.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      case 'check': return `<div class="bk-check">${b.items.map(x => `<label><input type="checkbox"> ${esc(x)}</label>`).join('')}</div>`;
+      case 'role': return `<div class="card left bk-role">${b.title ? `<b>${esc(b.title)}</b>` : ''}
+        <div class="bk-ab"><div><span class="tag">A</span><p>${esc(b.a)}</p></div><div><span class="tag alt">B</span><p>${esc(b.b)}</p></div></div></div>`;
+      case 'listen': {
+        const q = st.quiz.push(b.answer) - 1;
+        const k = st.seqs.push(b.script.map(l => [spoken(l[1]), voiceOf(l[0])]).filter(x => x[0])) - 1;
+        return `<div class="card left bk-listen" data-q="${q}">
+          <div class="bk-qhead"><b>${esc(b.q)}</b>${b.setting ? ` <span class="muted">${esc(b.setting)}</span>` : ''}</div>
+          <button class="btn primary" data-act="bk-play" data-arg="${k}">🔊 Play</button>
+          <div class="choices">${b.options.map((o, i) => `<button class="choice" data-act="bk-ans" data-arg="${q}.${i}">${i + 1}. ${esc(o)}</button>`).join('')}</div>
+          <div class="bk-result" aria-live="polite"></div>
+          <details class="ways"><summary>Script &amp; translation</summary>${talk(b.script)}</details>
+        </div>`;
+      }
+      default: return '';
+    }
+  }
+
+  async function playSeq(k) {
+    const my = ++tok;
+    for (const [text, who] of st?.seqs[k] || []) {
+      if (my !== tok) return;
+      await ctx.sayAs(text, who);
+    }
+  }
+
+  function answer(arg) {
+    const [q, i] = arg.split('.').map(Number);
+    const card = document.querySelector(`.bk-listen[data-q="${q}"]`);
+    if (!card || !st) return;
+    const right = st.quiz[q];
+    card.querySelectorAll('.choice').forEach((el, j) => {
+      el.classList.toggle('right', j === right);
+      el.classList.toggle('wrong', j === i && i !== right);
+    });
+    card.querySelector('.bk-result').innerHTML = i === right ? '<div class="score ok">✓ Correct!</div>' : `<div class="muted">The answer is ${right + 1}. Open the script to check.</div>`;
+  }
+
+  const actions = {
+    'bk-home': () => ctx.go('book'),
+    'bk-open': id => id && ctx.go('book/' + id),
+    'bk-say': i => { tok++; const s = st?.say[+i]; if (s) ctx.sayAs(s[0], s[1]); },
+    'bk-play': k => playSeq(+k),
+    'bk-ans': arg => answer(arg),
+  };
+
+  function route(h) {
+    if (h === 'book') return hub(), true;
+    if (h.startsWith('book/') && PAGES.some(p => p.id === h.slice(5))) return page(h.slice(5)), true;
+    return false;
+  }
+
+  function rerender() {
+    if (!st) return false;
+    page(st.id);
+    return true;
+  }
+
+  return { actions, route, rerender, clear() { st = null; tok++; ctx.stop(); } };
+}

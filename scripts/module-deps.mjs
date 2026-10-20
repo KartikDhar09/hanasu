@@ -3,7 +3,7 @@
 // Run: node scripts/module-deps.mjs        (check.mjs fails if the committed file is out of date)
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const ENTRIES = { phrases: ['data.js', 'furigana.js', 'ways.js'], study: ['study.js'], speaking: ['speaking.js'], jlpt: ['jlpt.js'], exam: ['exam.js'], strokes: ['strokes.js'], path: ['path.js'], search: ['search.js'] };
+const ENTRIES = { phrases: ['data.js', 'furigana.js', 'ways.js'], study: ['study.js'], speaking: ['speaking.js'], jlpt: ['jlpt.js'], exam: ['exam.js'], strokes: ['strokes.js'], path: ['path.js'], search: ['search.js'], book: ['book.js'] };
 const LOADED_FIRST = new Set(['app.js', 'units-index.js', 'core.js', 'clips.js', 'speech.js']); // already on the home screen
 
 const importsOf = f => [...readFileSync(new URL(`../js/${f}`, import.meta.url), 'utf8')

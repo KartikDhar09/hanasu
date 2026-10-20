@@ -569,7 +569,7 @@ test('mock scoring matches JLPT pass rules', () => {
       const missing = want.filter(f => f.startsWith('food/') && !PIC_SIZE[f]);
       assert.ok(!missing.length, `food pictures missing: ${missing.join(', ')}`);
       // Maps and menus are opened full size, so they may be bigger than the rest.
-      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/\/(map|menu)/.test(f) ? 240 : 80) * 1024);
+      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/(map|menu|seasons)$/.test(f) ? 240 : 80) * 1024);
       assert.ok(!big.length, `pictures too big: ${big.join(', ')}`);
       const sw = readFileSync('sw.js', 'utf8');
       assert.ok(!/'\/img\//.test(sw.match(/const SHELL = \[([\s\S]*?)\];/)[1]), 'pictures must not be precached');

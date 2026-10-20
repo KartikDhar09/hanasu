@@ -113,6 +113,8 @@ export const DEPS = {
   ],
   book: [
     "book-data.js",
+    "book-index.js",
+    "book-kit.js",
     "book-pics.js",
     "book.js",
     "conjugate.js"

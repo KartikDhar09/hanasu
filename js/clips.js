@@ -89,7 +89,9 @@ export function watchVisible(textFor, { dwell = 250, perScreen = 40 } = {}) {
     for (const e of entries) {
       if (e.isIntersecting) timers.set(e.target, setTimeout(() => {
         timers.delete(e.target); io.unobserve(e.target);
-        if (count++ < perScreen) prefetchClip(textFor(e.target));
+        // textFor gives the line, or [line, voice] when it isn't the main voice.
+        const t = textFor(e.target);
+        if (count++ < perScreen) Array.isArray(t) ? prefetchClip(t[0], t[1]) : prefetchClip(t);
       }, dwell));
       else { clearTimeout(timers.get(e.target)); timers.delete(e.target); }
     }
@@ -97,7 +99,7 @@ export function watchVisible(textFor, { dwell = 250, perScreen = 40 } = {}) {
   const seen = new WeakSet();
   return function watch(root, { newScreen = false } = {}) {
     if (newScreen) { count = 0; queue.length = 0; io.disconnect(); timers.forEach(clearTimeout); timers.clear(); }
-    for (const el of root.querySelectorAll('[data-act^="say"], [data-act="play"]')) if (!seen.has(el)) { seen.add(el); io.observe(el); }
+    for (const el of root.querySelectorAll('[data-act^="say"], [data-act="play"], [data-say]')) if (!seen.has(el)) { seen.add(el); io.observe(el); }
   };
 }
 

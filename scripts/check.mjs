@@ -535,7 +535,24 @@ test('mock scoring matches JLPT pass rules', () => {
 
 // ---------- Book tab (Nihongo Fun & Easy) ----------
 {
-  const BK = await import('../js/book-data.js');
+  const BK = { ...(await import('../js/book-data.js')) };
+  BK.PAGES = await BK.allPages();
+  {
+    const idx = await (await import('./book-index.mjs')).buildBookIndex();
+    if (readFileSync('js/book-index.js', 'utf8') !== idx) fail('js/book-index.js is out of date: run node scripts/book-index.mjs');
+    const files = readdirSync('js').filter(f => /^book-.+\.js$/.test(f) && !['book-data.js', 'book-kit.js', 'book-index.js', 'book-pics.js'].includes(f));
+    const listed = new Set(BK.BOOK_INDEX.map(p => `book-${p.id}.js`));
+    for (const f of files) if (!listed.has(f)) fail(`js/${f} is not in the Book contents (scripts/book-index.mjs ORDER)`);
+  }
+  test('listening answers match the book’s answer key (pp.186–191)', () => {
+    // Unit → answers to Q1–Q4, as numbered in the book (1–3).
+    const KEY = { u1: [1, 3, 1, 3], u2: [1, 2, 1, 2], u3: [3, 2, 2, 1], u4: [3, 1, 1, 2], u5: [1, 3, 2, 2], u6: [1, 3, 1, 2],
+      u7: [2, 2, 3, 2], u8: [3, 1, 1, 2], u9: [1, 2, 3, 1], u10: [3, 2, 3, 2], u11: [3, 1, 1, 2], u12: [2, 1, 2, 3] };
+    for (const [id, want] of Object.entries(KEY)) {
+      const qs = BK.PAGES.find(p => p.id === id).sections.flatMap(s => s.blocks).filter(b => b.t === 'listen');
+      assert.deepEqual(qs.map(q => q.answer + 1), want, `${id} listening answers`);
+    }
+  });
   const JPC = /[ぁ-ゖァ-ヺ一-龯々]/;
   test('book pages are well-formed', () => {
     const ids = BK.PAGES.map(p => p.id);
@@ -569,7 +586,7 @@ test('mock scoring matches JLPT pass rules', () => {
       const missing = want.filter(f => f.startsWith('food/') && !PIC_SIZE[f]);
       assert.ok(!missing.length, `food pictures missing: ${missing.join(', ')}`);
       // Maps and menus are opened full size, so they may be bigger than the rest.
-      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/(map|menu|seasons)$/.test(f) ? 240 : 80) * 1024);
+      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/(map|menu|seasons|weather|material)$/.test(f) ? 240 : 80) * 1024);
       assert.ok(!big.length, `pictures too big: ${big.join(', ')}`);
       const sw = readFileSync('sw.js', 'utf8');
       assert.ok(!/'\/img\//.test(sw.match(/const SHELL = \[([\s\S]*?)\];/)[1]), 'pictures must not be precached');

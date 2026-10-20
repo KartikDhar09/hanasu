@@ -1,6 +1,6 @@
 // Book tab: the Nihongo Fun & Easy textbook, page by page. Every Japanese line plays on tap; conversations and
 // listening scripts can play in full, each speaker in their own voice.
-import { BOOK_INFO, FRONT, UNITS, BACK, COMING, PAGES, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
+import { BOOK_INFO, BOOK_INDEX, loadPage, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
 import { PIC_SIZE } from './book-pics.js';
 
 export function initBook(ctx) {
@@ -10,7 +10,12 @@ export function initBook(ctx) {
   let tok = 0;     // bumps to stop a conversation that is playing
 
   const ro = t => S().settings.romaji && t ? `<div class="ro">${esc(t)}</div>` : '';
-  const sayIdx = (text, who = 'n') => { if (!text) return ''; st.say.push([text, who]); return ` data-act="bk-say" data-arg="${st.say.length - 1}"`; };
+  // A tappable line: data-say / data-who also let the app fetch its clip (in the right voice) while it's on screen.
+  const sayIdx = (text, who = 'n') => {
+    if (!text) return '';
+    st.say.push([text, who]);
+    return ` data-act="bk-say" data-arg="${st.say.length - 1}" data-say="${esc(text)}"${who !== 'n' ? ` data-who="${who}"` : ''}`;
+  };
 
   // ================= Contents =================
   function hub() {
@@ -26,37 +31,38 @@ export function initBook(ctx) {
         <div class="muted">${esc(BOOK_INFO.sub)} · ${esc(BOOK_INFO.publisher)}</div>
         <p class="muted">Every page of the book, unit by unit. Tap any Japanese to hear it.</p>
       </div>
-      <h2 class="sec">Before you start</h2>
-      <div class="units">${FRONT.map(p => btn(p, p.jp)).join('')}</div>
-      <h2 class="sec">Units</h2>
-      <div class="units">
-        ${UNITS.map(u => btn(u, `${u.topic} · ${u.topicJp}`)).join('')}
-        ${COMING.map(([n, title, topic]) => `<div class="unit bk-soon"><span class="icon">⏳</span>
-          <span class="ut"><b>${esc(`Unit ${n} · ${title}`)}</b><small>${esc(topic)} · coming next</small></span></div>`).join('')}
-      </div>
-      <h2 class="sec">Grammar &amp; Handy Wordbook</h2>
-      <div class="units">${BACK.map(p => btn(p, p.jp)).join('')}</div>`);
+      ${[['front', 'Before you start'], ['units', 'Units'], ['back', 'Grammar &amp; Handy Wordbook']].map(([g, h]) => `
+        <h2 class="sec">${h}</h2>
+        <div class="units">${BOOK_INDEX.filter(p => p.group === g).map(p => btn(p, p.n ? `${p.topic} · ${p.topicJp}` : p.jp)).join('')}</div>`).join('')}`);
   }
 
   // ================= One page (front matter or a unit) =================
-  function page(id) {
+  // Pages load on demand (one small file each); a page opened before it arrives is drawn once it does.
+  async function page(id) {
     ctx.clearSess(); tok++;
-    const p = PAGES.find(x => x.id === id);
-    st = { id, say: [], seqs: [], quiz: [] };
+    const want = location.hash;
+    const p = await loadPage(id);
+    if (location.hash !== want) return; // the learner moved on while it loaded
+    st = { id, p, say: [], seqs: [], quiz: [] };
     const top = p.n ? `
       <div class="card compact bk-key ex"${sayIdx(spoken(p.jp))}>
         <span class="tag">Unit ${p.n} · ${esc(p.topic)} <span lang="ja">${esc(p.topicJp)}</span></span>
         <div class="jp" lang="ja">${esc(p.jp)}</div>${ro(p.ro)}<div class="en">${esc(p.title)}</div>
       </div>
       <div class="card left"><b>Goals for Unit ${p.n}</b><ul class="bk-list">${p.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ul></div>` : '';
-    const i = PAGES.indexOf(p), prev = PAGES[i - 1], next = PAGES[i + 1];
+    const i = BOOK_INDEX.findIndex(x => x.id === id), prev = BOOK_INDEX[i - 1], next = BOOK_INDEX[i + 1];
+    if (next) loadPage(next.id).catch(() => {}); // so Next opens instantly
     render(`
       <div class="head">${back('bk-home')}<h1>${esc(p.n ? `Unit ${p.n}` : p.title)}</h1>${p.jp && !p.n ? `<span class="pill" lang="ja">${esc(p.jp)}</span>` : ''}</div>
       ${top}
-      ${p.sections.map((s, k) => `<details class="fold bk-sec"${p.sections.length === 1 || (!p.n && k === 0) ? ' open' : ''}>
+      ${p.sections.map((s, k) => {
+        const open = p.sections.length === 1 || (!p.n && k === 0);
+        // A folded section is drawn the first time it's opened, so long pages (400+ words) open instantly.
+        return `<details class="fold bk-sec"${open ? ' open' : ''} data-sec="${k}">
         <summary>${esc(s.h)}${s.sub ? ` <small class="muted">${esc(s.sub)}</small>` : ''}</summary>
-        <div class="bk-body">${s.blocks.map(block).join('')}</div>
-      </details>`).join('')}
+        <div class="bk-body">${open ? s.blocks.map(block).join('') : ''}</div>
+      </details>`;
+      }).join('')}
       <div class="row">
         <button class="btn" data-act="bk-open" data-arg="${prev?.id || ''}" ${prev ? '' : 'disabled'}>‹ Prev</button>
         <button class="btn" data-act="bk-open" data-arg="${next?.id || ''}" ${next ? '' : 'disabled'}>Next ›</button>
@@ -143,6 +149,15 @@ export function initBook(ctx) {
     card.querySelector('.bk-result').innerHTML = i === right ? '<div class="score ok">✓ Correct!</div>' : `<div class="muted">The answer is ${right + 1}. Open the script to check.</div>`;
   }
 
+  // Fill a folded section when it is first opened ('toggle' doesn't bubble, so listen in the capture phase).
+  document.addEventListener('toggle', e => {
+    const d = e.target;
+    if (!st || !d.open || !d.matches?.('.bk-sec[data-sec]')) return;
+    const body = d.querySelector('.bk-body');
+    if (body.childElementCount) return;
+    body.innerHTML = st.p.sections[+d.dataset.sec].blocks.map(block).join('');
+  }, true);
+
   const actions = {
     'bk-home': () => ctx.go('book'),
     'bk-open': id => id && ctx.go('book/' + id),
@@ -153,7 +168,7 @@ export function initBook(ctx) {
 
   function route(h) {
     if (h === 'book') return hub(), true;
-    if (h.startsWith('book/') && PAGES.some(p => p.id === h.slice(5))) return page(h.slice(5)), true;
+    if (h.startsWith('book/') && BOOK_INDEX.some(p => p.id === h.slice(5))) return page(h.slice(5)), true;
     return false;
   }
 

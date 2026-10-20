@@ -76,7 +76,8 @@ function render(html) {
 
 // The line a speak button would say, so its clip can load while it's on screen.
 function lineFor(el) {
-  const { act, arg } = el.dataset;
+  const { act, arg, say, who } = el.dataset;
+  if (say) return [say, who || 'n']; // Book tab lines carry their own text and speaker's voice
   if (act === 'say-text') return arg || '';
   const c = cardById(arg);
   if (!c) return '';

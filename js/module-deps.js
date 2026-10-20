@@ -113,6 +113,7 @@ export const DEPS = {
   ],
   book: [
     "book-data.js",
+    "book-pics.js",
     "book.js"
   ]
 };

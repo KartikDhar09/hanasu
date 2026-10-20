@@ -33,6 +33,26 @@ export function spoken(jp) {
 }
 export const sayOf = w => w[3] || spoken(w[0]);
 
+
+// Pictures cut from the book (img/book/, loaded lazily). Food photos by the word they show; colours as swatches.
+export const FOOD_PIC = {
+  すき焼き: 'sukiyaki', しゃぶしゃぶ: 'shabushabu', 焼肉: 'yakiniku', 焼き鳥: 'yakitori', 刺身: 'sashimi', 天ぷら: 'tempura', から揚げ: 'karaage',
+  しょうが焼き: 'shogayaki', 鶏の照り焼き: 'teriyaki', 肉じゃが: 'nikujaga', おでん: 'oden', 親子丼: 'oyakodon', 牛丼: 'gyudon', かつ丼: 'katsudon',
+  天丼: 'tendon', にぎりずし: 'nigirizushi', ちらしずし: 'chirashizushi', いなりずし: 'inarizushi', のり巻き: 'norimaki', きつねうどん: 'kitsuneudon',
+  たぬきうどん: 'tanukiudon', 天ぷらそば: 'tempurasoba', ざるそば: 'zarusoba', しょうゆラーメン: 'shoyuramen', 塩ラーメン: 'shioramen', 味噌ラーメン: 'misoramen',
+  とんこつラーメン: 'tonkotsuramen', 焼きそば: 'yakisoba', お好み焼き: 'okonomiyaki', もんじゃ焼き: 'monjayaki', たこ焼き: 'takoyaki', 冷奴: 'hiyayakko',
+  揚げ出し豆腐: 'agedashidofu', 枝豆: 'edamame', 卵焼き: 'tamagoyaki', おにぎり: 'onigiri', お茶漬け: 'ochazuke', 味噌汁: 'misoshiru', とん汁: 'tonjiru',
+  コロッケ: 'korokke', えびフライ: 'ebifurai', トンカツ: 'tonkatsu', ハンバーグ: 'hambagu', カレーライス: 'kareraisu', カツカレー: 'katsukare', オムライス: 'omuraisu',
+  ミートソース: 'mitososu', チャーハン: 'chahan', 餃子: 'gyoza', 春巻き: 'harumaki', シュウマイ: 'shumai', ショートケーキ: 'shotokeki', シュークリーム: 'shukurimu',
+  梅干: 'umeboshi', たくあん: 'takuan', ふくじんづけ: 'fukujinzuke', らっきょう: 'rakkyo', キムチ: 'kimuchi', のり: 'nori', 青のり: 'aonori', かつおぶし: 'katsuobushi',
+  紅しょうが: 'benishoga', ごま: 'goma', ねぎ: 'negi', 大根おろし: 'daikonoroshi', '七味(とうがらし)': 'shichimi', わさび: 'wasabi', からし: 'karashi', 納豆: 'natto',
+  豆腐: 'tofu', 油揚げ: 'aburaage', かまぼこ: 'kamaboko', こんにゃく: 'konnyaku', わかめ: 'wakame', こんぶ: 'kombu', たらこ: 'tarako', 明太子: 'mentaiko',
+};
+export const COLOR = {
+  '赤(い)*': '#D7262E', '青(い)*': '#1E73BE', '黄色(い)*': '#F5E11B', '黒(い)*': '#1A1A1A', '白(い)*': '#FFFFFF', 緑: '#149A3C', オレンジ: '#F0901E',
+  ピンク: '#F29CC0', 黄緑: '#9CCB3B', 紺: '#232A6E', 水色: '#8CCDF0', 紫: '#7B2C8C', '茶色／ブラウン': '#7A4A2A', '灰色／グレー': '#B8B8B8',
+};
+
 // ---- Block helpers (keep the content below readable) ----
 const K = (jp, ro, en) => ({ t: 'key', jp, ro, en });             // the unit's target phrase
 const H = text => ({ t: 'h', text });                             // small heading (Practice A, MEMO…)
@@ -49,6 +69,9 @@ const CHECK = (...items) => ({ t: 'check', items });
 const LIST = (...items) => ({ t: 'list', items });
 const TABLE = (head, rows) => ({ t: 'table', head, rows });
 const LINK = (href, text) => ({ t: 'link', href, text });
+const WP = (...items) => ({ t: 'words', items, pics: true });       // word cards with the book's photo / colour
+const IMG = (file, alt) => ({ t: 'img', file, alt });              // one picture from the book (map, menu)
+const SCENES = (unit, ...items) => ({ t: 'scenes', unit, items });  // "Do you remember?" pictures with their situation
 
 // ================= Front matter =================
 export const FRONT = [
@@ -108,13 +131,13 @@ export const FRONT = [
     sections: [
       { h: '色 Iro · Colors', blocks: [
         N('* = I-adjective'),
-        W(['赤(い)*', 'aka(i)*', 'red'], ['青(い)*', 'ao(i)*', 'blue'], ['黄色(い)*', 'kiiro(i)*', 'yellow'], ['黒(い)*', 'kuro(i)*', 'black'],
+        WP(['赤(い)*', 'aka(i)*', 'red'], ['青(い)*', 'ao(i)*', 'blue'], ['黄色(い)*', 'kiiro(i)*', 'yellow'], ['黒(い)*', 'kuro(i)*', 'black'],
           ['白(い)*', 'shiro(i)*', 'white'], ['緑', 'midori', 'green'], ['オレンジ', 'orenji', 'orange'], ['ピンク', 'pinku', 'pink'],
           ['黄緑', 'kimidori', 'yellow-green'], ['紺', 'kon', 'dark blue'], ['水色', 'mizuiro', 'light blue'], ['紫', 'murasaki', 'purple'],
           ['茶色／ブラウン', 'chairo / buraun', 'brown'], ['灰色／グレー', 'haiiro / gurē', 'gray']),
       ] },
       { h: '日本料理 Nihon ryōri · Japanese Food', blocks: [
-        W(['すき焼き', 'sukiyaki', 'beef and vegetables cooked in sweet-salty soy sauce'], ['しゃぶしゃぶ', 'shabu shabu', 'Japanese variant of hot pot'],
+        WP(['すき焼き', 'sukiyaki', 'beef and vegetables cooked in sweet-salty soy sauce'], ['しゃぶしゃぶ', 'shabu shabu', 'Japanese variant of hot pot'],
           ['焼肉', 'yakiniku', 'grilled meat'], ['焼き鳥', 'yakitori', 'grilled chicken skewers'], ['刺身', 'sashimi', 'raw fish'],
           ['天ぷら', 'tempura', 'deep-fried vegetables or seafood'], ['から揚げ', 'karaage', 'fried chicken'], ['しょうが焼き', 'shōgayaki', 'pork fried with ginger'],
           ['鶏の照り焼き', 'tori no teriyaki', 'chicken teriyaki'], ['肉じゃが', 'nikujaga', 'meat and potato stew'], ['おでん', 'oden', 'broth with egg, steamed fish cake etc.'],
@@ -131,27 +154,27 @@ export const FRONT = [
           ['お茶漬け', 'ochazuke', 'rice bowl filled with green tea'], ['味噌汁', 'misoshiru', 'miso soup'], ['とん汁', 'tonjiru', 'pork miso soup with vegetables']),
       ] },
       { h: '洋食 Yōshoku · Japanese Style Western Food', blocks: [
-        W(['コロッケ', 'korokke', 'croquette'], ['えびフライ', 'ebifurai', 'fried shrimp'], ['トンカツ', 'tonkatsu', 'pork cutlet'],
+        WP(['コロッケ', 'korokke', 'croquette'], ['えびフライ', 'ebifurai', 'fried shrimp'], ['トンカツ', 'tonkatsu', 'pork cutlet'],
           ['ハンバーグ', 'hambāgu', 'hamburger meat'], ['カレーライス', 'karē raisu', 'curry with rice'], ['カツカレー', 'katsu karē', 'pork cutlet curry'],
           ['オムライス', 'omuraisu', 'fried omelette stuffed with rice'], ['ミートソース', 'mīto sōsu', 'spaghetti meat sauce']),
       ] },
       { h: '中華料理 Chūka ryōri · Chinese Food', blocks: [
-        W(['チャーハン', 'chāhan', 'fried rice'], ['餃子', 'gyōza', 'pot stickers'], ['春巻き', 'harumaki', 'spring roll'], ['シュウマイ', 'shūmai', 'steamed meat dumpling']),
+        WP(['チャーハン', 'chāhan', 'fried rice'], ['餃子', 'gyōza', 'pot stickers'], ['春巻き', 'harumaki', 'spring roll'], ['シュウマイ', 'shūmai', 'steamed meat dumpling']),
       ] },
       { h: 'デザート Dezāto · Desserts', blocks: [
-        W(['ショートケーキ', 'shōtokēki', 'strawberry shortcake'], ['シュークリーム', 'shūkurīmu', 'cream puff']),
+        WP(['ショートケーキ', 'shōtokēki', 'strawberry shortcake'], ['シュークリーム', 'shūkurīmu', 'cream puff']),
       ] },
       { h: '漬物 Tsukemono · Pickled Vegetables', blocks: [
-        W(['梅干', 'umeboshi', 'pickled plum', '梅干し'], ['たくあん', 'takuan', 'pickled daikon radish'], ['ふくじんづけ', 'fukujinzuke', 'pickled vegetables in soy sauce'],
+        WP(['梅干', 'umeboshi', 'pickled plum', '梅干し'], ['たくあん', 'takuan', 'pickled daikon radish'], ['ふくじんづけ', 'fukujinzuke', 'pickled vegetables in soy sauce'],
           ['らっきょう', 'rakkyō', 'Japanese leek pickles'], ['キムチ', 'kimuchi', 'Korean style pickles']),
       ] },
       { h: '薬味 Yakumi · Condiments', blocks: [
-        W(['のり', 'nori', 'nori seaweed'], ['青のり', 'aonori', 'green nori seaweed'], ['かつおぶし', 'katsuobushi', 'sliced dried bonito'],
+        WP(['のり', 'nori', 'nori seaweed'], ['青のり', 'aonori', 'green nori seaweed'], ['かつおぶし', 'katsuobushi', 'sliced dried bonito'],
           ['紅しょうが', 'beni shōga', 'pickled ginger'], ['ごま', 'goma', 'sesame'], ['ねぎ', 'negi', 'green onion'], ['大根おろし', 'daikon oroshi', 'grated daikon radish'],
           ['七味(とうがらし)', 'shichimi (tōgarashi)', 'a mixture of red pepper and other spices', '七味とうがらし'], ['わさび', 'wasabi', 'wasabi'], ['からし', 'karashi', 'mustard']),
       ] },
       { h: 'その他の食材 Sonota no shokuzai · Other Foods', blocks: [
-        W(['納豆', 'nattō', 'fermented soybeans'], ['豆腐', 'tōfu', 'tofu'], ['油揚げ', 'abura age', 'deep-fried tofu'], ['かまぼこ', 'kamaboko', 'steamed fish cake'],
+        WP(['納豆', 'nattō', 'fermented soybeans'], ['豆腐', 'tōfu', 'tofu'], ['油揚げ', 'abura age', 'deep-fried tofu'], ['かまぼこ', 'kamaboko', 'steamed fish cake'],
           ['こんにゃく', 'konnyaku', 'konjac potato gel'], ['わかめ', 'wakame', 'wakame seaweed'], ['こんぶ', 'kombu', 'kombu seaweed'],
           ['たらこ', 'tarako', 'salted cod roe'], ['明太子', 'mentaiko', 'spiced cod roe']),
       ] },
@@ -354,7 +377,7 @@ export const UNITS = [
       ] },
       { h: 'Do you remember?', blocks: [
         P('Use the phrases you have learned in this unit in situations ①–③ below.'),
-        LIST('① You stand up in front of a group and introduce yourself: name, job, nationality. “I’m ….”',
+        SCENES('u1', '① You stand up in front of a group and introduce yourself: name, job, nationality. “I’m ….”',
           '② Two people who just met: “Where are you from?”',
           '③ “Do you like …?” One person likes soccer; the other doesn’t, but likes basketball.'),
       ] },
@@ -502,6 +525,7 @@ export const UNITS = [
         L(['それから', 'sorekara', 'and (Used when uttering an additional statement or question.)']),
       ] },
       { h: 'Material', sub: 'Town map', blocks: [
+        IMG('u2/map', 'Town map: post office, art museum, Fuji Hospital, Sakura Park, hotel, convenience store with ATM, station, koban, zoo, Sakura University'),
         P('The book’s map (p.33) shows a town around a station. “You are here” is at the station, at the bottom of the map.'),
         LIST('Near the station: Department store, Subway station, Koban (police box), Bus stop, Restaurant, Cinema',
           'In the middle: Sakura Hotel, Convenience store (with an ATM), Supermarket (a flower shop next to it), Bank, Internet cafe, Bookstore',
@@ -539,7 +563,7 @@ export const UNITS = [
       ] },
       { h: 'Do you remember?', blocks: [
         P('Use the phrases you have studied in this unit in situations ①–③ below.'),
-        LIST('① At an information desk with a big bag: you’re looking for a coin locker.',
+        SCENES('u2', '① At an information desk with a big bag: you’re looking for a coin locker.',
           '② You want to find the post office; the man you ask isn’t sure.',
           '③ In a restaurant, you ask the waiter where the ladies’ restroom is.'),
       ] },
@@ -737,7 +761,7 @@ export const UNITS = [
       ] },
       { h: 'Do you remember?', blocks: [
         P('Use the phrases you have studied in this unit in situations ①–④ below.'),
-        LIST('① A clothes shop: you want to know the price of a shirt (¥?).',
+        SCENES('u3', '① A clothes shop: you want to know the price of a shirt (¥?).',
           '② A shoe shop: “Do you have …?” (the shoes you tried don’t fit).',
           '③ A cake shop: you want three slices of cake.',
           '④ A tourist counter: “Do you have …?” (a Kyoto tour pamphlet).'),
@@ -897,6 +921,7 @@ export const UNITS = [
           ['ご一緒に〜はいかがですか。', 'Go-issho ni…wa ikaga desu ka.', 'Would you like …with that?']),
       ] },
       { h: 'Material', sub: 'Lunch menu ランチメニュー 11:30〜14:00', blocks: [
+        IMG('u4/menu', 'Lunch menu 11:30–14:00 with lunch sets, à la carte dishes, drinks and desserts'),
         H('ランチセット Lunch sets (+ drink)'),
         W(['今日のランチ', 'kyō no ranchi', '① Lunch of the day · ¥750'], ['日替わり定食', 'higawari-tēshoku', '② Today’s set meal · ¥800'], ['パスタランチ', 'pasuta ranchi', '③ Pasta lunch · ¥850']),
         H('単品 À la carte'),
@@ -943,7 +968,7 @@ export const UNITS = [
       ] },
       { h: 'Do you remember?', blocks: [
         P('Use the phrases you have studied in this unit in situations ①–④ below.'),
-        LIST('① At a fast food counter the staff asks “Eat in?” — No, you want to take it out.',
+        SCENES('u4', '① At a fast food counter the staff asks “Eat in?” — No, you want to take it out.',
           '② At a convenience store register: you don’t need a plastic bag.',
           '③ At an izakaya with a friend: ask the server for small plates.',
           '④ In a restaurant: “What’s …?” about the rice bowl the person at the next table is eating.'),

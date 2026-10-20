@@ -1,5 +1,5 @@
 // Static checks and logic tests, run with `npm test` before every deploy.
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
@@ -555,6 +555,26 @@ test('mock scoring matches JLPT pass rules', () => {
       }
     }
   });
+  {
+    const { PIC_SIZE } = await import('../js/book-pics.js');
+    const { picSizes } = await import('./book-images.mjs');
+    test('Book pictures exist, are sized and stay small', () => {
+      assert.equal(readFileSync('js/book-pics.js', 'utf8'), picSizes(), 'js/book-pics.js is out of date: run scripts/book-images.mjs');
+      const want = [...Object.values(BK.FOOD_PIC).map(f => `food/${f}`)];
+      for (const p of BK.PAGES) for (const s of p.sections) for (const b of s.blocks) {
+        if (b.t === 'img') want.push(b.file);
+        if (b.t === 'scenes') b.items.forEach((_, i) => want.push(`${b.unit}/remember-${i + 1}`));
+      }
+      // Pictures not cropped yet show a placeholder; food photos must all be there.
+      const missing = want.filter(f => f.startsWith('food/') && !PIC_SIZE[f]);
+      assert.ok(!missing.length, `food pictures missing: ${missing.join(', ')}`);
+      // Maps and menus are opened full size, so they may be bigger than the rest.
+      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/\/(map|menu)/.test(f) ? 240 : 80) * 1024);
+      assert.ok(!big.length, `pictures too big: ${big.join(', ')}`);
+      const sw = readFileSync('sw.js', 'utf8');
+      assert.ok(!/'\/img\//.test(sw.match(/const SHELL = \[([\s\S]*?)\];/)[1]), 'pictures must not be precached');
+    });
+  }
   test('book speech text drops marks and skips blanks', () => {
     assert.equal(BK.spoken('〈ジョン〉さん、(1)お国は？'), 'ジョンさん、お国は？');
     assert.equal(BK.spoken('はい、＿＿と＿＿がいます。'), null);

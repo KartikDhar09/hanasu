@@ -616,3 +616,15 @@ details.answers .phrases { margin-top: 8px; }
 .bk-listen > * + * { margin-top: 0; }
 .bk-listen .choices { display: grid; gap: 8px; }
 .bk-listen .choice { min-height: 0; font-size: .95rem; }
+/* Book pictures */
+.bk-img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--surface-2); }
+.bk-words.pics { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.bk-w.pic .bk-img { margin-bottom: 4px; }
+.bk-swatch { display: block; height: 44px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 4px; }
+.bk-pic { display: grid; gap: 4px; text-decoration: none; }
+.bk-pic .bk-img { background: #fff; }
+.bk-scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.bk-scenes figure { margin: 0; display: grid; gap: 6px; }
+.bk-scenes .bk-img { background: #fff; border: 1px solid var(--line); }
+.bk-scenes figcaption { font-size: .88rem; line-height: 1.4; }
+.bk-pending { aspect-ratio: 4 / 3; display: grid; place-items: center; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; }

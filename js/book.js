@@ -1,6 +1,7 @@
 // Book tab: the Nihongo Fun & Easy textbook, page by page. Every Japanese line plays on tap; conversations and
 // listening scripts can play in full, each speaker in their own voice.
-import { BOOK_INFO, FRONT, UNITS, COMING, PAGES, spoken, sayOf, voiceOf } from './book-data.js';
+import { BOOK_INFO, FRONT, UNITS, COMING, PAGES, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
+import { PIC_SIZE } from './book-pics.js';
 
 export function initBook(ctx) {
   const { esc, render, back } = ctx;
@@ -60,7 +61,15 @@ export function initBook(ctx) {
       </div>`);
   }
 
-  const word = w => `<button class="bk-w"${sayIdx(sayOf(w))}><b lang="ja">${esc(w[0])}</b>${ro(w[1])}<span class="en">${esc(w[2])}</span></button>`;
+  // A picture from the book: loads only when it scrolls near the screen; its size is reserved so nothing jumps.
+  const pic = (file, alt = '') => {
+    const [w, h] = PIC_SIZE[file] || [];
+    // Not cropped yet: a box the same shape the picture will be, so the page doesn't move when it arrives.
+    if (!w) return `<div class="bk-img bk-pending" role="img" aria-label="${esc(alt)}"><span>🖼️ Picture coming</span></div>`;
+    return `<img class="bk-img" src="/img/book/${file}.jpg" width="${w}" height="${h}" loading="lazy" decoding="async" alt="${esc(alt)}">`;
+  };
+  const picOf = w => COLOR[w[0]] ? `<span class="bk-swatch" style="background:${COLOR[w[0]]}"></span>` : FOOD_PIC[w[0]] ? pic(`food/${FOOD_PIC[w[0]]}`, w[2]) : '';
+  const word = (w, pics) => `<button class="bk-w${pics ? ' pic' : ''}"${sayIdx(sayOf(w))}>${pics ? picOf(w) : ''}<b lang="ja">${esc(w[0])}</b>${ro(w[1])}<span class="en">${esc(w[2])}</span></button>`;
   const line = w => `<li class="ex"${sayIdx(sayOf(w))}><div class="jp" lang="ja">${esc(w[0])}</div>${ro(w[1])}<div class="en">${esc(w[2])}</div></li>`;
 
   // A conversation: the first speaker on the left, the next on the right, and so on.
@@ -83,7 +92,9 @@ export function initBook(ctx) {
       case 'p': return `<p class="bk-p">${esc(b.text)}</p>`;
       case 'note': return `<div class="note">📝 ${esc(b.text)}</div>`;
       case 'tip': return `<div class="note ok">💡 <b>Hanasu note:</b> ${esc(b.text)}</div>`;
-      case 'words': return `<div class="bk-words">${b.items.map(word).join('')}</div>`;
+      case 'words': return `<div class="bk-words${b.pics ? ' pics' : ''}">${b.items.map(w => word(w, b.pics)).join('')}</div>`;
+      case 'img': return PIC_SIZE[b.file] ? `<a class="bk-pic" href="/img/book/${b.file}.jpg" target="_blank" rel="noopener">${pic(b.file, b.alt)}<small class="muted">Tap to open full size</small></a>` : `<div class="bk-pic">${pic(b.file, b.alt)}</div>`;
+      case 'scenes': return `<div class="bk-scenes">${b.items.map((x, i) => `<figure>${pic(`${b.unit}/remember-${i + 1}`, x)}<figcaption>${esc(x)}</figcaption></figure>`).join('')}</div>`;
       case 'lines': return `<ul class="phrases">${b.items.map(line).join('')}</ul>`;
       case 'talk': return talk(b.lines);
       case 'list': return `<ul class="bk-list">${b.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;

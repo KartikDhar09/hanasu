@@ -1,5 +1,5 @@
 // Static checks and logic tests, run with `npm test` before every deploy.
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 
@@ -532,6 +532,74 @@ test('mock scoring matches JLPT pass rules', () => {
   const n4 = EX.scoreMock([...mk('vocab', 10, 5), ...mk('grammar', 10, 5), ...mk('reading', 4, 2), ...mk('listening', 4, 2)], 'n4');
   assert.deepEqual([n4.total, n4.passed], [90, true]);
 });
+
+// ---------- Book tab (Nihongo Fun & Easy) ----------
+{
+  const BK = { ...(await import('../js/book-data.js')) };
+  BK.PAGES = await BK.allPages();
+  {
+    const idx = await (await import('./book-index.mjs')).buildBookIndex();
+    if (readFileSync('js/book-index.js', 'utf8') !== idx) fail('js/book-index.js is out of date: run node scripts/book-index.mjs');
+    const files = readdirSync('js').filter(f => /^book-.+\.js$/.test(f) && !['book-data.js', 'book-kit.js', 'book-index.js', 'book-pics.js'].includes(f));
+    const listed = new Set(BK.BOOK_INDEX.map(p => `book-${p.id}.js`));
+    for (const f of files) if (!listed.has(f)) fail(`js/${f} is not in the Book contents (scripts/book-index.mjs ORDER)`);
+  }
+  test('listening answers match the book’s answer key (pp.186–191)', () => {
+    // Unit → answers to Q1–Q4, as numbered in the book (1–3).
+    const KEY = { u1: [1, 3, 1, 3], u2: [1, 2, 1, 2], u3: [3, 2, 2, 1], u4: [3, 1, 1, 2], u5: [1, 3, 2, 2], u6: [1, 3, 1, 2],
+      u7: [2, 2, 3, 2], u8: [3, 1, 1, 2], u9: [1, 2, 3, 1], u10: [3, 2, 3, 2], u11: [3, 1, 1, 2], u12: [2, 1, 2, 3] };
+    for (const [id, want] of Object.entries(KEY)) {
+      const qs = BK.PAGES.find(p => p.id === id).sections.flatMap(s => s.blocks).filter(b => b.t === 'listen');
+      assert.deepEqual(qs.map(q => q.answer + 1), want, `${id} listening answers`);
+    }
+  });
+  const JPC = /[ぁ-ゖァ-ヺ一-龯々]/;
+  test('book pages are well-formed', () => {
+    const ids = BK.PAGES.map(p => p.id);
+    assert.equal(new Set(ids).size, ids.length, 'duplicate page ids');
+    for (const p of BK.PAGES) {
+      assert.ok(p.title && p.icon && p.sections.length, `${p.id}: missing title, icon or sections`);
+      if (p.n) assert.ok(p.jp && p.ro && p.topic && p.goals.length >= 2, `unit ${p.n}: needs jp, romaji, topic and its goals`);
+      for (const s of p.sections) for (const b of s.blocks) {
+        const at = `${p.id} / ${s.h} / ${b.t}`;
+        if (b.t === 'words' || b.t === 'lines') for (const w of b.items) assert.ok(w.length >= 3 && w.every(x => typeof x === 'string' && x), `${at}: word needs jp, romaji, english`);
+        if (b.t === 'talk' || b.t === 'listen') for (const l of b.lines || b.script) {
+          assert.ok(l.length === 4 && JPC.test(l[1]) && l[2] && l[3], `${at}: line needs speaker, japanese, romaji, english: ${l[1]}`);
+          assert.ok(!/[ぁ-ゖ一-龯]/.test(l[2]) && !/[ぁ-ゖ一-龯]/.test(l[3]), `${at}: romaji/english column has Japanese: ${l[1]}`);
+        }
+        if (b.t === 'listen') assert.ok(b.options.length === 3 && b.answer >= 0 && b.answer < 3, `${at}: needs 3 options and a valid answer`);
+        if (b.t === 'role') assert.ok(b.a && b.b, `${at}: role needs A and B`);
+      }
+    }
+  });
+  {
+    const { PIC_SIZE } = await import('../js/book-pics.js');
+    const { picSizes } = await import('./book-images.mjs');
+    test('Book pictures exist, are sized and stay small', () => {
+      assert.equal(readFileSync('js/book-pics.js', 'utf8'), picSizes(), 'js/book-pics.js is out of date: run scripts/book-images.mjs');
+      const want = [...Object.values(BK.FOOD_PIC).map(f => `food/${f}`)];
+      for (const p of BK.PAGES) for (const s of p.sections) for (const b of s.blocks) {
+        if (b.t === 'img') want.push(b.file);
+        if (b.t === 'scenes') b.items.forEach((_, i) => want.push(`${b.unit}/remember-${i + 1}`));
+      }
+      // Pictures not cropped yet show a placeholder; food photos must all be there.
+      const missing = want.filter(f => f.startsWith('food/') && !PIC_SIZE[f]);
+      assert.ok(!missing.length, `food pictures missing: ${missing.join(', ')}`);
+      // Maps and menus are opened full size, so they may be bigger than the rest.
+      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/(map|menu|seasons|weather|material)$/.test(f) ? 240 : 80) * 1024);
+      assert.ok(!big.length, `pictures too big: ${big.join(', ')}`);
+      const sw = readFileSync('sw.js', 'utf8');
+      assert.ok(!/'\/img\//.test(sw.match(/const SHELL = \[([\s\S]*?)\];/)[1]), 'pictures must not be precached');
+    });
+  }
+  test('book speech text drops marks and skips blanks', () => {
+    assert.equal(BK.spoken('〈ジョン〉さん、(1)お国は？'), 'ジョンさん、お国は？');
+    assert.equal(BK.spoken('はい、＿＿と＿＿がいます。'), null);
+    assert.equal(BK.spoken('茶色／ブラウン'), '茶色、ブラウン');
+    assert.equal(BK.spoken('私も好きです。／私はあまり好きじゃありません。'), '私も好きです。私はあまり好きじゃありません。');
+    assert.equal(BK.spoken('(お*)仕事'), 'お仕事');
+  });
+}
 
 // ---------- Paths: levels, coverage, level tests ----------
 const PATHMOD = await import('../js/path.js');

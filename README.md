@@ -13,6 +13,7 @@ A PWA for learning to **speak** Japanese fast: N5 everyday conversation and offi
 - Speak: the mic checks your pronunciation (Web Speech API, Chrome/Safari)
 - Quiz: listening and "how do you say…" multiple choice
 - Role-play: the app speaks one side, you speak the other
+- Book tab: the *Nihongo Fun & Easy* textbook page by page (front matter + Units 1–4 so far), every line voiced, listening quizzes with scripts. Personal study copy: keep the site private.
 - Works offline; progress stays on the device (localStorage)
 
 Run locally: `npm run dev` → http://localhost:8080. Test: `npm test`.

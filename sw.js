@@ -2,13 +2,16 @@
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and waits: the app asks
 // "New version · Restart" (js/app.js), and Restart tells it to take over; otherwise it takes over once the app
 // is fully closed. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v5.6';
+const CACHE = 'hanasu-v5.7';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v3';
 const AUDIO_MAX = 2000;
+// Book tab pictures: fetched only when a page shows them, then kept (cache-first) across app releases.
+const IMAGES = 'hanasu-img-v1';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/units-index.js', '/js/module-deps.js', '/js/core.js', '/js/data.js', '/js/corp-more.js', '/js/speech.js', '/js/clips.js', '/js/study.js', '/js/speaking.js', '/js/speaking-data.js', '/js/jlpt.js', '/js/jlpt-data.js', '/js/vocab-data.js', '/js/vocab-n5.js', '/js/vocab-n4.js', '/js/vocab-life.js', '/js/grammar-n5.js', '/js/grammar-n4.js', '/js/kanji-n4.js', '/js/exam.js', '/js/exam-data.js', '/js/exam-more.js', '/js/exam-listen.js', '/js/exam-types.js', '/js/conjugate.js', '/js/strokes.js', '/js/ways.js', '/js/ways-n5.js', '/js/ways-office.js', '/js/ways-corp.js', '/js/ways-qa.js', '/js/ways-particles.js', '/js/ways-grammar-n5.js', '/js/ways-grammar-n4.js', '/js/furigana.js', '/js/kanji-readings.js',
-  '/js/particles-data.js', '/js/counters-data.js', '/js/verbs-data.js', '/js/kanji-data.js', '/js/path.js', '/js/kana-data.js', '/js/search.js', '/js/path-jlpt.js', '/js/path-talk.js',
+  '/js/particles-data.js', '/js/counters-data.js', '/js/verbs-data.js', '/js/kanji-data.js', '/js/path.js', '/js/kana-data.js', '/js/search.js', '/js/path-jlpt.js', '/js/path-talk.js', '/js/book.js', '/js/book-data.js', '/js/book-kit.js', '/js/book-index.js', '/js/book-pics.js',
+  '/js/book-kana.js', '/js/book-pictures.js', '/js/book-musts.js', '/js/book-u1.js', '/js/book-u2.js', '/js/book-u3.js', '/js/book-u4.js', '/js/book-u5.js', '/js/book-u6.js', '/js/book-u7.js', '/js/book-u8.js', '/js/book-u9.js', '/js/book-u10.js', '/js/book-u11.js', '/js/book-u12.js', '/js/book-grammar.js', '/js/book-wb-verbs.js', '/js/book-wb-adjectives.js', '/js/book-wb-countries.js', '/js/book-wb-words.js',
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
 
 self.addEventListener('install', e => {
@@ -20,7 +23,7 @@ self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAIT
 
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
-    .then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== AUDIO).map(k => caches.delete(k))))
+    .then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== AUDIO && k !== IMAGES).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 
@@ -30,6 +33,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
   if (url.pathname.startsWith('/audio/')) { e.respondWith(audio(req, e)); return; }
+  if (url.pathname.startsWith('/img/')) { e.respondWith(image(req, e)); return; }
   const key = req.mode === 'navigate' ? '/' : req;
   e.respondWith(caches.open(CACHE).then(async cache => {
     const hit = await cache.match(key, { ignoreSearch: true });
@@ -60,4 +64,15 @@ async function audio(req, e) {
     }));
   }
   return res;
+}
+
+async function image(req, e) {
+  const cache = await caches.open(IMAGES);
+  const hit = await cache.match(req, { ignoreSearch: true });
+  if (hit) return hit;
+  try {
+    const res = await fetch(req);
+    if (res.status === 200) e.waitUntil(cache.put(req, res.clone()));
+    return res;
+  } catch (_) { return Response.error(); }
 }

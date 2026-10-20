@@ -76,7 +76,8 @@ function render(html) {
 
 // The line a speak button would say, so its clip can load while it's on screen.
 function lineFor(el) {
-  const { act, arg } = el.dataset;
+  const { act, arg, say, who } = el.dataset;
+  if (say) return [say, who || 'n']; // Book tab lines carry their own text and speaker's voice
   if (act === 'say-text') return arg || '';
   const c = cardById(arg);
   if (!c) return '';
@@ -684,6 +685,9 @@ const LOADERS = {
   })),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
   search: () => import('./search.js').then(m => m.initSearch(shared())),
+  book: () => import('./book.js').then(m => m.initBook({
+    ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
+  })),
   exam: () => import('./exam.js').then(m => m.initExam({
     ...shared(), mockPassed: lv => loadSection('path').then(m => m.mockPassed(lv)), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
@@ -697,7 +701,7 @@ function loadSection(name) {
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
   : /^jlpt/.test(h) ? 'jlpt' : /^(study|particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes'
-  : /^path\//.test(h) ? 'path' : h === 'search' ? 'search' : null;
+  : /^path\//.test(h) ? 'path' : /^book/.test(h) ? 'book' : h === 'search' ? 'search' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -713,7 +717,7 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 async function route() {
   const h = location.hash.slice(1);
   Object.values(mods).forEach(m => m.clear());
-  const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|path\/\w+)/.exec(h)?.[1];
+  const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|book|path\/\w+)/.exec(h)?.[1];
   const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
   const tabs = [...document.querySelectorAll('#tabs a')];
   const on = tabs.some(a => a.dataset.tab === tab) ? tab : h === 'search' ? '' : 'phrases'; // unknown links fall back to home

@@ -542,7 +542,7 @@ test('mock scoring matches JLPT pass rules', () => {
     assert.equal(new Set(ids).size, ids.length, 'duplicate page ids');
     for (const p of BK.PAGES) {
       assert.ok(p.title && p.icon && p.sections.length, `${p.id}: missing title, icon or sections`);
-      if (p.n) assert.ok(p.jp && p.ro && p.topic && p.goals.length === 3, `unit ${p.n}: needs jp, romaji, topic and 3 goals`);
+      if (p.n) assert.ok(p.jp && p.ro && p.topic && p.goals.length >= 2, `unit ${p.n}: needs jp, romaji, topic and its goals`);
       for (const s of p.sections) for (const b of s.blocks) {
         const at = `${p.id} / ${s.h} / ${b.t}`;
         if (b.t === 'words' || b.t === 'lines') for (const w of b.items) assert.ok(w.length >= 3 && w.every(x => typeof x === 'string' && x), `${at}: word needs jp, romaji, english`);

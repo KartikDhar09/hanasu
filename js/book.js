@@ -1,6 +1,6 @@
 // Book tab: the Nihongo Fun & Easy textbook, page by page. Every Japanese line plays on tap; conversations and
 // listening scripts can play in full, each speaker in their own voice.
-import { BOOK_INFO, FRONT, UNITS, COMING, PAGES, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
+import { BOOK_INFO, FRONT, UNITS, BACK, COMING, PAGES, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
 import { PIC_SIZE } from './book-pics.js';
 
 export function initBook(ctx) {
@@ -33,7 +33,9 @@ export function initBook(ctx) {
         ${UNITS.map(u => btn(u, `${u.topic} · ${u.topicJp}`)).join('')}
         ${COMING.map(([n, title, topic]) => `<div class="unit bk-soon"><span class="icon">⏳</span>
           <span class="ut"><b>${esc(`Unit ${n} · ${title}`)}</b><small>${esc(topic)} · coming next</small></span></div>`).join('')}
-      </div>`);
+      </div>
+      <h2 class="sec">Grammar &amp; Handy Wordbook</h2>
+      <div class="units">${BACK.map(p => btn(p, p.jp)).join('')}</div>`);
   }
 
   // ================= One page (front matter or a unit) =================

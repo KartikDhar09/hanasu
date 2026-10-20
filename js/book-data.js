@@ -12,6 +12,8 @@ export const BOOK_INFO = {
   publisher: 'ASK Publishing',
 };
 
+import { toRomaji } from './conjugate.js';
+
 // Speakers' voices: m = man, f = woman (anyone else uses the main voice).
 export const VOICE = {
   ジョン: 'm', クマール: 'm', 佐藤: 'm', 男の人: 'm', 警察官: 'm', 駅員: 'm', 運転手: 'm', 管理人: 'm', 係員: 'm', M: 'm',
@@ -73,50 +75,20 @@ const WP = (...items) => ({ t: 'words', items, pics: true });       // word card
 const IMG = (file, alt) => ({ t: 'img', file, alt });              // one picture from the book (map, menu)
 const SCENES = (unit, ...items) => ({ t: 'scenes', unit, items });  // "Do you remember?" pictures with their situation
 
+
+// Wordbook helpers: one word per line, fields separated by |.
+const lines = text => text.trim().split('\n').map(l => l.split('|'));
+// WL: english|japanese|romaji[|spoken] → word cards
+const WL = text => W(...lines(text).map(([en, jp, ro, say]) => say ? [jp, ro, en, say] : [jp, ro, en]));
+// VERBS: meaning|masu|dictionary|te|ta|nai → one card per verb, all five forms spoken
+const VERBS = text => W(...lines(text).map(([en, ...f]) => [f.join('・'), f.map(x => toRomaji(x)).join(' · '), en, f.join('、')]));
+// I-adjectives: meaning|dictionary form → non-past, negative, past, past negative (いい-endings conjugate from よい)
+const iForms = a => { const s = a.endsWith('いい') ? a.slice(0, -2) + 'よ' : a.slice(0, -1); return [a, s + 'くない', s + 'かった', s + 'くなかった']; };
+const IADJ = text => W(...lines(text).map(([en, a]) => { const f = iForms(a); return [f.join('・'), f.map(x => toRomaji(x)).join(' · '), en, f.join('、')]; }));
+const NADJ = text => W(...lines(text).map(([en, a]) => { const f = ['です', 'じゃありません', 'でした', 'じゃありませんでした'].map(e => a + e); return [f.join('・'), f.map(x => toRomaji(x)).join(' · '), en, f.join('、')]; }));
+
 // ================= Front matter =================
 export const FRONT = [
-  {
-    id: 'users', icon: '📖', title: 'To users of this book', jp: 'この本を使う方へ',
-    sections: [{
-      h: 'To Users of This Book', blocks: [
-        P('The idea to make this book came after we failed to come across a beginner-level text that met the needs of students hoping to learn practical Japanese for immediate use in the real world as opposed to grammar.'),
-        P('The majority of beginner texts we found made it difficult to grasp the Japanese language in a systematic way. Over-technical explanations, unnatural example sentences, and limited scope for a lesser learning experience, as well as choppy sentences that did not adequately portray an actual conversation, made it practically impossible to find a textbook that we felt would satisfy the curiosity of the adult learner.'),
-        H('This text is characterized by the following four points'),
-        LIST(
-          'Instead of grammar, phrases and their function within a conversation are written out to help students learn natural sounding Japanese.',
-          'Units are composed of several different elements, with a variety of situations, functions, and topics to allow students to effectively learn genuinely helpful expressions in accordance with their interests.',
-          'Conversation drills are presented separately from grammatical explanations to help students easily understand both practical exercises and the workings of the Japanese language.',
-          'Each unit contains a variety of practice exercises to help students naturally acquire target phrases and expressions.',
-        ),
-        P('Our goal in creating this book was to realize a text that 1) motivated students to talk about a variety of subjects with sentence patterns they had just learned; 2) spoke to adults with a sense of intellectual curiosity in a practical way; and 3) made readers feel more familiar with Japan.'),
-        P('At the core of this book is our desire for everyone who has had the opportunity to come to Japan to enjoy their stay in the country. Nothing would make us happier than to know that this book in some way contributed to your having a positive experience in Japan. — The Authors'),
-      ],
-    }, {
-      h: 'How to Use This Book (To Learners)', blocks: [
-        H('Introduction'),
-        P('This book is designed to help beginner students, including those with no knowledge of the Japanese language, acquire natural-sounding, essential Japanese that can be used immediately in daily conversation.'),
-        P('Because this book does not develop concepts of grammar as it progresses, students may begin studying from any of the 12 units at their leisure.'),
-        P('Particles, a grammatical device of the Japanese language, are frequently omitted as they are in daily conversation to expose students to natural sounding Japanese as much as possible. Roman letters and kana spellings to approximate the actual pronunciation of certain words are also included.'),
-        P('We recommend that students memorize phrases and expressions as they appear in the included dialogues so as to reproduce them later, and not analyze all elements of each sentence to study grammar.'),
-        P('The Grammar Appendix included at the back of the book is a complement to the main text intended to help students acquire a systematic understanding of the construction of the Japanese language. We recommend that students use the vocabulary list in the Appendix to expand exercises and practice dialogues found in the book, as well as carry around for reference of necessary words for daily conversation. The color pages in the book’s pre-text include pictures of foods commonly seen in Japan, which should prove useful for daily life as well as conversation practice.'),
-        H('What’s in a unit'),
-        TABLE(['Part', 'What it’s for'], [
-          ['Unit phrases', 'Phrase 1–4: use note and example sentences to understand how phrases are used.'],
-          ['Practice A', 'New words and practice conversation patterns. Use words from Practice A to complete phrases and communicate. Practice until you can say the words you need to know without looking at the book.'],
-          ['Practice B', 'Short practice conversations using target phrases. Use words in Practice A to complete brief practice conversations.'],
-          ['Dialogue', 'Use the target phrases in each unit to practice longer conversations.'],
-          ['Listening', 'Practice listening exercises with Japanese spoken at a natural speed.'],
-          ['Do you remember?', 'Use the right word or sentence as indicated by an illustration to see if you have learned target phrases.'],
-          ['Role playing', 'Perform role play exercises using the expressions learned in that unit.'],
-          ['Phrases for This Unit', 'Review the phrases learned in a unit in addition to other crucial expressions.'],
-          ['Material', 'A page of items to help effectively perform practice conversations.'],
-          ['One More Step', 'Practice for students wanting to challenge themselves to more difficult expressions.'],
-          ['Remember and Use!', 'A page to help students memorize basic Japanese words, including numbers, verbs, and adjectives, for later use.'],
-          ['Good to Know', 'Helpful introductions to services and Japanese words and phrases that make life in Japan a breeze.'],
-        ]),
-      ],
-    }],
-  },
   {
     id: 'kana', icon: 'あ', title: 'Hiragana & katakana', jp: 'ひらがな・カタカナ',
     sections: [{
@@ -224,27 +196,6 @@ export const FRONT = [
       { h: 'Numbers', blocks: [
         W(['いち', 'ichi', '1'], ['に', 'ni', '2'], ['さん', 'san', '3'], ['よん／し', 'yon / shi', '4'], ['ご', 'go', '5'],
           ['ろく', 'roku', '6'], ['なな／しち', 'nana / shichi', '7'], ['はち', 'hachi', '8'], ['きゅう／く', 'kyū / ku', '9'], ['じゅう', 'jū', '10']),
-      ] },
-    ],
-  },
-  {
-    id: 'notes', icon: '👥', title: 'Explanatory notes & characters', jp: '凡例',
-    sections: [
-      { h: 'A note about kana / kanji and the Romanization', blocks: [
-        P('Because this book is designed to help learners acquire conversational skills regardless of their ability to read Japanese, text is displayed in both a mixture of kana and kanji as well as Roman letters. However, some areas of the book only feature Roman letters due to space constraints.'),
-        P('Kanji are printed wherever they would normally be used in written Japanese, along with their readings in hiragana.'),
-        P('This book mainly incorporates the Hepburn system of Romanization. Long vowels are indicated with a horizontal line (eg. Tōkyō = Tookyoo). However, the long [i] found at the end of i-adjectives, such as in “tanoshii”, are spelled out to more easily demonstrate conjugations. Long [e] sounds are written as “ee” or “ei” depending on the original spelling of the word in question, although many times words with an [ei] sound are pronounced more like [ee].'),
-        P('Compound words include hyphens to indicate boundaries between individual words to aid pronunciation, such as “100-en” and “hon-ya”.'),
-      ] },
-      { h: 'Characters in this book', blocks: [
-        TABLE(['', 'Who'], [
-          ['ジョン John', 'American, Engineer'],
-          ['カレン Karen', 'British, John’s wife / English teacher'],
-          ['クマール Kumar', 'Indian, John’s co-worker / Engineer'],
-          ['田中 Tanaka', 'Japanese, John’s co-worker in the general affairs division'],
-          ['佐藤 Sato', 'Japanese, John and Karen’s friend / Student'],
-          ['鈴木 Suzuki', 'Japanese, John and Karen’s friend / Housewife'],
-        ]),
       ] },
     ],
   },
@@ -2271,7 +2222,930 @@ export const UNITS = [
 export const COMING = [
 ];
 
-export const PAGES = [...FRONT, ...UNITS];
+// ================= Back of the book =================
+export const BACK = [
+  {
+    id: 'grammar', icon: '📐', title: 'Grammar', jp: '文法',
+    sections: [
+      { h: 'I Sentence Structure', blocks: [
+        TIP('The book writes its grammar examples in romaji only; the Japanese lines here are added so every example can be played.'),
+        H('1. Basic Sentence Patterns'),
+        P('In broad terms, Japanese sentences can be divided into the following three patterns.'),
+        L(['私は日本人です。', 'Watashi wa Nihon-jin desu.', 'I am a Japanese person. [Noun Phrase]'], ['メアリーさんは忙しいです。', 'Mearī-san wa isogashii desu.', 'Mary-san is busy. [Adjective Phrase]'],
+          ['田中さんはラーメンを食べます。', 'Tanaka-san wa rāmen o tabemasu.', 'Tanaka-san eats ramen. [Verb Phrase]']),
+        P('“Desu” has a similar function to “to be” in English, and comes at the end of Noun and Adjective Phrases. Verb Phrases end with [-masu]. “Wa” is a particle that denotes topics and subjects. (The particles “ga” and “mo” can also indicate a subject. → See II Particles)'),
+        H('2. Negative Sentences'),
+        P('Negative Sentences are made by modifying the end of a predicate, which is typically the last part of a sentence. This grammatical structure is the reason that one must listen to the very end of a Japanese sentence to know whether it is negative or affirmative.'),
+        L(['私は日本人じゃありません。', 'Watashi wa Nihon-jin ja arimasen.', 'I am not a Japanese person. [Negative Noun Phrase]'], ['メアリーさんは忙しくないです。', 'Mearī-san wa isogashiku nai desu.', 'Mary-san is not busy. [Negative Adjective Phrase]'],
+          ['田中さんはラーメンを食べません。', 'Tanaka-san wa rāmen o tabemasen.', 'Tanaka-san does not eat ramen. [Negative Verb Phrase]']),
+        P('Please refer to individual chapters for more detailed information on how to make negative sentences using all parts of speech.'),
+        H('3. Interrogative Sentences (Questions)'),
+        P('Attach “ka” to the end of a Declarative Sentence to create an Interrogative Sentence.'),
+        L(['メアリーさんは忙しいですか。', 'Mearī-san wa isogashii desu ka.', 'Is Mary-san busy?'], ['田中さんはラーメンを食べますか。', 'Tanaka-san wa rāmen o tabemasu ka.', 'Does Tanaka-san eat ramen?']),
+        N('→ See VIII Interrogatives for interrogative words and sentences with wh-words (who, what, when, where, why, and how).'),
+      ] },
+      { h: 'II Particles', blocks: [
+        P('Creating longer sentences in Japanese typically involves inserting different kinds of information in between the subject and predicate. Grammatical units known as “particles” help simplify this process.'),
+        P('Japanese particles are similar to English prepositions, words like “in” and “at”. As shown below, while English uses prepositions, which precede the noun, clause, or phrase they modify, Japanese uses postpositions, which come after the clause or phrase.'),
+        L(['彼の部屋で晩ごはんを食べました。', 'Kare no heya de bangohan o tabemashita.', 'We had dinner in his room.'], ['毎朝6時に起きます。', 'Maiasa roku-ji ni okimasu.', 'I wake up at six o’clock every morning.']),
+        P('Although particles themselves do not carry any meaning, they provide an important role in sentence formation. For example, English does not use particles and thus relies on word order within a sentence. Changing the order of words in an English sentence can result in a completely different meaning: I gave her my dog. ≠ *I gave my dog her.'),
+        P('However, what is crucial in a Japanese sentence is not word order, but the units of information made up of a particle and the noun, clause, or phrase it modifies.'),
+        L(['私は彼女に犬をあげた。', 'Watashi wa kanojo ni inu o ageta.', 'I gave her my dog.'], ['私は犬を彼女にあげた。', 'Watashi wa inu o kanojo ni ageta.', 'I gave her my dog. (same meaning)']),
+        P('Even if the words of a sentence appear in a different order, as long as the particles remain the same, the meaning of the sentence does not change. There are different types of particles. Take a look at the different particles and their functions below.'),
+        H('1. wa'),
+        L(['私はタイ人です。', 'Watashi wa Tai-jin desu.', '[Subject] I am a Thai person.'], ['これは500円です。', 'Kore wa gohyaku-en desu.', '[Subject] This costs 500 yen.'],
+          ['昨日は居酒屋に行きました。', 'Kinō wa izakaya ni ikimashita.', '[Topic] Yesterday I went to an izakaya.'], ['夏休みは何をしましたか。', 'Natsu-yasumi wa nani o shimashita ka.', '[Topic] What did you do over the summer break?'],
+          ['すしは好きですが、さしみはきらいです。', 'Sushi wa suki desu ga, sashimi wa kirai desu.', '[Comparisons] I like sushi, but I don’t like sashimi.']),
+        H('2. o'),
+        L(['新聞を読みます。', 'Shimbun o yomimasu.', '[Object] I read newspapers.'], ['コーヒーを飲みます。', 'Kōhī o nomimasu.', '[Object] I drink coffee.']),
+        H('3. ni'),
+        L(['友だちに会います。', 'Tomodachi ni aimasu.', '[Object] I’m going to see my friend.'], ['父にネクタイをあげます。', 'Chichi ni nekutai o agemasu.', '[Object] I’m going to give my dad a necktie.'],
+          ['バスに乗ります。', 'Basu ni norimasu.', '[Object] I’m going to get on the bus.'], ['中国に行きます。', 'Chūgoku ni ikimasu.', '[Destination] I’m going to China.'],
+          ['日本に来ます。', 'Nihon ni kimasu.', '[Destination] I’m coming to Japan.'], ['うちに帰ります。', 'Uchi ni kaerimasu.', '[Destination] I’m going back home.']),
+        N('* The particle “e” is used to indicate a general direction as well as a destination, and is interchangeable with “ni”.'),
+        L(['7時に起きます。', 'Shichi-ji ni okimasu.', '[Time] I get up at seven o’clock.'], ['11時に寝ます。', 'Jūichi-ji ni nemasu.', '[Time] I go to bed at eleven o’clock.'],
+          ['3時に戻ります。', 'San-ji ni modorimasu.', '[Time] I’ll come back at three o’clock.'], ['弟の部屋にテレビがあります。', 'Otōto no heya ni terebi ga arimasu.', '[Location] There’s a TV in my little brother’s room.'],
+          ['うちにねこがいます。', 'Uchi ni neko ga imasu.', '[Location] There’s a cat in the house.']),
+        H('4. de'),
+        L(['レストランで晩ごはんを食べます。', 'Resutoran de bangohan o tabemasu.', '[Place of action] I eat dinner at restaurants.'], ['バスで行きます。', 'Basu de ikimasu.', '[Means] I’ll go by bus.'],
+          ['はしで食べます。', 'Hashi de tabemasu.', '[Means] I eat with chopsticks.'], ['パンでお願いします。', 'Pan de onegaishimasu.', '[Selection] (Waiter: Would you like bread or rice?) Bread, please.']),
+        H('5. no'),
+        L(['私の車', 'watashi no kuruma', '[Possession] my car'], ['友だちの本', 'tomodachi no hon', '[Possession] my friend’s book'], ['A社の社員', 'A-sha no shain', '[Affiliation] an employee of Company A'],
+          ['A大学の学生', 'A-daigaku no gakusei', '[Affiliation] a student at University A'], ['日本語の先生', 'Nihon-go no sensei', '[Attribute] a teacher of the Japanese language'],
+          ['いちごのシャーベット', 'ichigo no shābetto', '[Attribute] strawberry sherbet'], ['友だちのようこさん', 'tomodachi no Yōko-san', '[Apposition] my friend, Yoko-san'],
+          ['夫のトム', 'otto no Tomu', '[Apposition] my husband, Tom'], ['赤いの', 'akai no', '[Pronoun] the red one'], ['あついの', 'atsui no', '[Pronoun] the hot one']),
+        H('6. to'),
+        L(['友だちと映画を見ました。', 'Tomodachi to eiga o mimashita.', '[A partner in action] I saw a movie with my friend.'], ['えりさんと結婚しました。', 'Eri-san to kekkon shimashita.', '[A partner in action] I married Eri-san.'],
+          ['社長と話します。', 'Shachō to hanashimasu.', '[A partner in action] I’ll talk with the CEO.'], ['パンと卵', 'pan to tamago', '[Parallel phrases] bread and eggs']),
+        H('7. mo'),
+        L(['これもお願いします。', 'Kore mo onegaishimasu.', '[Sameness / Agreement] I’ll have this, too, please.'], ['私も映画が好きです。', 'Watashi mo eiga ga suki desu.', '[Sameness / Agreement] I also like movies.'],
+          ['ワインを5本も飲みました。', 'Wain o go-hon mo nomimashita.', '[Emphasis] I drank five bottles of wine!']),
+        H('8. kara'),
+        L(['うちから学校まで30分かかります。', 'Uchi kara gakkō made sanjuppun kakarimasu.', '[Origin of duration or motion] It takes thirty minutes from our house to the school.']),
+        H('9. made'),
+        L(['9時から11時まで勉強します。', 'Ku-ji kara jūichi-ji made benkyō shimasu.', '[End of duration or motion] I study from nine until eleven o’clock.']),
+        H('10. ga'),
+        P('Although the particle “ga” essentially follows the subject of a sentence, it sometimes provides a function similar to other particles. Because this can make “ga” confusing to use, try to remember the five patterns below.'),
+        L(['だれが来ますか。', 'Dare ga kimasu ka.', '[The subject of an interrogative sentence that uses an interrogative word] Who’s coming?'], ['いつがいいですか。', 'Itsu ga ii desu ka.', 'When would be a good time?'],
+          ['うちにパソコンがあります。', 'Uchi ni pasokon ga arimasu.', '[The subject of a sentence denoting possession or location] We have a computer at our house.'], ['トイレにねこがいます。', 'Toire ni neko ga imasu.', 'There’s a cat in the restroom.'],
+          ['これはベートーベンが作った曲です。', 'Kore wa Bētōben ga tsukutta kyoku desu.', '[The subject of an embedded clause modifying a noun phrase] This is a piece of music that is composed by Beethoven.'],
+          ['サッカーが好きです。', 'Sakkā ga suki desu.', '[Objects] (1) suki, kirai, jōzu, heta (like, dislike, be good at, be bad at): I like soccer.'],
+          ['ここから富士山を見ることができます。', 'Koko kara Fuji-san o miru koto ga dekimasu.', '[Objects] (2) wakaru, dekiru, mieru, kikoeru (understand, can do, can see, can hear): It is possible to see Mount Fuji from here.'],
+          ['新しいテレビがほしいです。', 'Atarashii terebi ga hoshii desu.', '[Objects] (3) hoshii, shitai (want, want to do): I want a new TV.'], ['日本語が勉強したいです。', 'Nihon-go ga benkyō shitai desu.', 'I want to study Japanese.'],
+          ['妹は髪が長い。', 'Imōto wa kami ga nagai.', '[An aspect of part of the subject] My younger sister has long hair.'], ['日本は犯罪が少ない。', 'Nihon wa hanzai ga sukunai.', 'Japan has little crime.']),
+      ] },
+      { h: 'III Demonstratives', blocks: [
+        P('There are four types of Japanese demonstratives, which begin with “ko-”, “so-”, “a-”, and “do-” respectively. → See Unit 2 and Unit 3'),
+        TABLE(['', 'ko- (close to the speaker)', 'so- (farther than ko-, or closer to the listener)', 'a- (farther than so-, or far from both)', 'do- (which, what, where)'], [
+          ['Thing', 'kore', 'sore', 'are', 'dore'], ['Thing + noun', 'kono [+noun]', 'sono [+noun]', 'ano [+noun]', 'dono [+noun]'], ['Place', 'koko', 'soko', 'asoko', 'doko'],
+          ['Direction', 'kocchi', 'socchi', 'acchi', 'docchi'], ['(Polite)', '(kochira)', '(sochira)', '(achira)', '(dochira)'], ['Area', 'kono hen', 'sono hen', 'ano hen', 'dono hen']]),
+        W(['これ', 'kore', 'this'], ['それ', 'sore', 'that'], ['あれ', 'are', 'that (over there)'], ['どれ', 'dore', 'which'], ['ここ', 'koko', 'here'], ['そこ', 'soko', 'there'], ['あそこ', 'asoko', 'over there'], ['どこ', 'doko', 'where'],
+          ['こっち', 'kocchi', 'this way'], ['そっち', 'socchi', 'that way'], ['あっち', 'acchi', 'that way (over there)'], ['どっち', 'docchi', 'which way']),
+      ] },
+      { h: 'IV Existential and Possessive Sentences', blocks: [
+        P('An Existential Sentence is a sentence with a phrase describing a location or time in which a noun exists. When the subject of an Existential Sentence is animate (capable of moving), the verb “imasu / iru” is used, while “arimasu / aru” is used for inanimate objects. → See Unit 1, Unit 2, Unit 3'),
+        L(['公園にこどもがいます。', 'Kōen ni kodomo ga imasu.', 'A little kid is in the park.'], ['駅前にタクシーがいます。', 'Ekimae ni takushī ga imasu.', 'Taxis are in front of the station.'],
+          ['うちの前にコンビニがあります。', 'Uchi no mae ni kombini ga arimasu.', 'There’s a convenience store in front of our house.'], ['庭に木があります。', 'Niwa ni ki ga arimasu.', 'There’s a tree in the garden.']),
+        P('Although a taxi is not alive, because the driver inside is capable of moving, it is considered animate. Likewise, although a tree is a living thing, because it cannot move on its own it is considered inanimate.'),
+        P('“imasu” and “arimasu” can also denote possession and scheduling, which are usages derived from their original meaning of existence.'),
+        L(['かさ、ありますか。', 'Kasa, arimasu ka.', '(At a store) Do you have umbrellas?'], ['明日会議があります。', 'Ashita kaigi ga arimasu.', 'I have a meeting tomorrow.'],
+          ['私は妹が二人います。', 'Watashi wa imōto ga futari imasu.', 'I have two younger sisters.'], ['こどものころ、うちに犬がいました。', 'Kodomo no koro, uchi ni inu ga imashita.', 'We had a dog at our house when I was a kid.']),
+        P('Although the subject of an Existential Sentence is primarily marked by “ga”, there are cases when it is denoted by the topic marker “wa”. → See II Particles'),
+      ] },
+      { h: 'V Verbs', blocks: [
+        P('Verbs provide a great deal of information in Japanese, including affirmation / negation, tense, and politeness. In broad terms, Japanese verbs can be divided into polite and plain forms, while Japanese tense is either past or non-past (used for present and future actions). → See Unit 8. Although some verbs have irregular conjugations, for the most part they follow the same basic rules.'),
+        H('1. Basic Verb Conjugations and Functions'),
+        P('Polite verbs end in [-masu]. This conjugation is known as either the masu-form or the polite form.'),
+        TABLE(['ikimasu (Go)', 'Affirmative', 'Negative'], [['Non-past', 'ikimasu', 'ikimasen'], ['Past', 'ikimashita', 'ikimasendeshita']]),
+        P('To find a verb in the dictionary, you need to search for the dictionary form or the plain form.'),
+        TABLE(['taberu (Eat)', 'Affirmative', 'Negative'], [['Non-past', 'taberu (dictionary form)', 'tabenai (nai-form)'], ['Past', 'tabeta (ta-form)', 'tabenakatta']]),
+        P('In certain contexts, the masu-form and dictionary form of a verb are used not to express tense or politeness, but to connect grammatical expressions. Take a look at what sort of sentences can be made using the masu-form and dictionary form of the verb “nomu” (drink).'),
+        L(['何か飲みたいです。', '1. Masu-form nomimasu + tai desu (Desire): Nani ka nomitai desu.', 'I want something to drink.'], ['飲みに行きます。', '+ ni ikimasu (Destination of motion): Nomi ni ikimasu.', 'I’m going drinking.'],
+          ['ビールを飲むのが好きです。', '2. Dictionary form nomu + no ga suki desu (Verb nominalization): Bīru o nomu no ga suki desu.', 'I like drinking beer.'],
+          ['日本酒を飲むことができます。', '+ koto ga dekimasu (Verb nominalization): Nihon-shu o nomu koto ga dekimasu.', 'I can drink Japanese sake.']),
+        P('Additional conjugations include the nai-form, ta-form, and te-form. Let’s take a look at what sort of sentences can be made using different forms of the verb “kaku” (write).'),
+        L(['ここに書かないでください。', '3. Nai-form kakanai + nai de kudasai (Negative request): Koko ni kakanai de kudasai.', 'Please don’t write here / on this.'],
+          ['住所も書かないといけません。', '+ nai to ikemasen (Obligation): Jūsho mo kakanai to ikemasen.', 'You must also write down your address.'],
+          ['ファンレターを書いたことがあります。', '4. Ta-form kaita + koto ga arimasu (Experience): Fan-retā o kaita koto ga arimasu.', 'I’ve written a fan letter before.'],
+          ['日本語で書いたほうがいいです。', '+ hō ga ii desu (Advice): Nihon-go de kaita hō ga ii desu.', 'It’d be better to write it in Japanese.']),
+        P('The te-form is considered to be the most essential and crucial of all verb conjugations. → See Unit 5, Unit 6'),
+        L(['ここに名前を書いて。', '5. Te-form kaite (A request to someone familiar): Koko ni namae o kaite.', 'Write your name here.'], ['手紙を書いて、寝た。', 'Te-form (Verb connector): Tegami o kaite, neta.', 'I wrote a letter and went to bed.'],
+          ['ここに名前を書いてください。', '+ kudasai (Request): Koko ni namae o kaite kudasai.', 'Please write your name here.'], ['今手紙を書いています。', '+ imasu (Progressive action): Ima tegami o kaite imasu.', 'I’m writing a letter right now.'],
+          ['ボールペンで書いてもいいですか。', '+ mo ii desu ka (Request for permission): Bōrupen de kaite mo ii desu ka.', 'May I write with a ballpoint pen?']),
+        H('2. How to Conjugate Verbs'),
+        P('We will now take a look at each verb conjugation. As mentioned before, although some exceptions do exist, most verbs apart from the two irregular verbs “suru” (do) and “kuru” (come) conjugate according to the same rules. Verbs can be divided into three categories according to their conjugations. In order to memorize how verbs conjugate, it is important to first understand these three categories.'),
+        LIST('1. Ru-verbs: Verbs that end in [-ru] whose final vowel before [-ru] is [i] or [e]. Ex. taberu (eat), miru (look), miseru (show), akeru (open). *Exceptions: kaeru (go home / return), hairu (enter), hashiru (run), shiru (know) → u-verb',
+          '2. U-verbs: Verbs that end in sounds beside [ru], such as [u] or [tsu]. Verbs that end in [ru] whose final vowel before [ru] is [a], [u], or [o]. Ex. iku (go), motsu (hold), tobu (fly), sawaru (touch), uru (sell), noru (get on)',
+          '3. Irregular verbs: Two verbs, “suru” (do) and “kuru” (come).'),
+        P('Given the above rules, as long as you are aware of a few exceptions, you can categorize all verbs into one of three groups. Although ru-verbs have the simplest rules for conjugations, the majority of verbs are u-verbs.'),
+        H('How to make the dictionary form'),
+        TABLE(['', 'Rule', 'Examples'], [
+          ['1. Ru-verbs', 'Starting from the masu-form, replace [masu] with [ru]. -masu → -ru', 'tabemasu → taberu · mimasu → miru'],
+          ['2. U-verbs', 'Starting from the masu-form, remove [masu] and replace the final [i] with [u]. Note that sound changes occur when using kana from the sa and ta rows.', 'kakimasu → kaku · nomimasu → nomu · hanashimasu → hanasu · mochimasu → motsu'],
+          ['3. Irregular verbs', '', 'shimasu → suru · kimasu → kuru']]),
+        H('How to make the nai-form'),
+        TABLE(['', 'Rule', 'Examples'], [
+          ['1. Ru-verbs', 'Starting from the masu-form, replace [masu] with [nai]. -masu → -nai', 'tabemasu → tabenai · mimasu → minai'],
+          ['2. U-verbs', 'Starting from the masu-form, remove [masu] and replace the final [i] with [anai]. -imasu → -anai. However, if the final [u] of the dictionary form of a verb is preceded by another vowel, the [u] becomes [wa] in the nai-form.', 'kakimasu → kakanai · nomimasu → nomanai · kau → kawanai · iu → iwanai'],
+          ['3. Irregular verbs', '', 'shimasu → shinai · kimasu → konai']]),
+        H('How to make the te-form'),
+        TABLE(['', 'Rule', 'Examples'], [
+          ['1. Ru-verbs', 'Starting from the masu-form, replace [masu] with [te]. -masu → -te', 'tabemasu → tabete · mimasu → mite'],
+          ['2. U-verbs (1)', '-i, -chi, -ri → -tte', 'kaimasu → katte · mochimasu → motte · kaerimasu → kaette'],
+          ['2. U-verbs (2)', '-mi, -bi, -ni → -nde', 'nomimasu → nonde · asobimasu → asonde · shinimasu → shinde'],
+          ['2. U-verbs (3)', '-ki, -gi → -ite, -ide (*Exception: ikimasu → itte)', 'kakimasu → kaite · oyogimasu → oyoide'],
+          ['2. U-verbs (4)', '-shi → -shite', 'hanashimasu → hanashite'],
+          ['3. Irregular verbs', '', 'shimasu → shite · kimasu → kite']]),
+        P('Although creating the te-forms of u-verbs is slightly complicated, they all obey certain rules, which are determined based on the final speech sound that remains after removing [masu] from the masu-form of each verb. *The ta-form is identical to the te-form conjugation.'),
+        LINK('#verbs', 'Practise verb forms in the app (all forms, with a quiz)'),
+      ] },
+      { h: 'VI Adjectives', blocks: [
+        P('Like Japanese verbs, Japanese adjectives convey crucial information at the end, such as negation and tense. Two types of Japanese adjectives exist, i-adjectives and na-adjectives, and they each have their own conjugation pattern. When attaching an adjective to the front of a noun to create a noun phrase, adjectives that end in [i] are known as i-adjectives, and adjectives that end in [na] are called na-adjectives. → See Unit 9, Unit 10, Unit 11'),
+        L(['広い部屋', 'hiroi heya', 'a spacious room (i-adjective)'], ['静かな部屋', 'shizuka na heya', 'a quiet room (na-adjective)'], ['古い部屋', 'furui heya', 'an old room (i-adjective)'], ['きれいな部屋', 'kirei na heya', 'a clean room (na-adjective)']),
+        P('Adjectives function in two ways depending on if they are used in the predicate of a sentence or as part of a noun phrase.'),
+        L(['このかばんは小さいです。', 'Kono kaban wa chiisai desu.', 'This bag is small.'], ['これは小さいかばんです。', 'Kore wa chiisai kaban desu.', 'This is a small bag.'],
+          ['この問題は簡単です。', 'Kono mondai wa kantan desu.', 'This problem is simple.'], ['これは簡単な問題です。', 'Kore wa kantan na mondai desu.', 'This is a simple problem.']),
+        TABLE(['', 'I-adjective hiroi (wide): Affirmative', 'Negative', 'Na-adjective shizuka (quiet): Affirmative', 'Negative'], [
+          ['Non-past', 'hiroi desu', 'hirokunai desu', 'shizuka desu', 'shizuka dewa / ja arimasen'], ['Past', 'hirokatta desu', 'hirokunakatta desu', 'shizuka deshita', 'shizuka dewa / ja arimasendeshita']]),
+        N('*1 I-adjective “ii” (good) conjugates irregularly: ii desu · yokunai desu · yokatta desu · yokunakatta desu.'),
+        N('*2 Na-adjectives also include the following conjugation: shizuka desu · shizuka janai desu · shizuka datta desu · shizuka janakatta desu.'),
+        P('Note that the word [desu] is frequently omitted in casual conversation.'),
+      ] },
+      { h: 'VII Numbers', blocks: [
+        P('Japanese has different words for numbers depending on if numbers are said by themselves, or if they are used in conjunction with a counter word.'),
+        H('1. Stand-alone Numbers'),
+        P('Japanese numbers are based around 10, with numbers higher than 10 formed by stating the unit of 10 and then saying the words for 1 through 9: 0 (zero / rei), 1 (ichi), 2 (ni), 3 (san), 4 (yon / shi), 5 (go), 6 (roku), 7 (nana / shichi), 8 (hachi), 9 (kyū / ku), 10 (jū), 11 (jūichi), 12 (jūni), …, 20 (nijū), …, 30 (sanjū).'),
+        P('Additionally, individual words exist for units of 10 with additional decimals, ranging from 10 (jū) and 100 (hyaku) to 1,000 (sen) and 10,000 (man). However, numbers higher than these units are composed by combining these four words.'),
+        W(['十万', 'jūman', '100,000'], ['百万', 'hyakuman', '1,000,000'], ['一千万', '(is)senman', '10,000,000', 'いっせんまん'], ['一億', '(ichi)oku', '100,000,000', 'いちおく'], ['一兆', '(ic)chō', '1,000,000,000,000', 'いっちょう']),
+        L(['ゼロ さん の ご に に ご の きゅう なな さん さん', 'zero san (no) go ni ni go (no) kyū nana san san', 'Stating a phone number: 03-5225-9733']),
+        H('2. Counting time'),
+        TABLE(['', '___ jikan (hours)', '___ ji (o’clock)', '___ fun / pun (minutes)'], [
+          ['1', 'ichi-jikan', 'ichi-ji', 'ippun'], ['2', 'ni-jikan', 'ni-ji', 'ni-fun'], ['3', 'san-jikan', 'san-ji', 'sam-pun'], ['4', 'yo-jikan', 'yo-ji', 'yon-pun'],
+          ['5', 'go-jikan', 'go-ji', 'go-fun'], ['6', 'roku-jikan', 'roku-ji', 'roppun'], ['7', 'shichi-jikan', 'shichi-ji', 'nana-fun'], ['8', 'hachi-jikan', 'hachi-ji', 'happun'],
+          ['9', 'ku-jikan', 'ku-ji', 'kyū-fun'], ['10', 'jū-jikan', 'jū-ji', 'juppun'], ['11', 'jūichi-jikan', 'jūichi-ji', 'jūippun'], ['12', 'jūni-jikan', 'jūni-ji', 'jūni-fun'],
+          ['20', 'nijū-jikan', '', 'nijuppun'], ['30', 'sanjū-jikan', '', 'sanjuppun']]),
+        L(['3時50分', 'san-ji gojuppun', 'Ex. 3:50', 'さんじごじゅっぷん'], ['8時30分／8時半', 'hachi-ji sanjuppun / hachi-ji han', 'Ex. 8:30 (han = half) → See Unit 7, Remember and Use!', 'はちじさんじゅっぷん、はちじはん']),
+        H('3. Counters'),
+        P('Japanese uses different counter words depending on what is being counted. → See Unit 2, Unit 3, Unit 4'),
+        L(['うちにCDが100枚あります。', 'Uchi ni CD ga hyaku-mai arimasu.', 'I have 100 CDs at home.'], ['車がもう1台ほしい。', 'Kuruma ga mō ichi-dai hoshii.', 'I want one more car.'], ['ハンバーガーをふたつください。', 'Hambāgā o futatsu kudasai.', 'Two hamburgers, please.']),
+        P('Counters are determined by the quality of the object(s) being counted. Numbers have different readings depending on the counter they are used with. Note that the numbers 1 (ichi), 3 (san), 6 (roku), 8 (hachi), and 10 (jū) are especially prone to change.'),
+        TABLE(['', '-mai flat objects (paper, CDs, DVDs, shirts)', '-dai large inanimate objects (TVs, PCs, cars, bicycles)', '-ko / -tsu small inanimate objects (eggs, hamburgers, tomatoes)', '-kai floors and number of times something is done', '-hon long, tubular objects (pens, umbrellas, bottles)', '-nin people'], [
+          ['1', 'ichi-mai', 'ichi-dai', 'ikko / hitotsu', 'ikkai', 'ippon', 'hitori'], ['2', 'ni-mai', 'ni-dai', 'ni-ko / futatsu', 'ni-kai', 'ni-hon', 'futari'],
+          ['3', 'san-mai', 'san-dai', 'san-ko / mittsu', 'san-kai*', 'sam-bon', 'san-nin'], ['4', 'yon-mai', 'yon-dai', 'yon-ko / yottsu', 'yon-kai', 'yon-hon', 'yo-nin'],
+          ['5', 'go-mai', 'go-dai', 'go-ko / itsutsu', 'go-kai', 'go-hon', 'go-nin'], ['6', 'roku-mai', 'roku-dai', 'rokko / muttsu', 'rokkai', 'roppon', 'roku-nin'],
+          ['7', 'nana-mai', 'nana-dai', 'nana-ko / nanatsu', 'nana-kai', 'nana-hon', 'shichi-nin'], ['8', 'hachi-mai', 'hachi-dai', 'hachi-ko / yattsu', 'hachi-kai / hakkai', 'hachi-hon / happon', 'hachi-nin'],
+          ['9', 'kyū-mai', 'kyū-dai', 'kyū-ko / kokonotsu', 'kyū-kai', 'kyū-hon', 'kyū-nin'], ['10', 'jū-mai', 'jū-dai', 'jukko / tō', 'jukkai', 'juppon', 'jū-nin'],
+          ['?', 'nam-mai', 'nan-dai', 'nan-ko / ikutsu', 'nan-kai*', 'nam-bon', 'nan-nin']]),
+        N('* When talking about floors of a building, [san-gai] and [nan-gai] are also permissible.'),
+        LINK('#counters', 'Practise counters in the app (32 counters with audio and a quiz)'),
+      ] },
+      { h: 'VIII Interrogatives', blocks: [
+        P('This section looks at interrogative sentences that use interrogative words like “what” and “who,” and provides a lineup of Japanese interrogatives. Interrogative sentences are usually formed by using an interrogative word for the information you are asking for and adding “ka” to the end of the sentence.'),
+        L(['何が好きですか。', '1. what = nani / nan: Nani ga suki desu ka.', 'What do you like?'], ['これはなんですか。', 'Kore wa nan desu ka.', 'What is this? → See Unit 4'],
+          ['何時に起きますか。', '2. what time = nan-ji: Nan-ji ni okimasu ka.', 'What time do you wake up?'], ['仕事は何時までですか。', 'Shigoto wa nan-ji made desu ka.', 'What time do you finish work?'],
+          ['どこに行きますか。', '3. where = doko: Doko ni ikimasu ka.', 'Where will you go? → See Unit 2, Unit 8'], ['どこで勉強しますか。', 'Doko de benkyō shimasu ka.', 'Where do you study?'],
+          ['だれと行きますか。', '4. who = dare: Dare to ikimasu ka.', 'Who are you going with?'], ['だれが来ましたか。', 'Dare ga kimashita ka.', 'Who came?']),
+        N('When used as the subject of a sentence, interrogative words are always followed by “ga”.'),
+        L(['なんの本を読みましたか。', '5. what + [noun] = nan no + [noun]: Nan no hon o yomimashita ka.', 'What book did you read?'],
+          ['どんな人ですか。', '6. what kind of = donna: Donna hito desu ka.', 'What kind of person is he / she? → See Unit 10'], ['どんなところですか。', 'Donna tokoro desu ka.', 'What kind of place is it?'],
+          ['何時間勉強しましたか。', '7. how many = nan + [counter] / ikutsu: Nan-jikan benkyō shimashita ka.', 'How many hours did you study?'], ['何人いますか。', 'Nan-nin imasu ka.', 'How many people are there?'],
+          ['いくつありますか。', 'Ikutsu arimasu ka.', 'How many are there?'], ['何歳ですか。', '8. how = nan + [counter] / donogurai: Nan-sai desu ka.', 'How old are you?'],
+          ['どのぐらい行きますか。', 'Donogurai ikimasu ka.', 'How often do you go?'], ['どのぐらい遠いですか。', 'Donogurai tōi desuka.', 'How far is it?'],
+          ['どのぐらいかかりますか。', 'Donogurai kakarimasu ka.', 'How long will it take? → See Unit 7'], ['いくらですか。', '9. how much = ikura: Ikura desu ka.', 'How much is it? → See Unit 3'],
+          ['どっち／どちらが好きですか。', '10. which = docchi / dochira / dore (with two options): Docchi / dochira ga suki desu ka.', 'Which do you prefer?'],
+          ['どれが(いちばん)好きですか。', '(with more than two options): Dore ga (ichiban) suki desu ka.', 'Which do you like [the most]?', 'どれがいちばん好きですか。']),
+      ] },
+      { h: 'IX Adverbs', blocks: [
+        P('In Japanese, adverbs come before verbs and adjectives and describe their state or degree.'),
+        H('[State adverbs]'),
+        L(['ゆっくり話してください。', 'Yukkuri hanashite kudasai.', 'Please talk slowly.'], ['この町はすっかり変わった。', 'Kono machi wa sukkari kawatta.', 'This town has completely changed.'], ['きちんと説明してください。', 'Kichinto setsumei shite kudasai.', 'Please explain this precisely.']),
+        H('[Degree adverbs]'),
+        L(['とてもおいしいです。', 'Totemo oishii desu.', 'It’s very delicious.'], ['日本語と英語はかなりちがう。', 'Nihon-go to Eigo wa kanari chigau.', 'Japanese and English are pretty different.'],
+          ['いつもはビールですが、たまに焼酎を飲みます。', 'Itsumo wa bīru desu ga, tamani shōchū o nomimasu.', 'I always drink beer, but sometimes I’ll have shochu.'],
+          ['映画はあまり好きじゃありません。', 'Eiga wa amari suki ja arimasen.', 'I don’t really like movies.'], ['私は彼女をぜんぜん知らない。', 'Watashi wa kanojo o zenzen shiranai.', 'I don’t know her at all.']),
+        P('Affirmative adverbs include “totemo” and “kanari” that describe degree and others like “itsumo” and “tamani” that describe frequency. Negative adverbs include “amari” and “zenzen”.'),
+        P('Some adjectives like the ones listed below can be conjugated to function as adverbs.'),
+        L(['早く着きました。', 'hayai → hayaku: Hayaku tsukimashita.', 'I arrived early.'], ['遅く起きました。', 'osoi → osoku: Osoku okimashita.', 'I woke up late.'],
+          ['富士山はすごくきれいだ。', 'sugoi → sugoku: Fuji-san wa sugoku kirei da.', 'Mt. Fuji is amazingly beautiful.'], ['静かに歩いてください。', 'shizuka na → shizuka ni: Shizuka ni aruite kudasai.', 'Please walk quietly.'],
+          ['もっとポジティブに考えよう。', 'pojithibu na → pojithibu ni: Motto pojithibu ni kangaeyou.', 'Let’s think more positively.']),
+      ] },
+      { h: 'X Omitting words', blocks: [
+        P('Particularly in spoken conversation, certain parts of a Japanese sentence can be omitted.'),
+        H('1. Subject omission'),
+        L(['(私は)ジョンです。', '(Watashi wa) Jon desu.', '(I am) John.'], ['(私は)会社員です。', '(Watashi wa) kaishain desu.', '(I am) a company employee.'], ['(私は)アメリカから来ました。', '(Watashi wa) Amerika kara kimashita.', '(I am) from the United States. → See Unit 1']),
+        P('Subjects that can be quickly understood from context in both interrogative and declarative sentences, particularly in ones in which the listener is the subject, are frequently omitted. It is important to note that the word “anata”, which corresponds to the word “you” in English, is hardly ever used in Japanese conversation. Instead, a person’s name or job title is used when it is necessary to explicitly refer to them in conversation.'),
+        L(['(あなたは)会社員ですか。', '(Anata wa) kaishain desu ka.', '(Are you) a company employee?'], ['(田中さん、)今、忙しいですか。', '(Tanaka-san,) ima, isogashii desu ka.', '(Tanaka-san, are you) busy right now?'],
+          ['(先生は)ラーメンを食べますか。', '(Sensei wa) rāmen o tabe masu ka.', '(Sensei, do you) eat ramen?']),
+        H('2. Interrogative omission'),
+        P('When asking a question using an interrogative word in conversation, there are also times when the question word itself is omitted and only the subject is uttered.'),
+        L(['お仕事は(なんですか)？', 'O-shigoto wa (nan desu ka)?', 'What do you do?'], ['お名前は(なんですか)？', 'O-namae wa (nan desu ka)?', 'What is your name? → See Unit 1']),
+        P('Like “anata” (you), the phrase “anata no” (your) is also not used when it can be easily inferred from context.'),
+      ] },
+      { h: 'XI Respectful Language', blocks: [
+        P('All languages have a method of conveying politeness depending on who someone is speaking to. Japanese is no exception to this, and Japanese keigo, or respectful language, is divided into two categories depending on who is speaking to whom. Sonkei-go, or honorific language, is used to promote the stature of a respectable person (listener or third party), while kenjō-go, or humble language, is used to lower the speaker’s own status. The desu / masu-form is sometimes referred to as teinei-go, or polite language, which can be considered a form of keigo, but unlike sonkei-go and kenjō-go, both listener and speaker can use the desu / masu-form to show respect.'),
+        P('For example, the verb “taberu” (eat) has completely different forms depending on whether it is in teinei-go (polite), sonkei-go (honorific), or kenjō-go (humble).'),
+        TABLE(['Ex.1 Taberu (eat)', ''], [['Teinei-go', 'tabemasu'], ['Sonkei-go', 'meshiagarimasu'], ['Kenjō-go', 'itadakimasu']]),
+        W(['食べます', 'tabemasu', 'teinei-go (polite)'], ['召し上がります', 'meshiagarimasu', 'sonkei-go (honorific)'], ['いただきます', 'itadakimasu', 'kenjō-go (humble)']),
+        P('While some verbs like “taberu” are replaced with completely different words when using polite language, most verbs follow a simple rule to promote the listener (o + [masu-form stem] + ni narimasu) or to demote the speaker (o + [masu-form stem] + shimasu). Additionally, attaching [-rareru] or [-areru] to the stem of a ru-verb or u-verb, respectively, can also be used to promote the listener.'),
+        TABLE(['Ex.2 Kariru (borrow)', ''], [['Teinei-go', 'karimasu'], ['Sonkei-go', 'okari ni narimasu / kariraremasu'], ['Kenjō-go', 'okarishimasu']]),
+        W(['借ります', 'karimasu', 'teinei-go (polite)'], ['お借りになります／借りられます', 'okari ni narimasu / kariraremasu', 'sonkei-go (honorific)'], ['お借りします', 'okarishimasu', 'kenjō-go (humble)']),
+        H('Ex.3 A-san is a librarian at a museum reference room. B-san is a student.'),
+        T(['A', 'この資料、お借りになりますか／借りられますか。', 'Kono shiryō, okari ni narimasu ka / kariraremasu ka.', 'Would you like to borrow these materials?'], ['B', 'ええ、お借りしたいです。', 'Ee, okari shitai desu.', 'Yes, I would [like to borrow them].']),
+        P('Keigo is not only limited to verbs. Nouns can be modified with bika-go, or beautified language, to show respect. In bika-go, the prefix “o” or “go” is attached to a noun.'),
+        W(['お水', 'o-mizu', 'water'], ['お皿', 'o-sara', 'plate'], ['おはし', 'o-hashi', 'chopsticks'], ['ご出身', 'go-shusshin', 'hometown'], ['ご家族', 'go-kazoku', 'family'], ['ご趣味', 'go-shumi', 'hobby']),
+        P('“o” is attached to wago, or native Japanese words, while “go” is attached to kango, or words that were borrowed from Chinese.'),
+        P('Keigo is often found in phrases frequently used at places that serve customers, such as shops, facilities, and areas of public transport.'),
+        L(['お待ちください。', 'Omachi kudasai.', 'Please wait. (sonkei-go)'], ['ゆっくりご覧になってください。', 'Yukkuri goran ni natte kudasai.', 'Please take your time and have a look. (sonkei-go)'],
+          ['いらっしゃいませ。', 'Irasshaimase.', 'Welcome. (sonkei-go)'], ['お待たせしました。', 'Omatase shimashita.', 'Thank you for waiting. (kenjō-go)'],
+          ['すぐお持ちします。', 'Sugu omochi shimasu.', 'I’ll bring that right out. (kenjō-go)'], ['電車がまいります。', 'Densha ga mairimasu.', 'A train is coming. (kenjō-go)']),
+        P('While the above was a brief introduction to Japanese polite language, keigo is not limited to verbs. Politeness in the Japanese language is an expansive system that extends all the way to nouns and adjectives, and reflects the dynamic between the people who use it and the people to whom it is used. Because of this complexity, keigo is not an aspect of the Japanese language that Japanese people naturally acquire and use without thinking, but a system that must be consciously studied.'),
+        P('Although it may take time for students of Japanese to comfortably use keigo, opportunities to listen to polite language abound at restaurants, buses, trains, and a variety of public places, so please begin your studies by listening to the keigo around you.'),
+      ] },
+    ],
+  },
+  // ---------------- Handy Wordbook 別冊語彙集 ----------------
+  {
+    id: 'wb-verbs', icon: '🏃', title: 'Wordbook: verb conjugation list', jp: '動詞活用表',
+    sections: [
+      { h: 'U-verbs', blocks: [P('Each card: masu-form · dictionary form · te-form · ta-form · nai-form. Tap to hear all five.'), VERBS(`
+meet|あいます|あう|あって|あった|あわない
+keep (a luggage)|あずかります|あずかる|あずかって|あずかった|あずからない
+rain|あめがふります|あめがふる|あめがふって|あめがふった|あめがふらない
+walk|あるきます|あるく|あるいて|あるいた|あるかない
+go|いきます|いく|いって|いった|いかない
+hurry|いそぎます|いそぐ|いそいで|いそいだ|いそがない
+think / guess / suppose|おもいます|おもう|おもって|おもった|おもわない
+buy|かいます|かう|かって|かった|かわない
+return (things)|かえします|かえす|かえして|かえした|かえさない
+return / go home|かえります|かえる|かえって|かえった|かえらない
+it takes (time) / cost|かかります|かかる|かかって|かかった|かからない
+write / draw|かきます|かく|かいて|かいた|かかない
+lend|かします|かす|かして|かした|かさない
+do one’s best|がんばります|がんばる|がんばって|がんばった|がんばらない
+listen / hear|ききます|きく|きいて|きいた|きかない
+sit|すわります|すわる|すわって|すわった|すわらない
+smoke (cigarettes)|たばこをすいます|たばこをすう|たばこをすって|たばこをすった|たばこをすわない
+use|つかいます|つかう|つかって|つかった|つかわない
+make|つくります|つくる|つくって|つくった|つくらない
+give one’s help|てつだいます|てつだう|てつだって|てつだった|てつだわない
+stop / stay (at a hotel)|とまります|とまる|とまって|とまった|とまらない
+take (a picture)|とります|とる|とって|とった|とらない
+drink|のみます|のむ|のんで|のんだ|のまない
+enter|はいります|はいる|はいって|はいった|はいらない
+put on (lower body)|はきます|はく|はいて|はいた|はかない
+speak|はなします|はなす|はなして|はなした|はなさない
+pay|はらいます|はらう|はらって|はらった|はらわない
+turn|まがります|まがる|まがって|まがった|まがらない
+wait|まちます|まつ|まって|まった|またない
+receive / get|もらいます|もらう|もらって|もらった|もらわない
+be absent / get rest|やすみます|やすむ|やすんで|やすんだ|やすまない
+read|よみます|よむ|よんで|よんだ|よまない
+understand / know|わかります|わかる|わかって|わかった|わからない`)] },
+      { h: 'Ru-verbs', blocks: [VERBS(`
+open|あけます|あける|あけて|あけた|あけない
+be [animate]|います|いる|いて|いた|いない
+wake up|おきます|おきる|おきて|おきた|おきない
+be late|おくれます|おくれる|おくれて|おくれた|おくれない
+teach|おしえます|おしえる|おしえて|おしえた|おしえない
+change|かえます|かえる|かえて|かえた|かえない
+borrow|かります|かりる|かりて|かりた|かりない
+put on (upper body)|きます|きる|きて|きた|きない
+eat|たべます|たべる|たべて|たべた|たべない
+get tired|つかれます|つかれる|つかれて|つかれた|つかれない
+go out|でかけます|でかける|でかけて|でかけた|でかけない
+sleep|ねます|ねる|ねて|ねた|ねない
+show|みせます|みせる|みせて|みせた|みせない
+see / look / watch|みます|みる|みて|みた|みない
+forget|わすれます|わすれる|わすれて|わすれた|わすれない`)] },
+      { h: 'Irregular verbs', blocks: [VERBS(`
+be [inanimate]|あります|ある|あって|あった|ない
+fill in|きにゅうします|きにゅうする|きにゅうして|きにゅうした|きにゅうしない
+come|きます|くる|きて|きた|こない
+cancel|キャンセルします|キャンセルする|キャンセルして|キャンセルした|キャンセルしない
+take a walk|さんぽします|さんぽする|さんぽして|さんぽした|さんぽしない
+work|しごとします|しごとする|しごとして|しごとした|しごとしない
+try on|しちゃくします|しちゃくする|しちゃくして|しちゃくした|しちゃくしない
+do / play|します|する|して|した|しない
+jog|ジョギングします|ジョギングする|ジョギングして|ジョギングした|ジョギングしない
+order|ちゅうもんします|ちゅうもんする|ちゅうもんして|ちゅうもんした|ちゅうもんしない
+phone / call|でんわします|でんわする|でんわして|でんわした|でんわしない
+study|べんきょうします|べんきょうする|べんきょうして|べんきょうした|べんきょうしない
+bring (things)|もってきます|もってくる|もってきて|もってきた|もってこない
+relax|ゆっくりします|ゆっくりする|ゆっくりして|ゆっくりした|ゆっくりしない
+reserve|よやくします|よやくする|よやくして|よやくした|よやくしない
+contact|れんらくします|れんらくする|れんらくして|れんらくした|れんらくしない`)] },
+    ],
+  },
+  {
+    id: 'wb-adjectives', icon: '🎨', title: 'Wordbook: adjective conjugation list', jp: '形容詞活用表',
+    sections: [
+      { h: 'I-adjectives', blocks: [P('Each card: non-past affirmative · negative · past affirmative · negative (add です to each). Tap to hear all four.'), IADJ(`
+bright|あかるい
+smart / wise|あたまがいい
+new|あたらしい
+hot|あつい
+dangerous|あぶない
+good / fine|いい
+busy|いそがしい
+noisy|うるさい
+delicious / tasty|おいしい
+big|おおきい
+heavy|おもい
+interesting / fun|おもしろい
+good-looking / cool|かっこいい
+light / lightweight|かるい
+pretty / cute|かわいい
+dirty|きたない
+feel good|きもちいい
+dark|くらい
+scary / feel fear|こわい
+cold [weather]|さむい
+great|すごい
+wonderful|すばらしい
+tall|せがたかい
+short (in height)|せがひくい
+narrow|せまい
+expensive / high|たかい
+enjoyable / fun|たのしい
+small|ちいさい
+close / near|ちかい
+boring|つまらない
+cold [thing]|つめたい
+strong|つよい
+far|とおい
+long|ながい
+wide / large [space]|ひろい
+old|ふるい
+taste bad|まずい
+short|みじかい
+difficult|むずかしい
+easy / kind|やさしい
+cheap|やすい
+weak|よわい
+young|わかい`)] },
+      { h: 'Na-adjectives', blocks: [P('Each card: です · じゃありません · でした · じゃありませんでした. Tap to hear all four.'), NADJ(`
+safe|あんぜん
+easy|かんたん
+clean / beautiful|きれい
+fine|げんき
+quiet|しずか
+skillful / good|じょうず
+simple|シンプル
+like / favorite|すき
+hard / tough / terrible|たいへん
+lively|にぎやか
+free / not busy|ひま
+complicated|ふくざつ
+friendly|フレンドリー
+unskillful / bad|へた
+convenient|べんり
+serious|まじめ
+famous|ゆうめい
+selfish|わがまま`)] },
+    ],
+  },
+  {
+    id: 'wb-countries', icon: '🌏', title: 'Wordbook: countries and regions', jp: '国・地域',
+    sections: [
+      { h: 'アフリカ Afurika · Africa', blocks: [WL(`
+Benin|ベナン|Benan
+Cameroon|カメルーン|Kamerūn
+Cote d’Ivoire|コートジボアール|Kōtojiboāru
+Egypt|エジプト|Ejiputo
+Ethiopia|エチオピア|Echiopia
+Ghana|ガーナ|Gāna
+Guinea|ギニア|Ginia
+Kenya|ケニア|Kenia
+Madagascar|マダガスカル|Madagasukaru
+Morocco|モロッコ|Morokko
+Nigeria|ナイジェリア|Naijeria
+Senegal|セネガル|Senegaru
+South African Republic|南アフリカ共和国|Minami Afurika kyōwakoku
+Tanzania|タンザニア|Tanzania
+Tunisia|チュニジア|Chunijia`)] },
+      { h: 'アジア／オセアニア Ajia / Oseania · Asia / Oceania', blocks: [WL(`
+Afghanistan|アフガニスタン|Afuganisutan
+Australia|オーストラリア|Ōsutoraria
+Bahrain|バーレーン|Bārēn
+Bangladesh|バングラデシュ|Banguradeshu
+China|中国|Chūgoku
+India|インド|Indo
+Indonesia|インドネシア|Indoneshia
+Iran|イラン|Iran
+Iraq|イラク|Iraku
+Japan|日本|Nihon
+Korea|韓国|Kankoku
+Kuwait|クウェート|Kuwēto
+Kyrgyzstan|キルギス|Kirugisu
+Lebanon|レバノン|Rebanon
+Malaysia|マレーシア|Marēshia
+Mongolia|モンゴル|Mongoru
+Myanmar|ミャンマー|Myanmā
+Nepal|ネパール|Nepāru
+New Zealand|ニュージーランド|Nyūjīrando
+Oman|オマーン|Omān
+Pakistan|パキスタン|Pakisutan
+Philippines|フィリピン|Firipin
+Qatar|カタール|Katāru
+Saudi Arabia|サウジアラビア|Sauji Arabia
+Singapore|シンガポール|Shingapōru
+Sri Lanka|スリランカ|Suriranka
+Taiwan|台湾|Taiwan
+Thailand|タイ|Tai
+Turkey|トルコ|Toruko
+United Arab Emirates|アラブ首長国連邦|Arabu shuchōkoku rempō
+Uzbekistan|ウズベキスタン|Uzubekisutan
+Vietnam|ベトナム|Betonamu`)] },
+      { h: 'ヨーロッパ Yōroppa · Europe', blocks: [WL(`
+Austria|オーストリア|Ōsutoria
+Belgium|ベルギー|Berugī
+Bulgaria|ブルガリア|Burugaria
+Croatia|クロアチア|Kuroachia
+Czech|チェコ|Cheko
+Denmark|デンマーク|Denmāku
+Estonia|エストニア|Esutonia
+Finland|フィンランド|Finrando
+France|フランス|Furansu
+Germany|ドイツ|Doitsu
+Greece|ギリシャ|Girisha
+Hungary|ハンガリー|Hangarī
+Iceland|アイスランド|Aisurando
+Ireland|アイルランド|Airurando
+Israel|イスラエル|Isuraeru
+Italy|イタリア|Itaria
+Latvia|ラトビア|Ratobia
+Lithuania|リトアニア|Ritoania
+Luxembourg|ルクセンブルク|Rukusenburuku
+Moldova|モルドバ|Morudoba
+Netherlands|オランダ|Oranda
+Norway|ノルウェー|Noruwē
+Poland|ポーランド|Pōrando
+Portugal|ポルトガル|Porutogaru
+Romania|ルーマニア|Rūmania
+Russian Federation|ロシア|Roshia
+Spain|スペイン|Supein
+Sweden|スウェーデン|Suwēden
+Switzerland|スイス|Suisu
+Ukraine|ウクライナ|Ukuraina
+United Kingdom|イギリス|Igirisu`)] },
+      { h: '北・中央・南アメリカ Kita / Chūō / Minami Amerika · North / Central / South America', blocks: [WL(`
+Argentina|アルゼンチン|Aruzenchin
+Brazil|ブラジル|Burajiru
+Canada|カナダ|Kanada
+Chile|チリ|Chiri
+Colombia|コロンビア|Korombia
+Costa Rica|コスタリカ|Kosutarika
+Cuba|キューバ|Kyūba
+Ecuador|エクアドル|Ekuadoru
+Guatemala|グアテマラ|Guatemara
+Jamaica|ジャマイカ|Jamaika
+Mexico|メキシコ|Mekishiko
+Paraguay|パラグアイ|Paraguai
+Peru|ペルー|Perū
+United States of America|アメリカ|Amerika
+Uruguay|ウルグアイ|Uruguai
+Venezuela|ベネズエラ|Benezuera`)] },
+    ],
+  },
+  {
+    id: 'wb-words', icon: '📚', title: 'Wordbook: list of useful words', jp: 'お役立ち語彙集',
+    sections: [
+      { h: '仕事 Shigoto · Jobs', blocks: [WL(`
+government worker|公務員|kōmuin
+company worker|会社員|kaishain
+engineer|エンジニア|enjinia
+programmer|プログラマー|puroguramā
+lawyer|弁護士|bengoshi
+accountant|会計士|kaikeishi
+tax accountant|税理士|zeirishi
+banker|銀行員|ginkōin
+translator|翻訳家|hon’yakuka
+interpreter|通訳(者)|tsūyaku(sha)|通訳者
+doctor|医者|isha
+nurse|看護師|kangoshi
+researcher|研究員|kenkyūin
+teacher|先生／教師|sensei / kyōshi
+student|学生|gakusei
+artist|アーティスト|āthisuto
+architect|建築家|kenchikuka
+designer|デザイナー|dezainā
+musician|ミュージシャン|myūjishan
+cameraman|カメラマン|kameraman
+photographer|写真家|shashinka
+writer|作家／ライター|sakka / raitā
+chef|シェフ／コック|shefu / kokku
+beautician|美容師|biyōshi
+self-employed|自営業|jieigyō
+housewife|主婦|shufu`)] },
+      { h: '趣味／スポーツ Shumi / Supōtsu · Hobbies / Sports', blocks: [WL(`
+movie|映画|eiga
+music|音楽|ongaku
+reading|読書|dokusho
+leisure walk|散歩|sampo
+gardening|ガーデニング|gādeningu
+paintings|絵|e
+travel / trip|旅行|ryokō
+leisure drive|ドライブ|doraibu
+picture / photo|写真|shashin
+shopping|買い物|kaimono
+cooking|料理|ryōri
+bowling|ボウリング|bōringu
+pool / billiard|ビリヤード|biriyādo
+karaoke|カラオケ|karaoke
+darts|ダーツ|dātsu
+video games|ゲーム|gēmu
+manga / comic|まんが|manga
+the outdoors|アウトドア|autodoa
+the internet|インターネット|intānetto
+eating tour|食べ歩き|tabe-aruki
+cycling|サイクリング|saikuringu
+jogging|ジョギング|jogingu
+soccer / football|サッカー|sakkā
+baseball|野球|yakyū
+snowboarding|スノーボード|sunōbōdo
+skiing|スキー|sukī
+scuba diving|スキューバダイビング|sukyūba-daibingu
+surfing|サーフィン|sāfin
+yoga|ヨガ|yoga
+dancing|ダンス|dansu
+golf|ゴルフ|gorufu
+tennis|テニス|tenisu
+ping pong|卓球|takkyū
+weight training|ウエイトトレーニング|ueito-torēningu
+martial arts|格闘技|kakutōgi
+judo|柔道|jūdō
+aikido|合気道|aikidō
+karate|空手|karate
+swimming|水泳|suiei
+mountain climbing|山登り|yama-nobori
+hiking|ハイキング|haikingu`)] },
+      { h: '店／施設 Mise / Shisetsu · Shops / Facilities', blocks: [WL(`
+bookstore|本屋|hon-ya
+flower shop|花屋|hana-ya
+internet café|インターネットカフェ|intānetto kafe
+restaurant|レストラン|resutoran
+café|喫茶店／カフェ|kissaten / kafe
+izakaya / Japanese pub|居酒屋|izakaya
+bakery|パン屋|pan-ya
+ramen house|ラーメン屋|rāmen-ya
+sushi restaurant|すし屋|sushi-ya
+electronics store|電気屋|denki-ya
+beauty salon|美容院|biyō-in
+barbershop|床屋|tokoya
+100-yen store|100円ショップ|hyaku-en shoppu|ひゃくえんショップ
+discount store|ディスカウントショップ|disukaunto shoppu
+drugstore|薬屋／ドラッグストア|kusuri-ya / doraggu sutoa
+pharmacy|薬局|yakkyoku
+super market|スーパー|sūpā
+convenience store|コンビニ|kombini
+bank|銀行|ginkō
+ATM|ATM|ATM|エーティーエム
+station|駅|eki
+bus stop|バス停|basu-tei
+movie theater|映画館|eigakan
+museum|美術館|bijutsukan
+zoo|動物園|dōbutsu-en
+police box|交番|kōban
+post office|郵便局|yūbinkyoku
+amusement park|遊園地|yūenchi
+park|公園|kōen
+hotel|ホテル|hoteru
+guesthouse|ゲストハウス|gesuto-hausu
+gas station|ガソリンスタンド|gasorin sutando
+parking lot|駐車場|chūshajō
+city hall|区役所／市役所|kuyakusho / shiyakusho
+airport|空港|kūkō
+university|大学|daigaku
+school|学校|gakkō
+hospital|病院|byōin
+department store|デパート|depāto
+shopping mall|ショッピングモール|shoppingu mōru
+onsen (hot spring)|温泉|onsen
+temple|お寺|otera
+restroom|トイレ|toire
+cash register|レジ|reji
+elevator|エレベーター|erebētā
+escalator|エスカレーター|esukarētā
+coin-operated locker|コインロッカー|koin rokkā
+entrance|入り口|iriguchi
+exit|出口|deguchi`)] },
+      { h: '衣類／アクセサリー Irui / Akusesarī · Clothing / Accessories', blocks: [WL(`
+T-shirt|Tシャツ|T-shatsu
+dress shirt|ワイシャツ|wai-shatsu
+shoes|靴|kutsu
+socks|靴下|kutsushita
+necktie|ネクタイ|nekutai
+shorts|半ズボン／ショートパンツ|han-zubon / shōto-pantsu
+pants / trousers|ズボン／パンツ|zubon / pantsu
+jacket|ジャケット|jaketto
+underwear|下着|shitagi
+short / long sleeves|半／長そで|han- / naga-sode|半そで、長そで
+skirt|スカート|sukāto
+jeans|ジーンズ|jīnzu
+sweater|セーター|sētā
+jumper|ジャンパー|jampā
+kimono|着物|kimono
+yukata / cotton kimono|浴衣|yukata
+watch / clock|時計|tokei
+scarf|マフラー|mafurā
+glasses|めがね|megane
+swimsuit|水着|mizugi
+hat / cap|帽子|bōshi
+pierced earring|ピアス|piasu
+earring|イヤリング|iyaringu
+necklace|ネックレス|nekkuresu
+glove|手袋|tebukuro
+belt|ベルト|beruto
+ring|ゆびわ|yubiwa
+handkerchief|ハンカチ|hankachi
+bag|バッグ／かばん|baggu / kaban`)] },
+      { h: '文房具 Bumbōgu · Stationery', blocks: [WL(`
+notebook|ノート|nōto
+pen|ペン|pen
+scissors|ハサミ|hasami
+file|ファイル|fairu
+eraser|消しゴム|keshigomu
+sticky note|付箋|fusen
+scotch tape|セロテープ|serotēpu
+packaging tape|ガムテープ|gamu-tēpu
+stapler|ホッチキス|hocchikisu`)] },
+      { h: '家具／電化製品 Kagu / Denka-seihin · Furniture / Appliance', blocks: [WL(`
+desk|机|tsukue
+chair|いす|isu
+table|テーブル|tēburu
+bed|ベッド|beddo
+Japanese-style bedding|布団|futon
+refrigerator|冷蔵庫|reizōko
+washing machine|洗濯機|sentakuki
+vacuum cleaner|掃除機|sōjiki
+microwave|電子レンジ|denshi-renji
+air conditioner|エアコン|eakon
+printer|プリンタ|purinta
+digital camera|デジカメ／デジタルカメラ|dejikame / dejitaru-kamera
+personal computer|パソコン|pasokon
+cellular phone|携帯(電話)|keitai (denwa)|携帯電話
+electronic dictionary|電子辞書|denshi-jisho
+TV|テレビ|terebi`)] },
+      { h: '薬 Kusuri · Medicine', blocks: [WL(`
+headache medicine|頭痛薬|zutsū-yaku
+painkiller|痛み止め|itami-dome
+cold medicine|かぜ薬|kazegusuri
+stomach medicine|胃薬|igusuri
+gargle|うがい薬|ugaigusuri
+eye drops|目薬|megusuri
+nasal drops|点鼻薬|tenbi-yaku
+itch medicine|かゆみ止め|kayumi-dome
+disinfectant|消毒液|shōdoku-eki
+band-aid|ばんそうこう|bansōkō
+diarrhea medicine|下痢止め|geri-dome
+wet cloth (compress)|湿布|shippu
+insecticide|殺虫剤|sacchū-zai`)] },
+      { h: '色 Iro · Colors', blocks: [P('The colours are on the Pictures page.'), LINK('#book/pictures', 'Open Pictures: colors & Japanese food')] },
+      { h: '料理 Ryōri · Food', blocks: [
+        P('The book’s food list repeats every dish from the Pictures pages; those are on the Pictures page with photos. These are the dishes that are only in the list:'),
+        LINK('#book/pictures', 'Open Pictures: colors & Japanese food'),
+        WL(`
+Japanese food|日本料理|Nihon ryōri
+rice with hashed meat|ハヤシライス|hayashi raisu
+pizza|ピザ|piza
+pasta with tomato ketchup|ナポリタン|naporitan
+spaghetti with cod roe|タラコスパゲッティ|tarako-supagetthi
+carbonara|カルボナーラ|karubonāra
+gratin|グラタン|guratan
+rice and cheese casserole|ドリア|doria
+hamburger|ハンバーガー|hambāgā
+cheeseburger|チーズバーガー|chīzu bāgā
+teriyaki burger|テリヤキバーガー|teriyaki bāgā
+french fries|(フライド)ポテト|(furaido) poteto|フライドポテト
+salad|サラダ|sarada
+Chinese food|中華料理|Chūka ryōri
+shrimp with chili sauce|エビチリ|ebichiri
+meat dumpling (bun)|肉まん|nikuman
+stir-fried vegetables|野菜炒め|yasai-itame
+chop suey rice bowl|中華丼|chūkadon
+cold Chinese noodles|冷やし中華|hiyashi chūka
+desserts|デザート|dezāto
+pudding|プリン|purin
+chocolate parfait|チョコレートパフェ|chokorēto pafe
+sweet boiled beans|みつまめ|mitsumame
+dumpling (sweet)|だんご|dango
+shaved ice|かき氷|kakigōri
+pickled vegetables|漬物|tsukemono`)] },
+      { h: '食材 Shokuzai · Cooking Ingredients', blocks: [WL(`
+seasoning|調味料|chōmiryō
+salt|塩|shio
+pepper|こしょう|koshō
+sugar|砂糖|satō
+soy sauce|しょうゆ|shōyu
+tabasco sauce|タバスコ|tabasuko
+mustard|マスタード|masutādo
+grated cheese|粉チーズ|kona-chīzu
+sauce|ソース|sōsu
+a mixture of red pepper and other spices|七味(とうがらし)|shichimi (tōgarashi)|七味とうがらし
+vinegar|(お)酢|(o)su|お酢
+ponzu (made from soy sauce and citrus juice)|ポン酢|ponzu
+mayonnaise|マヨネーズ|mayonēzu
+sweet sake (used as a condiment)|みりん|mirin
+ketchup|ケチャップ|kechappu
+Chinese chili oil|ラー油|rā-yu
+miso|味噌|miso
+condiments|薬味|yakumi
+egg|卵|tamago
+seafoods|シーフード|shīfūdo
+tuna|まぐろ|maguro
+shrimp|えび|ebi
+squid|いか|ika
+scallop|ほたて|hotate
+octopus|たこ|tako
+abalone|あわび|awabi
+oyster|かき|kaki
+sardine|いわし|iwashi
+salmon|さけ|sake
+mackerel|さば|saba
+eel|うなぎ|unagi
+salmon roe|いくら|ikura
+urchin|うに|uni
+crab|かに|kani
+blowfish|フグ|fugu
+meat|肉|niku
+pork|豚肉|butaniku
+beef|牛肉|gyūniku
+chicken|鶏肉|toriniku
+minced meat|ひき肉|hikiniku
+vegetables|野菜|yasai
+bean sprouts|もやし|moyashi
+lettuce|レタス|retasu
+cucumber|きゅうり|kyūri
+eggplant|なす|nasu
+bitter melon|ゴーヤ|gōya
+cabbage|キャベツ|kyabetsu
+carrot|にんじん|ninjin
+pepper (green)|ピーマン|pīman
+onion|たまねぎ|tamanegi
+bamboo shoot|たけのこ|takenoko
+spinach|ほうれんそう|hōrensō
+Japanese pumpkin|かぼちゃ|kabocha
+potato|じゃがいも|jagaimo
+Japanese sweet potato|さつまいも|satsumaimo
+garlic|にんにく|ninniku
+celery|セロリ|serori
+Chinese cabbage|白菜|hakusai
+daikon radish|大根|daikon
+lotus root|レンコン|renkon
+burdock|ごぼう|gobō
+shiitake mushroom|しいたけ|shiitake
+shimeji mushroom|しめじ|shimeji
+enoki mushroom|えのき|enoki
+fruits|果物|kudamono
+grape|ぶどう|budō
+watermelon|すいか|suika
+apple|りんご|ringo
+tangerine|みかん|mikan
+loquat|びわ|biwa
+peach|もも|momo
+strawberry|いちご|ichigo
+pear|なし|nashi
+persimmon|かき|kaki
+cherry|さくらんぼ|sakurambo`), N('Condiments like nori, katsuobushi, wasabi and tofu are on the Pictures page with photos.')] },
+      { h: '飲み物 Nomimono · Drinks', blocks: [WL(`
+water|水|mizu
+tea|お茶|o-cha
+green tea|緑茶|ryoku-cha
+powdered green tea|抹茶|maccha
+barley tea|麦茶|mugi-cha
+oolong tea|ウーロン茶|ūron-cha
+black tea|紅茶|kōcha
+iced tea|アイスティー|aisu-thī
+coffee|コーヒー|kōhī
+iced coffee|アイスコーヒー|aisu-kōhī
+cream|(コーヒー)ミルク|(kōhī) miruku|コーヒーミルク
+liquid sugar|ガムシロップ|gamu shiroppu
+café au lait|カフェオレ|kafeore
+cappuccino|カプチーノ|kapuchīno
+hot chocolate|ココア|kokoa
+juice|ジュース|jūsu
+cola|コーラ|kōra
+ginger ale|ジンジャエール|jinjā ēru
+milk|牛乳|gyūnyū
+soy milk|豆乳|tōnyū
+alcoholic drink / Japanese sake|(お)酒|(o)sake|お酒
+(canned / bottled) beer|(缶／ビン)ビール|(kan / bin) bīru|缶ビール、ビンビール
+draft beer|生ビール|nama-bīru
+Japanese sake|日本酒|nihon-shu
+hot sake|熱燗|atsukan
+cold sake|冷酒|reishu
+red / white wine|(赤／白)ワイン|(aka / shiro) wain|赤ワイン、白ワイン
+champagne|シャンパン|shampan
+cocktail|カクテル|kakuteru
+shochu (Japanese liquor similar to vodka)|焼酎|shōchū
+with cold water|水割り|mizu-wari
+with hot water|お湯割り|oyu-wari
+with soda|ソーダ割り|sōda-wari
+shochu with lemon and soda|レモンサワー|remon sawā
+whiskey|ウイスキー|uisukī
+on the rocks|ロック|rokku
+straight|ストレート|sutorēto
+shochu with tonic water|チューハイ|chū-hai
+plum wine|梅酒|umeshu`)] },
+      { h: '食器類 Shokki-rui · Tableware', blocks: [WL(`
+plate / dish|皿|sara
+small plate|取り皿|torizara
+cup|コップ|koppu
+glass|グラス|gurasu
+knife|ナイフ|naifu
+fork|フォーク|fōku
+Chinese soup spoon|れんげ|renge
+spoon|スプーン|supūn
+chopsticks|(お)はし|(o)hashi|おはし
+disposable chopsticks|割りばし|waribashi
+straw|ストロー|sutorō
+rolled wet towel|おしぼり|oshibori
+toothpick|つまようじ|tsumayōji
+napkin|ナプキン|napukin`)] },
+      { h: '日用品 Nichiyō-hin · Daily Commodities', blocks: [WL(`
+umbrella|かさ|kasa
+tissue|ティッシュ|thisshu
+toothbrush|歯ブラシ|haburashi
+battery / dry cell|電池|denchi
+light bulb|電球|denkyū
+cigarette|たばこ|tabako
+ashtray|灰皿|haizara
+towel|タオル|taoru
+soap|せっけん|sekken
+detergent|洗剤|senzai
+paper bag|紙袋|kami-bukuro
+plastic bag|ビニール袋|binīru-bukuro
+newspaper|新聞|shimbun
+map|地図|chizu`)] },
+      { h: '乗り物／電車 Norimono / Densha · Vehicles / Train', blocks: [WL(`
+car / automobile|車／自動車|kuruma / jidōsha
+motorcycle|バイク|baiku
+bus|バス|basu
+taxi|タクシー|takushī
+airplane|飛行機|hikōki
+bicycle|自転車|jitensha
+boat / ship|船|fune
+ferry|フェリー|ferī
+train|電車|densha
+subway|地下鉄|chikatetsu
+Shinkansen / bullet train|新幹線|shinkansen
+platform|ホーム|hōmu
+platform no. …|〜番線|-ban sen|番線
+ticket gate|改札|kaisatsu
+ticket|切符|kippu
+ticket salespoint|切符売り場|kippu-uriba
+bound for …|〜行き|-iki|行き
+local|普通／各駅停車|futsū / kakueki-teisha
+rapid|快速|kaisoku
+express|急行|kyūkō
+special express|特急|tokkyū
+not in service|回送|kaisō
+station employee|駅員|eki-in
+conductor|車掌|shashō
+seat|席|seki
+designated seating|指定席|shitei-seki
+free seating|自由席|jiyū-seki
+first-class car|グリーン車|gurīn sha
+last train|終電|shūden
+first train|始発(電車)|shihatsu (densha)|始発電車
+priority seating|優先席|yūsen-seki
+women-only car|女性専用車|josei-sen’yō sha
+kiosk|売店／キオスク|baiten / kiosuku
+station bento|駅弁|eki-ben`)] },
+      { h: 'イベント Ibento · Event', blocks: [WL(`
+party|パーティー|pāthī
+drinking party at izakaya|飲み会|nomikai
+new year’s party|新年会|shinnenkai
+year-end party|忘年会|bōnenkai
+spring break|春休み|haru-yasumi
+summer break|夏休み|natsu-yasumi
+winter break|冬休み|fuyu-yasumi
+rice-cake making|餅つき|mochitsuki
+concert / gig|コンサート／ライブ|konsāto / raibu
+barbecue|バーベキュー|bābekyū
+fireworks display|花火大会|hanabi-taikai
+flower (sakura) viewing|花見|hanami
+goodbye party|送別会|sōbetsukai
+welcome party|歓迎会|kangeikai
+after-party|2次会|niji-kai|にじかい
+date|デート|dēto
+mixer|合コン|gō-kon
+wedding|結婚式|kekkonshiki
+open-air festival|野外フェス|yagai-fesu`)] },
+      { h: '伝統芸能 Dentō geinō · Traditional Arts', blocks: [WL(`
+kabuki|歌舞伎|kabuki
+sumo wrestling|すもう|sumō
+noh theatre|能|nō
+tea ceremony|茶道|sadō
+flower arrangement|華道|kadō
+calligraphy|書道|shodō
+haiku poetry|俳句|haiku
+Japanese comedic storytelling|落語|rakugo`)] },
+    ],
+  },
+];
+
+export const PAGES = [...FRONT, ...UNITS, ...BACK];
 
 // Every line the Book tab can speak, by voice, for scripts/audio-texts.mjs.
 export function bookSpoken() {

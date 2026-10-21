@@ -639,3 +639,13 @@ details.answers .phrases { margin-top: 8px; }
 .brow { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .bname { font-size: 1.05rem; overflow-wrap: anywhere; }
 .bfeed li { padding: 10px 12px; background: var(--surface); border-radius: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+/* Book: "Mark this page done" sits above Prev / Next; once done it turns green like a passed level. */
+.bk-done { margin-top: 16px; }
+.bk-done.on { color: var(--ok); border-color: var(--ok); }
+/* Board: each person's card folds; the summary line stays visible when closed. */
+.bperson summary { list-style: none; cursor: pointer; display: grid; gap: 4px; }
+.bperson summary::-webkit-details-marker { display: none; }
+.bsum { font-size: .9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.barea { margin-top: 14px; display: grid; gap: 4px; }
+.bline { display: flex; gap: 6px; font-size: .92rem; line-height: 1.4; }
+.bline > span { min-width: 0; overflow-wrap: anywhere; }

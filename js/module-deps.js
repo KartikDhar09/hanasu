@@ -120,6 +120,8 @@ export const DEPS = {
     "conjugate.js"
   ],
   board: [
-    "board.js"
+    "board.js",
+    "book-index.js",
+    "path-summary.js"
   ]
 };

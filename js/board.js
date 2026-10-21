@@ -1,7 +1,19 @@
-// 👥 Progress board (#board): everyone's path levels, passed mock tests and last active day, plus a feed of what
-// happened ("Ravi passed level 5 of the JLPT path"). Data comes from /api/board; the app reports progress there
-// (js/app.js sync). Opened from the 👥 button in the header, not a tab (seven tabs is the most that fit).
+// 👥 Progress board (#board): for each person, what is done, current and left in every tab, plus passed mock
+// tests, last active day and a feed of what happened ("Ravi passed level 5 of the JLPT path"). Data comes from
+// /api/board; the app reports progress there (js/app.js syncProgress). Opened from the 👥 button in the header,
+// not a tab (seven tabs is the most that fit).
+//
+// Nothing per tab is tracked: the two paths split the whole course (js/path-summary.js), so a level number says
+// what is done in Study, JLPT, Phrases and Speak too. Only the Book has its own record: pages marked done.
+import { PATH_SUMMARY } from './path-summary.js';
+import { BOOK_INDEX } from './book-index.js';
+
 const PATH_NAMES = { jlpt: '🪜 JLPT path', talk: '🗣️ Fluent path' };
+// What each path stands for on the board: the tabs whose content it covers.
+const AREAS = [
+  ['jlpt', '🪜 N5·N4 path', 'Study + JLPT tabs'],
+  ['talk', '🗣️ Fluent path', 'Phrases + Speak tabs'],
+];
 // Vercel's free plan can't keep a live connection open, so the board re-reads every minute while it's on screen.
 const REFRESH_MS = 60 * 1000;
 
@@ -28,16 +40,53 @@ export function initBoard(ctx) {
         : e.to - e.from === 1 ? `passed level ${e.to} of the ${path}` : `passed levels ${e.from + 1}–${e.to} of the ${path}`;
       case 'reset': return `started the ${path} again`;
       case 'mock': return `passed the full ${String(e.lv).toUpperCase()} mock test 🎉`;
+      case 'book': { const b = BOOK_INDEX.find(x => x.id === e.page); return b ? `finished Book page: ${pageName(b)} 📕` : ''; }
       default: return '';
     }
   }
 
-  function person(p, max) {
-    const row = k => `<div class="brow"><span>${PATH_NAMES[k]}</span><b>${p[k]} / ${max[k]}</b></div>${ctx.bar(p[k], max[k])}`;
+  const pageName = b => b.n ? `Unit ${b.n} · ${b.title}` : b.title;
+  // "3 grammar points · 1 kanji group", leaving out kinds with nothing in them.
+  const counts = (kinds, nums) => nums.map((n, i) => n ? `${n} ${kinds[i][n === 1 ? 0 : 1]}` : '').filter(Boolean).join(' · ');
+  const sum = (rows, from, to) => rows[0].slice(1).map((_, i) => rows.slice(from, to).reduce((t, r) => t + r[i + 1], 0));
+
+  // One tab area: done (levels passed), now (the level you are on) and left (everything after it).
+  function area(p, [k, name, tabs]) {
+    const { kinds, levels } = PATH_SUMMARY[k], n = Math.min(p[k], levels.length);
+    const done = counts(kinds, sum(levels, 0, n)), left = counts(kinds, sum(levels, n + 1, levels.length));
+    const now = levels[n];
+    return `<div class="barea">
+      <div class="brow"><span><b>${name}</b> <small class="muted">${tabs}</small></span><b>${n} / ${levels.length}</b></div>${ctx.bar(n, levels.length)}
+      <div class="bline">✅ <span>${n ? `${n} level${n === 1 ? '' : 's'}${done ? ` · ${done}` : ''}` : 'Nothing yet'}</span></div>
+      <div class="bline">📍 <span>${now ? `Level ${n + 1} · ${esc(now[0])}${counts(kinds, now.slice(1)) ? ` <small class="muted">(${counts(kinds, now.slice(1))})</small>` : ''}` : 'Path complete 🏆'}</span></div>
+      ${now ? `<div class="bline">⏳ <span>${levels.length - n - 1 ? `${levels.length - n - 1} more level${levels.length - n - 1 === 1 ? '' : 's'}${left ? ` · ${left}` : ''}` : 'Nothing after this level'}</span></div>` : ''}
+    </div>`;
+  }
+
+  // The Book: pages marked done, the first page not done yet (book order), and how many are left.
+  function bookArea(p) {
+    const done = BOOK_INDEX.filter(b => p.book.includes(b.id)), next = BOOK_INDEX.find(b => !p.book.includes(b.id));
+    const total = BOOK_INDEX.length;
+    return `<div class="barea">
+      <div class="brow"><b>📕 Book</b><b>${done.length} / ${total}</b></div>${ctx.bar(done.length, total)}
+      <div class="bline">✅ <span>${done.length ? `${done.length} page${done.length === 1 ? '' : 's'}` : 'Nothing yet'}</span></div>
+      <div class="bline">📍 <span>${next ? esc(pageName(next)) : 'Book finished 🏆'}</span></div>
+      ${next ? `<div class="bline">⏳ <span>${total - done.length} page${total - done.length === 1 ? '' : 's'} left</span></div>` : ''}
+    </div>`;
+  }
+
+  // Each person's card is a fold: name, levels and mocks always visible; the done / now / left details open on
+  // tap (yours starts open), so the board stays short with several people.
+  function person(p) {
     const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill">✅ ${lv.toUpperCase()} mock</span>`).join(' ');
-    return `<li class="card left bperson${p.me ? ' me' : ''}">
-      <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b><small class="muted">${p.active ? `active ${esc(ago(p.active))}` : ''}</small></div>
-      ${row('jlpt')}${row('talk')}${mocks ? `<div>${mocks}</div>` : ''}</li>`;
+    const total = BOOK_INDEX.length, bookN = BOOK_INDEX.filter(b => p.book.includes(b.id)).length;
+    return `<li class="card left bperson${p.me ? ' me' : ''}"><details${p.me ? ' open' : ''}>
+      <summary>
+        <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b><small class="muted">${p.active ? `active ${esc(ago(p.active))}` : ''}</small></div>
+        <div class="bsum">🪜 ${Math.min(p.jlpt, PATH_SUMMARY.jlpt.levels.length)}/${PATH_SUMMARY.jlpt.levels.length} · 🗣️ ${Math.min(p.talk, PATH_SUMMARY.talk.levels.length)}/${PATH_SUMMARY.talk.levels.length} · 📕 ${bookN}/${total}${mocks ? ` ${mocks}` : ''}</div>
+      </summary>
+      ${AREAS.map(a => area(p, a)).join('')}${bookArea(p)}
+    </details></li>`;
   }
 
   function page() {
@@ -52,8 +101,8 @@ export function initBoard(ctx) {
         return text ? `<li><b>${e.me ? 'You' : esc(e.name)}</b> ${esc(text)} <small class="muted">· ${esc(ago(e.at))}</small></li>` : '';
       }).join('');
       body = `${error ? `<p class="warn">${esc(error)}</p>` : ''}
-        <p class="muted small">Levels in each path and passed full mock tests, shared with everyone who has an account. Updates every minute.</p>
-        <ul class="bpeople">${people.map(p => person(p, data.max)).join('')}</ul>
+        <p class="muted small">What everyone has done, is on now and has left in each tab. The paths cover Study, JLPT, Phrases and Speak; Book pages count once marked done. Shared with everyone who has an account; updates every minute.</p>
+        <ul class="bpeople">${people.map(person).join('')}</ul>
         <h2 class="sec">What's new</h2>
         ${feed ? `<ul class="bfeed">${feed}</ul>` : '<p class="muted">Nothing yet. Pass a level test in a path and it shows up here.</p>'}`;
     }

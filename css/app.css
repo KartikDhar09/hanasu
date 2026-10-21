@@ -631,3 +631,11 @@ details.answers .phrases { margin-top: 8px; }
 .bk-scenes .bk-img { background: #fff; border: 1px solid var(--line); }
 .bk-scenes figcaption { font-size: .88rem; line-height: 1.4; }
 .bk-pending { aspect-ratio: 4 / 3; display: grid; place-items: center; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; }
+
+/* ---------- 👥 Board (js/board.js) ---------- */
+.bpeople, .bfeed { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+.bperson.me { border-color: var(--accent); }
+/* One line: label left, value right; wraps on narrow phones instead of overflowing. */
+.brow { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.bname { font-size: 1.05rem; overflow-wrap: anywhere; }
+.bfeed li { padding: 10px 12px; background: var(--surface); border-radius: 12px; line-height: 1.4; overflow-wrap: anywhere; }

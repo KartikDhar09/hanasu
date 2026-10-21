@@ -118,5 +118,8 @@ export const DEPS = {
     "book-pics.js",
     "book.js",
     "conjugate.js"
+  ],
+  board: [
+    "board.js"
   ]
 };

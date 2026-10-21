@@ -545,6 +545,8 @@ function openSettings() {
           <button class="btn" data-act="test-voice">🔊 Test browser voice</button>
           <button class="btn primary" data-act="save-settings">Save</button>
         </div>
+        ${me ? `<p class="muted small">Logged in as <b>${esc(me)}</b></p>
+          <button class="btn danger" data-act="logout">Log out on this device</button>` : ''}
       </section>
       <section id="p-credits" role="tabpanel" aria-labelledby="t-credits" class="panel-tab" hidden>
         <p class="muted small">Hanasu is built on these. Thank you! · Shukriya!</p>
@@ -621,6 +623,7 @@ const actions = {
   'save-settings': () => saveSettings(),
   'rate-label': (_, v) => { document.getElementById('s-rate-val').textContent = v + '×'; },
   'settings-tab': t => settingsTab(t === 'credits' ? 'credits' : 'prefs'),
+  logout: () => logout(),
   'test-voice': () => {
     const r = document.getElementById('s-rate'), vs = document.getElementById('s-voice');
     say('こんにちは。日本語を勉強しましょう。', { rate: +r.value, voice: vs ? vs.value : S.settings.voice, clip: false });
@@ -705,7 +708,7 @@ const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listenin
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
-const NO_DATA = new Set(['settings', 'settings-tab', 'save-settings', 'test-voice', 'rate-label']);
+const NO_DATA = new Set(['settings', 'settings-tab', 'save-settings', 'test-voice', 'rate-label', 'logout']);
 async function run(name, ...args) {
   if (!NO_DATA.has(name)) await loadPhrases();
   if (!actions[name]) await loadAll();
@@ -758,6 +761,26 @@ route();
 const idle = window.requestIdleCallback || (f => setTimeout(f, 1));
 idle(() => loadPhrases(), { timeout: 500 });
 if (!constrained()) setTimeout(() => idle(() => loadAll(), { timeout: 3000 }), 2500);
+
+// ---------- Login ----------
+// middleware.js keeps logged-out visitors out, but the offline copy (sw.js) can still open the app from the cache
+// after the session has expired. So on every launch with a connection we ask the server who is logged in; a 401
+// sends the user to the login page. Offline, the check fails quietly and the cached app keeps working.
+let me = null; // display name of the logged-in user, shown in Settings
+fetch('/api/auth', { cache: 'no-store' }).then(async res => {
+  if (res.ok) me = (await res.json()).name;
+  else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
+}).catch(() => {});
+
+// Logging out also deletes the offline copy and the cached audio and pictures, so the next person to pick up this
+// phone can't open the app (or the book) from the cache without logging in.
+async function logout() {
+  if (!confirm('Log out on this device? The offline copy is removed too; the app downloads again after you log in.')) return;
+  await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"logout"}' }).catch(() => {});
+  if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k)));
+  if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister()));
+  location.replace('/login.html');
+}
 
 // The offline copy downloads every app file; start it once the page has loaded so it doesn't compete with the
 // first screen for bandwidth.

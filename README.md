@@ -15,6 +15,11 @@ A PWA for learning to **speak** Japanese fast: N5 everyday conversation and offi
 - Role-play: the app speaks one side, you speak the other
 - Book tab: the *Nihongo Fun & Easy* textbook page by page (front matter + Units 1–4 so far), every line voiced, listening quizzes with scripts. Personal study copy: keep the site private.
 - Works offline; progress stays on the device (localStorage)
+- Login wall: the whole app (book included) is visible only after logging in (`middleware.js`, `api/auth.js`).
+  Accounts: unique name + password; anyone with the link can sign up. Needs these Vercel environment variables:
+  `SESSION_SECRET` (32+ random characters) and Upstash Redis (`KV_REST_API_URL`, `KV_REST_API_TOKEN`).
+  Optional `INVITE_CODE`: once set, sign-up needs that code (the field appears on the login page by itself).
+  Forgot a password: `node scripts/reset-password.mjs "<name>"` (see the file for the keys it needs)
 
 Run locally: `npm run dev` → http://localhost:8080. Test: `npm test`.
 Content lives in `js/data.js`. Bump `CACHE` in `sw.js` on each release.

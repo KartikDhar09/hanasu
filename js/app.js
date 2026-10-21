@@ -4,6 +4,7 @@ import { DEPS } from './module-deps.js';
 import { fill, matchScore, useReadings, PASS } from './core.js';
 import { watchVisible, prefetchClip, constrained } from './clips.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
+import { icon } from './icons.js';
 
 // ---------- State ----------
 // Nothing about the learner is stored on the device: no name, scores or streak. Saved: display settings, so the
@@ -165,9 +166,9 @@ function home() {
       <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${PHRASE_COUNT} phrases in ${UNIT_INDEX.length} units, each with flashcards, speaking practice, a quiz and a role-play.</span></div>
       <button class="btn primary big" data-act="learn" data-arg="${UNIT_INDEX[0].id}">Start: ${esc(UNIT_INDEX[0].title)}</button>
       <div class="quick">
-        <a href="#path/jlpt" class="qlink"><span>🪜</span>JLPT path, level by level</a>
-        <a href="#path/talk" class="qlink"><span>🗣️</span>Speaking path, level by level</a>
-        <a href="#jlpt/vocab/life" class="qlink"><span>🏢</span>Life &amp; work words</a>
+        <a href="#path/jlpt" class="qlink">${icon('path-jlpt')}JLPT path, level by level</a>
+        <a href="#path/talk" class="qlink">${icon('path-talk')}Speaking path, level by level</a>
+        <a href="#jlpt/vocab/life" class="qlink">${icon('work')}Life &amp; work words</a>
       </div>
     </section>
     ${TRACKS.map(t => `
@@ -192,10 +193,10 @@ function unit(id) {
     <div class="head">${back()}<h1>${u.icon} ${esc(u.title)}</h1></div>
     <p class="muted sub"><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</p>
     <div class="modes compact">
-      <button class="mode" data-act="learn" data-arg="${id}"><span>🃏</span><b>Learn</b><small>Flashcards · seekho</small></button>
-      <button class="mode" data-act="speak" data-arg="${id}"><span>🎤</span><b>Speak</b><small>Say it, get checked · bolo</small></button>
-      <button class="mode" data-act="quiz" data-arg="${id}"><span>✅</span><b>Quiz</b><small>Listen &amp; choose · quiz</small></button>
-      <button class="mode" data-act="talk" data-arg="${id}"><span>💬</span><b>Role-play</b><small>Real conversation · baatcheet</small></button>
+      <button class="mode" data-act="learn" data-arg="${id}">${icon('learn')}<b>Learn</b><small>Flashcards · seekho</small></button>
+      <button class="mode" data-act="speak" data-arg="${id}">${icon('speak')}<b>Speak</b><small>Say it, get checked · bolo</small></button>
+      <button class="mode" data-act="quiz" data-arg="${id}">${icon('quiz')}<b>Quiz</b><small>Listen &amp; choose · quiz</small></button>
+      <button class="mode" data-act="talk" data-arg="${id}">${icon('roleplay')}<b>Role-play</b><small>Real conversation · baatcheet</small></button>
     </div>
     <h2 class="sec">Phrases <small class="muted">tap to hear</small></h2>
     <ul class="phrases">
@@ -501,10 +502,10 @@ function finish(title, unitId, extra = '', backAct = 'home') {
       <p class="muted">よくできました！ Bahut badhiya!</p>
       ${unitId ? `
         <div class="modes">
-          <button class="mode" data-act="speak" data-arg="${unitId}"><span>🎤</span><b>Speak</b></button>
-          <button class="mode" data-act="quiz" data-arg="${unitId}"><span>✅</span><b>Quiz</b></button>
-          <button class="mode" data-act="talk" data-arg="${unitId}"><span>💬</span><b>Role-play</b></button>
-          <button class="mode" data-act="home"><span>🏠</span><b>Home</b></button>
+          <button class="mode" data-act="speak" data-arg="${unitId}">${icon('speak')}<b>Speak</b></button>
+          <button class="mode" data-act="quiz" data-arg="${unitId}">${icon('quiz')}<b>Quiz</b></button>
+          <button class="mode" data-act="talk" data-arg="${unitId}">${icon('roleplay')}<b>Role-play</b></button>
+          <button class="mode" data-act="home">${icon('home')}<b>Home</b></button>
         </div>` : `<button class="btn primary big" data-act="${backAct}">Back</button>`}
     </div>
   `);
@@ -518,6 +519,7 @@ const CREDITS = [
   ['🎙️', 'VOICEVOX:青山龍星', 'Listening conversations (man).', 'https://www.virvoxproject.com/voicevox%E3%81%AE%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84', 'Terms of use'],
   ['🔊', 'VOICEVOX', 'Free Japanese speech engine used to record the voices.', 'https://voicevox.hiroshiba.jp/', 'voicevox.hiroshiba.jp'],
   ['✍️', 'KanjiVG', 'Stroke order for every kanji. © Ulrich Apel and contributors, CC BY-SA 3.0.', 'https://kanjivg.tagaini.net/', 'kanjivg.tagaini.net'],
+  ['◇', 'Lucide', 'Interface icons (tabs, buttons, board). © Lucide Contributors, ISC licence; portions © Cole Bemis (Feather, MIT).', 'https://lucide.dev/license', 'lucide.dev'],
   ['漢', 'KANJIDIC2', 'Kanji readings used to place furigana over each kanji. © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.', 'https://www.edrdg.org/edrdg/licence.html', 'Licence'],
   ['🗣️', 'Your device’s voice', 'Speaks lines without a recording (your own words in the sentence builder, your name).', '', ''],
   ['😀', 'Emoji', 'Pictures come from your device’s emoji font.', '', ''],

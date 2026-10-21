@@ -6,6 +6,7 @@ import { listen } from './speech.js';
 import { furigana } from './furigana.js';
 import { matchScore, useReadings, PASS } from './core.js';
 import { READINGS } from './kanji-readings.js';
+import { icon } from './icons.js';
 
 export function initSpeaking(ctx) {
   const { esc, render, speak, shuffle, bar, back } = ctx;
@@ -30,13 +31,13 @@ export function initSpeaking(ctx) {
     render(`
       <h1 class="page">Speak <span lang="ja">話す</span></h1>
       <div class="intro">Speaking is a skill, like cricket: you get better by doing it out loud, every day. Use headphones, speak at normal volume, and copy the rhythm.${hg('Roz zor se bolo. Sunte raho, copy karo, phir khud bolo.', 'hi intro-hg')}</div>
-      <p class="muted">Want a plan? The <a class="inline-link" href="#path/talk">🗣️ Fluent path</a> takes you level by level, with a speaking test at the end of each.</p>
+      <p class="muted">Want a plan? The <a class="inline-link" href="#path/talk">${icon('path-talk')} Fluent path</a> takes you level by level, with a speaking test at the end of each.</p>
       <div class="speak-grid">
-        <button class="scard" data-act="shadow-random"><span>🔁</span><b>Shadow 10 phrases</b><small>Listen, repeat, get a score. A random mix from every unit.</small></button>
-        <button class="scard" data-act="qa" data-arg="0"><span>💬</span><b>Answer questions</b><small>Real questions people ask you. Answer out loud.</small></button>
-        <button class="scard wide" data-act="builder"><span>🧩</span><b>Sentence builder: “Can I use X?”</b><small>Pick a pattern, swap in any software, device or test resource, and practise the sentence. “Could you install X on Y?”, “Is X available for testing?”…</small></button>
-        <button class="scard" data-act="intro-builder"><span>🙋</span><b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
-        <button class="scard" data-act="sounds"><span>👄</span><b>Pronunciation</b><small>Sounds that change meaning: おばさん vs おばあさん.</small></button>
+        <button class="scard" data-act="shadow-random">${icon('shadow')}<b>Shadow 10 phrases</b><small>Listen, repeat, get a score. A random mix from every unit.</small></button>
+        <button class="scard" data-act="qa" data-arg="0">${icon('questions')}<b>Answer questions</b><small>Real questions people ask you. Answer out loud.</small></button>
+        <button class="scard wide" data-act="builder">${icon('builder')}<b>Sentence builder: “Can I use X?”</b><small>Pick a pattern, swap in any software, device or test resource, and practise the sentence. “Could you install X on Y?”, “Is X available for testing?”…</small></button>
+        <button class="scard" data-act="intro-builder">${icon('intro')}<b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
+        <button class="scard" data-act="sounds">${icon('sounds')}<b>Pronunciation</b><small>Sounds that change meaning: おばさん vs おばあさん.</small></button>
       </div>
       <h2 class="sec">Practise a unit <small class="muted">🎤 shadow · 💬 role-play</small></h2>
       ${TRACKS.map(t => `<details class="fold" ${t.id === 'n5' ? 'open' : ''}><summary><span class="sum-title">${esc(t.title)}<small lang="ja" class="accent">${t.jp}</small></span></summary>

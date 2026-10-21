@@ -909,6 +909,24 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
   });
 }
 
+// 7b. Interface icons (js/icons.js): every icon the code asks for exists, and the static copies in index.html (tab
+// bar, header) are identical to the generated ones, so a re-generation can't leave them behind.
+{
+  const { ICONS, icon } = await import('../js/icons.js');
+  test('interface icons exist and index.html matches js/icons.js', () => {
+    const used = new Set();
+    for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) for (const [, n] of read('js/' + f).matchAll(/\bicon\('([a-z-]+)'\)/g)) used.add(n);
+    for (const p of ['jlpt', 'talk']) used.add('path-' + p); // icon('path-' + p)
+    for (const n of used) assert.ok(ICONS[n], `icon "${n}" is used but not in js/icons.js (add it to NAMES in scripts/icons.mjs)`);
+    const inline = [...html.matchAll(/<svg class="ic" data-icon="([a-z-]+)" viewBox="0 0 24 24" aria-hidden="true" focusable="false">(.*?)<\/svg>/g)];
+    assert.equal(inline.length, 10, 'tab bar (7) + header (3)');
+    for (const [, n, body] of inline) assert.equal(body, ICONS[n], `index.html icon "${n}" differs from js/icons.js`);
+    assert.match(icon('home'), /^<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path /);
+    assert.ok(!/[<>"](?:script|on\w+=)/i.test(JSON.stringify(ICONS)), 'icons are plain shapes');
+    for (const [k, v] of Object.entries(ICONS)) assert.match(v, /^(<(path|circle|rect|line|polyline|polygon|ellipse)( [a-z0-9-]+="[^"]*")+\/>)+$/, `icon ${k}: only simple shapes`);
+  });
+}
+
 // 8. Progress board (api/board.js, js/board.js), against the in-memory database.
 {
   const session = await import('../api/_session.js');

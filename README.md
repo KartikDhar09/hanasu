@@ -24,5 +24,8 @@ A PWA for learning to **speak** Japanese fast: N5 everyday conversation and offi
   full mocks and last active day, plus a feed. Regenerate the summary after editing a path: `node scripts/path-summary.mjs`. The app reports progress to `/api/board` on launch and on every change; levels follow the account.
   Forgot a password: `node scripts/reset-password.mjs "<name>"` (see the file for the keys it needs)
 
+- Interface icons (tabs, header, buttons, hub cards, board) are inline SVG from Lucide in `js/icons.js`, generated
+  by `scripts/icons.mjs` (see the file for how to regenerate). Emoji stay where they are content (vocab, food, units).
+
 Run locally: `npm run dev` → http://localhost:8080. Test: `npm test`.
 Content lives in `js/data.js`. Bump `CACHE` in `sw.js` on each release.

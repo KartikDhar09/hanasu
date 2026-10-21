@@ -7,12 +7,13 @@
 // what is done in Study, JLPT, Phrases and Speak too. Only the Book has its own record: pages marked done.
 import { PATH_SUMMARY } from './path-summary.js';
 import { BOOK_INDEX } from './book-index.js';
+import { icon } from './icons.js';
 
-const PATH_NAMES = { jlpt: '🪜 JLPT path', talk: '🗣️ Fluent path' };
+const PATH_NAMES = { jlpt: 'JLPT path', talk: 'Fluent path' };
 // What each path stands for on the board: the tabs whose content it covers.
 const AREAS = [
-  ['jlpt', '🪜 N5·N4 path', 'Study + JLPT tabs'],
-  ['talk', '🗣️ Fluent path', 'Phrases + Speak tabs'],
+  ['jlpt', 'N5·N4 path', 'Study + JLPT tabs'],
+  ['talk', 'Fluent path', 'Phrases + Speak tabs'],
 ];
 // Vercel's free plan can't keep a live connection open, so the board re-reads every minute while it's on screen.
 const REFRESH_MS = 60 * 1000;
@@ -56,10 +57,10 @@ export function initBoard(ctx) {
     const done = counts(kinds, sum(levels, 0, n)), left = counts(kinds, sum(levels, n + 1, levels.length));
     const now = levels[n];
     return `<div class="barea">
-      <div class="brow"><span><b>${name}</b> <small class="muted">${tabs}</small></span><b>${n} / ${levels.length}</b></div>${ctx.bar(n, levels.length)}
-      <div class="bline">✅ <span>${n ? `${n} level${n === 1 ? '' : 's'}${done ? ` · ${done}` : ''}` : 'Nothing yet'}</span></div>
-      <div class="bline">📍 <span>${now ? `Level ${n + 1} · ${esc(now[0])}${counts(kinds, now.slice(1)) ? ` <small class="muted">(${counts(kinds, now.slice(1))})</small>` : ''}` : 'Path complete 🏆'}</span></div>
-      ${now ? `<div class="bline">⏳ <span>${levels.length - n - 1 ? `${levels.length - n - 1} more level${levels.length - n - 1 === 1 ? '' : 's'}${left ? ` · ${left}` : ''}` : 'Nothing after this level'}</span></div>` : ''}
+      <div class="brow"><span>${icon('path-' + k)} <b>${name}</b> <small class="muted">${tabs}</small></span><b>${n} / ${levels.length}</b></div>${ctx.bar(n, levels.length)}
+      <div class="bline ok">${icon('done')}<span>${n ? `${n} level${n === 1 ? '' : 's'}${done ? ` · ${done}` : ''}` : 'Nothing yet'}</span></div>
+      <div class="bline">${icon('now')}<span>${now ? `Level ${n + 1} · ${esc(now[0])}${counts(kinds, now.slice(1)) ? ` <small class="muted">(${counts(kinds, now.slice(1))})</small>` : ''}` : 'Path complete 🏆'}</span></div>
+      ${now ? `<div class="bline">${icon('left')}<span>${levels.length - n - 1 ? `${levels.length - n - 1} more level${levels.length - n - 1 === 1 ? '' : 's'}${left ? ` · ${left}` : ''}` : 'Nothing after this level'}</span></div>` : ''}
     </div>`;
   }
 
@@ -68,10 +69,10 @@ export function initBoard(ctx) {
     const done = BOOK_INDEX.filter(b => p.book.includes(b.id)), next = BOOK_INDEX.find(b => !p.book.includes(b.id));
     const total = BOOK_INDEX.length;
     return `<div class="barea">
-      <div class="brow"><b>📕 Book</b><b>${done.length} / ${total}</b></div>${ctx.bar(done.length, total)}
-      <div class="bline">✅ <span>${done.length ? `${done.length} page${done.length === 1 ? '' : 's'}` : 'Nothing yet'}</span></div>
-      <div class="bline">📍 <span>${next ? esc(pageName(next)) : 'Book finished 🏆'}</span></div>
-      ${next ? `<div class="bline">⏳ <span>${total - done.length} page${total - done.length === 1 ? '' : 's'} left</span></div>` : ''}
+      <div class="brow"><span>${icon('book')} <b>Book</b></span><b>${done.length} / ${total}</b></div>${ctx.bar(done.length, total)}
+      <div class="bline ok">${icon('done')}<span>${done.length ? `${done.length} page${done.length === 1 ? '' : 's'}` : 'Nothing yet'}</span></div>
+      <div class="bline">${icon('now')}<span>${next ? esc(pageName(next)) : 'Book finished 🏆'}</span></div>
+      ${next ? `<div class="bline">${icon('left')}<span>${total - done.length} page${total - done.length === 1 ? '' : 's'} left</span></div>` : ''}
     </div>`;
   }
 
@@ -83,7 +84,7 @@ export function initBoard(ctx) {
     return `<li class="card left bperson${p.me ? ' me' : ''}"><details${p.me ? ' open' : ''}>
       <summary>
         <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b><small class="muted">${p.active ? `active ${esc(ago(p.active))}` : ''}</small></div>
-        <div class="bsum">🪜 ${Math.min(p.jlpt, PATH_SUMMARY.jlpt.levels.length)}/${PATH_SUMMARY.jlpt.levels.length} · 🗣️ ${Math.min(p.talk, PATH_SUMMARY.talk.levels.length)}/${PATH_SUMMARY.talk.levels.length} · 📕 ${bookN}/${total}${mocks ? ` ${mocks}` : ''}</div>
+        <div class="bsum">${icon('path-jlpt')} ${Math.min(p.jlpt, PATH_SUMMARY.jlpt.levels.length)}/${PATH_SUMMARY.jlpt.levels.length} · ${icon('path-talk')} ${Math.min(p.talk, PATH_SUMMARY.talk.levels.length)}/${PATH_SUMMARY.talk.levels.length} · ${icon('book')} ${bookN}/${total}${mocks ? ` ${mocks}` : ''}</div>
       </summary>
       ${AREAS.map(a => area(p, a)).join('')}${bookArea(p)}
     </details></li>`;
@@ -106,7 +107,7 @@ export function initBoard(ctx) {
         <h2 class="sec">What's new</h2>
         ${feed ? `<ul class="bfeed">${feed}</ul>` : '<p class="muted">Nothing yet. Pass a level test in a path and it shows up here.</p>'}`;
     }
-    render(`<div class="head">${back()}<h1>👥 Board</h1></div>${body}`);
+    render(`<div class="head">${back()}<h1>${icon('board')} Board</h1></div>${body}`);
   }
 
   async function load() {

@@ -22,23 +22,24 @@
   <link rel="modulepreload" href="/js/core.js">
   <link rel="modulepreload" href="/js/speech.js">
   <link rel="modulepreload" href="/js/clips.js">
+  <link rel="modulepreload" href="/js/icons.js">
 </head>
 <body>
   <header class="top">
     <a class="logo" href="#"><span lang="ja">話す</span> Hanasu</a>
-    <a class="gear" href="#board" aria-label="Progress board">👥</a>
-    <a class="gear" href="#search" aria-label="Search">🔍</a>
-    <button class="gear" data-act="settings" aria-label="Settings">⚙︎</button>
+    <a class="gear" href="#board" aria-label="Progress board"><svg class="ic" data-icon="board" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></a>
+    <a class="gear" href="#search" aria-label="Search"><svg class="ic" data-icon="search" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></a>
+    <button class="gear" data-act="settings" aria-label="Settings"><svg class="ic" data-icon="settings" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
   </header>
   <main id="app"></main>
   <nav class="tabs" id="tabs" aria-label="Sections">
-    <a href="#" data-tab="phrases"><span>💬</span>Phrases</a>
-    <a href="#path/jlpt" data-tab="path-jlpt"><span>🪜</span>N5·N4</a>
-    <a href="#path/talk" data-tab="path-talk"><span>🗣️</span>Fluent</a>
-    <a href="#speak" data-tab="speak"><span>🎤</span>Speak</a>
-    <a href="#study" data-tab="study"><span lang="ja">学</span>Study</a>
-    <a href="#jlpt" data-tab="jlpt"><span>🎓</span>JLPT</a>
-    <a href="#book" data-tab="book"><span>📕</span>Book</a>
+    <a href="#" data-tab="phrases"><svg class="ic" data-icon="phrases" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>Phrases</a>
+    <a href="#path/jlpt" data-tab="path-jlpt"><svg class="ic" data-icon="path-jlpt" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>N5·N4</a>
+    <a href="#path/talk" data-tab="path-talk"><svg class="ic" data-icon="path-talk" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>Fluent</a>
+    <a href="#speak" data-tab="speak"><svg class="ic" data-icon="speak" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>Speak</a>
+    <a href="#study" data-tab="study"><svg class="ic" data-icon="study" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Study</a>
+    <a href="#jlpt" data-tab="jlpt"><svg class="ic" data-icon="jlpt" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>JLPT</a>
+    <a href="#book" data-tab="book"><svg class="ic" data-icon="book" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 2v8l3-3 3 3V2"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>Book</a>
   </nav>
   <div id="sheet" class="sheet" hidden></div>
   <div id="toast" class="toast" role="status"></div>

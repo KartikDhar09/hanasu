@@ -2,7 +2,7 @@
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and waits: the app asks
 // "New version · Restart" (js/app.js), and Restart tells it to take over; otherwise it takes over once the app
 // is fully closed. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v5.10';
+const CACHE = 'hanasu-v5.11';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v3';
@@ -11,7 +11,7 @@ const AUDIO_MAX = 2000;
 const IMAGES = 'hanasu-img-v1';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/units-index.js', '/js/module-deps.js', '/js/core.js', '/js/data.js', '/js/corp-more.js', '/js/speech.js', '/js/clips.js', '/js/study.js', '/js/speaking.js', '/js/speaking-data.js', '/js/jlpt.js', '/js/jlpt-data.js', '/js/vocab-data.js', '/js/vocab-n5.js', '/js/vocab-n4.js', '/js/vocab-life.js', '/js/grammar-n5.js', '/js/grammar-n4.js', '/js/kanji-n4.js', '/js/exam.js', '/js/exam-data.js', '/js/exam-more.js', '/js/exam-listen.js', '/js/exam-types.js', '/js/conjugate.js', '/js/strokes.js', '/js/ways.js', '/js/ways-n5.js', '/js/ways-office.js', '/js/ways-corp.js', '/js/ways-qa.js', '/js/ways-particles.js', '/js/ways-grammar-n5.js', '/js/ways-grammar-n4.js', '/js/furigana.js', '/js/kanji-readings.js',
   '/js/particles-data.js', '/js/counters-data.js', '/js/verbs-data.js', '/js/kanji-data.js', '/js/path.js', '/js/kana-data.js', '/js/search.js', '/js/path-jlpt.js', '/js/path-talk.js', '/js/book.js', '/js/book-data.js', '/js/book-kit.js', '/js/book-index.js', '/js/book-pics.js',
-  '/js/book-kana.js', '/js/book-pictures.js', '/js/book-musts.js', '/js/book-u1.js', '/js/book-u2.js', '/js/book-u3.js', '/js/book-u4.js', '/js/book-u5.js', '/js/book-u6.js', '/js/book-u7.js', '/js/book-u8.js', '/js/book-u9.js', '/js/book-u10.js', '/js/book-u11.js', '/js/book-u12.js', '/js/book-grammar.js', '/js/book-wb-verbs.js', '/js/book-wb-adjectives.js', '/js/book-wb-countries.js', '/js/book-wb-words.js', '/js/login.js', '/js/board.js', '/js/path-summary.js',
+  '/js/book-kana.js', '/js/book-pictures.js', '/js/book-musts.js', '/js/book-u1.js', '/js/book-u2.js', '/js/book-u3.js', '/js/book-u4.js', '/js/book-u5.js', '/js/book-u6.js', '/js/book-u7.js', '/js/book-u8.js', '/js/book-u9.js', '/js/book-u10.js', '/js/book-u11.js', '/js/book-u12.js', '/js/book-grammar.js', '/js/book-wb-verbs.js', '/js/book-wb-adjectives.js', '/js/book-wb-countries.js', '/js/book-wb-words.js', '/js/login.js', '/js/board.js', '/js/path-summary.js', '/js/icons.js',
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
 
 // Is anyone logged in on this device? null = can't tell (offline), so nothing drastic happens without a network.

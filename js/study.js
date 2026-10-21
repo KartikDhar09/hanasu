@@ -7,6 +7,7 @@ import { KANJI, ALL_KANJI_GROUPS, KANJI_INTRO } from './kanji-data.js';
 import { conjugate, toRomaji, FORMS } from './conjugate.js';
 import { sayable, sameMeaning } from './core.js';
 import { COUNTERS, COUNTER_GROUPS, COUNTER_INTRO, NUMBERS, NUMBER_KANJI } from './counters-data.js';
+import { icon } from './icons.js';
 
 const ALL_PARTICLES = PARTICLES.map(p => p.p);
 const plain = s => s.replace(/[[\]]/g, '');
@@ -39,19 +40,19 @@ export function initStudy(ctx) {
     ctx.clearSess(); st = null;
     render(`
       <h1 class="page">Study <span lang="ja">勉強</span></h1>
-      <p class="muted">Not sure where to start? The <a class="inline-link" href="#path/jlpt">🪜 N5·N4 path</a> tells you what to study, in order.</p>
+      <p class="muted">Not sure where to start? The <a class="inline-link" href="#path/jlpt">${icon('path-jlpt')} N5·N4 path</a> tells you what to study, in order.</p>
       <h2 class="sec">Grammar <span lang="ja">文法</span></h2>
       <div class="intro">${esc(PARTICLES_INTRO.en)}${hg(PARTICLES_INTRO.hg, 'hi intro-hg')}</div>
       <div class="speak-grid">
         <button class="scard" data-act="particles"><span lang="ja" class="pch">は</span><b>Particles</b><small>${PARTICLES.length} little words that glue sentences together: は, を, に, で…</small></button>
-        <button class="scard" data-act="verbs"><span>🏃</span><b>Verbs</b><small>${VERBS.length} verbs with every form: ます, て, ない, た…</small></button>
+        <button class="scard" data-act="verbs">${icon('verbs')}<b>Verbs</b><small>${VERBS.length} verbs with every form: ます, て, ない, た…</small></button>
         <button class="scard" data-act="counters"><span lang="ja" class="pch">本</span><b>Counters</b><small>${COUNTERS.length} ways to count: 本, 枚, 人, 個… with the tricky sound changes</small></button>
-        <button class="scard" data-act="jlpt-grammar" data-arg="n5"><span>📘</span><b>Grammar points</b><small>Every N5 and N4 pattern with examples (in the JLPT tab)</small></button>
+        <button class="scard" data-act="jlpt-grammar" data-arg="n5">${icon('grammar')}<b>Grammar points</b><small>Every N5 and N4 pattern with examples (in the JLPT tab)</small></button>
       </div>
       <h2 class="sec">Kanji <span lang="ja">漢字</span></h2>
       <div class="speak-grid">
         <button class="scard" data-act="kanji"><span lang="ja" class="pch">漢</span><b>Kanji</b><small>${KANJI.length} N5 and N4 kanji with readings, examples, flashcards and a quiz</small></button>
-        <button class="scard" data-act="stroke-tab"><span>✍️</span><b>Stroke order</b><small>Watch every kanji, hiragana and katakana drawn stroke by stroke</small></button>
+        <button class="scard" data-act="stroke-tab">${icon('strokes')}<b>Stroke order</b><small>Watch every kanji, hiragana and katakana drawn stroke by stroke</small></button>
       </div>`);
   }
 

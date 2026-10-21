@@ -9,6 +9,7 @@ import { furigana, markBrackets } from './furigana.js';
 import { prefetchClip } from './clips.js';
 
 import { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA, toKata, combos } from './kana-data.js';
+import { icon } from './icons.js';
 export { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA };
 
 // Splits a sentence into pieces at particle boundaries, for the ★ word-order drill.
@@ -92,13 +93,13 @@ export function initJlpt(ctx) {
       <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">🏁 Take a ${ex.title} mock test</button>
       <h2 class="sec">Practise like the exam</h2>
       <div class="speak-grid">
-        <button class="scard" data-act="ex-reading" data-arg="${lv}"><span>📖</span><b>Reading</b><small>${READING.filter(r => r.level === lv).length} real-life passages with questions</small></button>
-        <button class="scard" data-act="ex-listening" data-arg="${lv}"><span>🎧</span><b>Listening</b><small>${LISTENING.filter(l => l.level === lv).length} conversations, some with picture answers</small></button>
-        <button class="scard" data-act="jlpt-grammar" data-arg="${lv}"><span>📘</span><b>Grammar points</b><small>${GRAMMAR.filter(g => g.level === lv).length} ${lv.toUpperCase()} patterns with pictures and examples</small></button>
-        <button class="scard" data-act="gquiz" data-arg="${lv}"><span>✏️</span><b>Grammar quiz</b><small>Fill in the blank, like 文法形式</small></button>
-        <button class="scard" data-act="order" data-arg="${lv}"><span>★</span><b>Sentence order</b><small>Put the pieces in order, like 文の組み立て</small></button>
-        <button class="scard" data-act="jlpt-vocab" data-arg="${lv}"><span>🖼️</span><b>Vocabulary</b><small>${WORDS.filter(w => w.level === lv).length} ${lv.toUpperCase()} words with pictures</small></button>
-        <button class="scard" data-act="jlpt-vocab" data-arg="life"><span>🏢</span><b>Life &amp; work words</b><small>${WORDS.filter(w => w.level === 'life').length} everyday and office words beyond the JLPT</small></button>
+        <button class="scard" data-act="ex-reading" data-arg="${lv}">${icon('reading')}<b>Reading</b><small>${READING.filter(r => r.level === lv).length} real-life passages with questions</small></button>
+        <button class="scard" data-act="ex-listening" data-arg="${lv}">${icon('listening')}<b>Listening</b><small>${LISTENING.filter(l => l.level === lv).length} conversations, some with picture answers</small></button>
+        <button class="scard" data-act="jlpt-grammar" data-arg="${lv}">${icon('grammar')}<b>Grammar points</b><small>${GRAMMAR.filter(g => g.level === lv).length} ${lv.toUpperCase()} patterns with pictures and examples</small></button>
+        <button class="scard" data-act="gquiz" data-arg="${lv}">${icon('grammar-quiz')}<b>Grammar quiz</b><small>Fill in the blank, like 文法形式</small></button>
+        <button class="scard" data-act="order" data-arg="${lv}">${icon('order')}<b>Sentence order</b><small>Put the pieces in order, like 文の組み立て</small></button>
+        <button class="scard" data-act="jlpt-vocab" data-arg="${lv}">${icon('vocab')}<b>Vocabulary</b><small>${WORDS.filter(w => w.level === lv).length} ${lv.toUpperCase()} words with pictures</small></button>
+        <button class="scard" data-act="jlpt-vocab" data-arg="life">${icon('work')}<b>Life &amp; work words</b><small>${WORDS.filter(w => w.level === 'life').length} everyday and office words beyond the JLPT</small></button>
         <button class="scard" data-act="kana"><span lang="ja">あア</span><b>Kana charts</b><small>Hiragana & katakana with sound + quiz</small></button>
       </div>
       <details class="fold"><summary>📋 About the exam: sections, times, pass marks</summary>

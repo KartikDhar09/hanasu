@@ -649,3 +649,24 @@ details.answers .phrases { margin-top: 8px; }
 .barea { margin-top: 14px; display: grid; gap: 4px; }
 .bline { display: flex; gap: 6px; font-size: .92rem; line-height: 1.4; }
 .bline > span { min-width: 0; overflow-wrap: anywhere; }
+
+/* ---------- Interface icons (js/icons.js, Lucide) ----------
+   Line icons in the text colour, so they follow light/dark and the red active tab. Sized in em where they sit in
+   text, in px where the layout needs a fixed box. */
+.ic { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.22em; }
+.tabs a .ic { width: 24px; height: 24px; margin-bottom: 1px; }
+.gear .ic { width: 24px; height: 24px; display: block; }
+.gear { display: grid; place-items: center; min-width: 40px; min-height: 40px; }
+.qlink .ic { width: 20px; height: 20px; color: var(--accent); }
+/* Mode buttons and hub cards: the icon is the first thing the eye finds, in the accent colour. */
+.mode > .ic { width: 28px; height: 28px; color: var(--accent); }
+.modes.compact .mode > .ic { width: 26px; height: 26px; }
+.scard > .ic { width: 30px; height: 30px; color: var(--accent); margin-bottom: 2px; }
+/* Kanji-character icons (は, 本, 漢) sit on the same left edge as the line icons beside them. */
+.scard > .pch { text-align: left; padding: 0; line-height: 30px; }
+.page > .ic, .head h1 > .ic { color: var(--accent); }
+/* Board: done / now / left markers line up as a column. */
+.bline > .ic { width: 18px; height: 18px; margin-top: 2px; color: var(--muted); }
+.bline.ok > .ic { color: var(--ok); }
+.barea .brow .ic, .bsum .ic { color: var(--accent); }
+.bsum .ic { width: 16px; height: 16px; }

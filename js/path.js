@@ -13,10 +13,11 @@ import { ALL_KANA, toKata } from './kana-data.js';
 import { toRomaji } from './conjugate.js';
 import { sayable, PASS } from './core.js';
 import { prefetchClip } from './clips.js';
+import { icon } from './icons.js';
 
 export const PATHS = {
-  jlpt: { levels: PATH_JLPT, intro: PATH_JLPT_INTRO, title: 'Path to JLPT N5 & N4', icon: '🪜', short: 'JLPT path' },
-  talk: { levels: PATH_TALK, intro: PATH_TALK_INTRO, title: 'Path to speaking fluently', icon: '🗣️', short: 'Speaking path' },
+  jlpt: { levels: PATH_JLPT, intro: PATH_JLPT_INTRO, title: 'Path to JLPT N5 & N4', short: 'JLPT path' },
+  talk: { levels: PATH_TALK, intro: PATH_TALK_INTRO, title: 'Path to speaking fluently', short: 'Speaking path' },
 };
 
 const plain = s => s.replace(/[[\]]/g, '');
@@ -87,7 +88,7 @@ export function initPath(ctx) {
     const P = PATHS[p], cur = ctx.level(p), L = P.levels;
     const next = L[cur];
     render(`
-      <h1 class="page">${P.icon} ${esc(P.title)}</h1>
+      <h1 class="page">${icon('path-' + p)} ${esc(P.title)}</h1>
       <div class="card left pnow">${next
         ? `<span class="tag">Level ${cur + 1} of ${L.length}</span><b>${esc(next.icon)} ${esc(next.title)}</b><p class="muted small">${esc(next.goal)}</p>
            <button class="btn primary big" data-act="path-level" data-arg="${p}.${next.id}">${cur ? 'Continue' : 'Start level 1'}</button>`
@@ -114,7 +115,7 @@ export function initPath(ctx) {
     const sd = l.study || {};
     const sec = (title, how, body) => body ? `<h3 class="psub">${title}</h3>${how ? `<p class="muted small">${how}</p>` : ''}${body}` : '';
     const rows = items => items.length ? `<ul class="path prow">${items.join('')}</ul>` : '';
-    const row = (icon, title, small, t) => `<li><button ${target(t)}><span class="pico" lang="ja">${icon}</span>
+    const row = (pic, title, small, t) => `<li><button ${target(t)}><span class="pico" lang="ja">${pic}</span>
       <span class="ptext"><b>${title}</b>${small ? `<small lang="ja">${small}</small>` : ''}</span><span class="count">›</span></button></li>`;
     const chips = items => items.length ? `<div class="chips">${items.join('')}</div>` : '';
 

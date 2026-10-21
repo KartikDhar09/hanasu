@@ -7,6 +7,7 @@ import { chunk } from './jlpt.js';
 import { prefetchClip } from './clips.js';
 import { sameMeaning } from './core.js';
 import { CONTEXT, PARAPHRASE, USAGE, PASSAGES, ORDER } from './exam-types.js';
+import { icon } from './icons.js';
 
 // Question types, in exam order.
 export const TYPES = { kanji: '漢字読み', hyouki: '表記', pic: '語彙', context: '文脈規定', para: '言い換え類義', usage: '用法', form: '文法形式', order: '文の組み立て', passage: '文章の文法', read: '読解', task: '課題理解', point: 'ポイント理解', say: '発話表現', quick: '即時応答' };
@@ -408,7 +409,7 @@ export function initExam(ctx) {
       <p>Focus next on <b>${esc(SECTIONS.find(x => x[0] === weakest[0])[1])}</b>.</p>
       <details class="answers left"><summary>📊 By question type</summary><ul class="tips">${types}</ul></details>
       ${wrong ? `<details class="answers left"><summary>🔁 Review mistakes (${results.filter(r => !r.ok).length})</summary><ul class="phrases">${wrong}</ul></details>` : ''}
-      ${s.passed && full ? '<p>🪜 This completes the exam level in your N5·N4 path.</p><a class="btn big" href="#path/jlpt">Open the path</a>' : ''}
+      ${s.passed && full ? `<p>${icon('path-jlpt')} This completes the exam level in your N5·N4 path.</p><a class="btn big" href="#path/jlpt">Open the path</a>` : ''}
       <button class="btn primary big" data-act="ex-mock" data-arg="${lv}">Done</button>
     </div>`);
   }

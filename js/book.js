@@ -20,8 +20,9 @@ export function initBook(ctx) {
   // ================= Contents =================
   function hub() {
     ctx.clearSess(); st = null; tok++;
+    // ✅ in place of the icon once the page is marked done (on the 👥 board too).
     const btn = (p, sub) => `<button class="unit" data-act="bk-open" data-arg="${p.id}">
-        <span class="icon">${p.icon}</span>
+        <span class="icon">${ctx.pageDone(p.id) ? '✅' : p.icon}</span>
         <span class="ut"><b>${esc(p.n ? `Unit ${p.n} · ${p.title}` : p.title)}</b><small>${esc(sub)}</small></span>
       </button>`;
     render(`
@@ -63,10 +64,26 @@ export function initBook(ctx) {
         <div class="bk-body">${open ? s.blocks.map(block).join('') : ''}</div>
       </details>`;
       }).join('')}
+      ${doneButton(id)}
       <div class="row">
         <button class="btn" data-act="bk-open" data-arg="${prev?.id || ''}" ${prev ? '' : 'disabled'}>‹ Prev</button>
         <button class="btn" data-act="bk-open" data-arg="${next?.id || ''}" ${next ? '' : 'disabled'}>Next ›</button>
       </div>`);
+  }
+
+  // Marks the page done on the account (shown on the 👥 board). Nothing is saved on the device, so it needs a
+  // connection; the button says so instead of pretending it worked.
+  const doneButton = id => ctx.pageDone(id)
+    ? `<button class="btn big bk-done on" id="bk-done" data-act="bk-done" data-arg="0">✅ Done · tap to undo</button>`
+    : `<button class="btn big bk-done" id="bk-done" data-act="bk-done" data-arg="1">✓ Mark this page done</button>`;
+  async function markDone(done) {
+    const id = st?.id, el = document.getElementById('bk-done');
+    if (!id || !el) return;
+    el.disabled = true;
+    const ok = await ctx.markPage(id, done);
+    if (st?.id !== id) return; // moved to another page meanwhile
+    if (ok) el.outerHTML = doneButton(id);
+    else { el.disabled = false; el.textContent = 'No connection. Tap to try again.'; }
   }
 
   // A picture from the book: loads only when it scrolls near the screen; its size is reserved so nothing jumps.
@@ -164,6 +181,7 @@ export function initBook(ctx) {
     'bk-say': i => { tok++; const s = st?.say[+i]; if (s) ctx.sayAs(s[0], s[1]); },
     'bk-play': k => playSeq(+k),
     'bk-ans': arg => answer(arg),
+    'bk-done': d => markDone(d === '1'),
   };
 
   function route(h) {

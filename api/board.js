@@ -2,8 +2,9 @@
 // _session.js). Callers: js/app.js reports progress (sync), js/board.js shows the board.
 //
 //   GET                                   → {me, people: [{name, me, jlpt, talk, mocks, active}], feed, max}
-//   POST {path: {jlpt, talk}, reset?, mock?} → merges this device's levels into the account, returns the merged
-//                                            levels so every device of the same person ends up at the same level
+//   POST {path: {jlpt, talk}, reset?, mock?, book?: {page, done}}
+//        → merges this device's levels into the account and marks a Book page done or not done; returns the
+//          account's levels and done pages, so every device of the same person ends up in the same place
 //
 // Progress is reported by the app and trusted (a trial between friends, the user's choice); the server only keeps
 // it sane: whole numbers within each path, levels never go down except by an explicit "start again".
@@ -13,6 +14,9 @@ import { userOf } from './_session.js';
 // Number of levels in each path (js/path-jlpt.js and js/path-talk.js; check.mjs keeps these in step).
 export const MAX = { jlpt: 13, talk: 11 };
 const MOCKS = ['n5', 'n4'];
+// Book page ids look like "u3" or "wb-verbs" (js/book-index.js). Checked by shape, not against the list, so the
+// server doesn't depend on the app's files; the board ignores ids it doesn't know. Capped so the record stays small.
+const PAGE_ID = /^[a-z0-9-]{1,24}$/, BOOK_MAX = 60;
 const FEED_SHOWN = 30;
 // A normal day of studying syncs a few dozen times at most; this only stops a runaway loop or a script.
 const SYNC_LIMIT = 120, WINDOW = 15 * 60;
@@ -28,8 +32,9 @@ const levelOf = (v, p) => Number.isInteger(v) && v >= 0 && v <= MAX[p] ? v : 0;
 //   prev: saved progress or null (first sync = "joined")   body: what the app sent   now: Date
 export function merge(prev, body, now) {
   const at = now.toISOString();
-  const next = { jlpt: 0, talk: 0, mocks: {}, ...prev, active: at };
+  const next = { jlpt: 0, talk: 0, mocks: {}, book: [], ...prev, active: at };
   next.mocks = { ...next.mocks };
+  next.book = [...next.book];
   const events = [];
   if (!prev) events.push({ kind: 'joined', at });
   for (const p of Object.keys(MAX)) {
@@ -47,6 +52,13 @@ export function merge(prev, body, now) {
     next.mocks[body.mock] = at;
     events.push({ kind: 'mock', lv: body.mock, at });
   }
+  // A Book page marked done (an event) or not done any more (quietly removed: un-ticking isn't news).
+  const page = body.book?.page;
+  if (typeof page === 'string' && PAGE_ID.test(page)) {
+    const has = next.book.includes(page);
+    if (body.book.done === true && !has && next.book.length < BOOK_MAX) { next.book.push(page); events.push({ kind: 'book', page, at }); }
+    if (body.book.done === false && has) next.book = next.book.filter(x => x !== page);
+  }
   return { next, events };
 }
 
@@ -58,14 +70,17 @@ export async function handle(req, env) {
   if (req.method === 'GET') {
     const { people, feed } = await db.board(env, FEED_SHOWN);
     const names = Object.fromEntries(people.map(p => [p.key, p.user.name]));
+    const books = Object.fromEntries(people.map(p => [p.key, p.prog.book || []]));
+    // A Book page ticked by mistake and un-ticked again shouldn't stay in the feed as "finished".
+    const stillTrue = e => e.kind !== 'book' || books[e.who]?.includes(e.page);
     return json(200, {
       max: MAX,
       // Only what the board shows: never the password hash or the name key.
       people: people.map(({ key: k, user, prog }) => ({
-        name: user.name, me: k === key, jlpt: prog.jlpt, talk: prog.talk, mocks: prog.mocks || {}, active: prog.active,
+        name: user.name, me: k === key, jlpt: prog.jlpt, talk: prog.talk, mocks: prog.mocks || {}, book: prog.book || [], active: prog.active,
       })),
       // Events name their person by key; send the display name instead (an event of a deleted account is dropped).
-      feed: feed.filter(e => names[e.who]).map(({ who, ...e }) => ({ ...e, name: names[who], me: who === key })),
+      feed: feed.filter(e => names[e.who] && stillTrue(e)).map(({ who, ...e }) => ({ ...e, name: names[who], me: who === key })),
     });
   }
   if (req.method !== 'POST') return json(405, { error: 'Method not allowed.' });
@@ -77,7 +92,7 @@ export async function handle(req, env) {
   try { body = await req.json(); } catch { return json(400, { error: 'Bad request.' }); }
   const { next, events } = merge(await db.getProgress(env, key), body || {}, new Date());
   await db.saveProgress(env, key, next, events.map(e => ({ who: key, ...e })));
-  return json(200, { path: { jlpt: next.jlpt, talk: next.talk } });
+  return json(200, { path: { jlpt: next.jlpt, talk: next.talk }, book: next.book });
 }
 
 // Same pattern as api/auth.js: Web-standard handlers per method; errors become a plain 500, details in the log.

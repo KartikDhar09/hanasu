@@ -697,6 +697,8 @@ const LOADERS = {
   board: () => import('./board.js').then(m => m.initBoard(shared())),
   book: () => import('./book.js').then(m => m.initBook({
     ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
+    pageDone: id => bookDone.has(id),
+    markPage: (id, done) => syncProgress({ book: { page: id, done } }),
   })),
   exam: () => import('./exam.js').then(m => m.initExam({
     ...shared(), mockPassed: lv => { syncProgress({ mock: lv }); return loadSection('path').then(m => m.mockPassed(lv)); }, sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
@@ -784,25 +786,29 @@ fetch('/api/auth', { cache: 'no-store' }).then(async res => {
   } else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
 }).catch(() => {});
 
-// 👥 Board: sends this device's path levels (and a passed mock or a "start again") to the account, on launch and
-// whenever they change. The server answers with the account's levels, the highest any device has reached, and
-// this device catches up, so progress follows the person from phone to laptop. Offline it fails quietly; the
-// next launch sends the levels again (a mock passed offline is not reported).
+// 👥 Board: sends this device's path levels (and a passed mock, a "start again" or a Book page marked done) to
+// the account, on launch and whenever they change. The server answers with the account's levels, the highest any
+// device has reached, and this device catches up, so progress follows the person from phone to laptop. Offline it
+// fails quietly; the next launch sends the levels again (a mock passed offline is not reported).
+// Returns true when the server accepted it (the Book's Mark done button needs to know).
+let bookDone = new Set(); // Book pages marked done, from the account; kept in memory only, never on the device
 async function syncProgress(extra = {}) {
   try {
     const res = await fetch('/api/board', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: S.path, ...extra }),
     });
-    if (!res.ok) return;
-    const { path } = await res.json();
+    if (!res.ok) return false;
+    const { path, book } = await res.json();
+    if (Array.isArray(book)) bookDone = new Set(book.filter(x => typeof x === 'string'));
     // Only ever moves forward here, and only to a plain whole number in range (it ends up in page markup).
     let changed = false;
     for (const p of PATH_IDS) if (Number.isInteger(path?.[p]) && path[p] > (S.path[p] || 0) && path[p] <= 99) { S.path[p] = path[p]; changed = true; }
-    if (!changed) return;
+    if (!changed) return true;
     save();
     // Redraw only a path overview: redrawing a lesson or quiz mid-way would reshuffle the question.
     if (/^#path\/\w+$/.test(location.hash)) rerender();
-  } catch (_) { /* offline: try again next launch */ }
+    return true;
+  } catch (_) { return false; /* offline: try again next launch */ }
 }
 
 // Logging out also deletes the offline copy and the cached audio and pictures, so the next person to pick up this

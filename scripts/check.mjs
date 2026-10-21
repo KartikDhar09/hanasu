@@ -925,6 +925,10 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     ? { headers: { cookie: key ? await as(key) : '' } }
     : { method: 'POST', headers: { cookie: await as(key), 'Content-Type': 'application/json' }, body: JSON.stringify(body) }), env);
 
+  await atest('path summary is up to date (run node scripts/path-summary.mjs)', async () => {
+    assert.equal(read('js/path-summary.js'), await (await import('./path-summary.mjs')).buildSummary());
+  });
+
   test('board level counts match the paths', () => {
     assert.deepEqual(board.MAX, { jlpt: PATH_JLPT.length, talk: PATH_TALK.length }, 'update MAX in api/board.js');
   });
@@ -932,7 +936,7 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
   test('merge: levels only go up, reset is explicit, junk is ignored', () => {
     const now = new Date('2026-10-21T10:00:00Z');
     const first = board.merge(null, { path: { jlpt: 2, talk: 0 } }, now);
-    assert.deepEqual(first.next, { jlpt: 2, talk: 0, mocks: {}, active: now.toISOString() });
+    assert.deepEqual(first.next, { jlpt: 2, talk: 0, mocks: {}, book: [], active: now.toISOString() });
     assert.deepEqual(first.events.map(e => e.kind), ['joined', 'level']);
     assert.deepEqual(board.merge(first.next, { path: { jlpt: 1, talk: 0 } }, now).next.jlpt, 2, 'an older device cannot lower the level');
     assert.deepEqual(board.merge(first.next, { path: { jlpt: 1 } }, now).events, [], 'nothing new: no events');
@@ -945,16 +949,24 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     assert.equal(mock.next.mocks.n5, now.toISOString());
     assert.deepEqual(board.merge(mock.next, { mock: 'n5' }, now).events, [], 'a mock counts once');
     assert.deepEqual(board.merge(null, { mock: 'n3', reset: 'evil' }, now).events.map(e => e.kind), ['joined'], 'unknown mock/path ignored');
+    const read = board.merge(first.next, { book: { page: 'u3', done: true } }, now);
+    assert.deepEqual(read.next.book, ['u3']);
+    assert.deepEqual(read.events, [{ kind: 'book', page: 'u3', at: now.toISOString() }]);
+    assert.deepEqual(board.merge(read.next, { book: { page: 'u3', done: true } }, now).events, [], 'a page counts once');
+    const undo = board.merge(read.next, { book: { page: 'u3', done: false } }, now);
+    assert.deepEqual([undo.next.book, undo.events], [[], []], 'un-ticking removes the page quietly');
+    for (const bad of ['U3', '../x', '', 'x'.repeat(25), 7, null]) assert.deepEqual(board.merge(null, { book: { page: bad, done: true } }, now).next.book, [], `ignores page ${JSON.stringify(bad)}`);
+    assert.equal(board.merge(first.next, { book: { page: 'u4', done: 'yes' } }, now).next.book.length, 0, 'done must be true or false');
   });
 
   await atest('board API: logged-in only, sync, board view, feed', async () => {
     assert.equal((await call(null)).status, 401, 'no cookie, no board');
     const r1 = await call('kartik', { path: { jlpt: 3, talk: 1 } });
-    assert.deepEqual(await r1.json(), { path: { jlpt: 3, talk: 1 } });
+    assert.deepEqual(await r1.json(), { path: { jlpt: 3, talk: 1 }, book: [] });
     await call('ravi', { path: { jlpt: 0, talk: 0 } });
     await call('ravi', { path: { jlpt: 1, talk: 0 }, mock: 'n5' });
     const r2 = await call('kartik', { path: { jlpt: 1, talk: 0 } });
-    assert.deepEqual(await r2.json(), { path: { jlpt: 3, talk: 1 } }, 'a second device catches up to the account');
+    assert.deepEqual(await r2.json(), { path: { jlpt: 3, talk: 1 }, book: [] }, 'a second device catches up to the account');
     const view = await (await call('ravi')).json();
     assert.deepEqual(view.max, board.MAX);
     const k = view.people.find(p => p.name === 'Kartik'), r = view.people.find(p => p.name === 'Ravi');
@@ -963,6 +975,12 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     // Newest first; within one sync the order is level, then mock, so the mock lands on top.
     assert.deepEqual(view.feed.map(e => `${e.name}:${e.kind}`), ['Ravi:mock', 'Ravi:level', 'Ravi:joined', 'Kartik:level', 'Kartik:level', 'Kartik:joined']);
     assert.deepEqual(view.feed.filter(e => e.name === 'Kartik').map(e => e.kind).sort(), ['joined', 'level', 'level']);
+    await call('ravi', { book: { page: 'u1', done: true } });
+    await call('ravi', { book: { page: 'u2', done: true } });
+    await call('ravi', { book: { page: 'u2', done: false } });
+    const books = await (await call('kartik')).json();
+    assert.deepEqual(books.people.find(p => p.name === 'Ravi').book, ['u1']);
+    assert.deepEqual(books.feed.filter(e => e.kind === 'book').map(e => e.page), ['u1'], 'an un-ticked page leaves the feed');
     db.users.delete('ravi');
     const after = await (await call('kartik')).json();
     assert.deepEqual(after.people.map(p => p.name), ['Kartik'], 'a deleted account leaves the board');

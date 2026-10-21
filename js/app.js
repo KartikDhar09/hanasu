@@ -768,8 +768,11 @@ if (!constrained()) setTimeout(() => idle(() => loadAll(), { timeout: 3000 }), 2
 // sends the user to the login page. Offline, the check fails quietly and the cached app keeps working.
 let me = null; // display name of the logged-in user, shown in Settings
 fetch('/api/auth', { cache: 'no-store' }).then(async res => {
-  if (res.ok) me = (await res.json()).name;
-  else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
+  if (res.ok) {
+    me = (await res.json()).name;
+    // Logged in: make sure the offline copy is complete (a service worker installed while logged out has none).
+    navigator.serviceWorker?.ready.then(r => r.active?.postMessage({ type: 'PRECACHE' }));
+  } else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
 }).catch(() => {});
 
 // Logging out also deletes the offline copy and the cached audio and pictures, so the next person to pick up this

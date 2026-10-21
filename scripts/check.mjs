@@ -899,6 +899,10 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     const sw = read('sw.js');
     assert.match(sw, /url\.pathname === '\/login\.html' \|\| url\.pathname\.startsWith\('\/api\/'\)\) return;/);
     assert.match(sw, /res\.ok && !res\.redirected/);
+    // Devices with a copy from before the wall: logged out, the new worker must take over and wipe every cache.
+    assert.match(sw, /if \(on === false\) return self\.skipWaiting\(\);/);
+    assert.match(sw, /keys\.filter\(k => out \|\|/);
+    assert.match(sw, /c\.navigate\('\/login\.html'\)/);
     const vc = JSON.parse(read('vercel.json'));
     const audioCache = vc.headers.find(h => h.source === '/audio/(.*)').headers.find(h => h.key === 'Cache-Control').value;
     assert.match(audioCache, /^private/, 'clips must not sit in shared caches where a logged-out visitor could get them');

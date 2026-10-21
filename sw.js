@@ -2,7 +2,7 @@
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and waits: the app asks
 // "New version · Restart" (js/app.js), and Restart tells it to take over; otherwise it takes over once the app
 // is fully closed. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v5.8';
+const CACHE = 'hanasu-v5.8.1';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v3';
@@ -14,17 +14,49 @@ const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/units-inde
   '/js/book-kana.js', '/js/book-pictures.js', '/js/book-musts.js', '/js/book-u1.js', '/js/book-u2.js', '/js/book-u3.js', '/js/book-u4.js', '/js/book-u5.js', '/js/book-u6.js', '/js/book-u7.js', '/js/book-u8.js', '/js/book-u9.js', '/js/book-u10.js', '/js/book-u11.js', '/js/book-u12.js', '/js/book-grammar.js', '/js/book-wb-verbs.js', '/js/book-wb-adjectives.js', '/js/book-wb-countries.js', '/js/book-wb-words.js', '/js/login.js',
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
 
+// Is anyone logged in on this device? null = can't tell (offline), so nothing drastic happens without a network.
+const loggedIn = () => fetch('/api/auth', { cache: 'no-store' }).then(r => r.ok ? true : r.status === 401 ? false : null, () => null);
+
+// Login wall (middleware.js) vs. offline copies made before it existed: an old service worker answers from its
+// cache without ever reaching the server, so a device that had the app before v5.8 kept opening it with no login.
+// Its update can't download the app files while logged out (they answer 401), so a normal install would fail and
+// the old copy would stay forever. So when nobody is logged in, this version installs without downloading anything
+// and takes over at once; activate then deletes every copy and sends open windows to the login page.
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
+  e.waitUntil(loggedIn().then(async on => {
+    if (on === false) return self.skipWaiting();
+    await precache();
+  }));
 });
 
+// Downloads the whole offline copy. A marker entry records that it finished, so a device that installed this
+// version while logged out (empty copy, see above) can fill it later: js/app.js sends PRECACHE after a login.
+const DONE = '/__precached';
+async function precache() {
+  const c = await caches.open(CACHE);
+  if (await c.match(DONE)) return;
+  await c.addAll(SHELL);
+  await c.put(DONE, new Response('1'));
+}
+
 // Restart in the update prompt.
-self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });
+// PRECACHE: sent by js/app.js once the server confirms someone is logged in.
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (e.data && e.data.type === 'PRECACHE') e.waitUntil(precache().catch(() => {}));
+});
 
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys()
-    .then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== AUDIO && k !== IMAGES).map(k => caches.delete(k))))
-    .then(() => self.clients.claim()));
+  e.waitUntil((async () => {
+    // Logged out: drop everything, the voice clips and book pictures included, so nothing of the app is readable
+    // from this device until someone logs in. Logged in (or offline): drop only older app versions, as before.
+    const out = await loggedIn() === false;
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => out || (k !== CACHE && k !== AUDIO && k !== IMAGES)).map(k => caches.delete(k)));
+    await self.clients.claim();
+    // Windows still showing the old app (it's already in memory) are moved to the login page.
+    if (out) for (const c of await self.clients.matchAll({ type: 'window' })) c.navigate('/login.html').catch(() => {});
+  })());
 });
 
 self.addEventListener('fetch', e => {

@@ -1,6 +1,10 @@
 # Allowlist: publish only what the app needs. Anything else (scripts, CI config, docs, new files) stays private.
 /*
 !/index.html
+!/login.html
+# Login wall: the middleware and the /api functions run on Vercel's servers; they are never served as files.
+!/middleware.js
+!/api
 !/sw.js
 !/manifest.webmanifest
 !/robots.txt

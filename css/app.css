@@ -313,7 +313,10 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .panel p { margin: 0; }
 .panel label { display: grid; gap: 4px; font-weight: 600; font-size: .9rem; }
 .panel label.check { display: flex; align-items: center; gap: 10px; font-weight: 500; }
-.panel input:not([type]), .panel select {
+/* Login page: the same panel as the settings sheet, standing on its own in the middle of the screen. */
+.panel.login { margin: 8vh auto 0; border-radius: 20px; animation: none; max-height: none; }
+.panel.login h1 { margin: 0; text-align: center; }
+.panel input:not([type]), .panel input[type="password"], .panel select {
   width: 100%; min-width: 0; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
 }
 .panel input[type="checkbox"] { width: 24px; height: 24px; flex: none; accent-color: var(--accent); }

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hanasu · Log in</title>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, noai, noimageai">
+  <meta name="theme-color" content="#FAFAFA" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#161616" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <!-- The only page a logged-out visitor can open (see middleware.js). The form is sent by js/login.js with
+       fetch; the CSP's form-action 'none' blocks a normal form submit, which is fine because it never happens. -->
+  <main>
+    <form class="panel login" id="login" novalidate>
+      <h1><span lang="ja">話す</span> Hanasu</h1>
+      <div class="seg" role="tablist" aria-label="Log in or create an account">
+        <button type="button" role="tab" id="m-login" aria-selected="true" class="on">Log in</button>
+        <button type="button" role="tab" id="m-signup" aria-selected="false">Create account</button>
+      </div>
+      <label>Name <input id="name" name="username" autocomplete="username" autocapitalize="words" maxlength="20" required></label>
+      <label>Password <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+      <label id="invite-row" hidden>Invite code <input id="invite" name="invite" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <p class="muted small" id="hint">Your name is shown to the others on the progress board.</p>
+      <p class="warn" id="error" role="alert" hidden></p>
+      <button class="btn primary big" id="submit">Log in</button>
+    </form>
+  </main>
+  <script type="module" src="/js/login.js"></script>
+</body>
+</html>

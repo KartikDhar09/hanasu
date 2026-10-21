@@ -55,7 +55,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         run: |
           cd .vercel/output/static && find . -type f | sort
-          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a|strokes/[0-9a-f]{5}\.json|img/book/[a-z0-9-]+(/[a-z0-9-]+)?\.jpg)$'; then
+          if find . -type f | grep -vE '^\./(index\.html|login\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a|strokes/[0-9a-f]{5}\.json|img/book/[a-z0-9-]+(/[a-z0-9-]+)?\.jpg)$'; then
             echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
           fi
       - name: Deploy preview
@@ -94,7 +94,7 @@ jobs:
         if: env.VERCEL_TOKEN != ''
         run: |
           cd .vercel/output/static && find . -type f | sort
-          if find . -type f | grep -vE '^\./(index\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a|strokes/[0-9a-f]{5}\.json|img/book/[a-z0-9-]+(/[a-z0-9-]+)?\.jpg)$'; then
+          if find . -type f | grep -vE '^\./(index\.html|login\.html|sw\.js|manifest\.webmanifest|robots\.txt|icon(\.svg|-[0-9]+\.png)|js/[a-z0-9-]+\.js|css/[a-z0-9-]+\.css|audio/silence\.m4a|audio/[nmf]/[0-9a-f]{8}\.m4a|strokes/[0-9a-f]{5}\.json|img/book/[a-z0-9-]+(/[a-z0-9-]+)?\.jpg)$'; then
             echo "::error::Files outside the app would be published (listed above). Check .vercelignore."; exit 1
           fi
       - name: Deploy to production
@@ -104,15 +104,20 @@ jobs:
           echo "### Production deployed: $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Smoke test live site
         if: env.VERCEL_TOKEN != ''
+        # The site is behind a login (middleware.js), so a logged-out request must see only the login page:
+        # page loads redirect to it, app files and the book answer 401, and private repo files never answer 200.
         run: |
-          for path in / /js/app.js /js/core.js /js/data.js /js/speech.js /css/app.css /sw.js /manifest.webmanifest; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "https://hanasu-two.vercel.app$path")
-            echo "$path -> $code"
-            [ "$code" = "200" ] || { echo "::error::$path returned $code"; exit 1; }
-          done
-          curl -s https://hanasu-two.vercel.app/ | grep -q "<title>Hanasu</title>"
-          for path in /scripts/check.mjs /scripts/icons.swift /.github/workflows/ci.yml /README.md /package.json /vercel.json /.vercelignore /.env.local; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "https://hanasu-two.vercel.app$path")
-            echo "$path -> $code (should be private)"
-            [ "$code" = "404" ] || { echo "::error::$path is publicly visible"; exit 1; }
+          site=https://hanasu-two.vercel.app
+          expect() { code=$(curl -s -o /dev/null -w "%{http_code}" "$2" "$site$3"); echo "$3 -> $code (want $1)"; [ "$code" = "$1" ] || { echo "::error::$3 returned $code, expected $1"; exit 1; }; }
+          expect 200 -sS /login.html
+          curl -s "$site/login.html" | grep -q "<title>Hanasu · Log in</title>"
+          for path in /js/login.js /css/app.css /sw.js /manifest.webmanifest /icon.svg /robots.txt; do expect 200 -sS "$path"; done
+          expect 302 "-HAccept: text/html" /
+          curl -s -o /dev/null -w "%{redirect_url}" -H "Accept: text/html" "$site/" | grep -q "/login.html$"
+          for path in /js/app.js /js/data.js /js/book-u1.js /js/book-index.js /audio/silence.m4a /index.html; do expect 401 -sS "$path"; done
+          expect 401 -sS /api/auth
+          for path in /scripts/check.mjs /scripts/icons.swift /.github/workflows/ci.yml /README.md /package.json /vercel.json /.vercelignore /.env.local /middleware.js /api/_session.js /api/_store.js /api/_account.js; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$site$path")
+            echo "$path -> $code (must not be 200)"
+            [ "$code" != "200" ] || { echo "::error::$path is publicly visible"; exit 1; }
           done

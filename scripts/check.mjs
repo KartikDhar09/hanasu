@@ -8,7 +8,7 @@ const fail = msg => errors.push(msg);
 const read = p => readFileSync(p, 'utf8');
 
 // 1. Every script parses.
-for (const f of [...readdirSync('js').map(f => 'js/' + f), 'sw.js']) {
+for (const f of [...readdirSync('js').map(f => 'js/' + f), 'sw.js', 'middleware.js', ...readdirSync('api').map(f => 'api/' + f)]) {
   try { execFileSync(process.execPath, ['--check', f], { stdio: 'pipe' }); }
   catch (e) { fail(`${f} has a syntax error:\n${e.stderr}`); }
 }
@@ -38,8 +38,8 @@ try {
   const csp = all.find(h => h.key === 'Content-Security-Policy')?.value || '';
   for (const d of ["script-src 'self'", "object-src 'none'", "frame-ancestors 'none'", "base-uri 'none'"]) if (!csp.includes(d)) fail(`vercel.json CSP missing ${d}`);
   for (const k of ['X-Content-Type-Options', 'Referrer-Policy', 'Permissions-Policy', 'Strict-Transport-Security']) if (!all.some(h => h.key === k)) fail(`vercel.json missing ${k} header`);
-  if (/<script(?![^>]*\bsrc=)/i.test(html)) fail('index.html has an inline <script>');
-  for (const f of ['index.html', ...readdirSync('js').map(f => 'js/' + f)]) {
+  for (const f of ['index.html', 'login.html']) if (/<script(?![^>]*\bsrc=)/i.test(read(f))) fail(`${f} has an inline <script>`);
+  for (const f of ['index.html', 'login.html', ...readdirSync('js').map(f => 'js/' + f)]) {
     if (/\son(click|input|change|load|error|submit|key\w*|mouse\w*)=/i.test(read(f))) fail(`${f} uses an inline event handler`);
     if (/\beval\(|new Function\(/.test(read(f))) fail(`${f} uses eval`);
   }
@@ -270,12 +270,14 @@ const strokeMod = await import('./strokes.mjs');
 const readingsMod = await import('../js/kanji-readings.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 test('no third-party requests (fonts are self-hosted)', () => {
-  for (const f of ['index.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
+  for (const f of ['index.html', 'login.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
 });
 test('.vercelignore publishes only app files', () => {
   const lines = readFileSync('.vercelignore', 'utf8').split('\n').filter(l => l && !l.startsWith('#'));
   assert.equal(lines[0], '/*', 'must start by ignoring everything');
   for (const bad of ['scripts', '.github', 'README.md', 'package.json']) assert.ok(!lines.some(l => l.includes(bad)), `${bad} must stay private`);
+  // Without these the deploy silently drops the login wall: the app would go out with no middleware at all.
+  for (const need of ['!/login.html', '!/middleware.js', '!/api']) assert.ok(lines.includes(need), `${need} must be deployed`);
 });
 test('nothing but display settings and path levels is stored', () => {
   for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) {
@@ -760,6 +762,137 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
   assert.equal(SEARCH.search('zzqxv').total, 0);
   assert.equal(SEARCH.search('   ').total, undefined, 'empty query searches nothing');
 });
+
+// 7. Login wall (middleware.js, api/). Runs the real code against an in-memory database, so no Upstash is needed.
+const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
+{
+  const session = await import('../api/_session.js');
+  const { memoryStore, useStore } = await import('../api/_store.js');
+  const { handle } = await import('../api/auth.js');
+  const account = await import('../api/_account.js');
+  const env = { SESSION_SECRET: 's'.repeat(40), INVITE_CODE: 'sakura-2026' };
+  const db = memoryStore();
+  useStore(db);
+  const post = (body, headers = {}) => handle(new Request('https://hanasu.test/api/auth', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-forwarded-for': '1.2.3.4', ...headers }, body: JSON.stringify(body),
+  }), env);
+  const cookieOf = res => (res.headers.get('set-cookie') || '').split(';')[0];
+  const me = cookie => handle(new Request('https://hanasu.test/api/auth', { headers: { cookie } }), env);
+
+  await atest('session cookies: valid, tampered, expired, wrong secret', async () => {
+    const t = await session.sign('kartik', env);
+    assert.equal(await session.verify(t, env), 'kartik');
+    const [body, sig] = t.split('.');
+    const forged = Buffer.from(JSON.stringify({ u: 'friend', exp: 9e9 })).toString('base64url');
+    assert.equal(await session.verify(`${forged}.${sig}`, env), null, 'a changed name must not verify');
+    assert.equal(await session.verify(`${body}.${sig.slice(0, -2)}AA`, env), null, 'a changed signature must not verify');
+    assert.equal(await session.verify(t, { SESSION_SECRET: 't'.repeat(40) }), null, 'another secret must not verify');
+    assert.equal(await session.verify(t, env, Date.now() + (session.DAYS + 1) * 86400e3), null, 'expired');
+    assert.equal(await session.verify(t, { SESSION_SECRET: 'short' }), null, 'a too-short secret locks everyone out');
+    for (const junk of ['', 'a.b', 'a.b.c', null, undefined]) assert.equal(await session.verify(junk, env), null);
+  });
+
+  await atest('names are unique ignoring case, spaces and full-width letters', async () => {
+    assert.equal(account.nameKey('  Kartik  '), 'kartik');
+    assert.equal(account.nameKey('ＫＡＲＴＩＫ'), 'kartik');
+    assert.equal(account.displayName('Ravi   Kumar'), 'Ravi Kumar');
+    for (const bad of ['', 'a', ' ', '😀😀', 'x'.repeat(21), '-kartik', 'kar<b>tik']) assert.ok(account.nameProblem(bad), `${JSON.stringify(bad)} should be refused`);
+    for (const ok of ['Kartik', 'Ravi Kumar', 'ラビ', 'k.d_09']) assert.equal(account.nameProblem(ok), null, `${ok} should be allowed`);
+  });
+
+  await atest('passwords are hashed with scrypt and checked', async () => {
+    const h = await account.hashPassword('correct horse');
+    assert.match(h, /^scrypt\$16384\$8\$1\$[0-9a-f]{32}\$[0-9a-f]{128}$/);
+    assert.notEqual(h, await account.hashPassword('correct horse'), 'salted: same password, different hash');
+    assert.ok(await account.checkPassword('correct horse', h));
+    assert.ok(!await account.checkPassword('correct horsf', h));
+  });
+
+  await atest('sign up needs the invite code and a free name', async () => {
+    assert.equal((await post({ action: 'signup', name: 'Kartik', password: 'password1', invite: 'wrong' })).status, 403);
+    assert.equal((await post({ action: 'signup', name: 'Kartik', password: 'password1', invite: '' })).status, 403);
+    assert.equal((await handle(new Request('https://hanasu.test/api/auth', { method: 'POST', body: '{"action":"signup","name":"Kartik","password":"password1","invite":""}' }), { ...env, INVITE_CODE: '' })).status, 403, 'no INVITE_CODE in Vercel = no sign-ups');
+    assert.equal((await post({ action: 'signup', name: 'K', password: 'password1', invite: 'sakura-2026' })).status, 400, 'name too short');
+    assert.equal((await post({ action: 'signup', name: 'Kartik', password: 'short', invite: 'sakura-2026' })).status, 400, 'password too short');
+    const ok = await post({ action: 'signup', name: ' Kartik ', password: 'password1', invite: ' sakura-2026 ' });
+    assert.equal(ok.status, 200);
+    assert.deepEqual(await ok.json(), { name: 'Kartik' });
+    assert.match(ok.headers.get('set-cookie'), /^hanasu_session=[^;]+; Path=\/; Max-Age=7776000; HttpOnly; Secure; SameSite=Lax$/);
+    assert.ok(!JSON.stringify([...db.users.values()]).includes('password1'), 'the password itself is never stored');
+    for (const same of ['kartik', 'KARTIK', 'ＫＡＲＴＩＫ', '  Kartik'])
+      assert.equal((await post({ action: 'signup', name: same, password: 'password2', invite: 'sakura-2026' })).status, 409, `${same} is the same name`);
+    assert.ok(await account.checkPassword('password1', db.users.get('kartik').hash), 'a refused sign-up never overwrites the owner');
+  });
+
+  await atest('log in, who-am-I, log out', async () => {
+    assert.equal((await post({ action: 'login', name: 'kartik', password: 'nope-nope' })).status, 401);
+    const wrongName = await post({ action: 'login', name: 'nobody', password: 'password1' });
+    assert.equal(wrongName.status, 401);
+    assert.equal((await wrongName.json()).error, 'Name or password is wrong.', 'same message for a wrong name and a wrong password');
+    const ok = await post({ action: 'login', name: 'KARTIK', password: 'password1' });
+    assert.equal(ok.status, 200);
+    const who = await me(cookieOf(ok));
+    assert.equal(who.status, 200);
+    assert.deepEqual(await who.json(), { name: 'Kartik' });
+    assert.equal((await me('')).status, 401);
+    const out = await post({ action: 'logout' });
+    assert.match(out.headers.get('set-cookie'), /^hanasu_session=; .*Max-Age=0/);
+    db.users.delete('kartik');
+    assert.equal((await me(cookieOf(ok))).status, 401, 'a deleted account is logged out');
+    assert.equal((await post({ action: 'login', name: 'x', password: 'y' }, { origin: 'https://evil.example' })).status, 403, 'other sites cannot post');
+  });
+
+  await atest('repeated guessing is blocked', async () => {
+    const fresh = memoryStore();
+    useStore(fresh);
+    let last;
+    for (let i = 0; i < 11; i++) last = await post({ action: 'login', name: 'friend', password: 'guess' + i }, { 'x-forwarded-for': '9.9.9.' + i });
+    assert.equal(last.status, 429, 'per-name limit');
+    for (let i = 0; i < 21; i++) last = await post({ action: 'login', name: 'n' + i, password: 'guess' }, { 'x-forwarded-for': '8.8.8.8' });
+    assert.equal(last.status, 429, 'per-address limit');
+    useStore(db);
+  });
+
+  await atest('middleware lets in only logged-in users and the login page', async () => {
+    const { default: mw, PUBLIC } = await import('../middleware.js');
+    const saved = process.env.SESSION_SECRET;
+    process.env.SESSION_SECRET = env.SESSION_SECRET;
+    try {
+      const req = (path, headers = {}) => mw(new Request('https://hanasu.test' + path, { headers }));
+      const passes = r => r.headers.get('x-middleware-next') === '1';
+      for (const p of ['/login.html', '/js/login.js', '/css/app.css', '/sw.js', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/robots.txt', '/api/auth'])
+        assert.ok(passes(await req(p)), `${p} must be public`);
+      for (const p of ['/', '/index.html', '/js/app.js', '/js/book-u1.js', '/js/login.js.map', '/audio/silence.m4a', '/img/book/food/aburaage.jpg', '/strokes/065e5.json', '/login.html.bak', '/css/app.css/x'])
+        assert.ok(!PUBLIC.test(p), `${p} must need a login`);
+      const page = await req('/js/book-u1.js?x=1', { accept: 'text/html' });
+      assert.equal(page.status, 302);
+      assert.equal(page.headers.get('location'), '/login.html?next=%2Fjs%2Fbook-u1.js%3Fx%3D1');
+      assert.equal((await req('/', { 'sec-fetch-mode': 'navigate' })).headers.get('location'), '/login.html');
+      assert.equal((await req('/js/app.js')).status, 401, 'files get a bare 401, never the login page');
+      const cookie = `${session.COOKIE}=${await session.sign('kartik', env)}`;
+      assert.ok(passes(await req('/js/book-u1.js', { cookie })), 'a logged-in user gets everything');
+      assert.equal((await req('/js/app.js', { cookie: `${session.COOKIE}=forged.token` })).status, 401);
+      delete process.env.SESSION_SECRET;
+      assert.equal((await req('/js/app.js', { cookie })).status, 401, 'no SESSION_SECRET in Vercel = locked, not open');
+    } finally { if (saved === undefined) delete process.env.SESSION_SECRET; else process.env.SESSION_SECRET = saved; }
+  });
+
+  test('login page: only safe redirects after logging in', () => {
+    const src = read('js/login.js');
+    const rule = new RegExp(src.match(/return \/(.+)\/\.test\(next\)/)[1]);
+    for (const ok of ['/', '/#book', '/js/x.js?a=1']) assert.ok(rule.test(ok), ok);
+    for (const bad of ['//evil.com', '/\\evil.com', 'https://evil.com', 'javascript:alert(1)', '']) assert.ok(!rule.test(bad), bad);
+  });
+
+  test('service worker never caches the login wall', () => {
+    const sw = read('sw.js');
+    assert.match(sw, /url\.pathname === '\/login\.html' \|\| url\.pathname\.startsWith\('\/api\/'\)\) return;/);
+    assert.match(sw, /res\.ok && !res\.redirected/);
+    const vc = JSON.parse(read('vercel.json'));
+    const audioCache = vc.headers.find(h => h.source === '/audio/(.*)').headers.find(h => h.key === 'Cache-Control').value;
+    assert.match(audioCache, /^private/, 'clips must not sit in shared caches where a logged-out visitor could get them');
+  });
+}
 
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));

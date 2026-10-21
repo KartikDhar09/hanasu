@@ -811,7 +811,8 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
   await atest('sign up needs the invite code and a free name', async () => {
     assert.equal((await post({ action: 'signup', name: 'Kartik', password: 'password1', invite: 'wrong' })).status, 403);
     assert.equal((await post({ action: 'signup', name: 'Kartik', password: 'password1', invite: '' })).status, 403);
-    assert.equal((await handle(new Request('https://hanasu.test/api/auth', { method: 'POST', body: '{"action":"signup","name":"Kartik","password":"password1","invite":""}' }), { ...env, INVITE_CODE: '' })).status, 403, 'no INVITE_CODE in Vercel = no sign-ups');
+    // Closed sign-up (INVITE_CODE set): the login page is told to show the code field.
+    assert.equal((await (await me('')).json()).invite, true);
     assert.equal((await post({ action: 'signup', name: 'K', password: 'password1', invite: 'sakura-2026' })).status, 400, 'name too short');
     assert.equal((await post({ action: 'signup', name: 'Kartik', password: 'short', invite: 'sakura-2026' })).status, 400, 'password too short');
     const ok = await post({ action: 'signup', name: ' Kartik ', password: 'password1', invite: ' sakura-2026 ' });
@@ -822,6 +823,16 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     for (const same of ['kartik', 'KARTIK', 'ＫＡＲＴＩＫ', '  Kartik'])
       assert.equal((await post({ action: 'signup', name: same, password: 'password2', invite: 'sakura-2026' })).status, 409, `${same} is the same name`);
     assert.ok(await account.checkPassword('password1', db.users.get('kartik').hash), 'a refused sign-up never overwrites the owner');
+  });
+
+  await atest('open sign-up when no INVITE_CODE is set (the default)', async () => {
+    const open = { SESSION_SECRET: env.SESSION_SECRET };
+    const call = (init = {}) => handle(new Request('https://hanasu.test/api/auth', { headers: { 'x-forwarded-for': '5.5.5.5' }, ...init }), open);
+    assert.equal((await (await call()).json()).invite, false, 'the login page hides the code field');
+    const ok = await call({ method: 'POST', body: JSON.stringify({ action: 'signup', name: 'Ravi', password: 'password1' }) });
+    assert.equal(ok.status, 200, 'anyone with the link can create an account');
+    const again = await call({ method: 'POST', body: JSON.stringify({ action: 'signup', name: 'RAVI', password: 'password2' }) });
+    assert.equal(again.status, 409, 'names stay unique with open sign-up');
   });
 
   await atest('log in, who-am-I, log out', async () => {

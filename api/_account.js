@@ -37,11 +37,16 @@ export async function checkPassword(pw, stored) {
   return timingSafeEqual(got, Buffer.from(hash, 'hex'));
 }
 
+// Sign-up is open to anyone with the link by default (the user's choice, 2026-10-21: "whoever the link is shared
+// to should create an account"). Setting INVITE_CODE in Vercel closes it: from then on sign-up needs that code,
+// and the login page shows the code field on its own (it reads `invite` from GET /api/auth).
+export const inviteNeeded = env => !!env.INVITE_CODE;
+
 // Invite code check in constant time. Both sides are hashed first so they have equal length for timingSafeEqual
 // (which would otherwise reveal the code's length).
 export function inviteOk(given, env) {
   const want = env.INVITE_CODE || '';
-  if (!want) return false; // no code set in Vercel = nobody can sign up
+  if (!want) return true; // no code set = open sign-up
   const h = s => createHash('sha256').update(String(s ?? '').trim()).digest();
   return timingSafeEqual(h(given), h(want));
 }

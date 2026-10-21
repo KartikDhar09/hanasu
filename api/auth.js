@@ -2,12 +2,13 @@
 // launch check (js/app.js) are the only callers.
 //
 //   GET                                         → 200 {name} when the session cookie is valid, else 401
-//   POST {action:'signup', name, password, invite} → creates the account and logs in; 409 if the name is taken
+//   POST {action:'signup', name, password, invite} → creates the account and logs in; 409 if the name is taken;
+//                                                    invite is checked only when INVITE_CODE is set in Vercel
 //   POST {action:'login',  name, password}         → logs in; one vague error for any wrong name or password
 //   POST {action:'logout'}                         → clears the cookie
 import { store } from './_store.js';
 import { sign, userOf, setCookie, clearCookie } from './_session.js';
-import { displayName, nameKey, nameProblem, passwordProblem, hashPassword, checkPassword, inviteOk } from './_account.js';
+import { displayName, nameKey, nameProblem, passwordProblem, hashPassword, checkPassword, inviteOk, inviteNeeded } from './_account.js';
 
 // Brute-force guards, counted in Upstash so they hold across serverless instances. Generous for two real people
 // typing (a typo or five), far too low for a password-guessing script.
@@ -28,11 +29,14 @@ const ipOf = req => (req.headers.get('x-forwarded-for') || '').split(',')[0].tri
 export async function handle(req, env) {
   const db = store();
   if (req.method === 'GET') {
+    // A logged-out answer also tells the login page whether sign-up needs an invite code (only a yes/no, never
+    // the code), so the code field appears only when INVITE_CODE is set.
+    const out = { error: 'Not logged in.', invite: inviteNeeded(env) };
     const user = await userOf(req, env);
-    if (!user) return json(401, { error: 'Not logged in.' });
+    if (!user) return json(401, out);
     const rec = await db.getUser(env, user);
     // A valid cookie for a deleted account is treated as logged out.
-    return rec ? json(200, { name: rec.name }) : json(401, { error: 'Not logged in.' }, { 'Set-Cookie': clearCookie() });
+    return rec ? json(200, { name: rec.name }) : json(401, out, { 'Set-Cookie': clearCookie() });
   }
   if (req.method !== 'POST') return json(405, { error: 'Method not allowed.' });
 

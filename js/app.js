@@ -6,8 +6,9 @@ import { watchVisible, prefetchClip, constrained } from './clips.js';
 import { say, canSpeak, canListen, listen, stopListening, stopSpeaking, rankedVoices } from './speech.js';
 
 // ---------- State ----------
-// Nothing about the learner is stored: no name, scores or streak. Saved: display settings, so the app looks the
-// same next time, and the level reached in each path (the user chose this; a number per path, nothing else).
+// Nothing about the learner is stored on the device: no name, scores or streak. Saved: display settings, so the
+// app looks the same next time, and the level reached in each path (the user chose this; a number per path).
+// Since v5.9 the levels (and passed full mocks) are also sent to the account for the 👥 board: see syncProgress.
 const KEY = 'hanasu-v1';
 const DEFAULTS = { settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' } };
 const PATH_IDS = ['jlpt', 'talk'];
@@ -531,7 +532,7 @@ function openSettings() {
         <button role="tab" id="t-credits" aria-controls="p-credits" aria-selected="false" data-act="settings-tab" data-arg="credits">🙏 Credits</button>
       </div>
       <section id="p-prefs" role="tabpanel" aria-labelledby="t-prefs" class="panel-tab">
-        <p class="muted small">Only these display settings and the level you reach in each path are saved, on this device only. No scores, history or anything else about you.</p>
+        <p class="muted small">Saved on this device: these display settings and the level you reach in each path. Your levels and passed full mock tests are also shared on the 👥 board with everyone who has an account. No scores, history or anything else about you.</p>
         <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
         <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
         <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
@@ -684,15 +685,21 @@ const LOADERS = {
     },
     level: p => S.path[p] || 0,
     // A passed test only ever moves you forward; force is for "start again".
-    setLevel: (p, n, force) => { if (PATH_IDS.includes(p) && (force || n > (S.path[p] || 0))) { S.path[p] = n; save(); } },
+    setLevel: (p, n, force) => {
+      if (!PATH_IDS.includes(p) || !(force || n > (S.path[p] || 0))) return;
+      S.path[p] = n; save();
+      // The board's server keeps the highest level it has seen, so "start again" has to say so explicitly.
+      syncProgress(force ? { reset: p } : {});
+    },
   })),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
   search: () => import('./search.js').then(m => m.initSearch(shared())),
+  board: () => import('./board.js').then(m => m.initBoard(shared())),
   book: () => import('./book.js').then(m => m.initBook({
     ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
   exam: () => import('./exam.js').then(m => m.initExam({
-    ...shared(), mockPassed: lv => loadSection('path').then(m => m.mockPassed(lv)), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
+    ...shared(), mockPassed: lv => { syncProgress({ mock: lv }); return loadSection('path').then(m => m.mockPassed(lv)); }, sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
 };
 const mods = {};      // initialised modules
@@ -704,7 +711,7 @@ function loadSection(name) {
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
   : /^jlpt/.test(h) ? 'jlpt' : /^(study|particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes'
-  : /^path\//.test(h) ? 'path' : /^book/.test(h) ? 'book' : h === 'search' ? 'search' : null;
+  : /^path\//.test(h) ? 'path' : /^book/.test(h) ? 'book' : h === 'search' ? 'search' : h === 'board' ? 'board' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -723,7 +730,8 @@ async function route() {
   const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|book|path\/\w+)/.exec(h)?.[1];
   const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
   const tabs = [...document.querySelectorAll('#tabs a')];
-  const on = tabs.some(a => a.dataset.tab === tab) ? tab : h === 'search' ? '' : 'phrases'; // unknown links fall back to home
+  // Search and the board are opened from the header, so no tab lights up; unknown links fall back to home.
+  const on = h === 'search' || h === 'board' ? '' : tabs.some(a => a.dataset.tab === tab) ? tab : 'phrases';
   tabs.forEach(a => a.classList.toggle('on', a.dataset.tab === on));
   // Home renders straight away; every other screen needs the phrase data first.
   if (!h) return home();
@@ -772,8 +780,30 @@ fetch('/api/auth', { cache: 'no-store' }).then(async res => {
     me = (await res.json()).name;
     // Logged in: make sure the offline copy is complete (a service worker installed while logged out has none).
     navigator.serviceWorker?.ready.then(r => r.active?.postMessage({ type: 'PRECACHE' }));
+    syncProgress();
   } else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
 }).catch(() => {});
+
+// 👥 Board: sends this device's path levels (and a passed mock or a "start again") to the account, on launch and
+// whenever they change. The server answers with the account's levels, the highest any device has reached, and
+// this device catches up, so progress follows the person from phone to laptop. Offline it fails quietly; the
+// next launch sends the levels again (a mock passed offline is not reported).
+async function syncProgress(extra = {}) {
+  try {
+    const res = await fetch('/api/board', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: S.path, ...extra }),
+    });
+    if (!res.ok) return;
+    const { path } = await res.json();
+    // Only ever moves forward here, and only to a plain whole number in range (it ends up in page markup).
+    let changed = false;
+    for (const p of PATH_IDS) if (Number.isInteger(path?.[p]) && path[p] > (S.path[p] || 0) && path[p] <= 99) { S.path[p] = path[p]; changed = true; }
+    if (!changed) return;
+    save();
+    // Redraw only a path overview: redrawing a lesson or quiz mid-way would reshuffle the question.
+    if (/^#path\/\w+$/.test(location.hash)) rerender();
+  } catch (_) { /* offline: try again next launch */ }
+}
 
 // Logging out also deletes the offline copy and the cached audio and pictures, so the next person to pick up this
 // phone can't open the app (or the book) from the cache without logging in.

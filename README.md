@@ -19,6 +19,8 @@ A PWA for learning to **speak** Japanese fast: N5 everyday conversation and offi
   Accounts: unique name + password; anyone with the link can sign up. Needs these Vercel environment variables:
   `SESSION_SECRET` (32+ random characters) and Upstash Redis (`KV_REST_API_URL`, `KV_REST_API_TOKEN`).
   Optional `INVITE_CODE`: once set, sign-up needs that code (the field appears on the login page by itself).
+  👥 Board (#board, header button): everyone's path levels, passed full mocks and last active day, plus a feed
+  of new levels. The app reports progress to `/api/board` on launch and on every change; levels follow the account.
   Forgot a password: `node scripts/reset-password.mjs "<name>"` (see the file for the keys it needs)
 
 Run locally: `npm run dev` → http://localhost:8080. Test: `npm test`.

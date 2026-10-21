@@ -909,6 +909,74 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
   });
 }
 
+// 8. Progress board (api/board.js, js/board.js), against the in-memory database.
+{
+  const session = await import('../api/_session.js');
+  const { memoryStore, useStore } = await import('../api/_store.js');
+  const board = await import('../api/board.js');
+  const { PATH_JLPT } = await import('../js/path-jlpt.js');
+  const { PATH_TALK } = await import('../js/path-talk.js');
+  const env = { SESSION_SECRET: 's'.repeat(40) };
+  const db = memoryStore();
+  useStore(db);
+  for (const [key, name] of [['kartik', 'Kartik'], ['ravi', 'Ravi']]) await db.createUser(env, key, { name, hash: 'x', created: '' });
+  const as = async key => `${session.COOKIE}=${await session.sign(key, env)}`;
+  const call = async (key, body) => board.handle(new Request('https://hanasu.test/api/board', body === undefined
+    ? { headers: { cookie: key ? await as(key) : '' } }
+    : { method: 'POST', headers: { cookie: await as(key), 'Content-Type': 'application/json' }, body: JSON.stringify(body) }), env);
+
+  test('board level counts match the paths', () => {
+    assert.deepEqual(board.MAX, { jlpt: PATH_JLPT.length, talk: PATH_TALK.length }, 'update MAX in api/board.js');
+  });
+
+  test('merge: levels only go up, reset is explicit, junk is ignored', () => {
+    const now = new Date('2026-10-21T10:00:00Z');
+    const first = board.merge(null, { path: { jlpt: 2, talk: 0 } }, now);
+    assert.deepEqual(first.next, { jlpt: 2, talk: 0, mocks: {}, active: now.toISOString() });
+    assert.deepEqual(first.events.map(e => e.kind), ['joined', 'level']);
+    assert.deepEqual(board.merge(first.next, { path: { jlpt: 1, talk: 0 } }, now).next.jlpt, 2, 'an older device cannot lower the level');
+    assert.deepEqual(board.merge(first.next, { path: { jlpt: 1 } }, now).events, [], 'nothing new: no events');
+    const reset = board.merge(first.next, { path: { jlpt: 0 }, reset: 'jlpt' }, now);
+    assert.equal(reset.next.jlpt, 0);
+    assert.equal(reset.events[0].kind, 'reset');
+    for (const junk of [99, -1, 2.5, '7', null, { x: 1 }]) assert.equal(board.merge(null, { path: { jlpt: junk } }, now).next.jlpt, 0, `ignores ${JSON.stringify(junk)}`);
+    assert.equal(board.merge(null, { path: { jlpt: 13 } }, now).next.jlpt, 13, 'the last level is allowed');
+    const mock = board.merge(first.next, { mock: 'n5' }, now);
+    assert.equal(mock.next.mocks.n5, now.toISOString());
+    assert.deepEqual(board.merge(mock.next, { mock: 'n5' }, now).events, [], 'a mock counts once');
+    assert.deepEqual(board.merge(null, { mock: 'n3', reset: 'evil' }, now).events.map(e => e.kind), ['joined'], 'unknown mock/path ignored');
+  });
+
+  await atest('board API: logged-in only, sync, board view, feed', async () => {
+    assert.equal((await call(null)).status, 401, 'no cookie, no board');
+    const r1 = await call('kartik', { path: { jlpt: 3, talk: 1 } });
+    assert.deepEqual(await r1.json(), { path: { jlpt: 3, talk: 1 } });
+    await call('ravi', { path: { jlpt: 0, talk: 0 } });
+    await call('ravi', { path: { jlpt: 1, talk: 0 }, mock: 'n5' });
+    const r2 = await call('kartik', { path: { jlpt: 1, talk: 0 } });
+    assert.deepEqual(await r2.json(), { path: { jlpt: 3, talk: 1 } }, 'a second device catches up to the account');
+    const view = await (await call('ravi')).json();
+    assert.deepEqual(view.max, board.MAX);
+    const k = view.people.find(p => p.name === 'Kartik'), r = view.people.find(p => p.name === 'Ravi');
+    assert.equal(k.jlpt, 3); assert.equal(k.me, false); assert.equal(r.me, true); assert.ok(r.mocks.n5);
+    assert.ok(!JSON.stringify(view).includes('"hash"') && !JSON.stringify(view).includes('"who"'), 'no hashes or name keys leave the server');
+    // Newest first; within one sync the order is level, then mock, so the mock lands on top.
+    assert.deepEqual(view.feed.map(e => `${e.name}:${e.kind}`), ['Ravi:mock', 'Ravi:level', 'Ravi:joined', 'Kartik:level', 'Kartik:level', 'Kartik:joined']);
+    assert.deepEqual(view.feed.filter(e => e.name === 'Kartik').map(e => e.kind).sort(), ['joined', 'level', 'level']);
+    db.users.delete('ravi');
+    const after = await (await call('kartik')).json();
+    assert.deepEqual(after.people.map(p => p.name), ['Kartik'], 'a deleted account leaves the board');
+    assert.ok(after.feed.every(e => e.name === 'Kartik'), "and its events leave the feed");
+  });
+
+  test('board screen escapes names and is reachable', () => {
+    const src = read('js/board.js');
+    assert.match(src, /\$\{esc\(p\.name\)\}/);
+    assert.match(src, /esc\(e\.name\)/);
+    assert.match(html, /href="#board"/);
+  });
+}
+
 if (errors.length) {
   console.error(`✗ ${errors.length} problem(s):\n- ` + errors.join('\n- '));
   process.exit(1);

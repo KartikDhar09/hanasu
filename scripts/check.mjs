@@ -956,7 +956,9 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
   test('merge: levels only go up, reset is explicit, junk is ignored', () => {
     const now = new Date('2026-10-21T10:00:00Z');
     const first = board.merge(null, { path: { jlpt: 2, talk: 0 } }, now);
-    assert.deepEqual(first.next, { jlpt: 2, talk: 0, mocks: {}, book: [], active: now.toISOString() });
+    assert.deepEqual(first.next, { jlpt: 2, talk: 0, mocks: {}, book: [] });
+    // Last seen was removed from the board: an old record's `active` is dropped, not kept or refreshed.
+    assert.ok(!('active' in board.merge({ ...first.next, active: '2026-10-01T00:00:00Z' }, {}, now).next), 'no last-seen time is stored');
     assert.deepEqual(first.events.map(e => e.kind), ['joined', 'level']);
     assert.deepEqual(board.merge(first.next, { path: { jlpt: 1, talk: 0 } }, now).next.jlpt, 2, 'an older device cannot lower the level');
     assert.deepEqual(board.merge(first.next, { path: { jlpt: 1 } }, now).events, [], 'nothing new: no events');
@@ -992,6 +994,7 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     const k = view.people.find(p => p.name === 'Kartik'), r = view.people.find(p => p.name === 'Ravi');
     assert.equal(k.jlpt, 3); assert.equal(k.me, false); assert.equal(r.me, true); assert.ok(r.mocks.n5);
     assert.ok(!JSON.stringify(view).includes('"hash"') && !JSON.stringify(view).includes('"who"'), 'no hashes or name keys leave the server');
+    assert.ok(view.people.every(p => !('active' in p)) && view.feed.every(e => !('at' in e)), 'no last-seen time (or event time) leaves the server');
     // Newest first; within one sync the order is level, then mock, so the mock lands on top.
     assert.deepEqual(view.feed.map(e => `${e.name}:${e.kind}`), ['Ravi:mock', 'Ravi:level', 'Ravi:joined', 'Kartik:level', 'Kartik:level', 'Kartik:joined']);
     assert.deepEqual(view.feed.filter(e => e.name === 'Kartik').map(e => e.kind).sort(), ['joined', 'level', 'level']);

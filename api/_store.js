@@ -3,7 +3,7 @@
 //
 // Upstash is reached over its REST API with plain fetch (no SDK, nothing to install). Keys:
 //   user:<name key>   JSON {name, hash, created}  name = as typed (shown on the board), key = normalised (unique)
-//   prog:<name key>   JSON {jlpt, talk, mocks: {n5?, n4?: ISO date}, active: ISO time}  what the board shows
+//   prog:<name key>   JSON {jlpt, talk, mocks: {n5?, n4?: ISO date}, book: [page id]}  what the board shows
 //   members           set of name keys that have synced at least once (the board's rows)
 //   feed              list of event JSON, newest first, trimmed to FEED_MAX
 //   rate:<bucket>     attempt counter that expires on its own (see hit)

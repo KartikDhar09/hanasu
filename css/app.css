@@ -1,33 +1,36 @@
 /* =====================================================================
    Hanasu styles
-   Palette: white · soft red · charcoal (soft, but every text colour meets WCAG AA 4.5:1; scripts/check.mjs tests it).
+   Palette: white and red; deep black in dark mode; green only for "correct" (every text colour meets WCAG AA 4.5:1;
+   scripts/check.mjs tests it).
    Layout: one vertical rhythm. Top-level blocks in #app are 12px apart,
    section headings get 28px above them (see "Layout system").
    ===================================================================== */
 /* Text uses the device's own fonts (no font download): San Francisco on Apple, Roboto on Android, Segoe UI on Windows;
    Japanese: Hiragino on Apple, Noto CJK on Android, Yu Gothic/Meiryo on Windows. */
 :root {
-  --bg: #FAFAFA;
-  --surface: #FFFFFF;
-  --surface-2: #F2F2F2;
-  --ink: #2B2B2B;          /* charcoal, softer than black */
-  --muted: #6D6D6D;
-  --line: #E7E7E7;
-  --accent: #B4413B;       /* muted brick red */
-  --accent-btn: #B4413B;   /* behind white text */
+  /* Red and white, the user's palette (v5.13). Greys are only for text weight and lines; green is the one exception,
+     kept on purpose so a right answer never looks like a wrong one (red). Every text pair ≥ 5:1, tested at 4.5. */
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;      /* cards sit on white too: their border and shadow separate them */
+  --surface-2: #F4F4F4;
+  --ink: #111111;
+  --muted: #5E5E5E;
+  --line: #E6E6E6;
+  --accent: #C8102E;       /* clear red: brand, active tab, buttons */
+  --accent-btn: #C8102E;   /* behind white text */
   --accent-ink: #FFFFFF;
-  --accent-soft: #F8E7E6;
-  --you: #3B3B3B;          /* your lines in role-play, mic button */
-  --you-soft: #EFEFEF;
+  --accent-soft: #FDEBED;
+  --you: #1A1A1A;          /* your lines in role-play, mic button: black, not a third colour */
+  --you-soft: #F0F0F0;
   --you-ink: #FFFFFF;
-  --ok: #457C56;           /* muted green, only for “correct” */
-  --ok-soft: #E7F1EA;
+  --ok: #276B3C;           /* green, only for “correct” / passed / done */
+  --ok-soft: #E6F3EA;
   --ok-ink: #FFFFFF;
-  --warn: #966835;
-  --bad: #B5433D;
-  --bad-soft: #F7E4E3;
-  --casual: #A65550;       /* rose-red for casual speech */
-  --casual-soft: #F8EEED;
+  --warn: #A30D24;         /* darker red: a warning stays in the palette */
+  --bad: #C8102E;
+  --bad-soft: #FDEBED;
+  --casual: #9B1B30;       /* deep red for casual speech, just apart from the brand red */
+  --casual-soft: #FBEFF1;
   --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 4px 14px rgba(0, 0, 0, .05);
   --radius: 16px;
   --gap: 12px;
@@ -37,12 +40,13 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #161616; --surface: #1F1F1F; --surface-2: #282828; --ink: #E4E4E4; --muted: #9C9C9C; --line: #343434;
-    --accent: #D57872; --accent-btn: #BC554E; --accent-ink: #FFFFFF; --accent-soft: #3A2422;
-    --you: #CFCFCF; --you-soft: #2B2B2B; --you-ink: #161616;
-    --ok: #7DB88D; --ok-soft: #1F2E24; --ok-ink: #161616;
-    --warn: #D6A06A; --bad: #E07B74; --bad-soft: #3A2221;
-    --casual: #DE958F; --casual-soft: #33221F;
+    /* Deep black: pure #000 page (OLED pixels switch off), cards a step up so they still read as cards. */
+    --bg: #000000; --surface: #111111; --surface-2: #1C1C1C; --ink: #F2F2F2; --muted: #A0A0A0; --line: #2A2A2A;
+    --accent: #FF4D5E; --accent-btn: #D3122F; --accent-ink: #FFFFFF; --accent-soft: #2B0A0F;
+    --you: #E6E6E6; --you-soft: #1C1C1C; --you-ink: #000000;
+    --ok: #6FCF8A; --ok-soft: #0E2416; --ok-ink: #000000;
+    --warn: #FF7A85; --bad: #FF4D5E; --bad-soft: #2B0A0F;
+    --casual: #FF8C98; --casual-soft: #26090E;
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .22);
     color-scheme: dark;
   }
@@ -393,7 +397,7 @@ details.answers .phrases { margin-top: 8px; }
 .gap.wide { min-width: 3.5em; }
 .gap.star { font-weight: 700; }
 .mclock { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.mclock.late { color: var(--bad, #c0392b); font-weight: 700; }
+.mclock.late { color: var(--bad); font-weight: 700; }
 .done details.answers { text-align: left; margin: 12px 0; }
 .groups { display: grid; gap: 8px; }
 .group p { margin: 6px 0; }

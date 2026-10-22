@@ -312,8 +312,10 @@ test('text colours meet WCAG AA contrast (4.5:1) in light and dark themes', () =
   const dark = { ...light, ...vars(css.slice(darkStart, css.indexOf('}', darkStart))) };
   const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
-  const pairs = [['ink', 'bg'], ['ink', 'surface'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'surface-2'], ['accent', 'bg'], ['accent', 'surface'],
-    ['accent', 'accent-soft'], ['accent-ink', 'accent-btn'], ['ok-ink', 'ok'], ['ok', 'surface'], ['bad', 'surface'], ['warn', 'surface'], ['casual', 'surface'], ['you-ink', 'you']];
+  // Coloured text also sits on its own soft tint (pills, notes) and on surface-2 (inputs, chips): tested too (v5.13).
+  const pairs = [['ink', 'bg'], ['ink', 'surface'], ['ink', 'surface-2'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'surface-2'], ['accent', 'bg'], ['accent', 'surface'],
+    ['accent', 'surface-2'], ['accent', 'accent-soft'], ['accent-ink', 'accent-btn'], ['ok-ink', 'ok'], ['ok', 'surface'], ['ok', 'ok-soft'], ['bad', 'surface'], ['bad', 'bad-soft'],
+    ['warn', 'surface'], ['casual', 'surface'], ['casual', 'casual-soft'], ['you-ink', 'you']];
   for (const [name, t] of [['light', light], ['dark', dark]]) for (const [f, b] of pairs) {
     const r = ratio(t[f], t[b]);
     assert.ok(r >= 4.5, `${name}: --${f} on --${b} is ${r.toFixed(2)}:1`);

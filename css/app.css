@@ -54,10 +54,17 @@
 
 /* ---------- Base ---------- */
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* Responsive type (v5.13): everything is sized in rem, so text and icons scale together from this one value. It is a
+   percentage of the browser's own font size, so someone who set "Large" text in their browser still gets it.
+   Narrow phones step down a little so seven tab labels fit at 320px; big desktop screens step up so text isn't tiny
+   in a wide window. The step-ups also need height: a short laptop screen keeps the compact size. */
+html { -webkit-text-size-adjust: 100%; font-size: 100%; }
+@media (max-width: 359px) { html { font-size: 93.75%; } }
+@media (min-width: 1024px) and (min-height: 700px) { html { font-size: 106.25%; } }
+@media (min-width: 1440px) and (min-height: 820px) { html { font-size: 112.5%; } }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, var(--jp), sans-serif;
+  font: 1rem/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, var(--jp), sans-serif;
   padding-bottom: env(safe-area-inset-bottom);
 }
 [lang="ja"] { font-family: var(--jp); }
@@ -75,7 +82,10 @@ mark { background: var(--accent-soft); color: var(--accent); font-weight: 700; b
 .accent, h1.page span { color: var(--accent); }
 
 /* ---------- Layout system ---------- */
-main { max-width: 640px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+/* The column is 40rem (640px at normal size) so it widens with the text on big screens. The space kept free at the
+   bottom follows the tab bar's measured height (--tabs-h, set in js/app.js): the bar grows with font size and zoom,
+   and a fixed gap let the last card slide under it. The fallback is the bar's normal height. */
+main { max-width: 40rem; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-right)) calc(var(--tabs-h, calc(58px + env(safe-area-inset-bottom))) + 26px) max(16px, env(safe-area-inset-left)); }
 #app > * { margin-top: 0; margin-bottom: 0; }
 #app > * + * { margin-top: var(--gap); }
 #app > h2, #app > h3 { margin-top: var(--section); }
@@ -98,8 +108,8 @@ h1.page { margin: 0; font-size: 1.5rem; }
 /* ---------- Top bar ---------- */
 .top {
   position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px;
-  /* On wide screens the bar's contents line up with the 640px content column. */
-  padding: calc(10px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right), calc((100% - 640px) / 2 + 16px)) 10px max(16px, env(safe-area-inset-left), calc((100% - 640px) / 2 + 16px));
+  /* On wide screens the bar's contents line up with the 40rem content column. */
+  padding: calc(10px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right), calc((100% - 40rem) / 2 + 16px)) 10px max(16px, env(safe-area-inset-left), calc((100% - 40rem) / 2 + 16px));
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
 }
@@ -111,9 +121,11 @@ h1.page { margin: 0; font-size: 1.5rem; }
 .tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(7, 1fr);
   background: color-mix(in srgb, var(--bg) 97%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid var(--line); padding: 0 max(env(safe-area-inset-right), calc((100% - 640px) / 2)) env(safe-area-inset-bottom) max(env(safe-area-inset-left), calc((100% - 640px) / 2));
+  border-top: 1px solid var(--line); padding: 0 max(env(safe-area-inset-right), calc((100% - 40rem) / 2)) env(safe-area-inset-bottom) max(env(safe-area-inset-left), calc((100% - 40rem) / 2));
 }
-.tabs a { position: relative; display: grid; justify-items: center; gap: 1px; padding: 8px 0 6px; font-size: .72rem; font-weight: 600; color: var(--muted); text-decoration: none; }
+/* Labels follow the text size but never outgrow a seventh of the screen: with "Large" browser text on a 360px phone
+   ".72rem" alone cut "Phrases" off. 3.4vw keeps the normal size everywhere else. */
+.tabs a { position: relative; display: grid; justify-items: center; gap: 1px; padding: 8px 0 6px; min-width: 0; white-space: nowrap; font-size: min(.72rem, 3.4vw); font-weight: 600; color: var(--muted); text-decoration: none; }
 .tabs a span { font-size: 1.25rem; line-height: 1.2; }
 .tabs a.on { color: var(--accent); }
 .tabs a.on::before { content: ''; position: absolute; top: 0; left: 30%; right: 30%; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
@@ -309,7 +321,7 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 /* ---------- Settings sheet & toast ---------- */
 .sheet { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, .35); display: flex; align-items: flex-end; justify-content: center; }
 .panel {
-  background: var(--bg); width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; border-radius: 20px 20px 0 0;
+  background: var(--bg); width: 100%; max-width: 35rem; max-height: 92vh; max-height: 92dvh; overflow-y: auto; border-radius: 20px 20px 0 0;
   padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); display: grid; gap: 14px; animation: up .25s ease-out;
 }
 @keyframes up { from { transform: translateY(40px); opacity: 0; } }
@@ -334,7 +346,8 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .credits small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
 .credits a { display: inline-block; margin-top: 2px; padding: 4px 0; min-height: 24px; font-size: .85rem; color: var(--accent); }
 .toast {
-  position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); opacity: 0;
+  /* Just above the tab bar, whatever its height (see main). */
+  position: fixed; left: 50%; bottom: calc(var(--tabs-h, calc(58px + env(safe-area-inset-bottom))) + 22px); transform: translate(-50%, 20px); opacity: 0;
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; transition: .25s; pointer-events: none; z-index: 30;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -578,7 +591,7 @@ details.answers .phrases { margin-top: 8px; }
   .top { position: static; }
   .tabs a { grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px; padding: 6px 0; font-size: .75rem; }
   .tabs a span { font-size: 1.05rem; }
-  main { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
+  main { padding-bottom: calc(var(--tabs-h, calc(38px + env(safe-area-inset-bottom))) + 18px); }
   .card { min-height: 0; padding: 12px 16px; }
   .jpblock.big { margin: 6px 0; }
   .pic, .wpic.huge, .big-emoji { font-size: 2.4rem; }
@@ -656,16 +669,16 @@ details.answers .phrases { margin-top: 8px; }
 
 /* ---------- Interface icons (js/icons.js, Lucide) ----------
    Line icons in the text colour, so they follow light/dark and the red active tab. Sized in em where they sit in
-   text, in px where the layout needs a fixed box. */
+   text, in rem where the layout needs a fixed box (so they scale with the text, see Base). */
 .ic { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.22em; }
-.tabs a .ic { width: 24px; height: 24px; margin-bottom: 1px; }
-.gear .ic { width: 24px; height: 24px; display: block; }
+.tabs a .ic { width: 1.5rem; height: 1.5rem; margin-bottom: 1px; }
+.gear .ic { width: 1.5rem; height: 1.5rem; display: block; }
 .gear { display: grid; place-items: center; min-width: 40px; min-height: 40px; }
-.qlink .ic { width: 20px; height: 20px; color: var(--accent); }
+.qlink .ic { width: 1.25rem; height: 1.25rem; color: var(--accent); }
 /* Mode buttons and hub cards: the icon is the first thing the eye finds, in the accent colour. */
-.mode > .ic { width: 28px; height: 28px; color: var(--accent); }
-.modes.compact .mode > .ic { width: 26px; height: 26px; }
-.scard > .ic { width: 30px; height: 30px; color: var(--accent); margin-bottom: 2px; }
+.mode > .ic { width: 1.75rem; height: 1.75rem; color: var(--accent); }
+.modes.compact .mode > .ic { width: 1.625rem; height: 1.625rem; }
+.scard > .ic { width: 1.875rem; height: 1.875rem; color: var(--accent); margin-bottom: 2px; }
 /* Kanji-character icons (は, 本, 漢) sit on the same left edge as the line icons beside them. */
 .scard > .pch { text-align: left; padding: 0; line-height: 30px; }
 .page > .ic, .head h1 > .ic { color: var(--accent); }

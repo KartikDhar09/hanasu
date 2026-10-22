@@ -16,6 +16,14 @@ const REFRESH_MS = 60 * 1000;
 export function initBoard(ctx) {
   const { esc, render, back } = ctx;
   let timer = null, data = null, error = '';
+  // Which cards were opened or closed by hand, by display name. In memory only (gone on reload): the app stores
+  // nothing about what people do, and the board redraws every minute, which would otherwise snap cards shut.
+  const opened = new Map();
+  // 'toggle' doesn't bubble, so listen in the capture phase; one listener for the module's lifetime.
+  document.addEventListener('toggle', e => {
+    const d = e.target;
+    if (d instanceof HTMLDetailsElement && d.dataset.name !== undefined) opened.set(d.dataset.name, d.open);
+  }, true);
 
   function eventText(e, max) {
     const path = PATH_NAMES[e.path] || '';
@@ -54,13 +62,21 @@ export function initBoard(ctx) {
     return row('book', 'Book', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished 🏆');
   }
 
-  // Everything on one card, no fold: with three rows per person the board stays short without hiding anything.
+  // Each card folds (v5.14, the user asked for it back): closed it is one line of numbers, so a bigger group still
+  // fits on a screen; open it shows the three rows with bars. Your own card starts open, everyone else's closed.
   function person(p) {
-    const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">✅ ${lv.toUpperCase()} mock passed</span>`).join(' ');
-    return `<li class="card left bperson${p.me ? ' me' : ''}">
-      <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b>${mocks ? `<span>${mocks}</span>` : ''}</div>
+    const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">✅ ${lv.toUpperCase()}</span>`).join(' ');
+    const n = k => Math.min(p[k], PATH_SUMMARY[k].levels.length);
+    const book = BOOK_INDEX.filter(b => p.book.includes(b.id)).length;
+    // A card someone opened or closed stays that way through the minute refresh; otherwise only yours is open.
+    const isOpen = opened.has(p.name) ? opened.get(p.name) : p.me;
+    return `<li class="card left bperson${p.me ? ' me' : ''}"><details data-name="${esc(p.name)}"${isOpen ? ' open' : ''}>
+      <summary>
+        <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b>${icon('chevron')}</div>
+        <div class="bsum">${icon('path-jlpt')} ${n('jlpt')}/${PATH_SUMMARY.jlpt.levels.length} · ${icon('path-talk')} ${n('talk')}/${PATH_SUMMARY.talk.levels.length} · ${icon('book')} ${book}/${BOOK_INDEX.length}${mocks ? ` ${mocks}` : ''}</div>
+      </summary>
       ${pathRow(p, 'jlpt')}${pathRow(p, 'talk')}${bookRow(p)}
-    </li>`;
+    </details></li>`;
   }
 
   function page() {

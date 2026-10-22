@@ -1,7 +1,7 @@
 // /api/board: the shared progress board. Only logged-in users can read or write it (session cookie, see
 // _session.js). Callers: js/app.js reports progress (sync), js/board.js shows the board.
 //
-//   GET                                   → {me, people: [{name, me, jlpt, talk, mocks, active}], feed, max}
+//   GET                                   → {me, people: [{name, me, jlpt, talk, mocks, book}], feed, max}
 //   POST {path: {jlpt, talk}, reset?, mock?, book?: {page, done}}
 //        → merges this device's levels into the account and marks a Book page done or not done; returns the
 //          account's levels and done pages, so every device of the same person ends up in the same place
@@ -32,7 +32,10 @@ const levelOf = (v, p) => Number.isInteger(v) && v >= 0 && v <= MAX[p] ? v : 0;
 //   prev: saved progress or null (first sync = "joined")   body: what the app sent   now: Date
 export function merge(prev, body, now) {
   const at = now.toISOString();
-  const next = { jlpt: 0, talk: 0, mocks: {}, book: [], ...prev, active: at };
+  // No "last seen": the user removed it from the board (v5.12), so it isn't stored either. Records saved before
+  // that still carry `active`; dropping it here clears it on that person's next sync.
+  const { active: _lastSeen, ...kept } = prev || {};
+  const next = { jlpt: 0, talk: 0, mocks: {}, book: [], ...kept };
   next.mocks = { ...next.mocks };
   next.book = [...next.book];
   const events = [];
@@ -77,10 +80,11 @@ export async function handle(req, env) {
       max: MAX,
       // Only what the board shows: never the password hash or the name key.
       people: people.map(({ key: k, user, prog }) => ({
-        name: user.name, me: k === key, jlpt: prog.jlpt, talk: prog.talk, mocks: prog.mocks || {}, book: prog.book || [], active: prog.active,
+        name: user.name, me: k === key, jlpt: prog.jlpt, talk: prog.talk, mocks: prog.mocks || {}, book: prog.book || [],
       })),
       // Events name their person by key; send the display name instead (an event of a deleted account is dropped).
-      feed: feed.filter(e => names[e.who] && stillTrue(e)).map(({ who, ...e }) => ({ ...e, name: names[who], me: who === key })),
+      // The time stays on the server: the newest event's time would show when someone was last on (removed in v5.12).
+      feed: feed.filter(e => names[e.who] && stillTrue(e)).map(({ who, at, ...e }) => ({ ...e, name: names[who], me: who === key })),
     });
   }
   if (req.method !== 'POST') return json(405, { error: 'Method not allowed.' });

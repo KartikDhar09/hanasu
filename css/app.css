@@ -642,13 +642,9 @@ details.answers .phrases { margin-top: 8px; }
 /* Book: "Mark this page done" sits above Prev / Next; once done it turns green like a passed level. */
 .bk-done { margin-top: 16px; }
 .bk-done.on { color: var(--ok); border-color: var(--ok); }
-/* Board: each person's card folds; the summary line stays visible when closed. */
-.bperson summary { list-style: none; cursor: pointer; display: grid; gap: 4px; }
-.bperson summary::-webkit-details-marker { display: none; }
-.bsum { font-size: .9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
-.barea { margin-top: 14px; display: grid; gap: 4px; }
-.bline { display: flex; gap: 6px; font-size: .92rem; line-height: 1.4; }
-.bline > span { min-width: 0; overflow-wrap: anywhere; }
+/* Board card: name, then one short block per area (label + n / total, bar, what's next). */
+.barea { margin-top: 12px; display: grid; gap: 4px; }
+.bnow { font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }
 
 /* ---------- Interface icons (js/icons.js, Lucide) ----------
    Line icons in the text colour, so they follow light/dark and the red active tab. Sized in em where they sit in
@@ -665,8 +661,5 @@ details.answers .phrases { margin-top: 8px; }
 /* Kanji-character icons (は, 本, 漢) sit on the same left edge as the line icons beside them. */
 .scard > .pch { text-align: left; padding: 0; line-height: 30px; }
 .page > .ic, .head h1 > .ic { color: var(--accent); }
-/* Board: done / now / left markers line up as a column. */
-.bline > .ic { width: 18px; height: 18px; margin-top: 2px; color: var(--muted); }
-.bline.ok > .ic { color: var(--ok); }
-.barea .brow .ic, .bsum .ic { color: var(--accent); }
-.bsum .ic { width: 16px; height: 16px; }
+/* Board: the area icons in the accent colour, like the hub cards. */
+.barea .brow .ic { color: var(--accent); }

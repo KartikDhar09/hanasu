@@ -662,6 +662,14 @@ details.answers .phrases { margin-top: 8px; }
 /* Board card: name, then one short block per area (label + n / total, bar, what's next). */
 .barea { margin-top: 12px; display: grid; gap: 4px; }
 .bnow { font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }
+/* Folding card (v5.14): the summary is the tap target: name + chevron, then one line of numbers and mock badges. */
+.bperson summary { list-style: none; cursor: pointer; display: grid; gap: 4px; }
+.bperson summary::-webkit-details-marker { display: none; }
+.bsum { font-size: .9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.bsum .ic { color: var(--accent); }
+.bperson summary .brow { align-items: center; }
+.bperson summary .brow > .ic { color: var(--muted); transition: transform .2s; }
+.bperson details[open] summary .brow > .ic { transform: rotate(180deg); }
 
 /* ---------- Interface icons (js/icons.js, Lucide) ----------
    Line icons in the text colour, so they follow light/dark and the red active tab. Sized in em where they sit in

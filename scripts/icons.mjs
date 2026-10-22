@@ -18,6 +18,7 @@ export const NAMES = {
   jlpt: 'graduation-cap',          // JLPT tab: the exam
   book: 'book-marked',             // Book tab: the textbook
   board: 'users',                  // 👥 board (header)
+  chevron: 'chevron-down',         // board card fold: turns up when the card is open
   search: 'search',
   settings: 'settings',
   learn: 'layers',                 // Learn mode: a stack of flashcards

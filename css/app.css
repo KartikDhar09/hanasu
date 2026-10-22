@@ -573,7 +573,7 @@ details.answers .phrases { margin-top: 8px; }
 }
 .search:focus-visible, .form select:focus-visible, .panel input:focus-visible, .panel select:focus-visible { outline-offset: 0; }
 @media (hover: hover) {
-  .unit:hover, .pcard:hover, .vrow:hover, .scard:hover, .mode:hover, .crow:hover, .ktile:hover, .wcard:hover, .path button:hover, .choice:not(:disabled):hover {
+  .unit:hover, .bperson:hover, .pcard:hover, .vrow:hover, .scard:hover, .mode:hover, .crow:hover, .ktile:hover, .wcard:hover, .path button:hover, .choice:not(:disabled):hover {
     border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
   }
   .btn:not(:disabled):hover { filter: brightness(.98); }
@@ -662,14 +662,13 @@ details.answers .phrases { margin-top: 8px; }
 /* Board card: name, then one short block per area (label + n / total, bar, what's next). */
 .barea { margin-top: 12px; display: grid; gap: 4px; }
 .bnow { font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }
-/* Folding card (v5.14): the summary is the tap target: name + chevron, then one line of numbers and mock badges. */
-.bperson summary { list-style: none; cursor: pointer; display: grid; gap: 4px; }
-.bperson summary::-webkit-details-marker { display: none; }
+/* Folding card (v5.15): the whole card is the tap target. Closed: name + one line of numbers and mock badges.
+   Open: the three rows with bars take the place of that line (same numbers, so it isn't shown twice). */
+.bperson { cursor: pointer; display: grid; gap: 4px; }
 .bsum { font-size: .9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
 .bsum .ic { color: var(--accent); }
-.bperson summary .brow { align-items: center; }
-.bperson summary .brow > .ic { color: var(--muted); transition: transform .2s; }
-.bperson details[open] summary .brow > .ic { transform: rotate(180deg); }
+.bperson .bmore, .bperson.open .bsum { display: none; }
+.bperson.open .bmore { display: block; }
 
 /* ---------- Interface icons (js/icons.js, Lucide) ----------
    Line icons in the text colour, so they follow light/dark and the red active tab. Sized in em where they sit in

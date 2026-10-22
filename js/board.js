@@ -16,14 +16,10 @@ const REFRESH_MS = 60 * 1000;
 export function initBoard(ctx) {
   const { esc, render, back } = ctx;
   let timer = null, data = null, error = '';
-  // Which cards were opened or closed by hand, by display name. In memory only (gone on reload): the app stores
-  // nothing about what people do, and the board redraws every minute, which would otherwise snap cards shut.
-  const opened = new Map();
-  // 'toggle' doesn't bubble, so listen in the capture phase; one listener for the module's lifetime.
-  document.addEventListener('toggle', e => {
-    const d = e.target;
-    if (d instanceof HTMLDetailsElement && d.dataset.name !== undefined) opened.set(d.dataset.name, d.open);
-  }, true);
+  // Cards opened by tapping, by display name. Kept so the minute refresh redraws them still open; emptied in clear()
+  // when you leave the board, so every visit starts with all cards closed (the user's choice, v5.15). Memory only:
+  // the app stores nothing about what people do.
+  const opened = new Set();
 
   function eventText(e, max) {
     const path = PATH_NAMES[e.path] || '';
@@ -62,21 +58,21 @@ export function initBoard(ctx) {
     return row('book', 'Book', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished 🏆');
   }
 
-  // Each card folds (v5.14, the user asked for it back): closed it is one line of numbers, so a bigger group still
-  // fits on a screen; open it shows the three rows with bars. Your own card starts open, everyone else's closed.
+  // Each card folds: closed it is one line of numbers, so a bigger group still fits on a screen; open it shows the
+  // three rows with bars instead. Every card starts closed, yours too (v5.15).
   function person(p) {
     const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">✅ ${lv.toUpperCase()}</span>`).join(' ');
     const n = k => Math.min(p[k], PATH_SUMMARY[k].levels.length);
     const book = BOOK_INDEX.filter(b => p.book.includes(b.id)).length;
-    // A card someone opened or closed stays that way through the minute refresh; otherwise only yours is open.
-    const isOpen = opened.has(p.name) ? opened.get(p.name) : p.me;
-    return `<li class="card left bperson${p.me ? ' me' : ''}"><details data-name="${esc(p.name)}"${isOpen ? ' open' : ''}>
-      <summary>
-        <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b>${icon('chevron')}</div>
-        <div class="bsum">${icon('path-jlpt')} ${n('jlpt')}/${PATH_SUMMARY.jlpt.levels.length} · ${icon('path-talk')} ${n('talk')}/${PATH_SUMMARY.talk.levels.length} · ${icon('book')} ${book}/${BOOK_INDEX.length}${mocks ? ` ${mocks}` : ''}</div>
-      </summary>
-      ${pathRow(p, 'jlpt')}${pathRow(p, 'talk')}${bookRow(p)}
-    </details></li>`;
+    const isOpen = opened.has(p.name);
+    // The whole card is the tap target (not a <details>, whose summary line is the only clickable part). data-act
+    // makes app.js give it tabindex + role=button, so Tab and Enter/Space work too; aria-expanded tells a screen
+    // reader whether the rows are showing. It sits inside the <li> so the list keeps its list role.
+    return `<li><div class="card left bperson${p.me ? ' me' : ''}${isOpen ? ' open' : ''}" data-act="board-card" data-arg="${esc(p.name)}" aria-expanded="${isOpen}">
+      <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b></div>
+      <div class="bsum">${icon('path-jlpt')} ${n('jlpt')}/${PATH_SUMMARY.jlpt.levels.length} · ${icon('path-talk')} ${n('talk')}/${PATH_SUMMARY.talk.levels.length} · ${icon('book')} ${book}/${BOOK_INDEX.length}${mocks ? ` ${mocks}` : ''}</div>
+      <div class="bmore">${pathRow(p, 'jlpt')}${pathRow(p, 'talk')}${bookRow(p)}</div>
+    </div></li>`;
   }
 
   function page() {
@@ -125,10 +121,20 @@ export function initBoard(ctx) {
 
   function route(h) { if (h === 'board') return open(), true; return false; }
   return {
-    actions: {},
+    actions: {
+      // Toggled in place rather than redrawn, so keyboard focus stays on the card that was pressed.
+      'board-card'(name) {
+        const card = [...document.querySelectorAll('.bperson')].find(c => c.dataset.arg === name);
+        if (!card) return;
+        const on = !opened.has(name);
+        if (on) opened.add(name); else opened.delete(name);
+        card.classList.toggle('open', on);
+        card.setAttribute('aria-expanded', String(on));
+      },
+    },
     route,
     rerender() { if (location.hash !== '#board') return false; page(); return true; },
-    // Leaving the screen stops the refresh.
-    clear() { clearInterval(timer); timer = null; },
+    // Leaving the screen stops the refresh and closes every card again for the next visit.
+    clear() { clearInterval(timer); timer = null; opened.clear(); },
   };
 }

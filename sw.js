@@ -2,7 +2,7 @@
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and waits: the app asks
 // "New version · Restart" (js/app.js), and Restart tells it to take over; otherwise it takes over once the app
 // is fully closed. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v5.12';
+const CACHE = 'hanasu-v5.13';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v3';

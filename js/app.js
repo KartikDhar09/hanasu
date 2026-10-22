@@ -754,6 +754,12 @@ async function route() {
 }
 window.addEventListener('hashchange', route);
 
+// The tab bar's height changes with the browser's font size, zoom and the short-landscape layout. The page keeps that
+// much space free at the bottom (and the toast sits above it) through --tabs-h, so the last card never ends up hidden
+// under the bar. Set through CSSOM, which the self-only CSP allows (unlike a style attribute in HTML).
+const tabBar = document.getElementById('tabs');
+new ResizeObserver(() => document.documentElement.style.setProperty('--tabs-h', `${tabBar.offsetHeight}px`)).observe(tabBar);
+
 // Text inputs name their action in data-input; it gets (data-arg, value) on every keystroke.
 document.addEventListener('input', e => {
   const el = e.target.closest('[data-input]');

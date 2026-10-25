@@ -13,11 +13,11 @@ export const COUNTER_INTRO = {
 };
 
 export const COUNTER_GROUPS = [
-  { id: 'things', title: 'Things', hg: 'Cheezein', icon: '📦' },
-  { id: 'living', title: 'People & animals', hg: 'Log aur jaanvar', icon: '👥' },
-  { id: 'time', title: 'Time & age', hg: 'Samay aur umar', icon: '⏰' },
-  { id: 'order', title: 'Money, order & places', hg: 'Paisa, kram aur jagah', icon: '🔢' },
-  { id: 'work', title: 'At work', hg: 'Office mein', icon: '💼' },
+  { id: 'things', title: 'Things', hg: 'Cheezein' },
+  { id: 'living', title: 'People & animals', hg: 'Log aur jaanvar' },
+  { id: 'time', title: 'Time & age', hg: 'Samay aur umar' },
+  { id: 'order', title: 'Money, order & places', hg: 'Paisa, kram aur jagah' },
+  { id: 'work', title: 'At work', hg: 'Office mein' },
 ];
 
 export const COUNTERS = [

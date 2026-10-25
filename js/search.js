@@ -48,7 +48,7 @@ function buildIndex() {
     [p.p], [p.ro], [p.title, p.hg]);
   for (const c of COUNTERS) add({ kind: 'counter', title: c.c, sub: c.kana, en: c.title, hg: c.hg, go: 'counter/' + c.id },
     [c.c, c.kana], [toRomaji(c.kana)], [c.title, c.hg, c.use]);
-  for (const u of UNITS) add({ kind: 'unit', title: u.title, sub: u.jp, en: '', hg: u.hi, icon: u.icon, go: 'unit/' + u.id },
+  for (const u of UNITS) add({ kind: 'unit', title: u.title, sub: u.jp, en: '', hg: u.hi, go: 'unit/' + u.id },
     [u.jp], [], [u.title, u.hi]);
   return out;
 }
@@ -96,7 +96,7 @@ export function initSearch(ctx) {
     ctx.clearSess();
     render(`
       <div class="head">${back()}<h1>Search</h1></div>
-      <input class="search" type="search" id="sq" data-input="search-q" placeholder="🔍 日本語, romaji, English or Hinglish" aria-label="Search everything" value="${esc(q)}" autocomplete="off" enterkeyhint="search">
+      <input class="search" type="search" id="sq" data-input="search-q" placeholder="日本語, romaji, English or Hinglish" aria-label="Search everything" value="${esc(q)}" autocomplete="off" enterkeyhint="search">
       <div id="results" aria-live="polite">${results()}</div>`);
     const el = document.getElementById('sq');
     el.focus(); el.setSelectionRange(el.value.length, el.value.length);
@@ -109,7 +109,7 @@ export function initSearch(ctx) {
     return KINDS.filter(([k]) => r[k].length).map(([k, label]) => `<h2 class="sec">${label}</h2>
       <ul class="phrases sresults">${r[k].map(e => `<li${e.say ? ` class="ex" data-act="say-text" data-arg="${esc(e.say)}"` : ''}>
         <div class="srow"><div class="sbody">
-          <div class="jp" lang="ja">${e.pic ? `${esc(e.pic)} ` : ''}${e.icon ? `${esc(e.icon)} ` : ''}${esc(e.title)}${e.sub && S().settings.kana ? ` <span class="kana-inline">${esc(e.sub)}</span>` : ''}</div>
+          <div class="jp" lang="ja">${e.pic ? `${esc(e.pic)} ` : ''}${esc(e.title)}${e.sub && S().settings.kana ? ` <span class="kana-inline">${esc(e.sub)}</span>` : ''}</div>
           ${e.en ? `<div class="en">${esc(e.en)}</div>` : ''}${S().settings.hindi && e.hg ? `<div class="hi" lang="hi-Latn">${esc(e.hg)}</div>` : ''}
           ${e.where ? `<div class="muted small">${esc(e.where)}</div>` : ''}</div>
           <a class="sopen" href="#${esc(e.go)}" aria-label="Open ${esc(e.title)}">›</a></div></li>`).join('')}</ul>`).join('');

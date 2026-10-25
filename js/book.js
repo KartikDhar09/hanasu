@@ -2,6 +2,7 @@
 // listening scripts can play in full, each speaker in their own voice.
 import { BOOK_INFO, BOOK_INDEX, loadPage, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
 import { PIC_SIZE } from './book-pics.js';
+import { icon } from './icons.js';
 
 export function initBook(ctx) {
   const { esc, render, back } = ctx;
@@ -22,7 +23,7 @@ export function initBook(ctx) {
     ctx.clearSess(); st = null; tok++;
     // ✅ in place of the icon once the page is marked done (on the 👥 board too).
     const btn = (p, sub) => `<button class="unit" data-act="bk-open" data-arg="${p.id}">
-        <span class="icon">${ctx.pageDone(p.id) ? '✅' : p.icon}</span>
+        <span class="icon">${ctx.pageDone(p.id) ? icon('done') : p.n || icon(p.group === 'back' ? 'grammar' : 'book')}</span>
         <span class="ut"><b>${esc(p.n ? `Unit ${p.n} · ${p.title}` : p.title)}</b><small>${esc(sub)}</small></span>
       </button>`;
     render(`
@@ -74,8 +75,8 @@ export function initBook(ctx) {
   // Marks the page done on the account (shown on the 👥 board). Nothing is saved on the device, so it needs a
   // connection; the button says so instead of pretending it worked.
   const doneButton = id => ctx.pageDone(id)
-    ? `<button class="btn big bk-done on" id="bk-done" data-act="bk-done" data-arg="0">✅ Done · tap to undo</button>`
-    : `<button class="btn big bk-done" id="bk-done" data-act="bk-done" data-arg="1">✓ Mark this page done</button>`;
+    ? `<button class="btn big bk-done on" id="bk-done" data-act="bk-done" data-arg="0">${icon('done')} Done · tap to undo</button>`
+    : `<button class="btn big bk-done" id="bk-done" data-act="bk-done" data-arg="1">${icon('done')} Mark this page done</button>`;
   async function markDone(done) {
     const id = st?.id, el = document.getElementById('bk-done');
     if (!id || !el) return;
@@ -90,7 +91,7 @@ export function initBook(ctx) {
   const pic = (file, alt = '') => {
     const [w, h] = PIC_SIZE[file] || [];
     // Not cropped yet: a box the same shape the picture will be, so the page doesn't move when it arrives.
-    if (!w) return `<div class="bk-img bk-pending" role="img" aria-label="${esc(alt)}"><span>🖼️ Picture coming</span></div>`;
+    if (!w) return `<div class="bk-img bk-pending" role="img" aria-label="${esc(alt)}"><span>${icon('vocab')} Picture coming</span></div>`;
     return `<img class="bk-img" src="/img/book/${file}.jpg" width="${w}" height="${h}" loading="lazy" decoding="async" alt="${esc(alt)}">`;
   };
   const picOf = w => COLOR[w[0]] ? `<span class="bk-swatch" style="background:${COLOR[w[0]]}"></span>` : FOOD_PIC[w[0]] ? pic(`food/${FOOD_PIC[w[0]]}`, w[2]) : '';
@@ -102,7 +103,7 @@ export function initBook(ctx) {
     const sides = [];
     const k = st.seqs.push(lines.map(l => [spoken(l[1]), voiceOf(l[0])]).filter(x => x[0])) - 1;
     return `<div class="bk-talk">
-      ${title}<button class="btn bk-play" data-act="bk-play" data-arg="${k}">▶ Play conversation</button>
+      ${title}<button class="btn bk-play" data-act="bk-play" data-arg="${k}">${icon('start')} Play conversation</button>
       <div class="chat">${lines.map(l => {
         if (!sides.includes(l[0])) sides.push(l[0]);
         return `<div class="bubble ${sides.indexOf(l[0]) % 2 ? 'you' : 'them'}"${sayIdx(spoken(l[1]), voiceOf(l[0]))}>
@@ -115,8 +116,8 @@ export function initBook(ctx) {
       case 'key': return `<div class="card compact bk-key ex"${sayIdx(spoken(b.jp))}><div class="jp" lang="ja">${esc(b.jp)}</div>${ro(b.ro)}<div class="en">${esc(b.en)}</div></div>`;
       case 'h': return `<h3 class="bk-h">${esc(b.text)}</h3>`;
       case 'p': return `<p class="bk-p">${esc(b.text)}</p>`;
-      case 'note': return `<div class="note">📝 ${esc(b.text)}</div>`;
-      case 'tip': return `<div class="note ok">💡 <b>Hanasu note:</b> ${esc(b.text)}</div>`;
+      case 'note': return `<div class="note">${icon('note')} ${esc(b.text)}</div>`;
+      case 'tip': return `<div class="note ok">${icon('tip')} <b>Hanasu note:</b> ${esc(b.text)}</div>`;
       case 'words': return `<div class="bk-words${b.pics ? ' pics' : ''}">${b.items.map(w => word(w, b.pics)).join('')}</div>`;
       case 'img': return PIC_SIZE[b.file] ? `<a class="bk-pic" href="/img/book/${b.file}.jpg" target="_blank" rel="noopener">${pic(b.file, b.alt)}<small class="muted">Tap to open full size</small></a>` : `<div class="bk-pic">${pic(b.file, b.alt)}</div>`;
       case 'scenes': return `<div class="bk-scenes">${b.items.map((x, i) => `<figure>${pic(`${b.unit}/remember-${i + 1}`, x)}<figcaption>${esc(x)}</figcaption></figure>`).join('')}</div>`;
@@ -136,7 +137,7 @@ export function initBook(ctx) {
         const k = st.seqs.push(b.script.map(l => [spoken(l[1]), voiceOf(l[0])]).filter(x => x[0])) - 1;
         return `<div class="card left bk-listen" data-q="${q}">
           <div class="bk-qhead"><b>${esc(b.q)}</b>${b.setting ? ` <span class="muted">${esc(b.setting)}</span>` : ''}</div>
-          <button class="btn primary" data-act="bk-play" data-arg="${k}">🔊 Play</button>
+          <button class="btn primary" data-act="bk-play" data-arg="${k}">${icon('play')} Play</button>
           <div class="choices">${b.options.map((o, i) => `<button class="choice" data-act="bk-ans" data-arg="${q}.${i}">${i + 1}. ${esc(o)}</button>`).join('')}</div>
           <div class="bk-result" aria-live="polite"></div>
           <details class="ways"><summary>Script &amp; translation</summary>${talk(b.script)}</details>

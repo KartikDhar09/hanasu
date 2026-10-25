@@ -2,7 +2,7 @@
 import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, IMG, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u12', n: 12, icon: '🍵', title: 'Would you like to have a cup of tea?', jp: 'お茶を飲みませんか。', ro: 'Ocha o nomimasen ka.',
+  id: 'u12', n: 12, title: 'Would you like to have a cup of tea?', jp: 'お茶を飲みませんか。', ro: 'Ocha o nomimasen ka.',
   topic: 'Socializing II – Invitations', topicJp: '誘う',
   goals: ['Talk about your own experiences and ask about those of others', 'Invite a person to do or have something', 'Accept and refuse invitations'],
   sections: [

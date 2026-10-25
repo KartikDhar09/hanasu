@@ -2,7 +2,7 @@
 import { IMG, K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u3', n: 3, icon: '🛍️', title: 'How much is this?', jp: 'これ、いくらですか。', ro: 'Kore, ikura desu ka.',
+  id: 'u3', n: 3, title: 'How much is this?', jp: 'これ、いくらですか。', ro: 'Kore, ikura desu ka.',
   topic: 'Shopping', topicJp: '買い物',
   goals: ['Ask if a store has what you are looking for', 'Ask for the price of something you want to buy', 'Request what you would like from a store'],
   sections: [

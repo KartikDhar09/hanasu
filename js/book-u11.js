@@ -2,7 +2,7 @@
 import { IMG, K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u11', n: 11, icon: '⛅', title: 'It’s nice weather today, isn’t it?', jp: '今日はいい天気ですね。', ro: 'Kyō wa ii tenki desu ne.',
+  id: 'u11', n: 11, title: 'It’s nice weather today, isn’t it?', jp: '今日はいい天気ですね。', ro: 'Kyō wa ii tenki desu ne.',
   topic: 'Socializing I – Making small talk', topicJp: '世間話をする',
   goals: ['Start a conversation after saying hello', 'Make simple small talk by asking about a person’s family and job', 'Learn other ways to say goodbye than sayonara'],
   sections: [

@@ -3,7 +3,7 @@
 // examples: "word,kana,english,hinglish;word,kana,english,hinglish" (romaji is generated from the kana).
 
 export const N4_KANJI_MORE = [
-  { id: 'n4-people2', title: 'People & feelings', hg: 'Log aur bhaavnaayein', icon: '👪', list: `
+  { id: 'n4-people2', title: 'People & feelings', hg: 'Log aur bhaavnaayein', list: `
 自|ジ・シ|みずか(ら)|self|khud|🪞|Looks like a nose: people point to their nose to say “me”.|自分,じぶん,oneself,khud;自転車,じてんしゃ,bicycle,cycle
 者|シャ|もの|person (who does)|vyakti|🧑|Someone who does something.|医者,いしゃ,doctor,doctor;学者,がくしゃ,scholar,vidvaan
 私|シ|わたし・わたくし|I / private|main / niji|🙋|Grain (禾) + me (ム): my own.|私,わたし,I,main;私立,しりつ,private (school),private
@@ -18,7 +18,7 @@ export const N4_KANJI_MORE = [
 心|シン|こころ|heart / mind|dil / mann|❤️|A heart with drops of feeling.|心,こころ,heart,dil;安心,あんしん,relief,tasalli
 元|ゲン・ガン|もと|origin / base|mool / shuruaat|🌱|Two lines on legs: the base of things.|元気,げんき,well / lively,theek / fit;元日,がんじつ,New Year’s Day,naye saal ka din
 ` },
-  { id: 'n4-food2', title: 'Animals, food & farms', hg: 'Jaanwar, khaana, khet', icon: '🐄', list: `
+  { id: 'n4-food2', title: 'Animals, food & farms', hg: 'Jaanwar, khaana, khet', list: `
 牛|ギュウ|うし|cow|gaay|🐄|A cow’s head with horns.|牛,うし,cow,gaay;牛乳,ぎゅうにゅう,milk,doodh
 魚|ギョ|さかな・うお|fish|machhli|🐟|A fish: head, body and tail fins.|魚,さかな,fish,machhli;金魚,きんぎょ,goldfish,sunehri machhli
 鳥|チョウ|とり|bird|chidiya|🐦|A bird with a tail and feet.|鳥,とり,bird,chidiya;焼き鳥,やきとり,grilled chicken skewers,chicken tikka jaisa
@@ -30,7 +30,7 @@ export const N4_KANJI_MORE = [
 野|ヤ|の|field|maidan|🌾|Village (里) + give (予): open fields.|野菜,やさい,vegetables,sabzi;野球,やきゅう,baseball,baseball
 田|デン|た|rice field|dhaan ka khet|🌾|A rice paddy seen from above.|田中,たなか,Tanaka (name),Tanaka;水田,すいでん,paddy field,dhaan ka khet
 ` },
-  { id: 'n4-describe2', title: 'Colours & describing', hg: 'Rang aur varnan', icon: '🎨', list: `
+  { id: 'n4-describe2', title: 'Colours & describing', hg: 'Rang aur varnan', list: `
 赤|セキ|あか(い)|red|laal|🔴|Earth (土) over fire: glowing red.|赤い,あかい,red,laal;赤ちゃん,あかちゃん,baby,baby
 青|セイ|あお(い)|blue / green|neela / hara|🔵|Growing plant + moon: fresh blue-green.|青い,あおい,blue,neela;青年,せいねん,young man,naujawaan
 黒|コク|くろ(い)|black|kaala|⚫|A smoky field over fire: black soot.|黒い,くろい,black,kaala;黒板,こくばん,blackboard,blackboard
@@ -41,7 +41,7 @@ export const N4_KANJI_MORE = [
 別|ベツ|わか(れる)|separate|alag|✂️|A knife (刂) separating bones.|特別,とくべつ,special,khaas;別れる,わかれる,to part,alag hona
 有|ユウ|あ(る)|have / exist|hona|✋|A hand holding meat (月): to have.|有名,ゆうめい,famous,mashhoor;有料,ゆうりょう,paid (not free),paid
 ` },
-  { id: 'n4-actions2', title: 'More action kanji', hg: 'Aur kriyaayein', icon: '🏃', list: `
+  { id: 'n4-actions2', title: 'More action kanji', hg: 'Aur kriyaayein', list: `
 開|カイ|あ(く)・ひら(く)|open|kholna|🔓|Hands opening a gate (門).|開ける,あける,to open,kholna;開く,ひらく,to open / hold (an event),kholna / yojit karna
 閉|ヘイ|し(める)・と(じる)|close|band karna|🔒|A bar across a gate (門).|閉める,しめる,to close,band karna;閉店,へいてん,shop closing,dukaan band
 始|シ|はじ(める)|begin|shuru karna|🏁|Woman (女) + platform (台): the start.|始める,はじめる,to begin,shuru karna;開始,かいし,start,shuruaat
@@ -67,7 +67,7 @@ export const N4_KANJI_MORE = [
 研|ケン|と(ぐ)|polish / study|shodh|🔬|Stone (石) + level: polish until smooth.|研究,けんきゅう,research,shodh;研修,けんしゅう,training,training
 究|キュウ|きわ(める)|investigate|khoj|🔍|A hole (穴) + nine (九): digging deep.|研究,けんきゅう,research,shodh;研究所,けんきゅうじょ,research institute,shodh sansthaan
 ` },
-  { id: 'n4-society', title: 'Places, study & society', hg: 'Jagah, padhai, samaaj', icon: '🏛️', list: `
+  { id: 'n4-society', title: 'Places, study & society', hg: 'Jagah, padhai, samaaj', list: `
 京|キョウ・ケイ||capital|rajdhaani|🏯|A tall building: the capital.|東京,とうきょう,Tokyo,Tokyo;京都,きょうと,Kyoto,Kyoto
 場|ジョウ|ば|place|jagah|📍|Earth (土) + sun (昜): a sunny place.|場所,ばしょ,place,jagah;駐車場,ちゅうしゃじょう,car park,parking
 屋|オク|や|shop / roof|dukaan / chhat|🏪|A body (尸) under a roof: a house or shop.|部屋,へや,room,kamra;本屋,ほんや,bookshop,kitaabon ki dukaan
@@ -97,10 +97,10 @@ export const N4_KANJI_MORE = [
 銀|ギン||silver|chaandi|🥈|Metal (金) + stop (艮): silver.|銀行,ぎんこう,bank,bank;銀,ぎん,silver,chaandi
 ` },
   // Kanji the standard N5/N4 lists include that the app was missing (added 2026-10). A group marked n5 joins the N5 set.
-  { id: 'n5-school2', level: 'n5', title: 'School', hg: 'School', icon: '🏫', list: `
+  { id: 'n5-school2', level: 'n5', title: 'School', hg: 'School', list: `
 校|コウ||school|school / vidyalaya|🏫|A tree (木) and crossed legs (交): the place people meet to learn.|学校,がっこう,school,school;高校,こうこう,high school,high school
 ` },
-  { id: 'n4-nature4', title: 'Nature & weather', hg: 'Prakriti aur mausam', icon: '🌲', list: `
+  { id: 'n4-nature4', title: 'Nature & weather', hg: 'Prakriti aur mausam', list: `
 森|シン|もり|forest|jungal|🌲|Three trees (木): a whole forest.|森,もり,forest,jungal;森林,しんりん,woods,van
 林|リン|はやし|woods / grove|upvan|🌳|Two trees (木 木): a small wood.|林,はやし,woods,upvan;小林,こばやし,Kobayashi (surname),Kobayashi (naam)
 池|チ|いけ|pond|taalaab|🦆|Water (氵) and a winding shape: a pond.|池,いけ,pond,taalaab;電池,でんち,battery,battery
@@ -109,7 +109,7 @@ export const N4_KANJI_MORE = [
 寒|カン|さむ(い)|cold (weather)|thand|🥶|A roof over ice (冫): cold even indoors.|寒い,さむい,cold,thanda;寒さ,さむさ,the cold,thand
 暗|アン|くら(い)|dark|andhera|🌑|The sun (日) gone, only a sound (音) left in the dark.|暗い,くらい,dark,andhera;暗記,あんき,memorising,ratna
 ` },
-  { id: 'n4-places3', title: 'Cities & places', hg: 'Shahar aur jagah', icon: '🏙️', list: `
+  { id: 'n4-places3', title: 'Cities & places', hg: 'Shahar aur jagah', list: `
 区|ク||ward / district|ilaaka|🗺️|A box marking off one area.|区役所,くやくしょ,ward office,ward office;地区,ちく,district,ilaaka
 県|ケン||prefecture|zila / rajya|🗾|Japan’s 47 regions, like states.|静岡県,しずおかけん,Shizuoka Prefecture,Shizuoka prefecture;県庁,けんちょう,prefectural office,prefecture office
 市|シ|いち|city / market|shahar / bazaar|🏙️|Cloth hung up at a market; a city grew around it.|市役所,しやくしょ,city hall,city hall;市場,いちば,market,bazaar
@@ -117,7 +117,7 @@ export const N4_KANJI_MORE = [
 都|ト・ツ|みやこ|capital / metropolis|rajdhani|🏯|A big town (阝 on the right means town).|東京都,とうきょうと,Tokyo Metropolis,Tokyo;都合,つごう,convenience,suvidha
 門|モン|かど|gate|darwaaza|⛩️|A picture of two swinging doors.|門,もん,gate,gate;専門,せんもん,speciality,visheshagyata
 ` },
-  { id: 'n4-describe3', title: 'More describing kanji', hg: 'Aur varnan', icon: '📏', list: `
+  { id: 'n4-describe3', title: 'More describing kanji', hg: 'Aur varnan', list: `
 太|タイ・タ|ふと(い)|fat / thick|mota|🐘|Big (大) with an extra dot: even bigger.|太い,ふとい,thick,mota;太る,ふとる,gain weight,mota hona
 短|タン|みじか(い)|short|chhota|📏|An arrow (矢) and a bean (豆): both short things.|短い,みじかい,short,chhota;短期,たんき,short term,kam samay ke liye
 低|テイ|ひく(い)|low / short (height)|neecha|📉|A person (亻) standing on a low base.|低い,ひくい,low,neecha;最低,さいてい,the lowest / the worst,sabse kam
@@ -125,7 +125,7 @@ export const N4_KANJI_MORE = [
 好|コウ|す(き)・この(む)|like / fond of|pasand|💕|A woman (女) and a child (子): someone you love.|好き,すき,like,pasand;大好き,だいすき,love,bahut pasand
 洋|ヨウ||ocean / Western|samudra / pashchimi|🌊|Water (氵) and sheep (羊): the wide ocean, and things from across it.|洋服,ようふく,Western clothes,kapde;太平洋,たいへいよう,Pacific Ocean,Prashant mahasagar
 ` },
-  { id: 'n4-actions3', title: 'Actions & everyday kanji', hg: 'Kriyaayein aur roz ke kanji', icon: '➡️', list: `
+  { id: 'n4-actions3', title: 'Actions & everyday kanji', hg: 'Kriyaayein aur roz ke kanji', list: `
 引|イン|ひ(く)|pull|kheenchna|🏹|A bow (弓) and its string: pulling.|引く,ひく,pull,kheenchna;引っ越し,ひっこし,moving house,ghar badalna
 回|カイ|まわ(る)|times / turn round|baar / ghoomna|🔄|A box inside a box: going round and round.|一回,いっかい,once,ek baar;回る,まわる,go round,ghoomna
 合|ゴウ・ガッ|あ(う)|fit / match|milna|🤝|A lid on a mouth (口): things that fit together.|合う,あう,fit / match,milna;試合,しあい,match (game),match

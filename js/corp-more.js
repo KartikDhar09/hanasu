@@ -3,7 +3,7 @@
 
 export const CORP_MORE = [
   {
-    id: 'c-it', track: 'corp', icon: '💻', title: 'IT help & installing software', jp: 'ソフトのインストール', hi: 'IT madad aur install karna',
+    id: 'c-it', track: 'corp', title: 'IT help & installing software', jp: 'ソフトのインストール', hi: 'IT madad aur install karna',
     phrases: [
       ['このソフトをパソコンにインストールしたいんですが、手伝ってもらえますか。', 'このソフトをパソコンにインストールしたいんですが、てつだってもらえますか。', 'kono sofuto o pasokon ni insutōru shitai n desu ga, tetsudatte moraemasu ka?', 'I want to install this software on my PC. Could you help me?', 'Ye software apne PC pe install karna hai, madad kar denge?', 'Swap the device: スマホ (phone), 社用携帯 (work phone), タブレット (tablet).'],
       ['インストールの仕方を教えてもらえますか。', 'インストールのしかたをおしえてもらえますか。', 'insutōru no shikata o oshiete moraemasu ka?', 'Could you show me how to install it?', 'Install karne ka tareeka bata denge?'],
@@ -30,7 +30,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-suggest', track: 'corp', icon: '💡', title: 'Making suggestions', jp: 'ていあんする', hi: 'Sujhaav dena',
+    id: 'c-suggest', track: 'corp', title: 'Making suggestions', jp: 'ていあんする', hi: 'Sujhaav dena',
     phrases: [
       ['ちょっと提案してもいいですか。', 'ちょっとていあんしてもいいですか。', 'chotto teian shite mo ii desu ka?', 'Can I make a suggestion?', 'Ek sujhaav de sakte hain?'],
       ['一つ意見を言ってもよろしいですか。', 'ひとついけんをいってもよろしいですか。', 'hitotsu iken o itte mo yoroshii desu ka?', 'May I share one opinion?', 'Ek raay de sakte hain?', 'More formal. Good in meetings with seniors.'],
@@ -55,7 +55,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-feedback', track: 'corp', icon: '📝', title: 'Asking for feedback', jp: 'フィードバック', hi: 'Feedback maangna',
+    id: 'c-feedback', track: 'corp', title: 'Asking for feedback', jp: 'フィードバック', hi: 'Feedback maangna',
     phrases: [
       ['これ、見ていただけますか。', 'これ、みていただけますか。', 'kore, mite itadakemasu ka?', 'Could you take a look at this?', 'Ise ek baar dekh lenge?'],
       ['何か直したほうがいいところはありますか。', 'なにかなおしたほうがいいところはありますか。', 'nanika naoshita hō ga ii tokoro wa arimasu ka?', 'Is there anything I should fix?', 'Kuch theek karna chahiye kya?'],
@@ -77,7 +77,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-handover', track: 'corp', icon: '🔄', title: 'Covering & handing over work', jp: 'ひきつぎ', hi: 'Kaam saumpna aur cover karna',
+    id: 'c-handover', track: 'corp', title: 'Covering & handing over work', jp: 'ひきつぎ', hi: 'Kaam saumpna aur cover karna',
     phrases: [
       ['来週休むので、この仕事をお願いできますか。', 'らいしゅうやすむので、このしごとをおねがいできますか。', 'raishū yasumu node, kono shigoto o onegai dekimasu ka?', 'I’m off next week, so could you take on this work?', 'Agle hafte chhutti pe hain, ye kaam sambhaal lenge?'],
       ['引き継ぎの資料を作りました。', 'ひきつぎのしりょうをつくりました。', 'hikitsugi no shiryō o tsukurimashita.', 'I’ve made handover notes.', 'Handover ke documents bana diye hain.'],
@@ -101,7 +101,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-runmeeting', track: 'corp', icon: '🎤', title: 'Running a meeting', jp: 'かいぎのしんこう', hi: 'Meeting chalaana',
+    id: 'c-runmeeting', track: 'corp', title: 'Running a meeting', jp: 'かいぎのしんこう', hi: 'Meeting chalaana',
     phrases: [
       ['では、時間になりましたので、始めます。', 'では、じかんになりましたので、はじめます。', 'dewa, jikan ni narimashita node, hajimemasu.', 'It’s time, so let’s begin.', 'Time ho gaya hai, shuru karte hain.'],
       ['本日の議題は三つです。', 'ほんじつのぎだいはみっつです。', 'honjitsu no gidai wa mittsu desu.', 'There are three items on today’s agenda.', 'Aaj ke agenda mein teen baatein hain.'],
@@ -125,7 +125,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-thanks', track: 'corp', icon: '🙌', title: 'Thanking & praising coworkers', jp: 'かんしゃ', hi: 'Shukriya aur taareef',
+    id: 'c-thanks', track: 'corp', title: 'Thanking & praising coworkers', jp: 'かんしゃ', hi: 'Shukriya aur taareef',
     phrases: [
       ['いつもありがとうございます。', 'いつもありがとうございます。', 'itsumo arigatō gozaimasu.', 'Thanks as always.', 'Hamesha ke liye shukriya.'],
       ['本当に助かりました。', 'ほんとうにたすかりました。', 'hontō ni tasukarimashita.', 'That really saved me.', 'Sach mein bahut madad hui.'],
@@ -148,7 +148,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-disagree', track: 'corp', icon: '🤔', title: 'Disagreeing politely', jp: 'はんたいいけん', hi: 'Vinamrata se asahmati',
+    id: 'c-disagree', track: 'corp', title: 'Disagreeing politely', jp: 'はんたいいけん', hi: 'Vinamrata se asahmati',
     phrases: [
       ['おっしゃることは分かりますが…。', 'おっしゃることはわかりますが…。', 'ossharu koto wa wakarimasu ga…', 'I understand what you’re saying, but…', 'Aapki baat samajh aati hai, lekin…'],
       ['少し気になる点があるんですが。', 'すこしきになるてんがあるんですが。', 'sukoshi ki ni naru ten ga aru n desu ga.', 'There’s one point that bothers me.', 'Ek baat thodi khatak rahi hai.'],
@@ -171,7 +171,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-deadline', track: 'corp', icon: '⏳', title: 'Deadlines & priorities', jp: 'しめきり・ゆうせんじゅんい', hi: 'Deadline aur priority',
+    id: 'c-deadline', track: 'corp', title: 'Deadlines & priorities', jp: 'しめきり・ゆうせんじゅんい', hi: 'Deadline aur priority',
     phrases: [
       ['締め切りはいつですか。', 'しめきりはいつですか。', 'shimekiri wa itsu desu ka?', 'When’s the deadline?', 'Deadline kab hai?'],
       ['どちらを優先すればいいですか。', 'どちらをゆうせんすればいいですか。', 'dochira o yūsen sureba ii desu ka?', 'Which should I prioritise?', 'Kise pehle karein?'],
@@ -194,7 +194,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-remote', track: 'corp', icon: '🖥️', title: 'Chat & online meetings', jp: 'リモートワーク', hi: 'Online kaam aur chat',
+    id: 'c-remote', track: 'corp', title: 'Chat & online meetings', jp: 'リモートワーク', hi: 'Online kaam aur chat',
     phrases: [
       ['今、少しお時間いただけますか。オンラインで話せますか。', 'いま、すこしおじかんいただけますか。オンラインではなせますか。', 'ima, sukoshi o-jikan itadakemasu ka? onrain de hanasemasu ka?', 'Do you have a moment? Can we talk online?', 'Thoda time hai? Online baat kar sakte hain?'],
       ['画面共有してもいいですか。', 'がめんきょうゆうしてもいいですか。', 'gamen kyōyū shite mo ii desu ka?', 'Can I share my screen?', 'Screen share kar doon?'],
@@ -217,7 +217,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-ropes', track: 'corp', icon: '🧭', title: 'Learning the ropes', jp: 'しごとをおぼえる', hi: 'Naya kaam seekhna',
+    id: 'c-ropes', track: 'corp', title: 'Learning the ropes', jp: 'しごとをおぼえる', hi: 'Naya kaam seekhna',
     phrases: [
       ['この作業の手順を教えていただけますか。', 'このさぎょうのてじゅんをおしえていただけますか。', 'kono sagyō no tejun o oshiete itadakemasu ka?', 'Could you teach me the steps for this task?', 'Is kaam ke steps sikha denge?'],
       ['マニュアルはありますか。', 'マニュアルはありますか。', 'manyuaru wa arimasu ka?', 'Is there a manual?', 'Koi manual hai?'],
@@ -240,7 +240,7 @@ export const CORP_MORE = [
     ],
   },
   {
-    id: 'c-tools', track: 'corp', icon: '🧪', title: 'Using tools & test equipment', jp: 'ツール・けんしょうき', hi: 'Tools aur test equipment',
+    id: 'c-tools', track: 'corp', title: 'Using tools & test equipment', jp: 'ツール・けんしょうき', hi: 'Tools aur test equipment',
     phrases: [
       ['エクセルをこのパソコンにインストールしてもらえますか。', 'エクセルをこのパソコンにインストールしてもらえますか。', 'ekuseru o kono pasokon ni insutōru shite moraemasu ka?', 'Could you install Excel on this PC?', 'Excel ko is PC pe install kar denge?', 'Pattern: XをYにインストールしてもらえますか. Try any X and Y in Speak → Sentence builder.'],
       ['テスト用のパソコンにパイソンは入っていますか。', 'テストようのパソコンにパイソンははいっていますか。', 'tesuto-yō no pasokon ni paison wa haitte imasu ka?', 'Is Python installed on the test PC?', 'Kya test wale PC mein Python installed hai?', '入っている = “is installed” in everyday speech.'],

@@ -176,7 +176,7 @@ a.gear { text-decoration: none; }
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px; text-align: left;
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px;
 }
-.unit .icon { font-size: 1.6rem; grid-row: span 2; }
+.unit .icon { font-size: 1.6rem; grid-row: span 2; color: var(--accent); font-weight: 700; text-align: center; }
 .unit .ut b { display: block; }
 .unit .ut small { display: block; margin-top: 1px; color: var(--muted); }
 .unit .count { font-size: .85rem; color: var(--muted); }
@@ -305,6 +305,8 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .done .modes { margin-top: 12px; }
 .done .tips { text-align: left; }
 .big-emoji { font-size: 4rem; }
+/* Done screens show a large icon (v6.1: no emoji in the interface), in the accent colour like the other icons. */
+.big-emoji .ic, .card > .pic > .ic { color: var(--accent); }
 
 /* ---------- Role-play ---------- */
 .chat { display: flex; flex-direction: column; gap: 10px; }
@@ -342,7 +344,7 @@ ruby.grp > rt { border-bottom: 1px solid color-mix(in srgb, var(--muted) 60%, tr
 .panel-tab[hidden] { display: none; }
 .credits { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .credits li { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
-.credits .cicon { font-size: 1.3rem; text-align: center; line-height: 1.4; }
+.credits .cicon { font-size: 1.3rem; text-align: center; line-height: 1.4; color: var(--accent); }
 .credits small { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
 .credits a { display: inline-block; margin-top: 2px; padding: 4px 0; min-height: 24px; font-size: .85rem; color: var(--accent); }
 .toast {
@@ -482,7 +484,7 @@ details.answers .phrases { margin-top: 8px; }
 .urow { display: grid; grid-template-columns: 32px 1fr 44px 44px; gap: 8px; align-items: center; padding: 8px 12px; border-top: 1px solid var(--line); }
 .urow:first-child { border-top: 0; }
 .urow .vmeta small { display: block; }
-.uicon { font-size: 1.3rem; text-align: center; }
+.uicon { font-size: 1.3rem; text-align: center; color: var(--accent); }
 .ubtn { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); font-size: 1.15rem; }
 .intro-lines { padding-left: 1.4em; display: grid; gap: 8px; margin-top: 12px; }
 .intro-lines li { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; align-items: center; background: var(--surface);
@@ -648,7 +650,7 @@ details.answers .phrases { margin-top: 8px; }
 .bk-scenes figcaption { font-size: .88rem; line-height: 1.4; }
 .bk-pending { aspect-ratio: 4 / 3; display: grid; place-items: center; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; }
 
-/* ---------- 👥 Board (js/board.js) ---------- */
+/* ---------- Board (js/board.js) ---------- */
 .bpeople, .bfeed { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
 .bperson.me { border-color: var(--accent); }
 /* One line: label left, value right; wraps on narrow phones instead of overflowing. */

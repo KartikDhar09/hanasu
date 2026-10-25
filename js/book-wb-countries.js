@@ -2,7 +2,7 @@
 import { WL } from './book-kit.js';
 
 export default {
-  id: 'wb-countries', icon: '🌏', title: 'Wordbook: countries and regions', jp: '国・地域',
+  id: 'wb-countries', title: 'Wordbook: countries and regions', jp: '国・地域',
   sections: [
     { h: 'アフリカ Afurika · Africa', blocks: [WL(`
 Benin|ベナン|Benan

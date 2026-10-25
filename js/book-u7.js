@@ -2,7 +2,7 @@
 import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, IMG, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u7', n: 7, icon: '🚆', title: 'Does this (train) go to Yokohama?', jp: 'これ、横浜に行きますか。', ro: 'Kore, Yokohama ni ikimasu ka.',
+  id: 'u7', n: 7, title: 'Does this (train) go to Yokohama?', jp: 'これ、横浜に行きますか。', ro: 'Kore, Yokohama ni ikimasu ka.',
   topic: 'Transportation', topicJp: '交通',
   goals: ['Confirm how to get to a place with public transportation', 'Ask for the best route somewhere with public transportation', 'Ask about the time and cost required to reach a destination'],
   sections: [

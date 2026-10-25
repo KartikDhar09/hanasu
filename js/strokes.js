@@ -4,6 +4,7 @@
 import { KANJI, ALL_KANJI_GROUPS } from './kanji-data.js';
 import { KANA_ROWS, BASIC_HIRA, BASIC_KATA, toKata } from './kana-data.js';
 import { toRomaji } from './conjugate.js';
+import { icon } from './icons.js';
 
 // Kana as stroke-order entries: the romaji is the meaning line.
 const KANA = { hira: BASIC_HIRA, kata: BASIC_KATA };
@@ -44,7 +45,7 @@ export function initStrokes(ctx) {
         <div class="kchart">${KANA_ROWS.map(r => r.split('').map(ch => ch === '・' ? '<span class="kcell empty"></span>'
           : `<button class="kcell" data-act="stroke-open" data-arg="${level === 'kata' ? toKata(ch) : ch}"><b lang="ja">${level === 'kata' ? toKata(ch) : ch}</b><small>${kanaRomaji(ch)}</small></button>`).join('')).join('')}</div>`
       : ALL_KANJI_GROUPS.filter(g => g.level === level).map(g => `
-        <h2 class="sec">${g.icon} ${esc(g.title)}</h2>
+        <h2 class="sec">${esc(g.title)}</h2>
         <div class="kgrid">${g.kanji.map(k => `<button class="ktile" data-act="stroke-open" data-arg="${k[0]}" aria-label="${esc(k[0])}: ${esc(k[3])}">
           <span lang="ja">${k[0]}</span><small>${esc(k[3].split(' /')[0])}</small></button>`).join('')}</div>`).join('')}`);
   }
@@ -69,12 +70,12 @@ export function initStrokes(ctx) {
         <div class="stroke-count" id="count" aria-live="polite">Loading…</div>
         <div class="row center stroke-controls">
           <button class="btn icon" data-act="stroke-prev" aria-label="Previous stroke">‹</button>
-          <button class="btn primary" data-act="stroke-play" id="play">▶ Play</button>
+          <button class="btn primary" data-act="stroke-play" id="play">${icon('start')} Play</button>
           <button class="btn icon" data-act="stroke-next" aria-label="Next stroke">›</button>
         </div>
         <div class="row center">
-          <button class="btn small ghost" data-act="stroke-numbers" id="nums">🔢 Hide numbers</button>
-          ${k.kana ? `<button class="btn small ghost" data-act="say-text" data-arg="${esc(k.ch)}">🔊 Hear it</button>` : `<button class="btn small ghost" data-act="kanji-one" data-arg="${esc(k.ch)}">漢 Kanji page</button>`}
+          <button class="btn small ghost" data-act="stroke-numbers" id="nums">${icon('numbers')} Hide numbers</button>
+          ${k.kana ? `<button class="btn small ghost" data-act="say-text" data-arg="${esc(k.ch)}">${icon('play')} Hear it</button>` : `<button class="btn small ghost" data-act="kanji-one" data-arg="${esc(k.ch)}">漢 Kanji page</button>`}
         </div>
       </div>
       <div class="row">
@@ -124,7 +125,7 @@ export function initStrokes(ctx) {
     const live = () => st === s && s.playing === token;
     st.isPlaying = true;
     const btn = document.getElementById('play');
-    btn.textContent = '■ Stop';
+    btn.innerHTML = icon('pause') + ' Stop';
     if (reduceMotion()) {
       for (let i = 1; i <= s.paths.length; i++) { if (!live()) return; s.step = i; draw(); await wait(500); }
     } else {
@@ -142,10 +143,10 @@ export function initStrokes(ctx) {
       }
       if (live()) draw();
     }
-    if (live()) { s.isPlaying = false; btn.textContent = '↻ Replay'; }
+    if (live()) { s.isPlaying = false; btn.innerHTML = icon('also') + ' Replay'; }
   }
   const wait = ms => new Promise(r => setTimeout(r, ms));
-  const stop = () => { if (!st) return; st.playing++; st.isPlaying = false; const b = document.getElementById('play'); if (b) b.textContent = '▶ Play'; };
+  const stop = () => { if (!st) return; st.playing++; st.isPlaying = false; const b = document.getElementById('play'); if (b) b.innerHTML = icon('start') + ' Play'; };
 
   function stepBy(d) {
     if (!st?.data) return;
@@ -157,7 +158,7 @@ export function initStrokes(ctx) {
   function toggleNumbers() {
     if (!st?.data) return;
     st.numbers = !st.numbers;
-    document.getElementById('nums').textContent = st.numbers ? '🔢 Hide numbers' : '🔢 Show numbers';
+    document.getElementById('nums').innerHTML = icon('numbers') + (st.numbers ? ' Hide numbers' : ' Show numbers');
     draw();
   }
 

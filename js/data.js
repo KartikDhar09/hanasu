@@ -18,7 +18,7 @@ export const TRACKS = [
 
 export const UNITS = [
   {
-    id: 'greet', track: 'n5', icon: '👋', title: 'Greetings', jp: 'あいさつ', hi: 'Namaste aur greetings',
+    id: 'greet', track: 'n5', title: 'Greetings', jp: 'あいさつ', hi: 'Namaste aur greetings',
     phrases: [
       ['おはようございます。', 'おはようございます。', 'ohayō gozaimasu.', 'Good morning.', 'Good morning', '', ['おはよう。', 'おはよう。', 'ohayō.']],
       ['こんにちは。', 'こんにちは。', 'konnichiwa.', 'Hello.', 'Namaste', 'For neighbours, shop staff and people you don’t see daily. Coworkers don’t say it to each other: they use お疲れ様です.'],
@@ -43,7 +43,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'intro', track: 'n5', icon: '🙋', title: 'Introducing yourself', jp: 'じこしょうかい', hi: 'Apna parichay',
+    id: 'intro', track: 'n5', title: 'Introducing yourself', jp: 'じこしょうかい', hi: 'Apna parichay',
     phrases: [
       ['はじめまして。', 'はじめまして。', 'hajimemashite.', 'Nice to meet you.', 'Aapse milkar khushi hui.', 'Only the first time you meet someone.'],
       ['{name}です。', '{name}です。', '{nameRo} desu.', 'I’m {nameRo}.', 'Main {nameRo} hoon.', 'People rarely say 私は… because it sounds stiff. Just your name + です.'],
@@ -67,7 +67,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'time', track: 'n5', icon: '🕘', title: 'Time & days', jp: 'じかん', hi: 'Samay aur din',
+    id: 'time', track: 'n5', title: 'Time & days', jp: 'じかん', hi: 'Samay aur din',
     phrases: [
       ['今、何時ですか。', 'いま、なんじですか。', 'ima, nanji desu ka?', 'What time is it?', 'Abhi kitne baje hain?', '', ['今何時？', 'いまなんじ？', 'ima nanji?']],
       ['九時です。', 'くじです。', 'kuji desu.', 'It’s nine o’clock.', 'Nau baje hain.', '9 o’clock is くじ, 4 is よじ, 7 is しちじ.'],
@@ -90,7 +90,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'shop', track: 'n5', icon: '🛒', title: 'Shopping', jp: 'かいもの', hi: 'Shopping',
+    id: 'shop', track: 'n5', title: 'Shopping', jp: 'かいもの', hi: 'Shopping',
     phrases: [
       ['これ、いくらですか。', 'これ、いくらですか。', 'kore, ikura desu ka?', 'How much is this?', 'Ye kitne ka hai?', 'In speech people drop は and を: これ(は)いくら?', ['これいくら？', 'これいくら？', 'kore ikura?']],
       ['千円です。', 'せんえんです。', 'sen en desu.', 'It’s 1,000 yen.', 'Ek hazaar yen.'],
@@ -115,7 +115,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'food', track: 'n5', icon: '🍜', title: 'At a restaurant', jp: 'レストラン', hi: 'Restaurant mein',
+    id: 'food', track: 'n5', title: 'At a restaurant', jp: 'レストラン', hi: 'Restaurant mein',
     phrases: [
       ['何名様ですか。', 'なんめいさまですか。', 'nanmei-sama desu ka?', 'How many people?', 'Kitne log hain?', 'Staff ask this at the door. Answer with the number, or hold up fingers.'],
       ['二人です。', 'ふたりです。', 'futari desu.', 'Two of us.', 'Do log.', 'One person is 一人 ひとり.'],
@@ -139,7 +139,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'way', track: 'n5', icon: '🚃', title: 'Directions & trains', jp: 'みち・でんしゃ', hi: 'Raasta aur train',
+    id: 'way', track: 'n5', title: 'Directions & trains', jp: 'みち・でんしゃ', hi: 'Raasta aur train',
     phrases: [
       ['すみません、駅はどこですか。', 'すみません、えきはどこですか。', 'sumimasen, eki wa doko desu ka?', 'Excuse me, where’s the station?', 'Maaf kijiye, station kahaan hai?'],
       ['トイレどこですか。', 'トイレどこですか。', 'toire doko desu ka?', 'Where’s the toilet?', 'Toilet kahaan hai?'],
@@ -161,7 +161,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'plans', track: 'n5', icon: '🎬', title: 'Likes & plans', jp: 'すき・よてい', hi: 'Pasand aur plans',
+    id: 'plans', track: 'n5', title: 'Likes & plans', jp: 'すき・よてい', hi: 'Pasand aur plans',
     phrases: [
       ['何が好きですか。', 'なにがすきですか。', 'nani ga suki desu ka?', 'What do you like?', 'Aapko kya pasand hai?', 'Works just like Hindi “mujhe X pasand hai”: the thing you like takes が.'],
       ['日本の料理が好きです。', 'にほんのりょうりがすきです。', 'nihon no ryōri ga suki desu.', 'I like Japanese food.', 'Mujhe Japanese khaana pasand hai.', '', ['日本の料理好き！', 'にほんのりょうりすき！', 'nihon no ryōri suki!']],
@@ -184,7 +184,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'help', track: 'n5', icon: '🆘', title: 'When you don’t understand', jp: 'わからないとき', hi: 'Jab samajh na aaye',
+    id: 'help', track: 'n5', title: 'When you don’t understand', jp: 'わからないとき', hi: 'Jab samajh na aaye',
     phrases: [
       ['もう一回お願いします。', 'もういっかいおねがいします。', 'mō ikkai onegaishimasu.', 'One more time, please.', 'Ek baar phir se boliye.', 'In speech, 一回 is more common than textbook 一度.'],
       ['もうちょっとゆっくりお願いします。', 'もうちょっとゆっくりおねがいします。', 'mō chotto yukkuri onegaishimasu.', 'A little slower, please.', 'Thoda dheere boliye.'],
@@ -210,7 +210,7 @@ export const UNITS = [
 
   // ---------- Office ----------
   {
-    id: 'o-greet', track: 'office', icon: '🏢', title: 'Office greetings', jp: 'しょくばのあいさつ', hi: 'Office mein greetings',
+    id: 'o-greet', track: 'office', title: 'Office greetings', jp: 'しょくばのあいさつ', hi: 'Office mein greetings',
     phrases: [
       ['お疲れ様です。', 'おつかれさまです。', 'otsukaresama desu.', 'Hi. (thanks for your hard work)', 'Namaste (office waala)', 'THE office greeting: in the corridor, at the start of calls, chats and emails. Hindi has no exact match.', ['お疲れ！', 'おつかれ！', 'otsukare!']],
       ['お先に失礼します。', 'おさきにしつれいします。', 'osaki ni shitsurei shimasu.', 'I’m heading off before you.', 'Maaf kijiye, main pehle nikal raha/rahi hoon.', 'Say this when you leave while others are still working.', ['お先です。', 'おさきです。', 'osaki desu.']],
@@ -231,7 +231,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-intro', track: 'office', icon: '🤝', title: 'First day at work', jp: 'しょくばのじこしょうかい', hi: 'Office ka pehla din',
+    id: 'o-intro', track: 'office', title: 'First day at work', jp: 'しょくばのじこしょうかい', hi: 'Office ka pehla din',
     phrases: [
       ['本日からお世話になります。', 'ほんじつからおせわになります。', 'honjitsu kara o-sewa ni narimasu.', 'I start working with you today.', 'Aaj se main aapke saath kaam karunga/karungi.', 'Your first line on day one.'],
       ['{name}と申します。', '{name}ともうします。', '{nameRo} to mōshimasu.', 'My name is {nameRo}.', 'Mera naam {nameRo} hai.', 'The humble way to give your name at work.'],
@@ -250,7 +250,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-ask', track: 'office', icon: '🙏', title: 'Asking for help', jp: 'おねがい', hi: 'Madad maangna',
+    id: 'o-ask', track: 'office', title: 'Asking for help', jp: 'おねがい', hi: 'Madad maangna',
     phrases: [
       ['少しよろしいですか。', 'すこしよろしいですか。', 'sukoshi yoroshii desu ka?', 'Do you have a moment?', 'Kya aapke paas ek minute hai?', 'For your boss or someone senior.', ['ちょっといいですか。', 'ちょっといいですか。', 'chotto ii desu ka?']],
       ['今、お時間大丈夫ですか。', 'いま、おじかんだいじょうぶですか。', 'ima, o-jikan daijōbu desu ka?', 'Is now a good time?', 'Abhi baat karne ka time hai?'],
@@ -270,7 +270,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-task', track: 'office', icon: '📋', title: 'Taking instructions', jp: 'しじをうける', hi: 'Instructions lena',
+    id: 'o-task', track: 'office', title: 'Taking instructions', jp: 'しじをうける', hi: 'Instructions lena',
     phrases: [
       ['はい、承知しました。', 'はい、しょうちしました。', 'hai, shōchi shimashita.', 'Yes, understood.', 'Ji, theek hai.', 'Say this to your boss. With coworkers わかりました is fine.', ['了解です。', 'りょうかいです。', 'ryōkai desu.']],
       ['かしこまりました。', 'かしこまりました。', 'kashikomarimashita.', 'Certainly.', 'Ji, bilkul.', 'The most polite version. Use it with customers and clients.'],
@@ -291,7 +291,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-sorry', track: 'office', icon: '🙇', title: 'Apologies & being late', jp: 'おわび', hi: 'Maafi aur late hona',
+    id: 'o-sorry', track: 'office', title: 'Apologies & being late', jp: 'おわび', hi: 'Maafi aur late hona',
     phrases: [
       ['申し訳ありません。', 'もうしわけありません。', 'mōshiwake arimasen.', 'I’m very sorry.', 'Main maafi chahta/chahti hoon.', 'Much stronger than すみません. Use it for real mistakes at work.'],
       ['遅れてすみません。', 'おくれてすみません。', 'okurete sumimasen.', 'Sorry I’m late.', 'Late hone ke liye sorry.'],
@@ -310,7 +310,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-phone', track: 'office', icon: '📞', title: 'Phone calls', jp: 'でんわ', hi: 'Phone calls',
+    id: 'o-phone', track: 'office', title: 'Phone calls', jp: 'でんわ', hi: 'Phone calls',
     phrases: [
       ['はい、さくら商事でございます。', 'はい、さくらしょうじでございます。', 'hai, Sakura Shōji de gozaimasu.', 'Hello, Sakura Trading.', 'Hello, Sakura Trading.', 'Company name + でございます. もしもし is only for personal calls.'],
       ['少々お待ちください。', 'しょうしょうおまちください。', 'shōshō o-machi kudasai.', 'One moment, please.', 'Ek minute rukiye.'],
@@ -334,7 +334,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-meet', track: 'office', icon: '💬', title: 'Meetings', jp: 'かいぎ', hi: 'Meeting',
+    id: 'o-meet', track: 'office', title: 'Meetings', jp: 'かいぎ', hi: 'Meeting',
     phrases: [
       ['会議は何時からですか。', 'かいぎはなんじからですか。', 'kaigi wa nanji kara desu ka?', 'What time’s the meeting?', 'Meeting kitne baje se hai?'],
       ['会議室はどこですか。', 'かいぎしつはどこですか。', 'kaigishitsu wa doko desu ka?', 'Where’s the meeting room?', 'Meeting room kahaan hai?'],
@@ -356,7 +356,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'o-life', track: 'office', icon: '☕', title: 'Time off & small talk', jp: 'やすみ・ざつだん', hi: 'Chhutti aur gapshap',
+    id: 'o-life', track: 'office', title: 'Time off & small talk', jp: 'やすみ・ざつだん', hi: 'Chhutti aur gapshap',
     phrases: [
       ['明日、休みをもらってもいいですか。', 'あした、やすみをもらってもいいですか。', 'ashita, yasumi o moratte mo ii desu ka?', 'Could I take tomorrow off?', 'Kal chhutti mil sakti hai?'],
       ['体調が悪いので、今日はお休みします。', 'たいちょうがわるいので、きょうはおやすみします。', 'taichō ga warui node, kyō wa o-yasumi shimasu.', 'I’m not feeling well, so I’ll take today off.', 'Tabiyat theek nahi hai, isliye aaj chhutti lunga/lungi.'],
@@ -378,7 +378,7 @@ export const UNITS = [
 
   // ---------- Corporate conversation ----------
   {
-    id: 'c-ask', track: 'corp', icon: '💁', title: 'Asking a coworker', jp: 'どうりょうにきく', hi: 'Colleague se poochhna',
+    id: 'c-ask', track: 'corp', title: 'Asking a coworker', jp: 'どうりょうにきく', hi: 'Colleague se poochhna',
     phrases: [
       ['ちょっと聞いてもいいですか。', 'ちょっときいてもいいですか。', 'chotto kiite mo ii desu ka?', 'Can I ask you something quickly?', 'Ek baat poochhoon?', 'Friendly opener for coworkers at your level. For your boss, use 少しよろしいですか.', ['ちょっと聞いていい？', 'ちょっときいていい？', 'chotto kiite ii?']],
       ['このシステムの使い方、わかりますか。', 'このシステムのつかいかた、わかりますか。', 'kono shisutemu no tsukaikata, wakarimasu ka?', 'Do you know how to use this system?', 'Kya aapko pata hai ye system kaise chalaate hain?', 'Verb stem + 方 = “how to”: 書き方 how to write, 送り方 how to send.'],
@@ -402,7 +402,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-check', track: 'corp', icon: '🔍', title: 'Checking you understood', jp: 'かくにんする', hi: 'Samajh confirm karna',
+    id: 'c-check', track: 'corp', title: 'Checking you understood', jp: 'かくにんする', hi: 'Samajh confirm karna',
     phrases: [
       ['すみません、もう一回言ってもらえますか。', 'すみません、もういっかいいってもらえますか。', 'sumimasen, mō ikkai itte moraemasu ka?', 'Sorry, could you say that again?', 'Maaf kijiye, ek baar phir bolenge?'],
       ['つまり、明日までってことですか。', 'つまり、あしたまでってことですか。', 'tsumari, ashita made tte koto desu ka?', 'So you mean by tomorrow?', 'Matlab, kal tak?', 'Repeat what you heard + ってことですか to check you got it right.'],
@@ -424,7 +424,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-report', track: 'corp', icon: '📊', title: 'Reporting progress', jp: 'ほうれんそう', hi: 'Kaam ki report',
+    id: 'c-report', track: 'corp', title: 'Reporting progress', jp: 'ほうれんそう', hi: 'Kaam ki report',
     phrases: [
       ['ちょっと報告があります。', 'ちょっとほうこくがあります。', 'chotto hōkoku ga arimasu.', 'I have a quick update.', 'Ek chhota sa update hai.', '報連相 (report, inform, consult) is at the heart of Japanese office life: update your boss early and often.'],
       ['進捗を報告します。', 'しんちょくをほうこくします。', 'shinchoku o hōkoku shimasu.', 'Here’s a progress update.', 'Kaam ki progress batata/batati hoon.'],
@@ -445,7 +445,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-schedule', track: 'corp', icon: '📅', title: 'Scheduling', jp: 'にっていちょうせい', hi: 'Time fix karna',
+    id: 'c-schedule', track: 'corp', title: 'Scheduling', jp: 'にっていちょうせい', hi: 'Time fix karna',
     phrases: [
       ['ご都合いかがですか。', 'ごつごういかがですか。', 'go-tsugō ikaga desu ka?', 'When would suit you?', 'Aapke liye kab theek rahega?', '', ['いつが空いてる？', 'いつがあいてる？', 'itsu ga aiteru?']],
       ['来週の火曜日はどうですか。', 'らいしゅうのかようびはどうですか。', 'raishū no ka-yōbi wa dō desu ka?', 'How about next Tuesday?', 'Agle Tuesday kaisa rahega?'],
@@ -466,7 +466,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-guest', track: 'corp', icon: '🪪', title: 'Visitors & business cards', jp: 'らいきゃく・めいしこうかん', hi: 'Mehmaan aur business card',
+    id: 'c-guest', track: 'corp', title: 'Visitors & business cards', jp: 'らいきゃく・めいしこうかん', hi: 'Mehmaan aur business card',
     phrases: [
       ['お待ちしておりました。', 'おまちしておりました。', 'o-machi shite orimashita.', 'We’ve been expecting you.', 'Hum aapka intezaar kar rahe the.', 'With clients, formal keigo IS the real Japanese.'],
       ['こちらへどうぞ。', 'こちらへどうぞ。', 'kochira e dōzo.', 'This way, please.', 'Idhar aaiye.'],
@@ -487,7 +487,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-discuss', track: 'corp', icon: '🗣️', title: 'Giving opinions', jp: 'いけんをいう', hi: 'Apni raay dena',
+    id: 'c-discuss', track: 'corp', title: 'Giving opinions', jp: 'いけんをいう', hi: 'Apni raay dena',
     phrases: [
       ['ちょっと提案なんですが。', 'ちょっとていあんなんですが。', 'chotto teian nan desu ga.', 'I have a suggestion…', 'Ek suggestion hai…'],
       ['こっちの案はどうですか。', 'こっちのあんはどうですか。', 'kotchi no an wa dō desu ka?', 'How about this plan?', 'Ye plan kaisa rahega?', 'こっち is the everyday こちら.'],
@@ -508,7 +508,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-request', track: 'corp', icon: '🤲', title: 'Favours & saying no', jp: 'おねがい・ことわり', hi: 'Request aur mana karna',
+    id: 'c-request', track: 'corp', title: 'Favours & saying no', jp: 'おねがい・ことわり', hi: 'Request aur mana karna',
     phrases: [
       ['ちょっとお願いがあるんですけど。', 'ちょっとおねがいがあるんですけど。', 'chotto o-negai ga aru n desu kedo.', 'Could I ask you a favour…', 'Ek chhota sa kaam tha…', 'けど… trailing off is softer than a direct request.'],
       ['手が空いたら、見てもらえますか。', 'てがあいたら、みてもらえますか。', 'te ga aitara, mite moraemasu ka?', 'When you’re free, could you take a look?', 'Jab free hon, toh ek nazar dekh lenge?'],
@@ -529,7 +529,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-mail', track: 'corp', icon: '✉️', title: 'Email & chat', jp: 'メール・チャット', hi: 'Email aur chat',
+    id: 'c-mail', track: 'corp', title: 'Email & chat', jp: 'メール・チャット', hi: 'Email aur chat',
     phrases: [
       ['お疲れ様です。{name}です。', 'おつかれさまです。{name}です。', 'otsukaresama desu. {nameRo} desu.', 'Hi, it’s {nameRo}.', 'Namaste, main {nameRo}.', 'How internal emails and chat messages begin.'],
       ['お世話になっております。', 'おせわになっております。', 'o-sewa ni natte orimasu.', 'Thanks for your continued support.', 'Hamesha sahyog ke liye dhanyavaad.', 'How emails to clients begin. Written Japanese stays formal.'],
@@ -549,7 +549,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-trouble', track: 'corp', icon: '🔧', title: 'IT & office problems', jp: 'トラブル', hi: 'IT aur office ki dikkatein',
+    id: 'c-trouble', track: 'corp', title: 'IT & office problems', jp: 'トラブル', hi: 'IT aur office ki dikkatein',
     phrases: [
       ['パソコンが動かないんですけど…。', 'パソコンがうごかないんですけど…。', 'pasokon ga ugokanai n desu kedo…', 'My computer isn’t working…', 'Mera computer chal nahi raha…'],
       ['パスワード、忘れちゃいました。', 'パスワード、わすれちゃいました。', 'pasuwādo, wasurechaimashita.', 'I’ve forgotten my password.', 'Password bhool gaye.', '〜ちゃいました is spoken 〜てしまいました (oops, it happened).'],
@@ -569,7 +569,7 @@ export const UNITS = [
     ],
   },
   {
-    id: 'c-social', track: 'corp', icon: '🍻', title: 'After-work drinks', jp: 'のみかい', hi: 'Office party',
+    id: 'c-social', track: 'corp', title: 'After-work drinks', jp: 'のみかい', hi: 'Office party',
     phrases: [
       ['今日の飲み会、行きます！', 'きょうののみかい、いきます！', 'kyō no nomikai, ikimasu!', 'I’m coming to tonight’s drinks!', 'Aaj ki party mein aa rahe hain!'],
       ['お先にどうぞ。', 'おさきにどうぞ。', 'o-saki ni dōzo.', 'After you.', 'Pehle aap.'],

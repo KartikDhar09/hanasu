@@ -62,7 +62,7 @@ export function initExam(ctx) {
 
   const passageHtml = r => `
     <div class="passage" lang="ja">${esc(r.text).replace(/\n/g, '<br>')}</div>
-    <details class="answers"><summary>📖 Key words</summary><ul class="glossary">${r.words.map(w => `<li><b lang="ja">${esc(w[0])}</b> <span lang="ja">${esc(w[1])}</span> · ${esc(w[2])}</li>`).join('')}</ul></details>`;
+    <details class="answers"><summary>${icon('reading')} Key words</summary><ul class="glossary">${r.words.map(w => `<li><b lang="ja">${esc(w[0])}</b> <span lang="ja">${esc(w[1])}</span> · ${esc(w[2])}</li>`).join('')}</ul></details>`;
 
   // ================= Reading =================
   function readingList(lv) {
@@ -72,7 +72,7 @@ export function initExam(ctx) {
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-reading" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
       <p class="muted">Real-life notes, emails and notices, like the exam. Read the Japanese first. Use the key words if you get stuck, and the translation only at the end.</p>
       <div class="pgrid">${READING.filter(r => r.level === lv).map(r => `<button class="pcard" data-act="ex-passage" data-arg="${r.id}">
-        <span class="pch">${r.pic}</span><span class="pt"><b>${esc(r.title)}</b><small>${r.qs.length} questions</small></span></button>`).join('')}</div>`);
+        <span class="pch">${icon('reading')}</span><span class="pt"><b>${esc(r.title)}</b><small>${r.qs.length} questions</small></span></button>`).join('')}</div>`);
   }
 
   function passage(id) {
@@ -80,13 +80,13 @@ export function initExam(ctx) {
     const r = READING.find(x => x.id === id);
     st = { kind: 'passage', id, picked: {} };
     render(`
-      <div class="head">${back('ex-reading', r.level)}<h1>${r.pic} ${esc(r.title)}</h1></div>
+      <div class="head">${back('ex-reading', r.level)}<h1>${esc(r.title)}</h1></div>
       <div class="card left">${passageHtml(r)}</div>
       ${r.qs.map((q, qi) => `<div class="card left qblock">
         <b lang="ja">問${qi + 1}　${esc(q.q)}</b><div class="muted small">${esc(q.en)}</div>
         <div class="choices">${q.options.map((o, oi) => `<button class="choice" data-act="ex-read-answer" data-arg="${qi}.${oi}" id="ro-${qi}-${oi}"><span lang="ja">${oi + 1}. ${esc(o)}</span></button>`).join('')}</div>
       </div>`).join('')}
-      <details class="answers"><summary>🔤 English translation</summary><p>${esc(r.en)}</p></details>`);
+      <details class="answers"><summary>${icon('translate')} English translation</summary><p>${esc(r.en)}</p></details>`);
   }
 
   function readAnswer(arg) {
@@ -109,13 +109,13 @@ export function initExam(ctx) {
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-listening" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
       <p class="muted">Like the real test: you hear the question first, then the conversation, then the question again. The man’s voice is lower, the woman’s higher. Don’t read the transcript until you’ve answered!</p>
       <div class="pgrid">${LISTENING.filter(l => l.level === lv).map(l => `<button class="pcard" data-act="ex-listen" data-arg="${l.id}">
-        <span class="pch">${l.pic}</span><span class="pt"><b>${esc(l.kind)}</b><small>${esc(l.q[1])}</small></span></button>`).join('')}</div>`);
+        <span class="pch">${icon('listening')}</span><span class="pt"><b>${esc(l.kind)}</b><small>${esc(l.q[1])}</small></span></button>`).join('')}</div>`);
   }
 
   const listeningOptions = (item, act, arg = '') => `<div class="choices ${item.options[0].pic ? 'four' : ''}">${item.options.map((o, oi) => `<button class="choice ${o.pic ? 'center' : ''}" data-act="${act}" data-arg="${arg}${oi}" id="lo-${oi}">
       ${o.pic ? `<span class="wpic">${o.pic}</span>` : `<span lang="ja">${oi + 1}. ${esc(o.jp)}</span>`}</button>`).join('')}</div>`;
 
-  const transcript = item => `<details class="answers" id="transcript"><summary>📜 Transcript</summary><ul class="phrases">${item.lines.map(([who, jp, en]) => `<li><b>${who === 'm' ? '👨' : who === 'f' ? '👩' : '🎙️'}</b> <span lang="ja">${esc(jp)}</span><div class="muted small">${esc(en)}</div></li>`).join('')}</ul></details>`;
+  const transcript = item => `<details class="answers" id="transcript"><summary>${icon('transcript')} Transcript</summary><ul class="phrases">${item.lines.map(([who, jp, en]) => `<li><b>${who === 'm' ? 'Man' : who === 'f' ? 'Woman' : 'Narrator'}:</b> <span lang="ja">${esc(jp)}</span><div class="muted small">${esc(en)}</div></li>`).join('')}</ul></details>`;
 
   function listen(id) {
     ctx.clearSess();
@@ -123,11 +123,11 @@ export function initExam(ctx) {
     st = { kind: 'listen', id, answered: false };
     prefetchClip(item.q[0]); for (const [who, jp] of item.lines) prefetchClip(jp, who === 'm' || who === 'f' ? who : 'n');
     render(`
-      <div class="head">${back('ex-listening', item.level)}<h1>${item.pic} ${esc(item.kind)}</h1></div>
+      <div class="head">${back('ex-listening', item.level)}<h1>${esc(item.kind)}</h1></div>
       <div class="card">
-        <div class="pic">🎧</div>
+        <div class="pic">${icon('listening')}</div>
         <span class="tag alt">Listen and choose</span>
-        <button class="btn listen" data-act="ex-play">▶ Play</button>
+        <button class="btn listen" data-act="ex-play">${icon('play')} Play</button>
       </div>
       ${listeningOptions(item, 'ex-listen-answer')}
       <div class="actions" id="actions"></div>`);
@@ -163,11 +163,11 @@ export function initExam(ctx) {
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-mock" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
       <div class="card left">
         <p><b>Full mock</b>: the real exam’s question types, counts and time limits, in the same order. Scored the way JLPT scores: <b>language knowledge + reading out of 120</b> and <b>listening out of 60</b>.</p>
-        <ul class="tips">${plan.map(p => `<li>📝 ${esc(p.en)} <span lang="ja" class="muted">${p.jp}</span> · ${count(p)} questions · ${p.min} min</li>`).join('')}</ul>
-        <div class="note">🎯 To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. Each paper has its own clock.</div>
+        <ul class="tips">${plan.map(p => `<li>${esc(p.en)} <span lang="ja" class="muted">${p.jp}</span> · ${count(p)} questions · ${p.min} min</li>`).join('')}</ul>
+        <div class="note">${icon('goal')} To pass: ${ex.pass.total}/180 total, at least ${ex.pass.sections[0][1]}/120 and ${ex.pass.sections[1][1]}/60. No answers are shown until the end, like the real thing. Each paper has its own clock.</div>
       </div>
-      <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}.full">▶ Start full mock · ${plan.reduce((n, p) => n + p.min, 0)} min</button>
-      <button class="btn" data-act="ex-mock-start" data-arg="${lv}.quick">⚡ Quick mock · about 30 questions, no clock</button>`);
+      <button class="btn primary big" data-act="ex-mock-start" data-arg="${lv}.full">${icon('start')} Start full mock · ${plan.reduce((n, p) => n + p.min, 0)} min</button>
+      <button class="btn" data-act="ex-mock-start" data-arg="${lv}.quick">${icon('quick')} Quick mock · about 30 questions, no clock</button>`);
   }
 
   const tag = (jp, en) => `<span class="tag alt" lang="ja">${jp}</span> <span class="muted small">${esc(en)}</span>`;
@@ -267,7 +267,7 @@ export function initExam(ctx) {
       used.add(item.id);
       const line = type === 'say' || type === 'quick'; // the situation or remark is the question
       return { section: 'listening', type, item,
-        prompt: `${tag(TYPES[type], item.kind)}<button class="btn listen" data-act="ex-mock-play">▶ Play again</button>`,
+        prompt: `${tag(TYPES[type], item.kind)}<button class="btn listen" data-act="ex-mock-play">${icon('play')} Play again</button>`,
         options: item.options.map((o, i) => String(i)), right: String(item.answer), review: line ? item.lines[0][1] : item.q[0], en: line ? item.lines[0][2] : item.q[1], answerText: item.options[item.answer].jp };
     });
   }
@@ -312,10 +312,10 @@ export function initExam(ctx) {
     const el = document.getElementById('mclock');
     if (!el || st?.kind !== 'mock') return stopTimer();
     const ms = left();
-    el.textContent = '⏱ ' + clock(ms);
+    el.innerHTML = icon('time') + ' ' + clock(ms);
     el.classList.toggle('late', ms <= 0);
     if (ms <= 0 && !document.getElementById('mtimeup')) {
-      el.insertAdjacentHTML('afterend', `<div class="note" id="mtimeup">⌛ Time’s up for this paper. In the real test it ends now. <button class="btn" data-act="ex-mock-endpaper">End paper</button></div>`);
+      el.insertAdjacentHTML('afterend', `<div class="note" id="mtimeup">${icon('left')} Time’s up for this paper. In the real test it ends now. <button class="btn" data-act="ex-mock-endpaper">End paper</button></div>`);
     }
   }
 
@@ -337,9 +337,9 @@ export function initExam(ctx) {
         <h2>${esc(p.en)} <span lang="ja" class="muted">${p.jp}</span></h2>
         <p>${p.qs.length} questions · ${p.min} minutes</p>
         <ul class="tips">${parts}</ul>
-        ${p.qs[0]?.section === 'listening' ? '<div class="note">🎧 Each question plays once by itself: the question, the conversation, then the question again. You can replay it here, which the real test doesn’t allow.</div>' : ''}
+        ${p.qs[0]?.section === 'listening' ? `<div class="note">${icon('listening')} Each question plays once by itself: the question, the conversation, then the question again. You can replay it here, which the real test doesn’t allow.</div>` : ''}
       </div>
-      <button class="btn primary big" data-act="ex-mock-paper">▶ Start paper ${st.p + 1}</button>`);
+      <button class="btn primary big" data-act="ex-mock-paper">${icon('start')} Start paper ${st.p + 1}</button>`);
   }
 
   function mockQ() {
@@ -356,7 +356,7 @@ export function initExam(ctx) {
       : `<div class="choices">${q.options.map((o, i) => `<button class="choice" data-act="ex-mock-answer" data-arg="${i}"><span lang="ja">${i + 1}. ${esc(o)}</span></button>`).join('')}</div>`;
     const timed = paper.min > 0;
     render(`
-      <div class="head">${back('ex-mock', st.lv)}<div class="grow">${bar(done, total)}</div><span class="muted mclock" id="mclock">${timed ? '⏱ ' + clock(left()) : '⏱ ' + Math.floor((Date.now() - st.started) / 60000) + 'm'}</span></div>
+      <div class="head">${back('ex-mock', st.lv)}<div class="grow">${bar(done, total)}</div><span class="muted mclock" id="mclock">${icon('time')} ${timed ? clock(left()) : Math.floor((Date.now() - st.started) / 60000) + 'm'}</span></div>
       <p class="muted small center">${esc(sec[1])} <span lang="ja">${sec[2]}</span> · ${st.i + 1}/${paper.qs.length}${st.papers.length > 1 ? ` · paper ${st.p + 1}/${st.papers.length}` : ''}</p>
       ${q.passage ? `<div class="card left">${passageHtml(q.passage)}</div>` : ''}
       ${q.text ? `<div class="card left"><div class="passage" lang="ja">${q.text}</div></div>` : ''}
@@ -391,13 +391,13 @@ export function initExam(ctx) {
     const weakest = Object.entries(s.bySection).sort((a, b) => a[1] - b[1])[0];
     const types = [...new Set(results.map(r => r.type))].map(t => {
       const r = results.filter(x => x.type === t), ok = r.filter(x => x.ok).length;
-      return `<li>${ok / r.length >= 0.7 ? '✅' : '⚠️'} <span lang="ja">${TYPES[t] || t}</span>: ${ok}/${r.length}</li>`;
+      return `<li>${icon(ok / r.length >= 0.7 ? 'done' : 'warn')} <span lang="ja">${TYPES[t] || t}</span>: ${ok}/${r.length}</li>`;
     }).join('');
     const answerOf = q => q.answerText || q.right;
     const wrong = results.filter(r => !r.ok).map(({ q, picked }) => `<li><span lang="ja">${esc(q.review)}</span>${q.en ? `<div class="muted small">${esc(q.en)}</div>` : ''}
       <div>✓ <span lang="ja">${esc(answerOf(q))}</span>${picked == null ? ' <span class="muted small">(not answered)</span>' : q.item ? '' : ` <span class="muted small">· you chose <span lang="ja">${esc(picked)}</span></span>`}</div></li>`).join('');
     render(`<div class="done">
-      <div class="big-emoji">${s.passed ? '🎉' : '📚'}</div>
+      <div class="big-emoji">${icon(s.passed ? 'finish' : 'need')}</div>
       <h1>${s.passed ? 'Pass!' : 'Not yet'} · ${s.total}/180</h1>
       <p class="muted">${mins} min · ${ex.title}${S().settings.hindi ? (s.passed ? ' · Badhai ho!' : ' · Lage raho, ho jaayega!') : ''}</p>
       <div class="card left passbox">
@@ -405,10 +405,10 @@ export function initExam(ctx) {
         <div class="passbar small ${s.langReading >= ex.pass.sections[0][1] ? '' : 'fail'}"><span>Language + reading ${s.langReading} / 120 (min ${ex.pass.sections[0][1]})</span><div class="pb"><i style="width:${100 * s.langReading / 120}%"></i></div></div>
         <div class="passbar small ${s.listening >= ex.pass.sections[1][1] ? '' : 'fail'}"><span>Listening ${s.listening} / 60 (min ${ex.pass.sections[1][1]})</span><div class="pb"><i style="width:${100 * s.listening / 60}%"></i></div></div>
       </div>
-      <ul class="tips">${SECTIONS.map(([id, en, jp]) => `<li>${s.bySection[id] >= 70 ? '✅' : '⚠️'} ${esc(en)} <span lang="ja" class="muted">${jp}</span>: ${s.bySection[id]}%</li>`).join('')}</ul>
+      <ul class="tips">${SECTIONS.map(([id, en, jp]) => `<li>${icon(s.bySection[id] >= 70 ? 'done' : 'warn')} ${esc(en)} <span lang="ja" class="muted">${jp}</span>: ${s.bySection[id]}%</li>`).join('')}</ul>
       <p>Focus next on <b>${esc(SECTIONS.find(x => x[0] === weakest[0])[1])}</b>.</p>
-      <details class="answers left"><summary>📊 By question type</summary><ul class="tips">${types}</ul></details>
-      ${wrong ? `<details class="answers left"><summary>🔁 Review mistakes (${results.filter(r => !r.ok).length})</summary><ul class="phrases">${wrong}</ul></details>` : ''}
+      <details class="answers left"><summary>${icon('stats')} By question type</summary><ul class="tips">${types}</ul></details>
+      ${wrong ? `<details class="answers left"><summary>${icon('also')} Review mistakes (${results.filter(r => !r.ok).length})</summary><ul class="phrases">${wrong}</ul></details>` : ''}
       ${s.passed && full ? `<p>${icon('path-jlpt')} Passed! Mark the exam level complete in your N5·N4 path.</p><a class="btn big" href="#path/jlpt">Open the path</a>` : ''}
       <button class="btn primary big" data-act="ex-mock" data-arg="${lv}">Done</button>
     </div>`);

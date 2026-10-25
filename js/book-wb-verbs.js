@@ -2,7 +2,7 @@
 import { P, VERBS } from './book-kit.js';
 
 export default {
-  id: 'wb-verbs', icon: '🏃', title: 'Wordbook: verb conjugation list', jp: '動詞活用表',
+  id: 'wb-verbs', title: 'Wordbook: verb conjugation list', jp: '動詞活用表',
   sections: [
     { h: 'U-verbs', blocks: [P('Each card: masu-form · dictionary form · te-form · ta-form · nai-form. Tap to hear all five.'), VERBS(`
 meet|あいます|あう|あって|あった|あわない

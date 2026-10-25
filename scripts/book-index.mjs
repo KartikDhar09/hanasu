@@ -1,4 +1,4 @@
-// Builds js/book-index.js: the Book tab's contents (title, icon and group of every page), so the contents screen
+// Builds js/book-index.js: the Book tab's contents (title and group of every page), so the contents screen
 // opens without loading any page. Pages live in js/book-<id>.js and load only when opened.
 // Run: node scripts/book-index.mjs        (check.mjs fails if the committed file is out of date)
 import { writeFileSync } from 'node:fs';
@@ -15,7 +15,7 @@ export async function buildBookIndex() {
   for (const [group, ids] of Object.entries(ORDER)) for (const id of ids) {
     const p = (await import(`../js/book-${id}.js`)).default;
     if (p.id !== id) throw new Error(`js/book-${id}.js has id ${p.id}`);
-    const row = { id, group, icon: p.icon, title: p.title, jp: p.jp };
+    const row = { id, group, title: p.title, jp: p.jp };
     if (p.n) Object.assign(row, { n: p.n, topic: p.topic, topicJp: p.topicJp });
     rows.push(row);
   }

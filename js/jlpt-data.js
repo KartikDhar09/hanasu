@@ -31,11 +31,11 @@ export const EXAMS = {
 };
 
 export const EXAM_TIPS = [
-  ['📅', 'The JLPT is held twice a year in Japan, in early July and early December. Apply about 3 months before on jlpt.jp.', 'Saal mein do baar: July aur December. 3 mahine pehle jlpt.jp pe apply karo.'],
-  ['🎯', 'You must pass the total AND each section’s minimum. A great vocabulary score can’t save a very low listening score.', 'Total aur har section, dono pass karne zaroori hain.'],
-  ['🎧', 'Listening is where most people fail. Listen to Japanese every day, even 10 minutes in the Speak tab.', 'Zyaadatar log listening mein fail hote hain. Roz suno.'],
-  ['✏️', 'Every question is multiple choice. Never leave a blank: there’s no penalty for guessing.', 'Sab MCQ hai. Koi sawaal khaali mat chhodo.'],
-  ['⏱️', 'Grammar & Reading is the tightest on time. Do grammar fast, then spend the rest on reading.', 'Grammar jaldi karo, reading ke liye time bachao.'],
+  ['The JLPT is held twice a year in Japan, in early July and early December. Apply about 3 months before on jlpt.jp.', 'Saal mein do baar: July aur December. 3 mahine pehle jlpt.jp pe apply karo.'],
+  ['You must pass the total AND each section’s minimum. A great vocabulary score can’t save a very low listening score.', 'Total aur har section, dono pass karne zaroori hain.'],
+  ['Listening is where most people fail. Listen to Japanese every day, even 10 minutes in the Speak tab.', 'Zyaadatar log listening mein fail hote hain. Roz suno.'],
+  ['Every question is multiple choice. Never leave a blank: there’s no penalty for guessing.', 'Sab MCQ hai. Koi sawaal khaali mat chhodo.'],
+  ['Grammar & Reading is the tightest on time. Do grammar fast, then spend the rest on reading.', 'Grammar jaldi karo, reading ke liye time bachao.'],
 ];
 
 // Question types in the exam, with how to practise each one here.

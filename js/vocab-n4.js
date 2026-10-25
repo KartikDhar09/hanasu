@@ -3,7 +3,7 @@
 // Words already in vocab-data.js or in the N5 list are skipped when merged.
 
 export const N4_TOPICS = [
-  { id: 'n4-people3', title: 'People & relationships', hg: 'Log aur rishte', icon: '🧑‍🤝‍🧑', list: `
+  { id: 'n4-people3', title: 'People & relationships', hg: 'Log aur rishte', list: `
 人口|じんこう|population|aabaadi|👥
 人々|ひとびと|people|log|👥
 彼ら|かれら|they|wo log|👥
@@ -43,7 +43,7 @@ export const N4_TOPICS = [
 相手|あいて|the other person / partner|saamne wala|🤝
 知り合い|しりあい|acquaintance|jaan-pehchaan wala|👋
 ` },
-  { id: 'n4-home3', title: 'Home & living', hg: 'Ghar aur rehna', icon: '🏡', list: `
+  { id: 'n4-home3', title: 'Home & living', hg: 'Ghar aur rehna', list: `
 住所|じゅうしょ|address|pata|📮
 屋上|おくじょう|rooftop|chhat|🏢
 畳|たたみ|tatami mat|tatami chatai|🟩
@@ -76,7 +76,7 @@ export const N4_TOPICS = [
 生活|せいかつ|daily life|zindagi / rehan-sehan|🏠
 暮らす|くらす|to live|rehna / guzaara karna|🏠
 ` },
-  { id: 'n4-town2', title: 'Town & places', hg: 'Shahar aur jagah', icon: '🏙️', list: `
+  { id: 'n4-town2', title: 'Town & places', hg: 'Shahar aur jagah', list: `
 市|し|city|shahar|🏙️
 県|けん|prefecture|prefecture / zila|🗾
 区|く|ward|ward|🏘️
@@ -109,7 +109,7 @@ export const N4_TOPICS = [
 踏切|ふみきり|railway crossing|railway phatak|🚦
 線|せん|line|line|〰️
 ` },
-  { id: 'n4-travel2', title: 'Travel & transport', hg: 'Safar aur aana-jaana', icon: '🧳', list: `
+  { id: 'n4-travel2', title: 'Travel & transport', hg: 'Safar aur aana-jaana', list: `
 交通|こうつう|traffic / transport|yaataayaat|🚦
 乗り物|のりもの|vehicle|savaari|🚗
 特急|とっきゅう|limited express|express train|🚄
@@ -139,7 +139,7 @@ export const N4_TOPICS = [
 往復|おうふく|round trip|aana-jaana|🔁
 予約|よやく|reservation|booking|📝
 ` },
-  { id: 'n4-work3', title: 'Work & business', hg: 'Kaam aur business', icon: '💼', list: `
+  { id: 'n4-work3', title: 'Work & business', hg: 'Kaam aur business', list: `
 会社|かいしゃ|company|company|🏢
 営業|えいぎょう|sales|sales|📈
 貿易|ぼうえき|trade|vyapaar|🚢
@@ -171,7 +171,7 @@ export const N4_TOPICS = [
 規則|きそく|rule|niyam|📏
 必要|ひつよう|necessary|zaroori|❗
 ` },
-  { id: 'n4-study2', title: 'School & study', hg: 'School aur padhai', icon: '🎓', list: `
+  { id: 'n4-study2', title: 'School & study', hg: 'School aur padhai', list: `
 小学校|しょうがっこう|primary school|primary school|🏫
 中学校|ちゅうがっこう|junior high school|middle school|🏫
 高校|こうこう|high school|high school|🏫
@@ -202,7 +202,7 @@ export const N4_TOPICS = [
 文法|ぶんぽう|grammar|vyaakaran|📘
 発音|はつおん|pronunciation|uchchaaran|👄
 ` },
-  { id: 'n4-health3', title: 'Health & body', hg: 'Sehat aur sharir', icon: '🏥', list: `
+  { id: 'n4-health3', title: 'Health & body', hg: 'Sehat aur sharir', list: `
 首|くび|neck|gardan|🦒
 喉|のど|throat|gala|🗣️
 胸|むね|chest|chhaati|🫁
@@ -227,7 +227,7 @@ export const N4_TOPICS = [
 痩せる|やせる|lose weight|patla hona|🥗
 眠い|ねむい|sleepy|neend aana|😴
 ` },
-  { id: 'n4-nature3', title: 'Nature, weather & animals', hg: 'Prakriti, mausam, jaanwar', icon: '🌿', list: `
+  { id: 'n4-nature3', title: 'Nature, weather & animals', hg: 'Prakriti, mausam, jaanwar', list: `
 自然|しぜん|nature|prakriti|🌿
 世界|せかい|world|duniya|🌍
 地球|ちきゅう|the earth|dharti|🌏
@@ -257,7 +257,7 @@ export const N4_TOPICS = [
 羊|ひつじ|sheep|bhed|🐑
 象|ぞう|elephant|haathi|🐘
 ` },
-  { id: 'n4-food4', title: 'Food & cooking', hg: 'Khaana aur pakaana', icon: '🍳', list: `
+  { id: 'n4-food4', title: 'Food & cooking', hg: 'Khaana aur pakaana', list: `
 食事|しょくじ|meal|bhojan|🍽️
 夕飯|ゆうはん|dinner|raat ka khaana|🍛
 弁当|べんとう|boxed lunch|tiffin|🍱
@@ -284,7 +284,7 @@ export const N4_TOPICS = [
 サラダ|サラダ|salad|salad|🥗
 ステーキ|ステーキ|steak|steak|🥩
 ` },
-  { id: 'n4-shopping', title: 'Shopping & money', hg: 'Shopping aur paisa', icon: '💴', list: `
+  { id: 'n4-shopping', title: 'Shopping & money', hg: 'Shopping aur paisa', list: `
 値段|ねだん|price|daam|🏷️
 料金|りょうきん|fee / charge|shulk|💴
 代金|だいきん|payment|bhugtaan|💴
@@ -308,7 +308,7 @@ export const N4_TOPICS = [
 贈り物|おくりもの|gift|tohfa|🎁
 お祝い|おいわい|celebration / gift|badhai / tohfa|🎉
 ` },
-  { id: 'n4-culture', title: 'Hobbies, sport & culture', hg: 'Shauk, khel, sanskriti', icon: '🎎', list: `
+  { id: 'n4-culture', title: 'Hobbies, sport & culture', hg: 'Shauk, khel, sanskriti', list: `
 文化|ぶんか|culture|sanskriti|🎎
 習慣|しゅうかん|custom / habit|riwaaz / aadat|🔁
 趣味|しゅみ|hobby|shauk|🎨
@@ -329,7 +329,7 @@ export const N4_TOPICS = [
 人形|にんぎょう|doll|gudiya|🎎
 遊び|あそび|play / fun|khel / masti|🎈
 ` },
-  { id: 'n4-tech', title: 'Phones, computers & media', hg: 'Phone, computer, media', icon: '💻', list: `
+  { id: 'n4-tech', title: 'Phones, computers & media', hg: 'Phone, computer, media', list: `
 パソコン|パソコン|computer|computer|💻
 スマホ|スマホ|smartphone|smartphone|📱
 携帯電話|けいたいでんわ|mobile phone|mobile|📱
@@ -346,7 +346,7 @@ export const N4_TOPICS = [
 送信|そうしん|sending|bhejna|📤
 受信|じゅしん|receiving|praapt karna|📥
 ` },
-  { id: 'n4-society2', title: 'Society & events', hg: 'Samaaj aur aayojan', icon: '🏛️', list: `
+  { id: 'n4-society2', title: 'Society & events', hg: 'Samaaj aur aayojan', list: `
 社会|しゃかい|society|samaaj|🏛️
 国際|こくさい|international|antarraashtriya|🌐
 政府|せいふ|government|sarkaar|🏛️
@@ -366,7 +366,7 @@ export const N4_TOPICS = [
 会|かい|meeting / party|sabha / party|🎉
 集まり|あつまり|gathering|ikattha hona|👥
 ` },
-  { id: 'n4-time3', title: 'Time & frequency', hg: 'Samay aur baar-baar', icon: '⏰', list: `
+  { id: 'n4-time3', title: 'Time & frequency', hg: 'Samay aur baar-baar', list: `
 間|あいだ|interval / during|beech mein / dauraan|↔️
 最近|さいきん|recently|aajkal|🆕
 将来|しょうらい|future|bhavishya|🔮
@@ -386,7 +386,7 @@ export const N4_TOPICS = [
 夜中|よなか|middle of the night|aadhi raat|🌑
 朝寝坊|あさねぼう|oversleeping|der tak sona|😴
 ` },
-  { id: 'n4-verbs3', title: 'N4 verbs', hg: 'N4 kriyaayein', icon: '🏃', list: `
+  { id: 'n4-verbs3', title: 'N4 verbs', hg: 'N4 kriyaayein', list: `
 上がる|あがる|go up / rise|upar jaana|⬆️
 下がる|さがる|go down / fall|neeche jaana|⬇️
 空く|あく|become empty / free|khaali hona|🈳
@@ -515,7 +515,7 @@ export const N4_TOPICS = [
 笑う|わらう|laugh|hansna|😂
 割れる|われる|break (glass)|toot jaana|🍷
 ` },
-  { id: 'n4-keigo', title: 'Polite & humble verbs (keigo)', hg: 'Aadar wali kriyaayein', icon: '🙇', list: `
+  { id: 'n4-keigo', title: 'Polite & humble verbs (keigo)', hg: 'Aadar wali kriyaayein', list: `
 いらっしゃる|いらっしゃる|be / come / go (honorific)|hona / aana / jaana (aadar se)|🎩
 おっしゃる|おっしゃる|say (honorific)|kehna (aadar se)|🎩
 なさる|なさる|do (honorific)|karna (aadar se)|🎩
@@ -528,7 +528,7 @@ export const N4_TOPICS = [
 致す|いたす|do (humble)|karna (vinamra)|🙇
 ござる|ござる|be (very polite)|hona (bahut aadar se)|🙇
 ` },
-  { id: 'n4-iadj3', title: 'N4 い-adjectives', hg: 'N4 visheshan (-i wale)', icon: '🎨', list: `
+  { id: 'n4-iadj3', title: 'N4 い-adjectives', hg: 'N4 visheshan (-i wale)', list: `
 浅い|あさい|shallow|uthla|🏊
 深い|ふかい|deep|gehra|🌊
 美しい|うつくしい|beautiful|sundar|🌸
@@ -555,7 +555,7 @@ export const N4_TOPICS = [
 柔らかい|やわらかい|soft|naram|🧸
 優しい|やさしい|kind|dayalu|🤗
 ` },
-  { id: 'n4-naadj3', title: 'N4 な-adjectives', hg: 'N4 visheshan (-na wale)', icon: '🌼', list: `
+  { id: 'n4-naadj3', title: 'N4 な-adjectives', hg: 'N4 visheshan (-na wale)', list: `
 安全|あんぜん|safe|surakshit|🦺
 危険|きけん|dangerous|khatarnaak|⚠️
 簡単|かんたん|simple|aasaan|✅
@@ -578,7 +578,7 @@ export const N4_TOPICS = [
 盛ん|さかん|thriving / popular|lokpriya|🔥
 適当|てきとう|suitable / rough|theek-thaak|👌
 ` },
-  { id: 'n4-adverbs2', title: 'Adverbs & connectors', hg: 'Kriya-visheshan aur jodne wale shabd', icon: '🔗', list: `
+  { id: 'n4-adverbs2', title: 'Adverbs & connectors', hg: 'Kriya-visheshan aur jodne wale shabd', list: `
 いっぱい|いっぱい|full / a lot|bhara hua / bahut|🈵
 必ず|かならず|without fail|zaroor|✅
 きっと|きっと|surely|zaroor / pakka|👍
@@ -611,7 +611,7 @@ export const N4_TOPICS = [
 または|または|or|ya|🔀
 すると|すると|then / thereupon|tab|➡️
 ` },
-  { id: 'n4-katakana3', title: 'N4 katakana words', hg: 'N4 angrezi shabd', icon: '🔤', list: `
+  { id: 'n4-katakana3', title: 'N4 katakana words', hg: 'N4 angrezi shabd', list: `
 アルバイト|アルバイト|part-time job|part-time naukri|🧑‍🍳
 アナウンス|アナウンス|announcement|elaan|📢
 アクセサリー|アクセサリー|accessory|accessory|💍
@@ -639,7 +639,7 @@ export const N4_TOPICS = [
 レポート|レポート|report|report|📝
 ` },
   // Standard N4 words the app was missing (added 2026-10).
-  { id: 'n4-work4', title: 'Work, school & formal words', hg: 'Kaam, padhai aur aupchaarik shabd', icon: '🏢', list: `
+  { id: 'n4-work4', title: 'Work, school & formal words', hg: 'Kaam, padhai aur aupchaarik shabd', list: `
 挨拶|あいさつ|greeting|abhivaadan|👋
 案内|あんない|guidance / showing around|raasta dikhana
 以下|いか|below / or less|… se kam
@@ -684,7 +684,7 @@ export const N4_TOPICS = [
 係|かかり|person in charge|zimmedaar
 アナウンサー|アナウンサー|announcer|announcer|🎙️
 ` },
-  { id: 'n4-life4', title: 'Home, things & places', hg: 'Ghar, cheezein aur jagah', icon: '🏠', list: `
+  { id: 'n4-life4', title: 'Home, things & places', hg: 'Ghar, cheezein aur jagah', list: `
 裏|うら|back / reverse side|peechhe ki taraf
 表|おもて|front / surface|saamne ki taraf
 下着|したぎ|underwear|andar ke kapde|🩲
@@ -718,7 +718,7 @@ export const N4_TOPICS = [
 お宅|おたく|(your) home (polite)|aapka ghar
 家庭|かてい|household / home|ghar-parivaar
 ` },
-  { id: 'n4-people4', title: 'People & feelings', hg: 'Log aur bhaavnaayein', icon: '🫂', list: `
+  { id: 'n4-people4', title: 'People & feelings', hg: 'Log aur bhaavnaayein', list: `
 お子さん|おこさん|(someone’s) child|(aapke) bachche|🧒
 お金持ち|おかねもち|rich person|ameer|💰
 君|きみ|you (casual, to juniors)|tum
@@ -730,7 +730,7 @@ export const N4_TOPICS = [
 力|ちから|strength / power|taakat|💪
 喧嘩|けんか|quarrel|jhagda|😤
 ` },
-  { id: 'n4-verbs4', title: 'More N4 verbs', hg: 'Aur N4 kriyaayein', icon: '🏃', list: `
+  { id: 'n4-verbs4', title: 'More N4 verbs', hg: 'Aur N4 kriyaayein', list: `
 打つ|うつ|hit / type|maarna / type karna|⌨️
 構う|かまう|mind / care about|parwaah karna
 進む|すすむ|move forward / progress|aage badhna
@@ -748,7 +748,7 @@ export const N4_TOPICS = [
 止む|やむ|stop (rain)|rukna (baarish)|🌦️
 引き出す|ひきだす|withdraw (money)|paise nikaalna|🏧
 ` },
-  { id: 'n4-words4', title: 'Useful N4 words & expressions', hg: 'Kaam ke N4 shabd', icon: '💡', list: `
+  { id: 'n4-words4', title: 'Useful N4 words & expressions', hg: 'Kaam ke N4 shabd', list: `
 例えば|たとえば|for example|jaise ki
 久しぶり|ひさしぶり|after a long time|kaafi samay baad
 非常|ひじょう|emergency / extreme|aapaatkaal / atyant|🚨

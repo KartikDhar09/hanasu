@@ -21,9 +21,9 @@ export function initSpeaking(ctx) {
     ${S().settings.kana && !furi && l[1] !== l[0] ? `<div class="kana" lang="ja">${esc(l[1])}</div>` : ''}
     ${S().settings.romaji ? `<div class="ro">${esc(l[2])}</div>` : ''}
   </div>`; };
-  const micBtn = (act, arg = '', label = '🎤 Speak') => ctx.canListen()
+  const micBtn = (act, arg = '', label = icon('speak') + ' Speak') => ctx.canListen()
     ? `<button class="btn mic big" id="mic" data-act="${act}" data-arg="${arg}">${label}</button>`
-    : `<p class="muted center">This browser can’t check speech. Say it aloud and compare with 🔊.</p>`;
+    : `<p class="muted center">This browser can’t check speech. Say it aloud and compare with ${icon('play')}.</p>`;
 
   // ================= Hub =================
   function hub() {
@@ -39,13 +39,13 @@ export function initSpeaking(ctx) {
         <button class="scard" data-act="intro-builder">${icon('intro')}<b>My self-introduction</b><small>Build your own jikoshoukai and practise it line by line.</small></button>
         <button class="scard" data-act="sounds">${icon('sounds')}<b>Pronunciation</b><small>Sounds that change meaning: おばさん vs おばあさん.</small></button>
       </div>
-      <h2 class="sec">Practise a unit <small class="muted">🎤 shadow · 💬 role-play</small></h2>
+      <h2 class="sec">Practise a unit <small class="muted">${icon('speak')} shadow · ${icon('roleplay')} role-play</small></h2>
       ${TRACKS.map(t => `<details class="fold" ${t.id === 'n5' ? 'open' : ''}><summary><span class="sum-title">${esc(t.title)}<small lang="ja" class="accent">${t.jp}</small></span></summary>
         <div class="ulist">${UNITS.filter(u => u.track === t.id).map(u => `<div class="urow">
-          <span class="uicon">${u.icon}</span>
+          <span class="uicon">${icon(u.track === 'n5' ? 'phrases' : 'work')}</span>
           <span class="vmeta">${esc(u.title)}${S().settings.hindi ? `<small class="muted" lang="hi-Latn">${esc(u.hi)}</small>` : ''}</span>
-          <button class="ubtn" data-act="shadow-unit" data-arg="${u.id}" aria-label="Shadow ${esc(u.title)}">🎤</button>
-          <button class="ubtn" data-act="talk" data-arg="${u.id}" aria-label="Role-play ${esc(u.title)}">💬</button>
+          <button class="ubtn" data-act="shadow-unit" data-arg="${u.id}" aria-label="Shadow ${esc(u.title)}">${icon('speak')}</button>
+          <button class="ubtn" data-act="talk" data-arg="${u.id}" aria-label="Role-play ${esc(u.title)}">${icon('roleplay')}</button>
         </div>`).join('')}</div></details>`).join('')}`);
   }
 
@@ -63,16 +63,15 @@ export function initSpeaking(ctx) {
     render(`
       <div class="head">${back('speak-tab')}<div class="grow">${bar(i, QA.length)}</div><span class="muted">${i + 1}/${QA.length}</span></div>
       <div class="card">
-        <div class="pic">${item.pic}</div>
         <span class="tag alt">Answer out loud</span>
         ${line(q, true)}
         <div class="en">${esc(q[3])}</div>${hg(q[4])}
-        <div class="row center"><button class="btn icon" data-act="say-text" data-arg="${esc(q[0])}">🔊</button></div>
+        <div class="row center"><button class="btn icon" data-act="say-text" data-arg="${esc(q[0])}" aria-label="Play">${icon('play')}</button></div>
       </div>
       <div class="actions">
-        ${micBtn('qa-mic', i, '🎤 Answer')}
+        ${micBtn('qa-mic', i, icon('speak') + ' Answer')}
         <div id="result" class="result center"></div>
-        <details class="answers" ${ctx.canListen() ? '' : 'open'}><summary>💡 Example answers</summary>
+        <details class="answers" ${ctx.canListen() ? '' : 'open'}><summary>${icon('tip')} Example answers</summary>
           <ul class="phrases">${answers.map((a, j) => `<li class="ex" data-act="say-text" data-arg="${esc(a[0])}">${line(a)}<div class="en">${esc(a[3])}</div>${hg(a[4])}${ctx.waysSlot(`qa:${i}:${j}`)}</li>`).join('')}</ul>
         </details>
         <p class="muted center small">Say an example answer or one of its other ways. Your own answers can’t be scored yet.</p>
@@ -126,21 +125,21 @@ export function initSpeaking(ctx) {
     const sel = (id, opts, cur) => `<select id="${id}" data-change="intro-set">${opts.map((x, i) => `<option value="${i}" ${i === cur ? 'selected' : ''}>${x}</option>`).join('')}</select>`;
     const lines = introLines();
     render(`
-      <div class="head">${back('speak-tab')}<h1>🙋 My self-introduction</h1></div>
+      <div class="head">${back('speak-tab')}<h1>${icon('intro')} My self-introduction</h1></div>
       <p class="muted">The 自己紹介 (jikoshoukai) you’ll give at work, school and parties. Change the options and it rewrites itself. Nothing you type here is saved.</p>
       <div class="card left form">
         <label>Name (katakana) <input class="search" id="i-name" data-change="intro-set" value="${esc(o.name)}" autocomplete="off" maxlength="20"></label>
         <label>Name (romaji) <input class="search" id="i-namero" data-change="intro-set" value="${esc(o.nameRo)}" autocomplete="off" maxlength="30"></label>
         <label>Country ${sel('i-country', COUNTRIES.map(c => `${c[3]} · ${c[0]}`), o.country)}</label>
-        <label>Style ${sel('i-style', ['😊 Friendly (neighbours, friends)', '👔 Office (first day, clients)'], o.style === 'office' ? 1 : 0)}</label>
-        <label>Job ${sel('i-job', JOBS.map(j => `${j[5]} ${j[3]}`), o.job)}</label>
-        <label>Hobby ${sel('i-hobby', HOBBIES.map(h => `${h[5]} ${h[3]}`), o.hobby)}</label>
+        <label>Style ${sel('i-style', ['Friendly (neighbours, friends)', 'Office (first day, clients)'], o.style === 'office' ? 1 : 0)}</label>
+        <label>Job ${sel('i-job', JOBS.map(j => j[3]), o.job)}</label>
+        <label>Hobby ${sel('i-hobby', HOBBIES.map(h => h[3]), o.hobby)}</label>
         <label>Years in Japan ${sel('i-years', YEARS.map(y => y[0]), o.years)}</label>
       </div>
-      <button class="btn primary big" data-act="intro-play">▶ Listen to the whole thing</button>
+      <button class="btn primary big" data-act="intro-play">${icon('start')} Listen to the whole thing</button>
       <ol class="intro-lines">${lines.map((l, i) => `<li>
         <div class="il-main" data-act="say-text" data-arg="${esc(l[0])}">${line(l)}<div class="en">${esc(l[3])}</div>${hg(l[4])}</div>
-        ${ctx.canListen() ? `<button class="btn mic small" id="mic-${i}" data-act="intro-mic" data-arg="${i}">🎤</button>` : ''}
+        ${ctx.canListen() ? `<button class="btn mic small" id="mic-${i}" data-act="intro-mic" data-arg="${i}" aria-label="Speak">${icon('speak')}</button>` : ''}
         <div class="result" id="res-${i}"></div>
       </li>`).join('')}</ol>`);
   }
@@ -180,11 +179,11 @@ export function initSpeaking(ctx) {
   function sentenceCard() {
     const { p, line } = currentSentence();
     return `${line_(line)}<div class="en">${esc(line[3])}</div>${hg(line[4])}
-      ${p.tip ? `<div class="note">💡 ${esc(p.tip)}</div>` : ''}
+      ${p.tip ? `<div class="note">${icon('tip')} ${esc(p.tip)}</div>` : ''}
       <div class="row center">
-        <button class="btn icon" data-act="say-text" data-arg="${esc(line[0])}">🔊</button>
-        <button class="btn icon" data-act="builder-slow">🐢</button>
-        <button class="btn icon" data-act="builder-random" aria-label="Random example">🎲</button>
+        <button class="btn icon" data-act="say-text" data-arg="${esc(line[0])}" aria-label="Play">${icon('play')}</button>
+        <button class="btn icon" data-act="builder-slow" aria-label="Play slowly">${icon('slow')}</button>
+        <button class="btn icon" data-act="builder-random" aria-label="Random example">${icon('random')}</button>
       </div>
       <div id="bresult" class="result"></div>`;
   }
@@ -199,7 +198,7 @@ export function initSpeaking(ctx) {
         return `${head}<option value="${o.key}" ${o.key === cur ? 'selected' : ''}>${esc(o.it[3])} · ${esc(o.it[0])}</option>`; }).join('') + '</optgroup>';
     };
     render(`
-      <div class="head">${back('speak-tab')}<h1>🧩 Sentence builder</h1></div>
+      <div class="head">${back('speak-tab')}<h1>${icon('builder')} Sentence builder</h1></div>
       <p class="muted">Choose a pattern, then fill in the blanks. You can also type a tool name your team uses.${S().settings.hindi ? ' Pattern chuno, blanks bharo, aur bolke practice karo.' : ''}</p>
       <div class="card left form">
         <label>Pattern <select id="b-p" data-change="builder-set">${PATTERNS.map(x => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${esc(x.en.replace('{X}', 'X').replace('{Y}', 'Y'))}</option>`).join('')}</select></label>
@@ -208,8 +207,8 @@ export function initSpeaking(ctx) {
         ${p.y ? `<label>Y <select id="b-y" data-change="builder-set">${selOpts(p.y, b.y)}</select></label>` : ''}
       </div>
       <div class="card" id="bcard">${sentenceCard()}</div>
-      <div class="actions">${micBtn('builder-mic', '', '🎤 Say it')}</div>
-      <details class="fold"><summary>📋 All ${PATTERNS.length} patterns</summary>
+      <div class="actions">${micBtn('builder-mic', '', icon('speak') + ' Say it')}</div>
+      <details class="fold"><summary>${icon('about')} All ${PATTERNS.length} patterns</summary>
         <ul class="phrases">${PATTERNS.map(x => `<li class="ex" data-act="builder-pattern" data-arg="${x.id}"><div class="jp" lang="ja">${esc(x.jp.replaceAll('{X}', 'Ｘ').replaceAll('{Y}', 'Ｙ'))}</div>
           <div class="en">${esc(x.en.replace('{X}', 'X').replace('{Y}', 'Y'))}</div></li>`).join('')}</ul></details>`);
   }
@@ -238,8 +237,8 @@ export function initSpeaking(ctx) {
   function sounds() {
     ctx.clearSess(); st = { kind: 'sounds' };
     render(`
-      <div class="head">${back('speak-tab')}<h1>👄 Pronunciation</h1></div>
-      <div class="intro">Tap a picture to hear the word, and say it back. Press <b>🎤</b> and say one word, and the app tells you which one it heard.${hg('Picture dabao, suno, aur khud bolke dekho.', 'hi intro-hg')}</div>
+      <div class="head">${back('speak-tab')}<h1>${icon('sounds')} Pronunciation</h1></div>
+      <div class="intro">Tap a picture to hear the word, and say it back. Press ${icon('speak')} and say one word, and the app tells you which one it heard.${hg('Picture dabao, suno, aur khud bolke dekho.', 'hi intro-hg')}</div>
       ${PRONUNCIATION.map((g, gi) => `
         <h2 class="sec">${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
         <p class="muted small">${esc(g.tip)}</p>
@@ -247,7 +246,7 @@ export function initSpeaking(ctx) {
           ${pair.map((w, wi) => `<button class="ptile" data-act="sound-tap" data-arg="${gi}.${pi}.${wi}">
             <span class="pic">${w[4]}</span><b lang="ja">${w[0]}</b><small>${esc(w[1])} · ${esc(w[2])}${S().settings.hindi ? ` · ${esc(w[3])}` : ''}</small></button>`).join('')}
           <div class="pair-actions">
-            ${ctx.canListen() ? `<button class="btn small mic" id="smic-${gi}-${pi}" data-act="sound-mic" data-arg="${gi}.${pi}">🎤</button>` : ''}
+            ${ctx.canListen() ? `<button class="btn small mic" id="smic-${gi}-${pi}" data-act="sound-mic" data-arg="${gi}.${pi}" aria-label="Speak">${icon('speak')}</button>` : ''}
           </div>
           <div class="result" id="sres-${gi}-${pi}"></div>
         </div>`).join('')}`).join('')}
@@ -278,7 +277,7 @@ export function initSpeaking(ctx) {
         : `<div class="score retry">I heard “${esc(heard[0])}”. Try again, slowly.</div>`;
     } catch (e) {
       res.innerHTML = `<span class="muted">Couldn’t listen (${esc(e.message)}).</span>`;
-    } finally { mic.classList.remove('on'); mic.textContent = '🎤'; }
+    } finally { mic.classList.remove('on'); mic.innerHTML = icon('speak'); }
   }
 
   const actions = {

@@ -2,7 +2,7 @@
 import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u1', n: 1, icon: '🙋', title: 'I am John.', jp: '私はジョンです。', ro: 'Watashi wa Jon desu.',
+  id: 'u1', n: 1, title: 'I am John.', jp: '私はジョンです。', ro: 'Watashi wa Jon desu.',
   topic: 'Introducing yourself', topicJp: '自己紹介',
   goals: ['Provide a simple self-introduction', 'Ask a person you just met for their name and occupation', 'Have a conversation about hobbies and interests'],
   sections: [

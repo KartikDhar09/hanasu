@@ -45,28 +45,28 @@ export function initJlpt(ctx) {
 
   // ---- Study path: the order to work through each level ----
   const examSteps = lv => [
-    ['📖', 'Reading practice', 'Notes, emails and notices.', 'ex-reading'],
-    ['🎧', 'Listening practice', 'Conversations with picture answers.', 'ex-listening'],
-    ['🏁', 'Mock test', `Aim for ${EXAMS[lv].pass.total}+/180 with every section above the minimum.`, 'ex-mock'],
+    ['Reading practice', 'Notes, emails and notices.', 'ex-reading'],
+    ['Listening practice', 'Conversations with picture answers.', 'ex-listening'],
+    ['Mock test', `Aim for ${EXAMS[lv].pass.total}+/180 with every section above the minimum.`, 'ex-mock'],
   ];
 
   function path(lv) {
     if (lv === 'n5') return [
-      ['あ', 'Hiragana & katakana', 'Read every kana out loud until none makes you stop.', 'kana'],
-      ['💬', 'Everyday N5 phrases', 'Work through the Everyday N5 track.', 'home'],
-      ['の', 'Particles', 'Open each particle and say its examples aloud.', 'particles'],
-      ['🏃', 'Verbs & forms', 'Conjugation tables: say each form aloud.', 'verbs'],
-      ['漢', 'N5 kanji', `All ${KANJI_N5.length} kanji with flashcards.`, 'kanji'],
-      ['🍙', 'N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words with flashcards.`, 'jlpt-vocab'],
-      ['📘', 'N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns with examples to say aloud.`, 'jlpt-grammar'],
+      ['Hiragana & katakana', 'Read every kana out loud until none makes you stop.', 'kana'],
+      ['Everyday N5 phrases', 'Work through the Everyday N5 track.', 'home'],
+      ['Particles', 'Open each particle and say its examples aloud.', 'particles'],
+      ['Verbs & forms', 'Conjugation tables: say each form aloud.', 'verbs'],
+      ['N5 kanji', `All ${KANJI_N5.length} kanji with flashcards.`, 'kanji'],
+      ['N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words with flashcards.`, 'jlpt-vocab'],
+      ['N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns with examples to say aloud.`, 'jlpt-grammar'],
       ...examSteps('n5'),
     ];
     return [
-      ['5', 'N5 first', 'N4 includes everything in N5.', 'jlpt-n5'],
-      ['🏢', 'Office & corporate phrases', 'Work through the Office and Corporate tracks.', 'home'],
-      ['漢', 'N4 kanji', `${KANJI_N4.length} more kanji.`, 'kanji-n4'],
-      ['💼', 'N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, 'jlpt-vocab'],
-      ['📗', 'N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns with examples to say aloud.`, 'jlpt-grammar'],
+      ['N5 first', 'N4 includes everything in N5.', 'jlpt-n5'],
+      ['Office & corporate phrases', 'Work through the Office and Corporate tracks.', 'home'],
+      ['N4 kanji', `${KANJI_N4.length} more kanji.`, 'kanji-n4'],
+      ['N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, 'jlpt-vocab'],
+      ['N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns with examples to say aloud.`, 'jlpt-grammar'],
       ...examSteps('n4'),
     ];
   }
@@ -82,14 +82,14 @@ export function initJlpt(ctx) {
       <div class="card left">
         <b>${ex.title} · ${ex.level}</b>${hg(ex.hg)}
         <p>${esc(ex.can)}</p>${hg(ex.canHg)}
-        <div class="note">📚 You need: ${esc(ex.need)}</div>
+        <div class="note">${icon('need')} You need: ${esc(ex.need)}</div>
       </div>
       <h2 class="sec">Your path to ${ex.title}</h2>
-      <ol class="path">${steps.map(s => `<li><button data-act="${s[3]}" data-arg="${['jlpt-grammar', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[3]) ? lv : ''}">
-          <span class="pico" lang="ja">${s[0]}</span>
-          <span class="ptext"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span>
+      <ol class="path">${steps.map((s, n) => `<li><button data-act="${s[2]}" data-arg="${['jlpt-grammar', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[2]) ? lv : ''}">
+          <span class="pico">${n + 1}</span>
+          <span class="ptext"><b>${esc(s[0])}</b><small>${esc(s[1])}</small></span>
           <span class="count">›</span></button></li>`).join('')}</ol>
-      <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">🏁 Take a ${ex.title} mock test</button>
+      <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">${icon('mock')} Take a ${ex.title} mock test</button>
       <h2 class="sec">Practise like the exam</h2>
       <div class="speak-grid">
         <button class="scard" data-act="ex-reading" data-arg="${lv}">${icon('reading')}<b>Reading</b><small>${READING.filter(r => r.level === lv).length} real-life passages with questions</small></button>
@@ -99,7 +99,7 @@ export function initJlpt(ctx) {
         <button class="scard" data-act="jlpt-vocab" data-arg="life">${icon('work')}<b>Life &amp; work words</b><small>${WORDS.filter(w => w.level === 'life').length} everyday and office words beyond the JLPT</small></button>
         <button class="scard" data-act="kana"><span lang="ja">あア</span><b>Kana charts</b><small>Hiragana & katakana with sound</small></button>
       </div>
-      <details class="fold"><summary>📋 About the exam: sections, times, pass marks</summary>
+      <details class="fold"><summary>${icon('about')} About the exam: sections, times, pass marks</summary>
       <div class="exam">${ex.sections.map(sec => `<div class="exrow"><b>${esc(sec.name)}</b><span class="pill">${sec.min} min</span><small>${esc(sec.parts)}</small></div>`).join('')}</div>
       <div class="card left passbox">
         <b>To pass ${ex.title}</b>
@@ -107,11 +107,11 @@ export function initJlpt(ctx) {
         ${ex.pass.sections.map(([n, min, max]) => `<div class="passbar small"><span>${esc(n)}: at least ${min} / ${max}</span><div class="pb"><i style="width:${100 * min / max}%"></i></div></div>`).join('')}
       </div>
       </details>
-      <details class="fold"><summary>❓ Question types</summary>
+      <details class="fold"><summary>${icon('help')} Question types</summary>
       <ul class="phrases">${QUESTION_TYPES.map(q => `<li><b lang="ja">${q[0]}</b> · ${esc(q[1])}<div class="muted small">${esc(q[2])}</div></li>`).join('')}</ul>
       </details>
-      <details class="fold"><summary>💡 Exam tips</summary>
-      <ul class="tips">${EXAM_TIPS.map(t => `<li>${t[0]} ${esc(t[1])}${hg(t[2])}</li>`).join('')}</ul></details>`);
+      <details class="fold"><summary>${icon('tip')} Exam tips</summary>
+      <ul class="tips">${EXAM_TIPS.map(t => `<li>${esc(t[0])}${hg(t[1])}</li>`).join('')}</ul></details>`);
   }
 
   // ================= Kana =================
@@ -127,7 +127,7 @@ export function initJlpt(ctx) {
       <h2 class="sec">Basic</h2><div class="kchart">${KANA_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
       <h2 class="sec">With ゛ and ゜ <small class="muted">voiced sounds</small></h2><div class="kchart">${DAKUTEN_ROWS.map(r => r.split('').map(cell).join('')).join('')}</div>
       <h2 class="sec">Combinations</h2><div class="kchart three">${COMBO_ROWS.map(r => combos(r).map(cell).join('')).join('')}</div>
-      ${script === 'kata' ? '<div class="note">💡 ー makes a vowel long: コーヒー = kōhī. Small ッ doubles the next sound: ベッド = beddo.</div>' : '<div class="note">💡 Small っ doubles the next sound: きって = kitte. は and へ are read “wa” and “e” when they’re particles.</div>'}`);
+      ${script === 'kata' ? `<div class="note">${icon('tip')} ー makes a vowel long: コーヒー = kōhī. Small ッ doubles the next sound: ベッド = beddo.</div>` : `<div class="note">${icon('tip')} Small っ doubles the next sound: きって = kitte. は and へ are read “wa” and “e” when they’re particles.</div>`}`);
   }
 
   // ================= Grammar points =================
@@ -201,14 +201,14 @@ export function initJlpt(ctx) {
       <div class="head">${back(lv === 'life' ? 'home' : 'jlpt')}<h1>${esc(VLABEL[lv])} vocabulary</h1></div>
       <div class="seg">${VLEVELS.map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-vocab" data-arg="${l}">${esc(VLABEL[l])}</button>`).join('')}</div>
       ${lv === 'life' ? '<p class="muted">Everyday words for living and working in Japan that the JLPT lists leave out: the office, keigo on email and phone, contracts and pay, city hall, banking, housing, rubbish days, the clinic, commuting and disasters. Words already taught in N5/N4 are not repeated here.</p>' : ''}
-      <div class="row"><button class="btn primary" data-act="vlearn" data-arg="${lv}">🃏 Flashcards</button></div>
-      <input class="search" type="search" id="vsearch" data-input="vocab-search" data-arg="${lv}" placeholder="🔍 Search ${ws.length} words (日本語, romaji, English, Hinglish)" aria-label="Search words" value="${esc(st?.q || '')}" autocomplete="off">
+      <div class="row"><button class="btn primary" data-act="vlearn" data-arg="${lv}">${icon('learn')} Flashcards</button></div>
+      <input class="search" type="search" id="vsearch" data-input="vocab-search" data-arg="${lv}" placeholder="Search ${ws.length} words (日本語, romaji, English, Hinglish)" aria-label="Search words" value="${esc(st?.q || '')}" autocomplete="off">
       <div id="vresults"></div>
       <div id="vtopics">${VOCAB.filter(t => t.level === lv).map((t, i) => `
-        <details class="fold" ${i === 0 ? 'open' : ''}><summary><span class="sum-title">${t.icon} ${esc(t.title)}${S().settings.hindi ? `<small class="muted" lang="hi-Latn">${esc(t.hg)}</small>` : ''}</span>
+        <details class="fold" ${i === 0 ? 'open' : ''}><summary><span class="sum-title">${esc(t.title)}${S().settings.hindi ? `<small class="muted" lang="hi-Latn">${esc(t.hg)}</small>` : ''}</span>
           <span class="count">${t.words.length}</span></summary>
           <div class="wgrid" data-topic="${t.id}">${i === 0 ? topicCards(t.id) : ''}</div>
-          <button class="btn small ghost" data-act="vlearn" data-arg="${t.id}">🃏 Learn this topic</button>
+          <button class="btn small ghost" data-act="vlearn" data-arg="${t.id}">${icon('learn')} Learn this topic</button>
         </details>`).join('')}</div>`);
   }
 
@@ -223,7 +223,7 @@ export function initJlpt(ctx) {
     if (w) { prefetchClip(sayable(w.jp, w.kana)); const nx = st.queue[st.i + 1]; if (nx) prefetchClip(sayable(nx.jp, nx.kana)); }
     if (!w) {
       const lv = st.lv; st = null;
-      return render(`<div class="done"><div class="big-emoji">🖼️</div><h1>Words practised</h1><button class="btn primary big" data-act="jlpt-vocab" data-arg="${lv}">Back</button></div>`);
+      return render(`<div class="done"><div class="big-emoji">${icon('finish')}</div><h1>Words practised</h1><button class="btn primary big" data-act="jlpt-vocab" data-arg="${lv}">Back</button></div>`);
     }
     st.revealed = false;
     render(`

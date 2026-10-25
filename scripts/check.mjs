@@ -269,6 +269,7 @@ const WAYS_ALL = await (await import('../js/ways.js')).allWays();
 const strokeMod = await import('./strokes.mjs');
 const readingsMod = await import('../js/kanji-readings.js');
 const test = (name, fn) => { try { fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
+const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 test('no third-party requests (fonts are self-hosted)', () => {
   for (const f of ['index.html', 'login.html', 'css/app.css', 'sw.js', 'vercel.json']) assert.ok(!/googleapis|gstatic|https?:\/\/(?!rsms\.me)[a-z]/.test(readFileSync(f, 'utf8').replace(/https:\/\/(www\.)?w3\.org[^"' ]*/g, '')), `${f} references another origin`);
 });
@@ -286,9 +287,11 @@ test('nothing but display settings and path levels is stored', () => {
     assert.ok(!/practised\(|bumpStreak|quizBest|kanjiProgress|vocabProgress|readBest|listenDone|S\(\)\.(progress|spoken|mocks|intro|builder|jlptLevel)/.test(src), `${f} still tracks the learner`);
   }
   const app = readFileSync('js/app.js', 'utf8');
-  // Saved: display settings and one level number per path (the user's choice, 2026-10-18). Nothing else.
+  // Saved: display settings and which levels of each path are complete (the user's choice, 2026-10-18; a list of
+  // level numbers since v6.0). Nothing else.
   assert.match(app, /JSON\.stringify\(\{ settings: state\.settings, path: state\.path \}\)/);
-  assert.match(app, /s\.path = Object\.fromEntries\(PATH_IDS\.map\(p => \[p, Math\.round\(num\(/, 'path levels are sanitised to numbers');
+  assert.match(app, /s\.path = Object\.fromEntries\(PATH_IDS\.map\(p => \[p, levelList\(s\.path\?\.\[p\]\)\]\)\)/, 'path levels are sanitised');
+  assert.match(app, /Number\.isInteger\(x\) && x >= 0 && x < 99/, 'only whole level numbers in range are kept');
 });
 const clipsMod = await import('../js/clips.js');
 const spoken = await (await import('./audio-texts.mjs')).audioTexts();
@@ -605,7 +608,7 @@ test('mock scoring matches JLPT pass rules', () => {
   });
 }
 
-// ---------- Paths: levels, coverage, level tests ----------
+// ---------- Paths: levels and coverage (no level tests since v6.0) ----------
 const PATHMOD = await import('../js/path.js');
 {
   const KG = (await import('../js/kanji-data.js')).ALL_KANJI_GROUPS;
@@ -647,49 +650,8 @@ const PATHMOD = await import('../js/path.js');
       for (const m of l.missions || []) if (!m.trim()) fail(`${at}: empty mission`);
       for (const d of l.drill || []) if (d.length !== 3 || !LATIN.test(d[1]) || !JP.test(d[2])) fail(`${at}: drill topic needs [English, Hinglish, Japanese hints]`);
       for (const n of l.study?.qa || []) if (!QA_LIST[n]) fail(`${at}: no QA ${n}`); else if (seen.qa.has(n)) fail(`${at}: QA ${n} already in ${seen.qa.get(n)}`); else seen.qa.set(n, l.id);
-      const T = l.test;
-      if (T.mock) { if (!['n5', 'n4'].includes(T.mock)) fail(`${at}: bad mock`); continue; }
-      if (T.speak) {
-        const items = PATHMOD.parseSpeak(T.speak);
-        if (items.length < 10) fail(`${at}: speaking test needs 10+ items`);
-        const taught = new Set(P.levels.slice(0, P.levels.indexOf(l) + 1).flatMap(x => x.study?.units || []));
-        items.forEach((x, n) => {
-          const w = `${at} speak ${n + 1} (${x.t})`;
-          if (x.bad) return fail(`${w}: unknown item: ${x.bad}`);
-          if (x.t === 'u') {
-            const c = CARDS.find(c => c.id === x.card);
-            if (!c) return fail(`${w}: no phrase ${x.card}`);
-            if (!taught.has(c.unit)) fail(`${w}: ${x.card} is from a unit not taught by this level`);
-            if (/\{name\}/.test(c.jp)) fail(`${w}: ${x.card} contains the learner's name, which the mic can't match`);
-          } else {
-            if (!JP.test(x.jp) || !KANA.test(x.kana.replace(/[〜～…]/g, '')) || !x.ro || !x.en) fail(`${w}: needs jp, kana, romaji, English`);
-            for (const a of x.alts || []) if (!JP.test(a)) fail(`${w}: alternative "${a}" isn't Japanese`);
-          }
-          if (x.t !== 'a' && (!x.say || !NOJP.test(x.say.replace(/“[^”]*”/g, '')))) fail(`${w}: situation must be in English`);
-        });
-        continue;
-      }
-      if (!(T.pass >= 60 && T.pass <= 100)) fail(`${at}: pass mark`);
-      const qs = PATHMOD.parseQs(T.qs);
-      if ((T.n || 0) + qs.length < 15) fail(`${at}: level test needs 15+ questions`);
-      if (T.kana && !['hira', 'kata'].includes(T.kana)) fail(`${at}: kana must be hira or kata`);
-      qs.forEach((q, i) => {
-        const w = `${at} q${i + 1} (${q.t})`;
-        if (q.bad) return fail(`${w}: unknown question type: ${q.bad}`);
-        if (!q.right || q.wrong.length !== 3) return fail(`${w}: needs a right answer and exactly 3 wrong ones`);
-        const opts = [q.right, ...q.wrong];
-        if (new Set(opts).size !== 4 || opts.some(o => !o.trim())) fail(`${w}: options must be 4 different, non-empty`);
-        if (q.t === 'g') {
-          if ((q.jp.match(/\[/g) || []).length !== 1 || (q.kana.match(/\[/g) || []).length !== 1) fail(`${w}: mark the answer once in both lines`);
-          if (!KANA.test(q.kana.replace(/[A-Za-zＡ-Ｚ０-９]/g, ''))) fail(`${w}: kana line has kanji: ${q.kana}`);
-          if (!NOJP.test(q.en)) fail(`${w}: English has Japanese`);
-        }
-        if (q.t === 'r' && !opts.every(o => KANA.test(o))) fail(`${w}: readings must be kana`);
-        if ((q.t === 'm' || q.t === 'l') && !opts.every(o => NOJP.test(o))) fail(`${w}: meanings must be English`);
-        if ((q.t === 'w' || q.t === 'p') && !opts.every(o => JP.test(o))) fail(`${w}: options must be Japanese`);
-        if (q.t === 'w' && !NOJP.test(q.en)) fail(`${w}: English has Japanese`);
-        if (['g', 'r', 'm', 'l'].includes(q.t) && !JP.test(q.jp)) fail(`${w}: no Japanese`);
-      });
+      if ('test' in l) fail(`${at}: level tests were removed in v6.0; levels are marked complete by hand`);
+      if (l.mock && !['n5', 'n4'].includes(l.mock)) fail(`${at}: bad mock`);
     }
     if (pid === 'jlpt') {
       const need = { particles: PARTICLES.map(x => x.id), grammar: J.GRAMMAR.map(g => g.id), kanji: KG.map(g => g.id),
@@ -698,51 +660,47 @@ const PATHMOD = await import('../js/path.js');
         const missing = ids.filter(id => !seen[kind].has(id));
         if (missing.length) fail(`path jlpt: ${missing.length} ${kind} not in any level: ${missing.slice(0, 8).join(', ')}`);
       }
-      for (const lv of ['n5', 'n4']) if (!P.levels.some(l => l.test.mock === lv)) fail(`path jlpt: no level ends with the ${lv} mock`);
+      for (const lv of ['n5', 'n4']) if (!P.levels.some(l => l.mock === lv)) fail(`path jlpt: no level points to the ${lv} mock`);
     }
     if (pid === 'talk') {
       const missingU = UI.map(u => u.id).filter(id => !seen.units.has(id));
       if (missingU.length) fail(`path talk: units not in any level: ${missingU.join(', ')}`);
       const missingQ = QA_LIST.map((_, n) => n).filter(n => !seen.qa.has(n));
       if (missingQ.length) fail(`path talk: Q&A questions not in any level: ${missingQ.join(', ')}`);
-      if (!P.levels.every(l => l.test.speak)) fail('path talk: every level needs a speaking test');
     }
   }
 }
 
-test('speaking-path tests: each target and its alternatives pass the mic check; no item accepts another item’s answer', () => {
-  core.useReadings(readingsMod.READINGS);
-  const P = { name: 'スミス', nameRo: 'Sumisu', country: 'インド', countryKana: 'インド', countryRo: 'Indo', countryEn: 'India', countryHi: 'Bharat' };
-  const f = t => core.fill(t, P);
-  for (const l of PATHMOD.PATHS.talk.levels) {
-    const items = PATHMOD.parseSpeak(l.test.speak).map(x => {
-      if (x.t !== 'u') return { ...x, alts: (x.alts || []).map(a => [a]) };
-      const c = CARDS.find(c => c.id === x.card), w = WAYS_ALL.get(x.card);
-      const alts = w ? [...(w.biz && w.biz !== 'same' ? [w.biz] : []), ...w.alt].map(a => [f(a.jp), f(a.kana)]) : [];
-      return { ...x, jp: f(c.jp), kana: f(c.kana), alts: [...(c.casual ? [[f(c.casual.jp), f(c.casual.kana)]] : []), ...alts] };
-    });
-    for (const q of items) {
-      const sc = h => core.matchScore([h], q.jp, q.kana, q.alts.flat());
-      for (const h of [q.jp, q.kana, ...q.alts.map(a => a[0])]) assert.ok(sc(h) >= core.PASS, `${l.id}: “${h}” should pass for ${q.jp}`);
-      for (const o of items) if (o !== q) assert.ok(sc(o.jp) < core.PASS, `${l.id}: ${q.jp} also accepts ${o.jp}`);
-    }
-  }
+test('no tests are left but the full mocks: no quiz screens or level tests in the app', () => {
+  const gone = /data-act="(quiz|gquiz|order|kana-quiz|vocab-quiz|pquiz|vquiz|kquiz|cquiz|sound-test|path-test|path-speak)"/;
+  for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) assert.ok(!gone.test(read('js/' + f)), `js/${f} still offers a quiz or test`);
+  const exam = read('js/exam.js');
+  assert.match(exam, /if \(s\.passed && full\) ctx\.mockPassed\(lv\)/, 'exam.js reports a passed full mock (for the board)');
+  assert.match(exam, /full = st\.mode !== 'quick'/, 'quick mocks never count');
 });
 
-test('passing a full mock completes that exam level in the JLPT path (and only moves forward)', () => {
-  const levels = { jlpt: 2 }, calls = [];
-  const mod = PATHMOD.initPath({ S: () => ({ settings: {} }), esc: x => x, render() {}, speak() {}, shuffle: a => a, bar: () => '', back: () => '',
-    go() {}, clearSess() {}, run() {}, canListen: () => false, level: p => levels[p] || 0,
-    setLevel: (p, n) => { calls.push([p, n]); if (n > (levels[p] || 0)) levels[p] = n; } });
-  mod.mockPassed('n5');
-  const n5 = PATHMOD.PATHS.jlpt.levels.findIndex(l => l.test.mock === 'n5');
-  assert.deepEqual(calls, [['jlpt', n5 + 1]]);
-  assert.equal(levels.jlpt, n5 + 1);
-  mod.mockPassed('n4');
-  assert.equal(levels.jlpt, PATHMOD.PATHS.jlpt.levels.length, 'passing the N4 mock completes the path');
-  const exam = readFileSync('js/exam.js', 'utf8');
-  assert.match(exam, /if \(s\.passed && full\) ctx\.mockPassed\(lv\)/, 'exam.js reports a passed full mock');
-  assert.match(exam, /full = st\.mode !== 'quick'/, 'quick mocks never count');
+await atest('a level is marked complete by hand, in any order, and can be undone', async () => {
+  const done = { jlpt: new Set([0]) }, calls = [];
+  let html = '';
+  globalThis.location = { hash: '#path/jlpt/j3' };
+  globalThis.document = { getElementById: () => ({ disabled: false, set outerHTML(v) { html = v; } }) };
+  const mod = PATHMOD.initPath({ S: () => ({ settings: {} }), esc: x => x, render: h => { html = h; }, back: () => '',
+    go() {}, clearSess() {}, run() {}, done: p => done[p] || new Set(),
+    markLevel: async (p, i, on) => { calls.push([p, i, on]); if (on) done[p].add(i); else done[p].delete(i); return true; },
+    resetPath: async () => true });
+  mod.route('path/jlpt/j3');
+  assert.match(html, /Mark level complete/, 'an unticked level, even one ahead of the current, offers the button');
+  assert.ok(!/level test|speaking test/i.test(html), 'no level test on the page');
+  await mod.actions['path-complete']('jlpt.j3.1');
+  assert.deepEqual(calls, [['jlpt', 2, true]]);
+  assert.match(html, /Complete · tap to undo/);
+  await mod.actions['path-complete']('jlpt.j3.0');
+  assert.deepEqual(calls.at(-1), ['jlpt', 2, false]);
+  mod.actions['path-complete']('evil.j3.1'); mod.actions['path-complete']('jlpt.nope.1');
+  assert.equal(calls.length, 2, 'unknown paths and levels are ignored');
+  mod.route('path/jlpt/j8');
+  assert.match(html, /data-act="ex-mock" data-arg="n5"/, 'the N5 exam level links to the full mock');
+  delete globalThis.location; delete globalThis.document;
 });
 
 const SEARCH = await import('../js/search.js');
@@ -766,7 +724,6 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
 });
 
 // 7. Login wall (middleware.js, api/). Runs the real code against an in-memory database, so no Upstash is needed.
-const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "${name}": ${e.message}`); } };
 {
   const session = await import('../api/_session.js');
   const { memoryStore, useStore } = await import('../api/_store.js');
@@ -953,20 +910,32 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
     assert.deepEqual(board.MAX, { jlpt: PATH_JLPT.length, talk: PATH_TALK.length }, 'update MAX in api/board.js');
   });
 
-  test('merge: levels only go up, reset is explicit, junk is ignored', () => {
-    const now = new Date('2026-10-21T10:00:00Z');
-    const first = board.merge(null, { path: { jlpt: 2, talk: 0 } }, now);
-    assert.deepEqual(first.next, { jlpt: 2, talk: 0, mocks: {}, book: [] });
+  test('merge: levels are ticked and unticked one at a time, old records carry over, junk is ignored', () => {
+    const now = new Date('2026-10-25T09:00:00Z');
+    // A new account starts from what the device had: a pre-v6.0 level number (3 = levels 1–3) or a list.
+    const first = board.merge(null, { path: { jlpt: 3, talk: [1, 1, 0] } }, now);
+    assert.deepEqual(first.next.done, { jlpt: [0, 1, 2], talk: [0, 1] });
+    assert.deepEqual(first.events.map(e => e.kind), ['joined']);
     // Last seen was removed from the board: an old record's `active` is dropped, not kept or refreshed.
     assert.ok(!('active' in board.merge({ ...first.next, active: '2026-10-01T00:00:00Z' }, {}, now).next), 'no last-seen time is stored');
-    assert.deepEqual(first.events.map(e => e.kind), ['joined', 'level']);
-    assert.deepEqual(board.merge(first.next, { path: { jlpt: 1, talk: 0 } }, now).next.jlpt, 2, 'an older device cannot lower the level');
-    assert.deepEqual(board.merge(first.next, { path: { jlpt: 1 } }, now).events, [], 'nothing new: no events');
-    const reset = board.merge(first.next, { path: { jlpt: 0 }, reset: 'jlpt' }, now);
-    assert.equal(reset.next.jlpt, 0);
-    assert.equal(reset.events[0].kind, 'reset');
-    for (const junk of [99, -1, 2.5, '7', null, { x: 1 }]) assert.equal(board.merge(null, { path: { jlpt: junk } }, now).next.jlpt, 0, `ignores ${JSON.stringify(junk)}`);
-    assert.equal(board.merge(null, { path: { jlpt: 13 } }, now).next.jlpt, 13, 'the last level is allowed');
+    // A record saved before v6.0 ({jlpt: 2}) becomes a list, and the old fields are dropped.
+    const old = board.merge({ jlpt: 2, talk: 0, mocks: {}, book: [] }, {}, now).next;
+    assert.deepEqual(old.done, { jlpt: [0, 1], talk: [] }); assert.ok(!('jlpt' in old) && !('talk' in old));
+    // After the first sync the device's list is never merged in: an old offline copy can't undo or redo anything.
+    assert.deepEqual(board.merge(first.next, { path: { jlpt: [], talk: [5, 6, 7] } }, now).next.done, first.next.done);
+    const tick = board.merge(first.next, { level: { path: 'jlpt', i: 9, done: true } }, now);
+    assert.deepEqual(tick.next.done.jlpt, [0, 1, 2, 9], 'any level, in any order');
+    assert.deepEqual(tick.events.map(e => [e.kind, e.path, e.i]), [['done', 'jlpt', 9]]);
+    assert.deepEqual(board.merge(tick.next, { level: { path: 'jlpt', i: 9, done: true } }, now).events, [], 'a level counts once');
+    const untick = board.merge(tick.next, { level: { path: 'jlpt', i: 1, done: false } }, now);
+    assert.deepEqual(untick.next.done.jlpt, [0, 2, 9]); assert.deepEqual(untick.events, [], 'un-ticking is quiet');
+    const reset = board.merge(tick.next, { reset: 'jlpt' }, now);
+    assert.deepEqual(reset.next.done.jlpt, []); assert.deepEqual(reset.events.map(e => e.kind), ['reset']);
+    for (const junk of [13, -1, 2.5, '7', null, { x: 1 }]) assert.deepEqual(board.merge(first.next, { level: { path: 'jlpt', i: junk, done: true } }, now).next.done.jlpt, [0, 1, 2], `ignores level ${JSON.stringify(junk)}`);
+    assert.deepEqual(board.merge(first.next, { level: { path: 'jlpt', i: 12, done: true } }, now).next.done.jlpt, [0, 1, 2, 12], 'the last level is allowed');
+    assert.deepEqual(board.merge(first.next, { level: { path: 'evil', i: 1, done: true } }, now).events, [], 'unknown path ignored');
+    assert.deepEqual(board.merge(first.next, { level: { path: 'jlpt', i: 5, done: 'yes' } }, now).next.done.jlpt, [0, 1, 2], 'done must be true or false');
+    assert.deepEqual(board.merge(null, { path: { jlpt: [99, -1, 'x', 2] } }, now).next.done.jlpt, [2], 'a junk starting list is cleaned');
     const mock = board.merge(first.next, { mock: 'n5' }, now);
     assert.equal(mock.next.mocks.n5, now.toISOString());
     assert.deepEqual(board.merge(mock.next, { mock: 'n5' }, now).events, [], 'a mock counts once');
@@ -984,20 +953,23 @@ const atest = async (name, fn) => { try { await fn(); } catch (e) { fail(`test "
   await atest('board API: logged-in only, sync, board view, feed', async () => {
     assert.equal((await call(null)).status, 401, 'no cookie, no board');
     const r1 = await call('kartik', { path: { jlpt: 3, talk: 1 } });
-    assert.deepEqual(await r1.json(), { path: { jlpt: 3, talk: 1 }, book: [] });
-    await call('ravi', { path: { jlpt: 0, talk: 0 } });
-    await call('ravi', { path: { jlpt: 1, talk: 0 }, mock: 'n5' });
-    const r2 = await call('kartik', { path: { jlpt: 1, talk: 0 } });
-    assert.deepEqual(await r2.json(), { path: { jlpt: 3, talk: 1 }, book: [] }, 'a second device catches up to the account');
+    assert.deepEqual(await r1.json(), { done: { jlpt: [0, 1, 2], talk: [0] }, book: [] });
+    await call('ravi', { path: { jlpt: [], talk: [] } });
+    await call('ravi', { level: { path: 'jlpt', i: 4, done: true }, mock: 'n5' });
+    const r2 = await call('kartik', { path: { jlpt: [], talk: [] } });
+    assert.deepEqual(await r2.json(), { done: { jlpt: [0, 1, 2], talk: [0] }, book: [] }, 'a second device takes the account’s levels');
     const view = await (await call('ravi')).json();
     assert.deepEqual(view.max, board.MAX);
     const k = view.people.find(p => p.name === 'Kartik'), r = view.people.find(p => p.name === 'Ravi');
-    assert.equal(k.jlpt, 3); assert.equal(k.me, false); assert.equal(r.me, true); assert.ok(r.mocks.n5);
+    assert.deepEqual(k.done.jlpt, [0, 1, 2]); assert.equal(k.jlpt, 3, 'counts for older copies of the app');
+    assert.equal(k.me, false); assert.equal(r.me, true); assert.ok(r.mocks.n5);
     assert.ok(!JSON.stringify(view).includes('"hash"') && !JSON.stringify(view).includes('"who"'), 'no hashes or name keys leave the server');
     assert.ok(view.people.every(p => !('active' in p)) && view.feed.every(e => !('at' in e)), 'no last-seen time (or event time) leaves the server');
     // Newest first; within one sync the order is level, then mock, so the mock lands on top.
-    assert.deepEqual(view.feed.map(e => `${e.name}:${e.kind}`), ['Ravi:mock', 'Ravi:level', 'Ravi:joined', 'Kartik:level', 'Kartik:level', 'Kartik:joined']);
-    assert.deepEqual(view.feed.filter(e => e.name === 'Kartik').map(e => e.kind).sort(), ['joined', 'level', 'level']);
+    assert.deepEqual(view.feed.map(e => `${e.name}:${e.kind}`), ['Ravi:mock', 'Ravi:done', 'Ravi:joined', 'Kartik:joined']);
+    await call('ravi', { level: { path: 'jlpt', i: 4, done: false } });
+    const unticked = await (await call('kartik')).json();
+    assert.ok(!unticked.feed.some(e => e.kind === 'done'), 'an un-ticked level leaves the feed');
     await call('ravi', { book: { page: 'u1', done: true } });
     await call('ravi', { book: { page: 'u2', done: true } });
     await call('ravi', { book: { page: 'u2', done: false } });

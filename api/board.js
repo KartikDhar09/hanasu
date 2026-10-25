@@ -1,13 +1,17 @@
 // /api/board: the shared progress board. Only logged-in users can read or write it (session cookie, see
 // _session.js). Callers: js/app.js reports progress (sync), js/board.js shows the board.
 //
-//   GET                                   → {me, people: [{name, me, jlpt, talk, mocks, book}], feed, max}
-//   POST {path: {jlpt, talk}, reset?, mock?, book?: {page, done}}
-//        → merges this device's levels into the account and marks a Book page done or not done; returns the
-//          account's levels and done pages, so every device of the same person ends up in the same place
+//   GET                                   → {me, people: [{name, me, done: {jlpt, talk}, jlpt, talk, mocks, book}], feed, max}
+//   POST {path?: {jlpt, talk}, level?: {path, i, done}, reset?, mock?, book?: {page, done}}
+//        → marks one path level (or a Book page) complete or not, and returns the account's completed levels and
+//          pages, so every device of the same person ends up in the same place
 //
+// Since v6.0 there are no level tests: a level is complete because the person marked it (the user's choice,
+// 2026-10-25), in any order, and can be un-marked. So the account keeps a list of completed level indexes per path
+// instead of "the highest level reached", and the account is the source of truth: a device never pushes its own list,
+// it only sends single changes (like Book pages), so an old offline copy can't undo a change made on another device.
 // Progress is reported by the app and trusted (a trial between friends, the user's choice); the server only keeps
-// it sane: whole numbers within each path, levels never go down except by an explicit "start again".
+// it sane: whole-number indexes inside each path.
 import { store } from './_store.js';
 import { userOf } from './_session.js';
 
@@ -25,8 +29,12 @@ const json = (status, body) => new Response(JSON.stringify(body), {
   status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
 });
 
-// Anything that isn't a whole number in range becomes 0 for a new account, or leaves the saved level unchanged.
-const levelOf = (v, p) => Number.isInteger(v) && v >= 0 && v <= MAX[p] ? v : 0;
+const isLevel = (v, p) => Number.isInteger(v) && v >= 0 && v < MAX[p];
+// Sorted, unique, in range. An old-style number n (levels 1..n reached, before v6.0) becomes [0 .. n-1].
+export function levelsOf(v, p) {
+  if (Number.isInteger(v)) return Array.from({ length: Math.max(0, Math.min(v, MAX[p])) }, (_, i) => i);
+  return Array.isArray(v) ? [...new Set(v.filter(x => isLevel(x, p)))].sort((a, b) => a - b) : [];
+}
 
 // Works out the new progress and the feed events it causes. Pure, so the rules are easy to test.
 //   prev: saved progress or null (first sync = "joined")   body: what the app sent   now: Date
@@ -34,22 +42,28 @@ export function merge(prev, body, now) {
   const at = now.toISOString();
   // No "last seen": the user removed it from the board (v5.12), so it isn't stored either. Records saved before
   // that still carry `active`; dropping it here clears it on that person's next sync.
-  const { active: _lastSeen, ...kept } = prev || {};
-  const next = { jlpt: 0, talk: 0, mocks: {}, book: [], ...kept };
+  // The jlpt / talk level numbers saved before v6.0 are turned into lists once and then dropped.
+  const { active: _lastSeen, jlpt: oldJlpt, talk: oldTalk, ...kept } = prev || {};
+  const next = { mocks: {}, book: [], ...kept };
   next.mocks = { ...next.mocks };
   next.book = [...next.book];
+  // A new account starts from what this device already had (levels reached before logging in existed).
+  const start = prev ? { jlpt: oldJlpt, talk: oldTalk } : body.path || {};
+  next.done = Object.fromEntries(Object.keys(MAX).map(p => [p, levelsOf(prev?.done ? prev.done[p] : start[p], p)]));
   const events = [];
   if (!prev) events.push({ kind: 'joined', at });
   for (const p of Object.keys(MAX)) {
-    const was = next[p];
     if (body.reset === p) {
-      next[p] = 0;
-      if (was > 0) events.push({ kind: 'reset', path: p, at });
-      continue;
+      if (next.done[p].length) events.push({ kind: 'reset', path: p, at });
+      next.done[p] = [];
     }
-    // Max of saved and sent: a phone that was offline (or a second device) can't pull the level back down.
-    const sent = levelOf(body.path?.[p], p);
-    if (sent > was) { next[p] = sent; events.push({ kind: 'level', path: p, from: was, to: sent, at }); }
+  }
+  // One level marked complete (an event) or not complete any more (quietly removed, as with Book pages).
+  const lv = body.level;
+  if (lv && MAX[lv.path] && isLevel(lv.i, lv.path)) {
+    const list = next.done[lv.path], has = list.includes(lv.i);
+    if (lv.done === true && !has) { next.done[lv.path] = levelsOf([...list, lv.i], lv.path); events.push({ kind: 'done', path: lv.path, i: lv.i, at }); }
+    if (lv.done === false && has) next.done[lv.path] = list.filter(x => x !== lv.i);
   }
   if (MOCKS.includes(body.mock) && !next.mocks[body.mock]) {
     next.mocks[body.mock] = at;
@@ -65,6 +79,9 @@ export function merge(prev, body, now) {
   return { next, events };
 }
 
+// A saved record's completed levels, whether it was saved before v6.0 (level numbers) or after (lists).
+const doneOf = prog => Object.fromEntries(Object.keys(MAX).map(p => [p, levelsOf(prog.done ? prog.done[p] : prog[p], p)]));
+
 export async function handle(req, env) {
   const key = await userOf(req, env);
   if (!key) return json(401, { error: 'Not logged in.' });
@@ -74,13 +91,17 @@ export async function handle(req, env) {
     const { people, feed } = await db.board(env, FEED_SHOWN);
     const names = Object.fromEntries(people.map(p => [p.key, p.user.name]));
     const books = Object.fromEntries(people.map(p => [p.key, p.prog.book || []]));
-    // A Book page ticked by mistake and un-ticked again shouldn't stay in the feed as "finished".
-    const stillTrue = e => e.kind !== 'book' || books[e.who]?.includes(e.page);
+    const done = Object.fromEntries(people.map(p => [p.key, doneOf(p.prog)]));
+    // A Book page or level ticked by mistake and un-ticked again shouldn't stay in the feed as "finished".
+    const stillTrue = e => e.kind === 'book' ? books[e.who]?.includes(e.page)
+      : e.kind === 'done' ? done[e.who]?.[e.path]?.includes(e.i) : true;
     return json(200, {
       max: MAX,
       // Only what the board shows: never the password hash or the name key.
+      // jlpt / talk (counts) are still sent for copies of the app older than v6.0 until they update.
       people: people.map(({ key: k, user, prog }) => ({
-        name: user.name, me: k === key, jlpt: prog.jlpt, talk: prog.talk, mocks: prog.mocks || {}, book: prog.book || [],
+        name: user.name, me: k === key, done: done[k], jlpt: done[k].jlpt.length, talk: done[k].talk.length,
+        mocks: prog.mocks || {}, book: prog.book || [],
       })),
       // Events name their person by key; send the display name instead (an event of a deleted account is dropped).
       // The time stays on the server: the newest event's time would show when someone was last on (removed in v5.12).
@@ -96,7 +117,7 @@ export async function handle(req, env) {
   try { body = await req.json(); } catch { return json(400, { error: 'Bad request.' }); }
   const { next, events } = merge(await db.getProgress(env, key), body || {}, new Date());
   await db.saveProgress(env, key, next, events.map(e => ({ who: key, ...e })));
-  return json(200, { path: { jlpt: next.jlpt, talk: next.talk }, book: next.book });
+  return json(200, { done: next.done, book: next.book });
 }
 
 // Same pattern as api/auth.js: Web-standard handlers per method; errors become a plain 500, details in the log.

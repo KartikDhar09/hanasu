@@ -21,7 +21,6 @@ export const NAMES = {
   search: 'search',
   settings: 'settings',
   learn: 'layers',                 // Learn mode: a stack of flashcards
-  quiz: 'list-checks',
   roleplay: 'messages-square',
   home: 'house',
   work: 'briefcase',               // Life & work words
@@ -35,8 +34,6 @@ export const NAMES = {
   sounds: 'audio-lines',           // pronunciation
   reading: 'book-open',
   listening: 'headphones',
-  'grammar-quiz': 'pencil',
-  order: 'arrow-down-up',          // sentence order
   vocab: 'image',                  // words with pictures
   done: 'circle-check',            // board: done
   now: 'map-pin',                  // board: you are here

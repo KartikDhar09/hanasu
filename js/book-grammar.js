@@ -134,7 +134,7 @@ export default {
         ['2. U-verbs (4)', '-shi → -shite', 'hanashimasu → hanashite'],
         ['3. Irregular verbs', '', 'shimasu → shite · kimasu → kite']]),
       P('Although creating the te-forms of u-verbs is slightly complicated, they all obey certain rules, which are determined based on the final speech sound that remains after removing [masu] from the masu-form of each verb. *The ta-form is identical to the te-form conjugation.'),
-      LINK('#verbs', 'Practise verb forms in the app (all forms, with a quiz)'),
+      LINK('#verbs', 'Practise verb forms in the app (all forms, with audio)'),
     ] },
     { h: 'VI Adjectives', blocks: [
       P('Like Japanese verbs, Japanese adjectives convey crucial information at the end, such as negation and tense. Two types of Japanese adjectives exist, i-adjectives and na-adjectives, and they each have their own conjugation pattern. When attaching an adjective to the front of a noun to create a noun phrase, adjectives that end in [i] are known as i-adjectives, and adjectives that end in [na] are called na-adjectives. → See Unit 9, Unit 10, Unit 11'),
@@ -174,7 +174,7 @@ export default {
         ['9', 'kyū-mai', 'kyū-dai', 'kyū-ko / kokonotsu', 'kyū-kai', 'kyū-hon', 'kyū-nin'], ['10', 'jū-mai', 'jū-dai', 'jukko / tō', 'jukkai', 'juppon', 'jū-nin'],
         ['?', 'nam-mai', 'nan-dai', 'nan-ko / ikutsu', 'nan-kai*', 'nam-bon', 'nan-nin']]),
       N('* When talking about floors of a building, [san-gai] and [nan-gai] are also permissible.'),
-      LINK('#counters', 'Practise counters in the app (32 counters with audio and a quiz)'),
+      LINK('#counters', 'Practise counters in the app (32 counters with audio)'),
     ] },
     { h: 'VIII Interrogatives', blocks: [
       P('This section looks at interrogative sentences that use interrogative words like “what” and “who,” and provides a lineup of Japanese interrogatives. Interrogative sentences are usually formed by using an interrogative word for the information you are asking for and adding “ka” to the end of the sentence.'),

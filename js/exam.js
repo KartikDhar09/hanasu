@@ -386,7 +386,7 @@ export function initExam(ctx) {
     const s = scoreMock(st.results, st.lv), ex = EXAMS[st.lv];
     const mins = Math.max(1, Math.round((Date.now() - st.started) / 60000));
     const lv = st.lv, results = st.results, full = st.mode !== 'quick'; st = null;
-    // A passed full mock completes that exam level in the JLPT path.
+    // A passed full mock shows on the 👥 board. It no longer ticks a path level: levels are marked by hand (v6.0).
     if (s.passed && full) ctx.mockPassed(lv);
     const weakest = Object.entries(s.bySection).sort((a, b) => a[1] - b[1])[0];
     const types = [...new Set(results.map(r => r.type))].map(t => {
@@ -409,7 +409,7 @@ export function initExam(ctx) {
       <p>Focus next on <b>${esc(SECTIONS.find(x => x[0] === weakest[0])[1])}</b>.</p>
       <details class="answers left"><summary>📊 By question type</summary><ul class="tips">${types}</ul></details>
       ${wrong ? `<details class="answers left"><summary>🔁 Review mistakes (${results.filter(r => !r.ok).length})</summary><ul class="phrases">${wrong}</ul></details>` : ''}
-      ${s.passed && full ? `<p>${icon('path-jlpt')} This completes the exam level in your N5·N4 path.</p><a class="btn big" href="#path/jlpt">Open the path</a>` : ''}
+      ${s.passed && full ? `<p>${icon('path-jlpt')} Passed! Mark the exam level complete in your N5·N4 path.</p><a class="btn big" href="#path/jlpt">Open the path</a>` : ''}
       <button class="btn primary big" data-act="ex-mock" data-arg="${lv}">Done</button>
     </div>`);
   }

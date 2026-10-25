@@ -6,16 +6,12 @@
 //   kit       key phrases for this level, one per line: jp|kana|romaji|English|Hinglish (all voiced)
 //   missions  real-world tasks to do with real people (shown, never tracked)
 //   drill     topics for the 4/3/2 talking drill: [title, Hinglish, hint words in Japanese]
-//   test      { pass, speak: items } — each item is said into the microphone and checked
 //
-// Speaking test items, one per line:
-//   u|situation in English|card id               say a phrase taught in a unit (its casual, business and other ways also pass)
-//   s|situation|jp|kana|romaji|English|alts      say a new line; alts = other accepted Japanese, separated by ;
-//   a|jp|kana|romaji|English                     read the Japanese aloud (pronunciation)
+// No speaking tests since v6.0 (the user's choice, 2026-10-25): a level is done when the learner marks it complete.
 
 export const PATH_TALK_INTRO = {
-  en: 'Eleven levels take you from the sounds of Japanese to talking freely with coworkers, customers and friends. Each level gives you phrases to master, practice in the app, missions to do with real people, and a speaking test checked by the microphone. Speaking only grows by speaking: do the missions, not just the screens.',
-  hg: 'Bolne se hi bolna aata hai. App mein practice karo, phir asli logon ke saath missions karo. Sirf tera level is phone par save hota hai.',
+  en: 'Eleven levels take you from the sounds of Japanese to talking freely with coworkers, customers and friends. Each level gives you phrases to master, practice in the app and missions to do with real people. When you have done a level, mark it complete. Speaking only grows by speaking: do the missions, not just the screens.',
+  hg: 'Bolne se hi bolna aata hai. App mein practice karo, phir asli logon ke saath missions karo. Level ho gaya? Complete mark karo.',
 };
 
 export const PATH_TALK = [
@@ -42,21 +38,6 @@ export const PATH_TALK = [
 ビール|びーる|bīru|beer|beer`,
     missions: ['Greet three people at work today with the right greeting for the time of day.', 'Record yourself saying the six key words, then compare with the app’s voice.'],
     study: { units: ['greet'] },
-    test: {
-      pass: 80, speak: `
-a|おばあさん|おばあさん|obāsan|grandmother
-a|きって|きって|kitte|stamp
-a|ビール|びーる|bīru|beer
-a|がっこう|がっこう|gakkō|school
-a|しゅくだい|しゅくだい|shukudai|homework
-a|りょこう|りょこう|ryokō|travel
-a|きゅうり|きゅうり|kyūri|cucumber
-a|おはようございます。|おはようございます。|ohayō gozaimasu.|Good morning.
-u|You want to thank someone properly.|greet:3
-u|You bumped into someone on the train.|greet:6
-u|It’s evening and you meet a neighbour.|greet:2
-u|You’re saying goodbye to a friend: “See you.”|greet:11`,
-    },
   },
   {
     id: 't2', icon: '🆘', title: 'Never get stuck', part: 'Survival', time: '1 week · 20 min a day',
@@ -80,19 +61,6 @@ u|You’re saying goodbye to a friend: “See you.”|greet:11`,
 助けてください！|たすけてください！|tasukete kudasai!|Help!|Madad kijiye!`,
     missions: ['Ask a shop clerk a question, and when you don’t understand the answer, ask them to say it again.', 'Ask a coworker what one Japanese word means.'],
     study: { units: ['help'] },
-    test: {
-      pass: 80, speak: `
-u|You didn’t catch what someone said.|help:0
-u|They are talking too fast.|help:1
-u|Tell them you don’t quite understand.|help:2
-u|You hear a word you don’t know. Ask what it means.|help:9
-u|Point at something and ask what it’s called in Japanese.|help:8
-u|Ask them to wait a moment.|help:10
-u|Tell them you’ve understood.|help:3
-s|Tell someone you only speak a little Japanese.|日本語は少しだけ話せます。|にほんごはすこしだけはなせます。|nihongo wa sukoshi dake hanasemasu.|I speak only a little Japanese.|日本語は少し話せます;日本語、ちょっとだけ話せます;日本語は少しだけできます
-s|Ask them to write it down for you.|書いてもらえますか。|かいてもらえますか。|kaite moraemasu ka?|Could you write it down?|書いてください;書いていただけますか;書いてくれますか
-s|Ask if you may say it in English.|英語で言ってもいいですか。|えいごでいってもいいですか。|eigo de itte mo ii desu ka?|May I say it in English?|英語でいいですか;英語で話してもいいですか`,
-    },
   },
   {
     id: 't3', icon: '🙋', title: 'Introduce yourself', part: 'Basics', time: '1–2 weeks · 20 min a day',
@@ -115,20 +83,6 @@ s|Ask if you may say it in English.|英語で言ってもいいですか。|え�
 日本語を勉強しています。|にほんごをべんきょうしています。|nihongo o benkyō shite imasu.|I’m studying Japanese.|Main Japanese seekh raha / rahi hoon.`,
     missions: ['Introduce yourself in Japanese to someone you haven’t really talked to: a neighbour, a coworker from another team, a shop owner.', 'Ask someone two questions about themselves (where they’re from, their hobby).'],
     study: { units: ['intro'], qa: [0, 1, 2, 3, 4, 10] },
-    test: {
-      pass: 80, speak: `
-u|First meeting: say “Nice to meet you.”|intro:0
-u|Say you’re from India.|intro:2
-u|Say you’ve lived in Japan for three years.|intro:3
-u|Say you work at a company.|intro:4
-u|Say your hobby is cooking.|intro:5
-u|Ask someone their name.|intro:6
-u|Ask someone where they’re from.|intro:7
-u|Someone praises your Japanese. Be modest.|intro:9
-u|Finish your introduction politely.|intro:10
-s|Say you’re studying Japanese.|日本語を勉強しています。|にほんごをべんきょうしています。|nihongo o benkyō shite imasu.|I’m studying Japanese.|日本語を勉強中です;今、日本語を勉強しています
-s|Say there are four people in your family.|家族は四人です。|かぞくはよにんです。|kazoku wa yonin desu.|There are four of us in my family.|四人家族です;うちは四人家族です`,
-    },
   },
   {
     id: 't4', icon: '🛒', title: 'Shops, food & getting around', part: 'Daily life', time: '2 weeks · 20–30 min a day',
@@ -151,22 +105,6 @@ s|Say there are four people in your family.|家族は四人です。|かぞく�
 静岡駅までいくらですか。|しずおかえきまでいくらですか。|Shizuoka-eki made ikura desu ka?|How much is it to Shizuoka Station?|Shizuoka station tak kitna hai?`,
     missions: ['Buy something at a konbini and answer every question from the clerk in Japanese.', 'Order a meal at a restaurant without pointing at the menu.', 'Ask a station worker or passer-by the way somewhere.'],
     study: { units: ['shop', 'food', 'way', 'time'], qa: [6, 7, 9] },
-    test: {
-      pass: 80, speak: `
-u|At a shop: ask how much this is.|shop:0
-u|Say you’ll take this one.|shop:2
-u|A clerk comes over. Say you’re just looking.|shop:3
-u|Ask if you can pay by card.|shop:4
-u|Say you don’t need a bag.|shop:5
-u|At a restaurant: tell the staff there are two of you.|food:1
-u|Call the waiter and ask if you can order.|food:2
-u|Ask what they recommend.|food:3
-u|Ask for the bill.|food:10
-u|Ask where the station is.|way:0
-u|Ask if this train goes to Shizuoka.|way:6
-u|Ask what time it is.|time:0
-s|At a konbini, ask them to heat it up.|これ、温めてください。|これ、あたためてください。|kore, atatamete kudasai.|Please heat this up.|温めてください;温めてもらえますか;温めてお願いします`,
-    },
   },
   {
     id: 't5', icon: '🗓️', title: 'Talk about your life', part: 'Daily life', time: '2–3 weeks · 30 min a day',
@@ -197,19 +135,6 @@ s|At a konbini, ask them to heat it up.|これ、温めてください。|これ
       ['Your family', 'Tera parivaar', '何人・だれ・どこに住んでいる・仕事・趣味'],
     ],
     study: { units: ['plans'], qa: [5, 8, 11, 12, 14, 15] },
-    test: {
-      pass: 80, speak: `
-u|Ask a coworker what they do at weekends.|plans:2
-u|Say you usually go shopping.|plans:3
-u|Ask what they did yesterday.|plans:4
-u|Invite them to go together sometime.|plans:5
-u|Accept an invitation happily: “Sounds great! Let’s go.”|plans:6
-u|Turn down an invitation softly: that day is a bit…|plans:9
-u|Say you like Japanese food.|plans:1
-s|Say it was really fun.|すごく楽しかったです。|すごくたのしかったです。|sugoku tanoshikatta desu.|It was really fun.|とても楽しかったです;楽しかったです;めっちゃ楽しかったです
-s|Say you relaxed at home at the weekend.|週末は家でゆっくりしました。|しゅうまつはいえでゆっくりしました。|shūmatsu wa ie de yukkuri shimashita.|I relaxed at home at the weekend.|週末は家でゆっくりしていました;週末はうちでゆっくりしました
-s|Say you’re going back to India next month.|来月、インドに帰ります。|らいげつ、インドにかえります。|raigetsu, Indo ni kaerimasu.|I’m going back to India next month.|来月インドへ帰ります;来月、インドに帰る予定です`,
-    },
   },
   {
     id: 't6', icon: '🏢', title: 'Japanese at work: the basics', part: 'Work', time: '2–3 weeks · 30 min a day',
@@ -230,21 +155,6 @@ s|Say you’re going back to India next month.|来月、インドに帰ります
 今、何をすればいいですか。|いま、なにをすればいいですか。|ima, nani o sureba ii desu ka?|What should I do now?|Ab main kya karun?`,
     missions: ['Say お先に失礼します when you leave work, every day this week.', 'Ask a senior coworker to check something you made.', 'Report one finished task with 終わりました。確認お願いします。'],
     study: { units: ['o-greet', 'o-intro', 'o-ask', 'o-task', 'o-sorry', 'o-life'], qa: [13] },
-    test: {
-      pass: 80, speak: `
-u|You arrive at work in the afternoon. Greet a coworker the office way.|o-greet:0
-u|You’re leaving before your coworkers.|o-greet:1
-u|You’re back from an errand.|o-greet:5
-u|First day: say you start working with them today.|o-intro:0
-u|Ask your senior if they have a moment.|o-ask:0
-u|Ask them to check your work.|o-ask:5
-u|Your boss gives you a task: “Yes, understood.” (polite)|o-task:0
-u|Ask when it’s needed by.|o-task:2
-u|You’re late. Apologise.|o-sorry:1
-u|You made a mistake. Admit it and apologise.|o-sorry:4
-u|Ask if you can take tomorrow off.|o-life:0
-s|Ask what you should do now.|今、何をすればいいですか。|いま、なにをすればいいですか。|ima, nani o sureba ii desu ka?|What should I do now?|次は何をすればいいですか;何をしたらいいですか;今、何をしたらいいですか`,
-    },
   },
   {
     id: 't7', icon: '🔄', title: 'Keep the conversation going', part: 'Conversation', time: '2–3 weeks · 30 min a day',
@@ -271,20 +181,6 @@ s|Ask what you should do now.|今、何をすればいいですか。|いま、�
 田中さんは？|たなかさんは？|Tanaka-san wa?|And you, Tanaka-san?|Aur aap, Tanaka-san?`,
     missions: ['In one conversation, use three different reactions (へえ, 本当ですか, いいですね).', 'When you get an instruction at work, repeat it back to check: つまり、〜ってことですか。', 'At lunch, ask a coworker two follow-up questions about something they said.'],
     study: { units: ['c-ask', 'c-check', 'c-social'] },
-    test: {
-      pass: 80, speak: `
-s|A coworker says they went to Okinawa. React with interest.|へえ、そうなんですか。|へえ、そうなんですか。|hē, sō nan desu ka.|Oh, really?|そうなんですか;へえ;いいですね
-s|Someone tells you surprising news. Ask “Really?”|本当ですか。|ほんとうですか。|hontō desu ka?|Really?|本当に;ほんと;まじですか
-s|They say they like ramen. Say “Me too.”|私もです。|わたしもです。|watashi mo desu.|Me too.|僕もです;私も好きです;私も
-s|A coworker worked all weekend. Sympathise.|大変でしたね。|たいへんでしたね。|taihen deshita ne.|That must have been tough.|大変ですね;お疲れ様でした
-s|Turn the question back: “And you, Tanaka-san?”|田中さんは？|たなかさんは？|Tanaka-san wa?|And you, Tanaka-san?|田中さんはどうですか;田中さんはどうでしたか
-u|Ask a coworker if you can ask something quickly.|c-ask:0
-u|Ask if what you did is right.|c-ask:5
-u|Check: “So you mean by tomorrow?”|c-check:1
-u|Ask what exactly you should do.|c-check:2
-u|Ask for an example.|c-check:3
-u|At drinks, ask someone where they’re from originally.|c-social:4`,
-    },
   },
   {
     id: 't8', icon: '💡', title: 'Explain, report & give opinions', part: 'Conversation', time: '3 weeks · 30 min a day',
@@ -312,22 +208,6 @@ u|At drinks, ask someone where they’re from originally.|c-social:4`,
       ['Recommend a place to visit, and why', 'Ghoomne ki jagah suggest karo', 'どこ・何がある・いつ行く・どうやって・おすすめの理由'],
     ],
     study: { units: ['c-discuss', 'c-suggest', 'c-feedback', 'c-disagree', 'c-report'] },
-    test: {
-      pass: 80, speak: `
-u|Tell your boss you have a quick update.|c-report:0
-u|Report that it’s on schedule.|c-report:2
-u|Report that it’s a little behind.|c-report:3
-u|Say there’s something you’d like their advice on.|c-report:5
-u|Suggest something: “How about doing it like this?”|c-suggest:3
-u|Offer: “If you like, shall I do it?”|c-suggest:5
-u|Agree: “That’s true.”|c-discuss:2
-u|Say the cost is a bit high.|c-discuss:4
-u|Disagree softly: “I understand what you’re saying, but…”|c-disagree:0
-u|Propose deciding after looking at the data.|c-disagree:7
-u|Ask your senior to take a look at your work. (polite)|c-feedback:0
-s|Say you think this one is better.|こっちのほうがいいと思います。|こっちのほうがいいとおもいます。|kotchi no hō ga ii to omoimasu.|I think this one is better.|こちらのほうがいいと思います;私はこっちのほうがいいと思います
-s|Say there are two reasons.|理由は二つあります。|りゆうはふたつあります。|riyū wa futatsu arimasu.|There are two reasons.|理由が二つあります`,
-    },
   },
   {
     id: 't9', icon: '📞', title: 'Phone, meetings & keigo', part: 'Business', time: '3 weeks · 30 min a day',
@@ -350,22 +230,6 @@ s|Say there are two reasons.|理由は二つあります。|りゆうはふた�
 ただいま参ります。|ただいままいります。|tadaima mairimasu.|I’ll be right there. (humble)|Abhi aata / aati hoon.`,
     missions: ['Answer the office phone once (or role-play it with a coworker).', 'Book a meeting room or a meeting time in Japanese.', 'Send one work email or chat in Japanese using お疲れ様です and よろしくお願いします.'],
     study: { units: ['o-phone', 'o-meet', 'c-schedule', 'c-guest', 'c-request', 'c-mail', 'c-runmeeting', 'c-remote'] },
-    test: {
-      pass: 80, speak: `
-u|Answer the office phone with the company name.|o-phone:0
-u|Ask the caller to wait a moment.|o-phone:1
-u|Ask for the caller’s name politely.|o-phone:2
-u|Tell the caller Tanaka is away from their desk.|o-phone:3
-u|Say you’ll call them back.|o-phone:4
-s|Offer to take a message.|ご伝言を承りましょうか。|ごでんごんをうけたまわりましょうか。|go-dengon o uketamawarimashō ka?|Shall I take a message?|ご伝言を伺いましょうか;伝言を承りましょうか
-u|In an online meeting: ask if everyone can see your screen.|o-meet:3
-u|Ask to add one point in a meeting.|o-meet:5
-u|Suggest meeting next Tuesday.|c-schedule:1
-u|A visitor arrives. Say you’ve been expecting them.|c-guest:0
-u|Show them the way: “This way, please.”|c-guest:1
-u|Open a meeting: it’s time, so let’s begin.|c-runmeeting:0
-u|Online: say you’ll turn your camera on.|c-remote:2`,
-    },
   },
   {
     id: 't10', icon: '🛠️', title: 'Work like a pro', part: 'Business', time: '3 weeks · 30 min a day',
@@ -387,22 +251,6 @@ u|Online: say you’ll turn your camera on.|c-remote:2`,
 あと少しで終わります。|あとすこしでおわります。|ato sukoshi de owarimasu.|I’m almost done.|Bas thoda sa baaki hai.`,
     missions: ['Report an IT or equipment problem in Japanese.', 'Negotiate a deadline once: say what you can finish and by when.', 'Thank a coworker specifically for something they did this week.'],
     study: { units: ['c-trouble', 'c-it', 'c-handover', 'c-thanks', 'c-deadline', 'c-ropes', 'c-tools'] },
-    test: {
-      pass: 80, speak: `
-u|Tell IT your computer isn’t working.|c-trouble:0
-u|Say you’ve forgotten your password.|c-trouble:1
-u|Say it looks like you need admin rights.|c-it:2
-u|Say you can’t connect to the VPN.|c-it:5
-u|Ask a coworker to attend the meeting in your place.|c-handover:4
-u|Ask if anything is urgent.|c-handover:7
-u|Thank a coworker: it really saved you.|c-thanks:1
-u|Ask when the deadline is.|c-deadline:0
-u|Ask which you should prioritise.|c-deadline:1
-u|Say finishing by Friday will be a bit difficult.|c-deadline:3
-u|Ask them to show you once.|c-ropes:2
-u|Ask if you can use this software.|c-tools:2
-u|Ask if the test environment is free right now.|c-tools:4`,
-    },
   },
   {
     id: 't11', icon: '🗣️', title: 'Speak freely', part: 'Fluent', time: '4+ weeks · 30 min a day, then for life',
@@ -437,20 +285,5 @@ u|Ask if the test environment is free right now.|c-tools:4`,
       ['What you would change at your company, and why', 'Company mein kya badlein aur kyun', '今の問題・理由・提案・メリット・まとめ'],
     ],
     study: {},
-    test: {
-      pass: 80, speak: `
-u|On the phone, very politely: “Sorry, could you say that again?”|o-phone:5
-u|Tell your boss you’ll check and get back to them.|o-task:7
-u|After a mistake: say you’ll be careful from now on.|o-sorry:6
-u|Ask your senior for advice. (polite)|c-feedback:3
-u|Sum up at the end of a meeting.|c-runmeeting:8
-u|Thank a client for making time today.|c-guest:3
-u|Say you’re working from home today.|c-remote:8
-s|Ask a friend, casually, if they want to grab lunch.|お昼、行かない？|おひる、いかない？|o-hiru, ikanai?|Want to grab lunch? (casual)|お昼行こう;ご飯行かない;お昼一緒に行かない
-s|Say: “Actually, I’m going back to India next month.”|実は、来月インドに帰ります。|じつは、らいげつインドにかえります。|jitsu wa, raigetsu Indo ni kaerimasu.|Actually, I’m going back to India next month.|実は来月、インドに帰ります;実は、来月インドに帰るんです
-s|Explain: you have a fever, so you can’t go.|熱があるので、行けません。|ねつがあるので、いけません。|netsu ga aru node, ikemasen.|I have a fever, so I can’t go.|熱があるから、行けません;熱があって行けません
-s|Give an example: “For example, how about Excel?”|例えば、エクセルはどうですか。|たとえば、エクセルはどうですか。|tatoeba, ekuseru wa dō desu ka?|For example, how about Excel?|例えばエクセルはどうでしょうか;例えば、エクセルとかどうですか
-s|Sum up: “In short, we need more time.”|要するに、もっと時間が必要です。|ようするに、もっとじかんがひつようです。|yō suru ni, motto jikan ga hitsuyō desu.|In short, we need more time.|要するに、時間がもっと必要です;つまり、もっと時間が必要です`,
-    },
   },
 ];

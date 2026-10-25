@@ -80,7 +80,6 @@ export const DEPS = {
     "grammar-n4.js",
     "grammar-n5.js",
     "jlpt-data.js",
-    "kana-data.js",
     "kanji-data.js",
     "kanji-n4.js",
     "kanji-readings.js",

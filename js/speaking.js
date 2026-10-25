@@ -31,7 +31,7 @@ export function initSpeaking(ctx) {
     render(`
       <h1 class="page">Speak <span lang="ja">話す</span></h1>
       <div class="intro">Speaking is a skill, like cricket: you get better by doing it out loud, every day. Use headphones, speak at normal volume, and copy the rhythm.${hg('Roz zor se bolo. Sunte raho, copy karo, phir khud bolo.', 'hi intro-hg')}</div>
-      <p class="muted">Want a plan? The <a class="inline-link" href="#path/talk">${icon('path-talk')} Fluent path</a> takes you level by level, with a speaking test at the end of each.</p>
+      <p class="muted">Want a plan? The <a class="inline-link" href="#path/talk">${icon('path-talk')} Fluent path</a> takes you level by level: mark each one complete when you’re done.</p>
       <div class="speak-grid">
         <button class="scard" data-act="shadow-random">${icon('shadow')}<b>Shadow 10 phrases</b><small>Listen, repeat, get a score. A random mix from every unit.</small></button>
         <button class="scard" data-act="qa" data-arg="0">${icon('questions')}<b>Answer questions</b><small>Real questions people ask you. Answer out loud.</small></button>
@@ -236,11 +236,10 @@ export function initSpeaking(ctx) {
 
   // ================= Pronunciation =================
   function sounds() {
-    ctx.clearSess(); st = { kind: 'sounds', test: null, right: 0, tries: 0 };
+    ctx.clearSess(); st = { kind: 'sounds' };
     render(`
       <div class="head">${back('speak-tab')}<h1>👄 Pronunciation</h1></div>
-      <div class="intro">Tap a picture to hear the word. Then press <b>🎧 Test me</b>: the app says one of the pair and you pick the picture. Press <b>🎤</b> and say one word, and the app tells you which one it heard.${hg('Picture dabao, suno. Phir test karo, aur khud bolke dekho.', 'hi intro-hg')}</div>
-      <div id="score" class="muted center"></div>
+      <div class="intro">Tap a picture to hear the word, and say it back. Press <b>🎤</b> and say one word, and the app tells you which one it heard.${hg('Picture dabao, suno, aur khud bolke dekho.', 'hi intro-hg')}</div>
       ${PRONUNCIATION.map((g, gi) => `
         <h2 class="sec">${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
         <p class="muted small">${esc(g.tip)}</p>
@@ -248,7 +247,6 @@ export function initSpeaking(ctx) {
           ${pair.map((w, wi) => `<button class="ptile" data-act="sound-tap" data-arg="${gi}.${pi}.${wi}">
             <span class="pic">${w[4]}</span><b lang="ja">${w[0]}</b><small>${esc(w[1])} · ${esc(w[2])}${S().settings.hindi ? ` · ${esc(w[3])}` : ''}</small></button>`).join('')}
           <div class="pair-actions">
-            <button class="btn small" data-act="sound-test" data-arg="${gi}.${pi}">🎧 Test me</button>
             ${ctx.canListen() ? `<button class="btn small mic" id="smic-${gi}-${pi}" data-act="sound-mic" data-arg="${gi}.${pi}">🎤</button>` : ''}
           </div>
           <div class="result" id="sres-${gi}-${pi}"></div>
@@ -259,33 +257,10 @@ export function initSpeaking(ctx) {
 
   const pairOf = key => { const [gi, pi] = key.split('.').map(Number); return { gi, pi, pair: PRONUNCIATION[gi].pairs[pi] }; };
 
+  // Tapping a picture only plays it: the "Test me" listening check was removed with the other tests (v6.0).
   function soundTap(arg) {
     const [gi, pi, wi] = arg.split('.').map(Number);
-    const w = PRONUNCIATION[gi].pairs[pi][wi];
-    const t = st?.test;
-    if (t && t.gi === gi && t.pi === pi) {
-      const ok = wi === t.wi;
-      st.tries++; if (ok) st.right++;
-      const res = document.getElementById(`sres-${gi}-${pi}`);
-      res.innerHTML = ok ? `<div class="score ok">✓ Right: ${esc(w[0])} (${esc(w[2])})</div>`
-        : `<div class="score retry">✗ It was ${esc(PRONUNCIATION[gi].pairs[pi][t.wi][0])}. Listen again.</div>`;
-      document.getElementById('score').textContent = `Listening score: ${st.right}/${st.tries}`;
-      st.test = null;
-      document.querySelectorAll('.pair.testing').forEach(el => el.classList.remove('testing'));
-      if (!ok) speak(PRONUNCIATION[gi].pairs[pi][t.wi][0], true);
-      return;
-    }
-    speak(w[0]);
-  }
-
-  function soundTest(key) {
-    const { gi, pi, pair } = pairOf(key);
-    const wi = Math.floor(Math.random() * 2);
-    st.test = { gi, pi, wi };
-    document.querySelectorAll('.pair.testing').forEach(el => el.classList.remove('testing'));
-    document.getElementById(`pair-${gi}-${pi}`).classList.add('testing');
-    document.getElementById(`sres-${gi}-${pi}`).innerHTML = '<span class="muted">Which one did you hear? Tap the picture.</span>';
-    speak(pair[wi][0]);
+    speak(PRONUNCIATION[gi].pairs[pi][wi][0]);
   }
 
   async function soundMic(key) {
@@ -325,7 +300,6 @@ export function initSpeaking(ctx) {
     'builder-mic': () => builderMic(),
     'builder-pattern': id => { const b = bstate(), p = PATTERNS.find(x => x.id === id); b.p = id; b.x = slotOptions(p.x)[0].key; if (p.y) b.y = slotOptions(p.y)[0].key; b.custom = ''; builder(); window.scrollTo(0, 0); speak(currentSentence().line[0]); },
     'sound-tap': a => soundTap(a),
-    'sound-test': k => soundTest(k),
     'sound-mic': k => soundMic(k),
   };
 

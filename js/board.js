@@ -1,10 +1,11 @@
 // 👥 Progress board (#board): for each person, how far they are in the two paths and the Book (a bar each and
-// what's next), passed mock tests, and a feed of what happened ("Ravi passed level 5 of the JLPT path"). Data comes from
+// what's next), passed mock tests, and a feed of what happened ("Ravi completed level 5 of the JLPT path"). Data comes from
 // /api/board; the app reports progress there (js/app.js syncProgress). Opened from the 👥 button in the header,
 // not a tab (seven tabs is the most that fit).
 //
-// Nothing per tab is tracked: the two paths split the whole course (js/path-summary.js), so a level number says
+// Nothing per tab is tracked: the two paths split the whole course (js/path-summary.js), so the completed levels say
 // what is done in Study, JLPT, Phrases and Speak too. Only the Book has its own record: pages marked done.
+// Since v6.0 levels are marked complete by hand, in any order (no level tests), so a path is a set of levels.
 import { PATH_SUMMARY } from './path-summary.js';
 import { BOOK_INDEX } from './book-index.js';
 import { icon } from './icons.js';
@@ -25,6 +26,8 @@ export function initBoard(ctx) {
     const path = PATH_NAMES[e.path] || '';
     switch (e.kind) {
       case 'joined': return 'joined Hanasu 👋';
+      case 'done': return `completed level ${e.i + 1} of the ${path}`;
+      // Saved before v6.0, when a passed level test moved you up: still shown until they fall off the feed.
       case 'level': return e.to === max[e.path] ? `finished the ${path} 🏆`
         : e.to - e.from === 1 ? `passed level ${e.to} of the ${path}` : `passed levels ${e.from + 1}–${e.to} of the ${path}`;
       case 'reset': return `started the ${path} again`;
@@ -46,10 +49,11 @@ export function initBoard(ctx) {
     </div>`;
   }
 
-  // A path: the level number is all that's tracked; "Now" names the level being worked on.
+  // A path: how many levels are ticked; "Now" names the first level not ticked yet.
+  const doneOf = (p, k) => new Set((p.done?.[k] || []).filter(i => i < PATH_SUMMARY[k].levels.length));
   function pathRow(p, k) {
-    const { levels } = PATH_SUMMARY[k], n = Math.min(p[k], levels.length), now = levels[n];
-    return row('path-' + k, PATH_NAMES[k], n, levels.length, now ? `Now: Level ${n + 1} · ${esc(now[0])}` : 'Finished 🏆');
+    const { levels } = PATH_SUMMARY[k], d = doneOf(p, k), i = levels.findIndex((_, n) => !d.has(n));
+    return row('path-' + k, PATH_NAMES[k], d.size, levels.length, i >= 0 ? `Now: Level ${i + 1} · ${esc(levels[i][0])}` : 'Finished 🏆');
   }
 
   // The Book: pages marked done; "Next" is the first page not done yet, in book order.
@@ -62,7 +66,7 @@ export function initBoard(ctx) {
   // three rows with bars instead. Every card starts closed, yours too (v5.15).
   function person(p) {
     const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">✅ ${lv.toUpperCase()}</span>`).join(' ');
-    const n = k => Math.min(p[k], PATH_SUMMARY[k].levels.length);
+    const n = k => doneOf(p, k).size;
     const book = BOOK_INDEX.filter(b => p.book.includes(b.id)).length;
     const isOpen = opened.has(p.name);
     // The whole card is the tap target (not a <details>, whose summary line is the only clickable part). data-act
@@ -81,7 +85,7 @@ export function initBoard(ctx) {
     if (!data) body = error ? `<p class="warn">${esc(error)}</p>` : '<p class="muted">Loading…</p>';
     else {
       // You first, then whoever is furthest along. Not by recent activity: last seen was removed (v5.12).
-      const score = p => p.jlpt + p.talk + p.book.length;
+      const score = p => doneOf(p, 'jlpt').size + doneOf(p, 'talk').size + p.book.length;
       const people = [...data.people].sort((a, b) => (b.me - a.me) || score(b) - score(a) || a.name.localeCompare(b.name));
       // Newest first, with no times: a time on someone's latest event would tell everyone when they were last on.
       const feed = data.feed.map(e => {
@@ -92,7 +96,7 @@ export function initBoard(ctx) {
         <p class="muted small">How far everyone has got. Shared with everyone who has an account.</p>
         <ul class="bpeople">${people.map(person).join('')}</ul>
         <h2 class="sec">Latest</h2>
-        ${feed ? `<ul class="bfeed">${feed}</ul>` : '<p class="muted">Nothing yet. Pass a level test in a path and it shows up here.</p>'}`;
+        ${feed ? `<ul class="bfeed">${feed}</ul>` : '<p class="muted">Nothing yet. Mark a level complete in a path and it shows up here.</p>'}`;
     }
     render(`<div class="head">${back()}<h1>${icon('board')} Board</h1></div>${body}`);
   }

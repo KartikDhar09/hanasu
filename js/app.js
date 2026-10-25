@@ -8,8 +8,9 @@ import { icon } from './icons.js';
 
 // ---------- State ----------
 // Nothing about the learner is stored on the device: no name, scores or streak. Saved: display settings, so the
-// app looks the same next time, and the level reached in each path (the user chose this; a number per path).
-// Since v5.9 the levels (and passed full mocks) are also sent to the account for the 👥 board: see syncProgress.
+// app looks the same next time, and which levels of each path are marked complete (the user chose this: a list of
+// level numbers per path; since v6.0 levels are marked by hand, in any order, instead of passed by a test).
+// The account is the source of truth for those levels (👥 board, see syncProgress); this is the offline copy.
 const KEY = 'hanasu-v1';
 const DEFAULTS = { settings: { romaji: true, kana: true, hindi: true, casual: true, rate: 0.9, voice: '' } };
 const PATH_IDS = ['jlpt', 'talk'];
@@ -29,8 +30,15 @@ function sanitize(s) {
   s.settings.rate = num(s.settings.rate, 0.5, 1.5, DEFAULTS.settings.rate);
   s.settings.voice = typeof s.settings.voice === 'string' ? s.settings.voice : '';
   for (const k of ['romaji', 'kana', 'hindi', 'casual']) s.settings[k] = s.settings[k] !== false;
-  s.path = Object.fromEntries(PATH_IDS.map(p => [p, Math.round(num(s.path?.[p], 0, 99, 0))]));
+  s.path = Object.fromEntries(PATH_IDS.map(p => [p, levelList(s.path?.[p])]));
   return s;
+}
+
+// Completed levels as sorted, unique whole numbers 0–98 (they end up in page markup). A plain number is the
+// "level reached" saved before v6.0: reaching level n meant levels 0 .. n-1 were passed, so those count as complete.
+function levelList(v) {
+  if (Number.isFinite(+v) && !Array.isArray(v)) return Array.from({ length: Math.min(99, Math.max(0, Math.round(+v))) }, (_, i) => i);
+  return Array.isArray(v) ? [...new Set(v.filter(x => Number.isInteger(x) && x >= 0 && x < 99))].sort((a, b) => a - b) : [];
 }
 
 function save(state = S) {
@@ -163,7 +171,7 @@ function home() {
   sess = null; stopSpeaking();
   render(`
     <section class="hero">
-      <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${PHRASE_COUNT} phrases in ${UNIT_INDEX.length} units, each with flashcards, speaking practice, a quiz and a role-play.</span></div>
+      <div class="hero-text"><b>Speak Japanese for real life and work.</b><span class="muted">${PHRASE_COUNT} phrases in ${UNIT_INDEX.length} units, each with flashcards, speaking practice and a role-play.</span></div>
       <button class="btn primary big" data-act="learn" data-arg="${UNIT_INDEX[0].id}">Start: ${esc(UNIT_INDEX[0].title)}</button>
       <div class="quick">
         <a href="#path/jlpt" class="qlink">${icon('path-jlpt')}JLPT path, level by level</a>
@@ -195,7 +203,6 @@ function unit(id) {
     <div class="modes compact">
       <button class="mode" data-act="learn" data-arg="${id}">${icon('learn')}<b>Learn</b><small>Flashcards · seekho</small></button>
       <button class="mode" data-act="speak" data-arg="${id}">${icon('speak')}<b>Speak</b><small>Say it, get checked · bolo</small></button>
-      <button class="mode" data-act="quiz" data-arg="${id}">${icon('quiz')}<b>Quiz</b><small>Listen &amp; choose · quiz</small></button>
       <button class="mode" data-act="talk" data-arg="${id}">${icon('roleplay')}<b>Role-play</b><small>Real conversation · baatcheet</small></button>
     </div>
     <h2 class="sec">Phrases <small class="muted">tap to hear</small></h2>
@@ -350,66 +357,6 @@ async function micSpeak() {
   await recordAgainst(view(raw), document.getElementById('result'), document.getElementById('mic'));
 }
 
-// ---------- Quiz ----------
-function quiz(unitId) {
-  const cards = cardsOf(unitId);
-  const qs = shuffle(cards).slice(0, 8).map((c, i) => {
-    const type = i % 2 ? 'audio' : 'en2jp';
-    const options = shuffle([c, ...shuffle(cards.filter(o => o.id !== c.id)).slice(0, 3)]);
-    return { c, type, options };
-  });
-  sess = { kind: 'quiz', unitId, qs, i: 0, right: 0, answered: false };
-  quizQ();
-}
-
-function quizQ() {
-  const s = sess;
-  if (s.i >= s.qs.length) {
-    return finish(`Quiz score: ${s.right}/${s.qs.length}`, s.unitId, s.right === s.qs.length ? 'Perfect! 🎯' : '');
-  }
-  const q = s.qs[s.i];
-  const c = view(q.c);
-  s.answered = false;
-  render(`
-    <div class="head">${back('unit', s.unitId)}<div class="grow">${bar(s.i, s.qs.length)}</div><span class="muted">${s.right} ✓</span></div>
-    <div class="card">
-      ${q.type === 'audio'
-        ? `<span class="tag alt">What does this mean?</span>
-           <button class="btn listen" data-act="say" data-arg="${q.c.id}">🔊 Play again</button>
-           <button class="btn ghost small" data-act="sayslow" data-arg="${q.c.id}">🐢 Slow</button>`
-        : `<span class="tag alt">How do you say…</span><div class="prompt">${esc(c.en)}</div>${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(c.hi)}</div>` : ''}`}
-    </div>
-    <div class="choices">
-      ${q.options.map(o => {
-        const v = view(o);
-        return `<button class="choice" data-act="answer" data-arg="${o.id}">${q.type === 'audio'
-          ? `${esc(v.en)}${S.settings.hindi ? `<small lang="hi-Latn">${esc(v.hi)}</small>` : ''}` : `<span lang="ja">${esc(v.jp)}</span>${S.settings.romaji ? `<small>${esc(v.ro)}</small>` : ''}`}</button>`;
-      }).join('')}
-    </div>
-    <div class="actions" id="actions"></div>
-  `);
-  if (q.type === 'audio') speak(c.jp);
-}
-
-function answer(id) {
-  const s = sess;
-  if (s.answered) return;
-  s.answered = true;
-  const q = s.qs[s.i];
-  const ok = id === q.c.id;
-  if (ok) s.right++;
-  document.querySelectorAll('.choice').forEach(b => {
-    b.disabled = true;
-    if (b.dataset.arg === q.c.id) b.classList.add('right');
-    else if (b.dataset.arg === id) b.classList.add('wrong');
-  });
-  const c = view(q.c);
-  document.getElementById('actions').innerHTML = `
-    ${ok ? '' : `<div class="card compact">${jpBlock(c)}${meaning(c)}</div>`}
-    <button class="btn primary big" data-act="quiz-next">${s.i + 1 < s.qs.length ? 'Next' : 'See score'}</button>`;
-  speak(c.jp);
-}
-
 // ---------- Role-play ----------
 function talk(unitId) {
   const u = unitById(unitId);
@@ -503,7 +450,6 @@ function finish(title, unitId, extra = '', backAct = 'home') {
       ${unitId ? `
         <div class="modes">
           <button class="mode" data-act="speak" data-arg="${unitId}">${icon('speak')}<b>Speak</b></button>
-          <button class="mode" data-act="quiz" data-arg="${unitId}">${icon('quiz')}<b>Quiz</b></button>
           <button class="mode" data-act="talk" data-arg="${unitId}">${icon('roleplay')}<b>Role-play</b></button>
           <button class="mode" data-act="home">${icon('home')}<b>Home</b></button>
         </div>` : `<button class="btn primary big" data-act="${backAct}">Back</button>`}
@@ -534,7 +480,7 @@ function openSettings() {
         <button role="tab" id="t-credits" aria-controls="p-credits" aria-selected="false" data-act="settings-tab" data-arg="credits">🙏 Credits</button>
       </div>
       <section id="p-prefs" role="tabpanel" aria-labelledby="t-prefs" class="panel-tab">
-        <p class="muted small">Saved on this device: these display settings and the level you reach in each path. Your levels and passed full mock tests are also shared on the 👥 board with everyone who has an account. No scores, history or anything else about you.</p>
+        <p class="muted small">Saved on this device: these display settings and the levels you have marked complete in each path. Your completed levels and passed full mock tests are also shared on the 👥 board with everyone who has an account. No scores, history or anything else about you.</p>
         <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
         <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
         <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
@@ -590,7 +536,6 @@ function rerender() {
   if (!sess) return route();
   if (sess.kind === 'learn') learnCard();
   else if (sess.kind === 'speak') speakCard();
-  else if (sess.kind === 'quiz') quizQ();
   else talk(sess.unitId);
 }
 
@@ -600,7 +545,6 @@ const actions = {
   unit: id => go('unit/' + id),
   learn: id => learn(id),
   speak: id => speakMode(id),
-  quiz: id => quiz(id),
   talk: id => talk(id),
   play: id => speak(view(cardById(id)).jp),
   say: id => speak(view(cardById(id)).jp),
@@ -617,8 +561,6 @@ const actions = {
     if (sess.i >= sess.cards.length) { return finish('Speaking practice done', sess.unitId, '', sess.backAct); }
     speakCard();
   },
-  answer: id => answer(id),
-  'quiz-next': () => { sess.i++; quizQ(); },
   'talk-mic': () => talkMic(),
   hint: () => { document.getElementById('hint').hidden = false; },
   'talk-skip': () => talkAdvance(),
@@ -634,7 +576,7 @@ const actions = {
 };
 
 document.addEventListener('click', e => {
-  // Tabs: re-route even when the hash is unchanged (e.g. tapping Kanji mid-quiz goes back to the Kanji page).
+  // Tabs: re-route even when the hash is unchanged (e.g. tapping Kanji mid-flashcards goes back to the Kanji page).
   const tab = e.target.closest('#tabs a');
   if (tab) { e.preventDefault(); go(tab.getAttribute('href').slice(1)); return; }
   // Opening a "more ways" fold inside a tappable row shouldn't also play the row.
@@ -685,14 +627,11 @@ const LOADERS = {
       const v = view(cardById(id));
       return { jp: v.jp, kana: v.kana, ro: v.ro, en: v.en, casual: v.casual, alts: await waysOf(id) };
     },
-    level: p => S.path[p] || 0,
-    // A passed test only ever moves you forward; force is for "start again".
-    setLevel: (p, n, force) => {
-      if (!PATH_IDS.includes(p) || !(force || n > (S.path[p] || 0))) return;
-      S.path[p] = n; save();
-      // The board's server keeps the highest level it has seen, so "start again" has to say so explicitly.
-      syncProgress(force ? { reset: p } : {});
-    },
+    done: p => new Set(S.path[p] || []),
+    // Marks one level complete or not. Goes through the account first (like a Book page), so two devices can't
+    // disagree; true once the account has it, false offline (the button then says so and nothing changes).
+    markLevel: (p, i, done) => PATH_IDS.includes(p) ? syncProgress({ level: { path: p, i, done } }) : Promise.resolve(false),
+    resetPath: p => PATH_IDS.includes(p) ? syncProgress({ reset: p }) : Promise.resolve(false),
   })),
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
   search: () => import('./search.js').then(m => m.initSearch(shared())),
@@ -703,7 +642,7 @@ const LOADERS = {
     markPage: (id, done) => syncProgress({ book: { page: id, done } }),
   })),
   exam: () => import('./exam.js').then(m => m.initExam({
-    ...shared(), mockPassed: lv => { syncProgress({ mock: lv }); return loadSection('path').then(m => m.mockPassed(lv)); }, sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
+    ...shared(), mockPassed: lv => syncProgress({ mock: lv }), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
   })),
 };
 const mods = {};      // initialised modules
@@ -794,11 +733,12 @@ fetch('/api/auth', { cache: 'no-store' }).then(async res => {
   } else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
 }).catch(() => {});
 
-// 👥 Board: sends this device's path levels (and a passed mock, a "start again" or a Book page marked done) to
-// the account, on launch and whenever they change. The server answers with the account's levels, the highest any
-// device has reached, and this device catches up, so progress follows the person from phone to laptop. Offline it
-// fails quietly; the next launch sends the levels again (a mock passed offline is not reported).
-// Returns true when the server accepted it (the Book's Mark done button needs to know).
+// 👥 Board: tells the account about one change (a level or Book page marked complete or not, a passed mock, a
+// "start again"), or nothing at all on launch, and takes back the account's completed levels and pages. The account
+// is the source of truth (since v6.0): this device's list is only sent the first time an account syncs, so levels
+// reached before the board existed aren't lost, and it is never merged in later, so an old offline copy can't undo a
+// change made on another device. Offline it fails quietly (a mock passed offline is not reported).
+// Returns true when the server accepted it (the Mark complete buttons need to know).
 let bookDone = new Set(); // Book pages marked done, from the account; kept in memory only, never on the device
 async function syncProgress(extra = {}) {
   try {
@@ -806,15 +746,18 @@ async function syncProgress(extra = {}) {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: S.path, ...extra }),
     });
     if (!res.ok) return false;
-    const { path, book } = await res.json();
+    const { done, book } = await res.json();
     if (Array.isArray(book)) bookDone = new Set(book.filter(x => typeof x === 'string'));
-    // Only ever moves forward here, and only to a plain whole number in range (it ends up in page markup).
     let changed = false;
-    for (const p of PATH_IDS) if (Number.isInteger(path?.[p]) && path[p] > (S.path[p] || 0) && path[p] <= 99) { S.path[p] = path[p]; changed = true; }
+    for (const p of PATH_IDS) {
+      if (!Array.isArray(done?.[p])) continue;
+      const list = levelList(done[p]);
+      if (list.join() !== S.path[p].join()) { S.path[p] = list; changed = true; }
+    }
     if (!changed) return true;
     save();
-    // Redraw only a path overview: redrawing a lesson or quiz mid-way would reshuffle the question.
-    if (/^#path\/\w+$/.test(location.hash)) rerender();
+    // A path screen shows the ticks, so it is redrawn; nothing else on screen depends on them.
+    if (/^#path\//.test(location.hash)) rerender();
     return true;
   } catch (_) { return false; /* offline: try again next launch */ }
 }
@@ -836,7 +779,7 @@ if ('serviceWorker' in navigator) {
   if (document.readyState === 'complete') register(); else addEventListener('load', register, { once: true });
 }
 
-// A new release installs in the background and waits; this asks before switching to it, so a lesson or quiz
+// A new release installs in the background and waits; this asks before switching to it, so a lesson or mock test
 // in progress is never reloaded away. Checked on launch, on coming back to the app, and hourly.
 function watchForUpdates(reg) {
   const sw = navigator.serviceWorker;

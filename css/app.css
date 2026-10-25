@@ -192,7 +192,7 @@ a.gear { text-decoration: none; }
 }
 .mode span { font-size: 1.5rem; }
 .mode small { color: var(--muted); }
-.modes.compact { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.modes.compact { grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .modes.compact .mode { justify-items: center; text-align: center; padding: 10px 4px; box-shadow: none; }
 .modes.compact .mode span { font-size: 1.4rem; }
 .modes.compact .mode b { font-size: .85rem; }
@@ -490,7 +490,6 @@ details.answers .phrases { margin-top: 8px; }
 .intro-lines .il-main { cursor: pointer; }
 .intro-lines .result { grid-column: 1 / -1; min-height: 0; margin: 0; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; padding: 8px; border-radius: 14px; }
-.pair.testing { background: var(--accent-soft); }
 .pair-actions { grid-column: 1 / -1; display: flex; gap: 8px; justify-content: center; }
 .pair .result { grid-column: 1 / -1; margin: 0; text-align: center; min-height: 0; }
 .ptile { display: grid; justify-items: center; gap: 2px; padding: 10px 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
@@ -582,7 +581,7 @@ details.answers .phrases { margin-top: 8px; }
 /* ---------- Wider screens ---------- */
 @media (min-width: 560px) {
   .units { grid-template-columns: 1fr 1fr; }
-  .modes { grid-template-columns: repeat(4, 1fr); }
+  .modes { grid-template-columns: repeat(3, 1fr); }
   .modes.compact .mode small { display: block; font-size: .72rem; }
 }
 /* ---------- Short landscape screens (a phone held sideways) ----------

@@ -2,7 +2,7 @@
 import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u5', n: 5, icon: '💳', title: 'Can I pay by credit card?', jp: 'カードでいいですか。', ro: 'Kādo de ii desu ka.',
+  id: 'u5', n: 5, title: 'Can I pay by credit card?', jp: 'カードでいいですか。', ro: 'Kādo de ii desu ka.',
   topic: 'Asking permission', topicJp: '許可を得る',
   goals: ['Use simple sentences to ask for permission', 'Confirm things to make sure documents are submitted smoothly'],
   sections: [

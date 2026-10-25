@@ -116,12 +116,12 @@ function meaning(c, cls = 'en') {
 function casualBlock(c) {
   if (!c.casual || !S.settings.casual) return '';
   return `<button class="casual" data-act="say-casual" data-arg="${c.id}">
-    <span class="tag-mini">😎 Casual · doston se</span>
+    <span class="tag-mini">${icon('casual')} Casual · doston se</span>
     <span lang="ja">${(S.settings.kana && furigana(c.casual.jp, c.casual.kana, esc)) || esc(c.casual.jp)}</span>${S.settings.romaji ? ` <small>${esc(c.casual.ro)}</small>` : ''}
   </button>`;
 }
 
-const note = c => c.note ? `<div class="note">💡 ${esc(c.note)}</div>` : '';
+const note = c => c.note ? `<div class="note">${icon('tip')} ${esc(c.note)}</div>` : '';
 
 // 👔 Business version and other ways to say a line, folded away until opened. Each one plays when tapped.
 // Rendered into an empty slot once that track's data has loaded, so the screen itself never waits for it.
@@ -150,11 +150,11 @@ function waysBlock(w) {
   const p = profile();
   const f = l => ({ jp: fill(l.jp, p), kana: fill(l.kana, p), ro: fill(l.ro, p), en: fill(l.en, p), hi: fill(l.hi, p), note: fill(l.note, p) });
   const item = (tag, l) => `<li class="way" data-act="say-text" data-arg="${esc(l.jp)}">
-      <span class="way-tag">${tag}</span>${jpBlock(l)}${meaning(l)}${l.note ? `<div class="way-note">💡 ${esc(l.note)}</div>` : ''}</li>`;
-  const biz = w.biz === 'same' ? '<li class="way same"><span class="way-tag">👔 Business</span>The same: already right for work.</li>'
-    : w.biz ? item('👔 Business', f(w.biz)) : '';
-  return `<details class="ways"><summary>👔 Business · ${w.alt.length} other way${w.alt.length === 1 ? '' : 's'} to say it</summary>
-    <ul class="way-list">${biz}${w.alt.map(a => item('🔁 Also', f(a))).join('')}</ul></details>`;
+      <span class="way-tag">${tag}</span>${jpBlock(l)}${meaning(l)}${l.note ? `<div class="way-note">${icon('tip')} ${esc(l.note)}</div>` : ''}</li>`;
+  const biz = w.biz === 'same' ? `<li class="way same"><span class="way-tag">${icon('work')} Business</span>The same: already right for work.</li>`
+    : w.biz ? item(icon('work') + ' Business', f(w.biz)) : '';
+  return `<details class="ways"><summary>${icon('work')} Business · ${w.alt.length} other way${w.alt.length === 1 ? '' : 's'} to say it</summary>
+    <ul class="way-list">${biz}${w.alt.map(a => item(icon('also') + ' Also', f(a))).join('')}</ul></details>`;
 }
 
 function toast(msg) {
@@ -184,7 +184,7 @@ function home() {
       <p class="muted">${t.desc}${S.settings.hindi ? ` · <span lang="hi-Latn">${t.hi}</span>` : ''}</p>
       <div class="units">
         ${UNIT_INDEX.filter(u => u.track === t.id).map(u => `<button class="unit" data-act="unit" data-arg="${u.id}">
-            <span class="icon">${u.icon}</span>
+            <span class="icon">${icon(u.track === 'n5' ? 'phrases' : 'work')}</span>
             <span class="ut"><b>${esc(u.title)}</b><small><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</small></span>
             <span class="count">${u.n}</span>
           </button>`).join('')}
@@ -198,7 +198,7 @@ function unit(id) {
   const u = unitById(id);
   const cs = cardsOf(id).map(view);
   render(`
-    <div class="head">${back()}<h1>${u.icon} ${esc(u.title)}</h1></div>
+    <div class="head">${back()}<h1>${esc(u.title)}</h1></div>
     <p class="muted sub"><span lang="ja">${u.jp}</span>${S.settings.hindi ? ` · <span lang="hi-Latn">${u.hi}</span>` : ''}</p>
     <div class="modes compact">
       <button class="mode" data-act="learn" data-arg="${id}">${icon('learn')}<b>Learn</b><small>Flashcards · seekho</small></button>
@@ -249,8 +249,8 @@ function learnCard() {
       <div id="answer" ${intro ? '' : 'hidden'}>
         ${jpBlock(c, 'big')}
         <div class="row center">
-          <button class="btn icon" data-act="say" data-arg="${raw.id}">🔊</button>
-          <button class="btn icon" data-act="sayslow" data-arg="${raw.id}">🐢</button>
+          <button class="btn icon" data-act="say" data-arg="${raw.id}" aria-label="Play">${icon('play')}</button>
+          <button class="btn icon" data-act="sayslow" data-arg="${raw.id}" aria-label="Play slowly">${icon('slow')}</button>
         </div>
         ${casualBlock(c)}
         ${note(c)}
@@ -308,16 +308,16 @@ function speakCard() {
       ${S.settings.hindi ? `<div class="prompt-hi" lang="hi-Latn">${esc(c.hi)}</div>` : ''}
       ${jpBlock(c, 'big')}
       <div class="row center">
-        <button class="btn icon" data-act="say" data-arg="${raw.id}">🔊</button>
-        <button class="btn icon" data-act="sayslow" data-arg="${raw.id}">🐢</button>
+        <button class="btn icon" data-act="say" data-arg="${raw.id}" aria-label="Play">${icon('play')}</button>
+        <button class="btn icon" data-act="sayslow" data-arg="${raw.id}" aria-label="Play slowly">${icon('slow')}</button>
       </div>
       ${casualBlock(c)}
       <div id="result" class="result"></div>
     </div>
     <div class="actions">
       ${canListen()
-        ? `<button class="btn mic big" id="mic" data-act="mic">🎤 Tap and speak</button>`
-        : `<p class="muted center">Your browser can’t check speech. Say it aloud, then tap 🔊 to compare.</p>`}
+        ? `<button class="btn mic big" id="mic" data-act="mic">${icon('speak')} Tap and speak</button>`
+        : `<p class="muted center">Your browser can’t check speech. Say it aloud, then tap ${icon('play')} to compare.</p>`}
       <div class="row">
         <button class="btn" data-act="speak-move" data-arg="-1" ${s.i ? '' : 'disabled'}>‹ Prev</button>
         <button class="btn" data-act="speak-move" data-arg="1">${s.i + 1 < s.cards.length ? 'Next ›' : 'Finish'}</button>
@@ -339,7 +339,7 @@ async function recordAgainst(c, resultEl, micEl) {
     const score = matchScore(heard, c.jp, c.kana, [...(c.casual ? [c.casual.jp, c.casual.kana] : []), ...(c.alts || []).flat()]);
     const ok = score >= PASS;
     resultEl.innerHTML = `
-      <div class="score ${ok ? 'ok' : 'retry'}">${ok ? '🎉 Great!' : '🔁 Almost'} <b>${Math.round(score * 100)}%</b></div>
+      <div class="score ${ok ? 'ok' : 'retry'}">${ok ? icon('finish') + ' Great!' : icon('also') + ' Almost'} <b>${Math.round(score * 100)}%</b></div>
       <div class="heard">Heard: <span lang="ja">${esc(heard[0])}</span></div>`;
     return score;
   } catch (e) {
@@ -348,7 +348,7 @@ async function recordAgainst(c, resultEl, micEl) {
       : 'Couldn’t listen (' + esc(e.message) + '). Try again.'}</span>`;
     return null;
   } finally {
-    if (micEl) { micEl.classList.remove('on'); micEl.textContent = '🎤 Try again'; micEl.dataset.act = act; }
+    if (micEl) { micEl.classList.remove('on'); micEl.innerHTML = icon('speak') + ' Try again'; micEl.dataset.act = act; }
   }
 }
 
@@ -363,7 +363,7 @@ function talk(unitId) {
   sess = { kind: 'talk', unitId, lines: u.dialogue.map((l, i) => ({ ...lineView(l), wid: `dlg:${unitId}:${i}` })), i: 0, log: [] };
   sess.lines.forEach(l => prefetchClip(l.jp));
   render(`
-    <div class="head">${back('unit', unitId)}<h1>💬 Role-play</h1></div>
+    <div class="head">${back('unit', unitId)}<h1>${icon('roleplay')} Role-play</h1></div>
     <p class="muted">You play the lines on the right. The app speaks the other part. Tap any bubble to hear it again.</p>
     <div class="chat" id="chat"></div>
     <div class="actions" id="actions"></div>
@@ -396,7 +396,7 @@ async function talkStep() {
   if (sess !== s) return;
   if (s.i >= s.lines.length) {
     actions.innerHTML = `
-      <p class="center">🎉 Conversation complete!</p>
+      <p class="center">${icon('finish')} Conversation complete!</p>
       <div class="row"><button class="btn" data-act="talk" data-arg="${s.unitId}">Again</button>
       <button class="btn primary" data-act="unit" data-arg="${s.unitId}">Done</button></div>`;
     return;
@@ -411,9 +411,9 @@ async function talkStep() {
       <div class="muted small">Other natural ways to say it count too.</div>
       <div id="result" class="result"></div>
     </div>
-    ${canListen() ? `<button class="btn mic big" id="mic" data-act="talk-mic">🎤 Speak</button>` : ''}
+    ${canListen() ? `<button class="btn mic big" id="mic" data-act="talk-mic">${icon('speak')} Speak</button>` : ''}
     <div class="row">
-      <button class="btn" data-act="hint">💡 Hint</button>
+      <button class="btn" data-act="hint">${icon('tip')} Hint</button>
       <button class="btn" data-act="talk-skip">${canListen() ? 'Skip' : 'Show line'} ›</button>
     </div>`;
   fillWays();
@@ -443,7 +443,7 @@ function finish(title, unitId, extra = '', backAct = 'home') {
   sess = null;
   render(`
     <div class="done">
-      <div class="big-emoji">🌸</div>
+      <div class="big-emoji">${icon('finish')}</div>
       <h1>${esc(title)}</h1>
       ${extra ? `<p>${extra}</p>` : ''}
       <p class="muted">よくできました！ Bahut badhiya!</p>
@@ -460,15 +460,15 @@ function finish(title, unitId, extra = '', backAct = 'home') {
 // ---------- Settings ----------
 // Two tabs: Settings (saved on this device) and Credits. Tabs only show/hide, so unsaved changes survive a switch.
 const CREDITS = [
-  ['🎙️', 'VOICEVOX:四国めたん', 'Main voice: phrases, words and examples.', 'https://zunko.jp/con_ongen_kiyaku.html', 'Terms of use'],
-  ['🎙️', 'VOICEVOX:冥鳴ひまり', 'Listening conversations (woman).', 'https://meimeihimari.wixsite.com/himari/terms-of-use', 'Terms of use'],
-  ['🎙️', 'VOICEVOX:青山龍星', 'Listening conversations (man).', 'https://www.virvoxproject.com/voicevox%E3%81%AE%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84', 'Terms of use'],
-  ['🔊', 'VOICEVOX', 'Free Japanese speech engine used to record the voices.', 'https://voicevox.hiroshiba.jp/', 'voicevox.hiroshiba.jp'],
-  ['✍️', 'KanjiVG', 'Stroke order for every kanji. © Ulrich Apel and contributors, CC BY-SA 3.0.', 'https://kanjivg.tagaini.net/', 'kanjivg.tagaini.net'],
-  ['◇', 'Lucide', 'Interface icons (tabs, buttons, board). © Lucide Contributors, ISC licence; portions © Cole Bemis (Feather, MIT).', 'https://lucide.dev/license', 'lucide.dev'],
-  ['漢', 'KANJIDIC2', 'Kanji readings used to place furigana over each kanji. © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.', 'https://www.edrdg.org/edrdg/licence.html', 'Licence'],
-  ['🗣️', 'Your device’s voice', 'Speaks lines without a recording (your own words in the sentence builder, your name).', '', ''],
-  ['😀', 'Emoji', 'Pictures come from your device’s emoji font.', '', ''],
+  ['sounds', 'VOICEVOX:四国めたん', 'Main voice: phrases, words and examples.', 'https://zunko.jp/con_ongen_kiyaku.html', 'Terms of use'],
+  ['sounds', 'VOICEVOX:冥鳴ひまり', 'Listening conversations (woman).', 'https://meimeihimari.wixsite.com/himari/terms-of-use', 'Terms of use'],
+  ['sounds', 'VOICEVOX:青山龍星', 'Listening conversations (man).', 'https://www.virvoxproject.com/voicevox%E3%81%AE%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84', 'Terms of use'],
+  ['play', 'VOICEVOX', 'Free Japanese speech engine used to record the voices.', 'https://voicevox.hiroshiba.jp/', 'voicevox.hiroshiba.jp'],
+  ['strokes', 'KanjiVG', 'Stroke order for every kanji. © Ulrich Apel and contributors, CC BY-SA 3.0.', 'https://kanjivg.tagaini.net/', 'kanjivg.tagaini.net'],
+  ['learn', 'Lucide', 'Interface icons (tabs, buttons, board). © Lucide Contributors, ISC licence; portions © Cole Bemis (Feather, MIT).', 'https://lucide.dev/license', 'lucide.dev'],
+  ['study', 'KANJIDIC2', 'Kanji readings used to place furigana over each kanji. © Electronic Dictionary Research and Development Group, CC BY-SA 4.0.', 'https://www.edrdg.org/edrdg/licence.html', 'Licence'],
+  ['speak', 'Your device’s voice', 'Speaks lines without a recording (your own words in the sentence builder, your name).', '', ''],
+  ['vocab', 'Emoji', 'Word pictures come from your device’s emoji font.', '', ''],
 ];
 function openSettings() {
   const sheet = document.getElementById('sheet');
@@ -476,11 +476,11 @@ function openSettings() {
   sheet.innerHTML = `
     <div class="panel" role="dialog" aria-modal="true" aria-label="Settings">
       <div class="seg" role="tablist" aria-label="Settings sections">
-        <button role="tab" id="t-prefs" aria-controls="p-prefs" aria-selected="true" class="on" data-act="settings-tab" data-arg="prefs">⚙︎ Settings</button>
-        <button role="tab" id="t-credits" aria-controls="p-credits" aria-selected="false" data-act="settings-tab" data-arg="credits">🙏 Credits</button>
+        <button role="tab" id="t-prefs" aria-controls="p-prefs" aria-selected="true" class="on" data-act="settings-tab" data-arg="prefs">${icon('settings')} Settings</button>
+        <button role="tab" id="t-credits" aria-controls="p-credits" aria-selected="false" data-act="settings-tab" data-arg="credits">${icon('credits')} Credits</button>
       </div>
       <section id="p-prefs" role="tabpanel" aria-labelledby="t-prefs" class="panel-tab">
-        <p class="muted small">Saved on this device: these display settings and the levels you have marked complete in each path. Your completed levels and passed full mock tests are also shared on the 👥 board with everyone who has an account. No scores, history or anything else about you.</p>
+        <p class="muted small">Saved on this device: these display settings and the levels you have marked complete in each path. Your completed levels and passed full mock tests are also shared on the board with everyone who has an account. No scores, history or anything else about you.</p>
         <label class="check"><input type="checkbox" id="s-romaji" ${S.settings.romaji ? 'checked' : ''}> Show romaji</label>
         <label class="check"><input type="checkbox" id="s-kana" ${S.settings.kana ? 'checked' : ''}> Show furigana (kana reading over kanji)</label>
         <label class="check"><input type="checkbox" id="s-hindi" ${S.settings.hindi ? 'checked' : ''}> Show Hinglish meanings · Hindi mein matlab</label>
@@ -491,7 +491,7 @@ function openSettings() {
           <p class="muted small">Tip: on iPhone, download a better voice in Settings → Accessibility → Spoken Content → Voices → Japanese (Kyoko Enhanced or O-ren Premium).</p>` : ''}
         ${!canSpeak() || !voices.length ? `<p class="warn">No Japanese browser voice found. Recorded lines still play; others need one. On iPhone: Settings → Accessibility → Spoken Content → Voices → Japanese. On Android: install Google Text-to-speech Japanese.</p>` : ''}
         <div class="row">
-          <button class="btn" data-act="test-voice">🔊 Test browser voice</button>
+          <button class="btn" data-act="test-voice">${icon('play')} Test browser voice</button>
           <button class="btn primary" data-act="save-settings">Save</button>
         </div>
         ${me ? `<p class="muted small">Logged in as <b>${esc(me)}</b></p>
@@ -499,9 +499,9 @@ function openSettings() {
       </section>
       <section id="p-credits" role="tabpanel" aria-labelledby="t-credits" class="panel-tab" hidden>
         <p class="muted small">Hanasu is built on these. Thank you! · Shukriya!</p>
-        <ul class="credits">${CREDITS.map(([icon, name, what, url, label]) => `<li>
-          <span class="cicon" lang="ja">${icon}</span>
-          <span><b lang="ja">${esc(name)}</b><small>${esc(what)}</small>${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>` : ''}</span>
+        <ul class="credits">${CREDITS.map(([ic, name, what, url, label]) => `<li>
+          <span class="cicon">${icon(ic)}</span>
+          <span><b lang="ja">${esc(name)}</b><small>${esc(what)}</small>${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>` : ''}</span>
         </li>`).join('')}</ul>
       </section>
     </div>`;

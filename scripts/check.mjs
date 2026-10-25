@@ -145,14 +145,14 @@ if (KANJI_LIST.length < 250) fail('kanji should cover the full N5 + N4 list (250
 const SP = await import('../js/speaking-data.js');
 const KR = await import('../js/kanji-readings.js');
 for (const [i, item] of SP.QA.entries()) {
-  if (!item.pic || item.a.length < 2) fail(`QA ${i}: needs a picture and 2 answers`);
+  if (item.a.length < 2) fail(`QA ${i}: needs 2 answers`);
   for (const l of [item.q, ...item.a]) {
     if (l.length !== 5 || !l.every(x => typeof x === 'string' && x.trim())) fail(`QA ${i}: line needs 5 fields`);
     else { if (/[\u4e00-\u9faf]/.test(l[1].replace(/\{\w+\}/g, ''))) fail(`QA ${i}: kana has kanji: ${l[1]}`); romajiOk(l[2], `QA ${i}`); if (!LATIN.test(l[4])) fail(`QA ${i}: Hinglish: ${l[4]}`); }
   }
 }
 for (const g of SP.PRONUNCIATION) for (const pair of g.pairs) for (const w of pair) if (w.length !== 5 || !/^[\u3040-\u309f]+$/.test(w[0])) fail(`pronunciation word ${w[0]}: needs [kana, romaji, en, hinglish, emoji]`);
-for (const j of SP.JOBS) if (j.length !== 6) fail(`job ${j[0]}: needs 6 fields`);
+for (const j of SP.JOBS) if (j.length !== 5) fail(`job ${j[0]}: needs 5 fields`);
 
 // 5d. JLPT content.
 const J = await import('../js/jlpt-data.js');
@@ -565,7 +565,7 @@ test('mock scoring matches JLPT pass rules', () => {
     const ids = BK.PAGES.map(p => p.id);
     assert.equal(new Set(ids).size, ids.length, 'duplicate page ids');
     for (const p of BK.PAGES) {
-      assert.ok(p.title && p.icon && p.sections.length, `${p.id}: missing title, icon or sections`);
+      assert.ok(p.title && p.sections.length, `${p.id}: missing title or sections`);
       if (p.n) assert.ok(p.jp && p.ro && p.topic && p.goals.length >= 2, `unit ${p.n}: needs jp, romaji, topic and its goals`);
       for (const s of p.sections) for (const b of s.blocks) {
         const at = `${p.id} / ${s.h} / ${b.t}`;
@@ -625,11 +625,11 @@ const PATHMOD = await import('../js/path.js');
     if (!LATIN.test(P.intro.hg)) fail(`path ${pid}: intro Hinglish`);
     for (const l of P.levels) {
       const at = `path ${pid}/${l.id}`;
-      for (const k of ['icon', 'title', 'part', 'time', 'goal', 'tip']) if (!l[k]) fail(`${at}: missing ${k}`);
+      for (const k of ['title', 'part', 'time', 'goal', 'tip']) if (!l[k]) fail(`${at}: missing ${k}`);
       for (const k of ['goalHg', 'tipHg']) if (!LATIN.test(l[k] || '')) fail(`${at}: ${k} must be Roman-letter Hinglish`);
       if (l.steps.length < 3 || l.daily.length < 3) fail(`${at}: needs 3+ steps and 3+ daily items`);
-      for (const [icon, title, how, t] of l.steps) {
-        if (!icon || !title || !how) fail(`${at}: step missing text`);
+      for (const [title, how, t, extra] of l.steps) {
+        if (!title || !how || extra !== undefined) fail(`${at}: step needs [title, how, target]`);
         if (t && !(t.startsWith('#') ? HASH.test(t) : ACTIONS.has(t.split(':')[0]))) fail(`${at}: step target ${t} doesn't exist`);
         if (t?.startsWith('#unit/') && !UI.some(u => u.id === t.slice(6))) fail(`${at}: no unit ${t}`);
       }
@@ -670,6 +670,22 @@ const PATHMOD = await import('../js/path.js');
     }
   }
 }
+
+// v6.1 (the user's request, 2026-10-25): no emoji anywhere in the interface; buttons, notes and headings use the
+// Lucide icons in js/icons.js. Emoji are allowed only in content: word, kanji, grammar and counter pictures, the
+// pronunciation pairs, the exam data and the textbook's own pages.
+test('no emoji in the interface', () => {
+  const CONTENT = /^(vocab-|kanji-|grammar-n|counters-data|exam-(data|more|listen)|jlpt-data|speaking-data|book-(u\d+|wb-|grammar|kana|pictures|musts)|icons\.js)/;
+  const EMOJI = /\p{Extended_Pictographic}/u;
+  const files = [...readdirSync('js').filter(f => f.endsWith('.js') && !CONTENT.test(f)).map(f => 'js/' + f), 'index.html', 'login.html', 'css/app.css'];
+  for (const f of files) read(f).split('\n').forEach((l, i) => {
+    if (!/^\s*(\/\/|\/\*|\*)/.test(l) && EMOJI.test(l.replace(/[©®™]/g, ''))) fail(`${f}:${i + 1} has an emoji: ${l.trim().slice(0, 80)}`);
+  });
+  // Content files may keep their pictures, but not the old decorative fields.
+  for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) assert.ok(!/\bicon: '/.test(read('js/' + f)), `js/${f} still has an emoji icon field`);
+  assert.ok(SP.QA.every(q => !q.pic), 'Speak questions have no decorative picture');
+  assert.ok(J.EXAM_TIPS.every(t => t.length === 2 && !EMOJI.test(t[0])), 'exam tips have no emoji marker');
+});
 
 test('no tests are left but the full mocks: no quiz screens or level tests in the app', () => {
   const gone = /data-act="(quiz|gquiz|order|kana-quiz|vocab-quiz|pquiz|vquiz|kquiz|cquiz|sound-test|path-test|path-speak)"/;

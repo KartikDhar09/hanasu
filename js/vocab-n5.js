@@ -3,7 +3,7 @@
 // Romaji is generated from the kana. Words already in vocab-data.js are skipped when merged.
 
 export const N5_TOPICS = [
-  { id: 'n5-numbers', title: 'Numbers & counting', hg: 'Ginti', icon: '🔢', list: `
+  { id: 'n5-numbers', title: 'Numbers & counting', hg: 'Ginti', list: `
 一つ|ひとつ|one (thing)|ek|1️⃣
 二つ|ふたつ|two (things)|do|2️⃣
 三つ|みっつ|three (things)|teen|3️⃣
@@ -34,7 +34,7 @@ export const N5_TOPICS = [
 少し|すこし|a little|thoda|🤏
 ちょっと|ちょっと|a little / a moment|thoda / ek minute|🤏
 ` },
-  { id: 'n5-calendar', title: 'Days, months & dates', hg: 'Din, mahine, taareekh', icon: '📅', list: `
+  { id: 'n5-calendar', title: 'Days, months & dates', hg: 'Din, mahine, taareekh', list: `
 月曜日|げつようび|Monday|Somvaar|🌙
 火曜日|かようび|Tuesday|Mangalvaar|🔥
 水曜日|すいようび|Wednesday|Budhvaar|💧
@@ -88,7 +88,7 @@ export const N5_TOPICS = [
 〜か月|〜かげつ|… months|… mahine|🗓️
 〜週間|〜しゅうかん|… weeks|… hafte|🗓️
 ` },
-  { id: 'n5-clock', title: 'Time of day', hg: 'Din ka samay', icon: '🕒', list: `
+  { id: 'n5-clock', title: 'Time of day', hg: 'Din ka samay', list: `
 時間|じかん|time / hours|samay / ghante|⏳
 〜時|〜じ|… o’clock|… baje|🕐
 〜分|〜ふん|… minutes|… minute|⏱️
@@ -118,7 +118,7 @@ export const N5_TOPICS = [
 遅い|おそい|late / slow|der / dheema|🐢
 早い|はやい|early / fast|jaldi / tez|🏎️
 ` },
-  { id: 'n5-family2', title: 'More family & people', hg: 'Aur rishtedaar aur log', icon: '👪', list: `
+  { id: 'n5-family2', title: 'More family & people', hg: 'Aur rishtedaar aur log', list: `
 お父さん|おとうさん|father (someone’s)|papa / pitaji|👨
 お母さん|おかあさん|mother (someone’s)|mummy / maa|👩
 お兄さん|おにいさん|older brother (someone’s)|bade bhaiya|👦
@@ -156,7 +156,7 @@ export const N5_TOPICS = [
 〜君|〜くん|(suffix for boys)|(ladkon ke liye)|👦
 自分|じぶん|oneself|khud|🪞
 ` },
-  { id: 'n5-body', title: 'Body & health', hg: 'Sharir aur sehat', icon: '🧍', list: `
+  { id: 'n5-body', title: 'Body & health', hg: 'Sharir aur sehat', list: `
 体|からだ|body|sharir|🧍
 頭|あたま|head|sar|🧠
 顔|かお|face|chehra|🙂
@@ -177,7 +177,7 @@ export const N5_TOPICS = [
 丈夫|じょうぶ|strong / sturdy|mazboot|💪
 大丈夫|だいじょうぶ|OK / all right|theek hai|👌
 ` },
-  { id: 'n5-home', title: 'Home & household', hg: 'Ghar ka saamaan', icon: '🏠', list: `
+  { id: 'n5-home', title: 'Home & household', hg: 'Ghar ka saamaan', list: `
 うち|うち|home / my house|ghar|🏠
 台所|だいどころ|kitchen|rasoi|🍳
 お風呂|おふろ|bath|nahaane ka tub|🛁
@@ -209,7 +209,7 @@ export const N5_TOPICS = [
 建物|たてもの|building|imaarat|🏢
 隣|となり|next door|bagal mein|🏘️
 ` },
-  { id: 'n5-food2', title: 'More food & cooking', hg: 'Aur khaana', icon: '🍽️', list: `
+  { id: 'n5-food2', title: 'More food & cooking', hg: 'Aur khaana', list: `
 食べ物|たべもの|food|khaana|🍲
 飲み物|のみもの|drinks|peene ki cheez|🥤
 料理|りょうり|cooking / dish|khaana banana / dish|🍳
@@ -249,7 +249,7 @@ export const N5_TOPICS = [
 喫茶店|きっさてん|café|café|☕
 八百屋|やおや|greengrocer|sabzi waala|🥕
 ` },
-  { id: 'n5-clothes', title: 'Clothes & colours', hg: 'Kapde aur rang', icon: '👕', list: `
+  { id: 'n5-clothes', title: 'Clothes & colours', hg: 'Kapde aur rang', list: `
 洋服|ようふく|clothes (western)|kapde|👗
 上着|うわぎ|jacket|jacket|🧥
 コート|コート|coat|coat|🧥
@@ -273,7 +273,7 @@ export const N5_TOPICS = [
 茶色|ちゃいろ|brown|bhoora|🟤
 緑|みどり|green|hara|🟢
 ` },
-  { id: 'n5-places2', title: 'More places', hg: 'Aur jagah', icon: '🗺️', list: `
+  { id: 'n5-places2', title: 'More places', hg: 'Aur jagah', list: `
 所|ところ|place|jagah|📍
 町|まち|town|kasba|🏘️
 国|くに|country|desh|🗾
@@ -301,7 +301,7 @@ export const N5_TOPICS = [
 角|かど|corner|kona|↩️
 交差点|こうさてん|crossroads|chauraaha|🚦
 ` },
-  { id: 'n5-position', title: 'Position & direction', hg: 'Jagah aur disha', icon: '🧭', list: `
+  { id: 'n5-position', title: 'Position & direction', hg: 'Jagah aur disha', list: `
 上|うえ|above / on|upar|⬆️
 下|した|below / under|neeche|⬇️
 中|なか|inside|andar|📥
@@ -320,7 +320,7 @@ export const N5_TOPICS = [
 北|きた|north|uttar|⬆️
 まっすぐ|まっすぐ|straight|seedha|⬆️
 ` },
-  { id: 'n5-kosoado', title: 'This, that & question words', hg: 'Ye, wo aur sawaal', icon: '👉', list: `
+  { id: 'n5-kosoado', title: 'This, that & question words', hg: 'Ye, wo aur sawaal', list: `
 これ|これ|this (near me)|ye|👇
 それ|それ|that (near you)|wo (aapke paas)|👉
 あれ|あれ|that (over there)|wo (door)|☝️
@@ -354,7 +354,7 @@ export const N5_TOPICS = [
 いくら|いくら|how much|kitne ka|💴
 どのくらい|どのくらい|how long / how much|kitna|📏
 ` },
-  { id: 'n5-nature', title: 'Nature & animals', hg: 'Prakriti aur jaanwar', icon: '🌳', list: `
+  { id: 'n5-nature', title: 'Nature & animals', hg: 'Prakriti aur jaanwar', list: `
 空|そら|sky|aasmaan|☁️
 太陽|たいよう|sun|suraj|☀️
 星|ほし|star|taara|⭐
@@ -379,7 +379,7 @@ export const N5_TOPICS = [
 冷たい|つめたい|cold (to touch)|thanda (chhoone mein)|🧊
 熱い|あつい|hot (to touch)|garam (chhoone mein)|♨️
 ` },
-  { id: 'n5-school', title: 'School, study & work', hg: 'Padhai aur kaam', icon: '🏫', list: `
+  { id: 'n5-school', title: 'School, study & work', hg: 'Padhai aur kaam', list: `
 勉強|べんきょう|study|padhai|📖
 宿題|しゅくだい|homework|homework|📝
 問題|もんだい|problem / question|sawaal / samasya|❓
@@ -422,7 +422,7 @@ export const N5_TOPICS = [
 電話番号|でんわばんごう|phone number|phone number|📞
 名前|なまえ|name|naam|📛
 ` },
-  { id: 'n5-hobbies', title: 'Hobbies & free time', hg: 'Shauk aur khaali samay', icon: '🎮', list: `
+  { id: 'n5-hobbies', title: 'Hobbies & free time', hg: 'Shauk aur khaali samay', list: `
 映画|えいが|movie|movie|🎬
 音楽|おんがく|music|sangeet|🎵
 歌|うた|song|gaana|🎤
@@ -440,7 +440,7 @@ export const N5_TOPICS = [
 お祭り|おまつり|festival|tyohaar|🏮
 趣味|しゅみ|hobby|shauk|🎨
 ` },
-  { id: 'n5-transport2', title: 'More travel words', hg: 'Aur safar ke shabd', icon: '🚉', list: `
+  { id: 'n5-transport2', title: 'More travel words', hg: 'Aur safar ke shabd', list: `
 地下鉄|ちかてつ|subway|metro|🚇
 新幹線|しんかんせん|bullet train|bullet train|🚄
 船|ふね|ship|jahaaz|🚢
@@ -451,7 +451,7 @@ export const N5_TOPICS = [
 旅行|りょこう|trip|trip|🧳
 外国|がいこく|abroad|videsh|🌏
 ` },
-  { id: 'n5-verbs', title: 'N5 verbs', hg: 'N5 kriyaayein', icon: '🏃', list: `
+  { id: 'n5-verbs', title: 'N5 verbs', hg: 'N5 kriyaayein', list: `
 会う|あう|meet|milna|🤝
 開く|あく|open (it opens)|khulna|🔓
 開ける|あける|open (something)|kholna|🚪
@@ -560,7 +560,7 @@ export const N5_TOPICS = [
 渡る|わたる|cross|paar karna|🚶
 忘れる|わすれる|forget|bhoolna|🤦
 ` },
-  { id: 'n5-iadj', title: 'More い-adjectives', hg: 'Aur visheshan (-i wale)', icon: '🎨', list: `
+  { id: 'n5-iadj', title: 'More い-adjectives', hg: 'Aur visheshan (-i wale)', list: `
 暖かい|あたたかい|warm|garam|🌤️
 危ない|あぶない|dangerous|khatarnaak|⚠️
 厚い|あつい|thick|mota|📚
@@ -595,7 +595,7 @@ export const N5_TOPICS = [
 近い|ちかい|near|paas|📍
 速い|はやい|fast|tez|🏎️
 ` },
-  { id: 'n5-naadj', title: 'な-adjectives', hg: 'Visheshan (-na wale)', icon: '🌸', list: `
+  { id: 'n5-naadj', title: 'な-adjectives', hg: 'Visheshan (-na wale)', list: `
 好き|すき|like|pasand|❤️
 大好き|だいすき|love / really like|bahut pasand|😍
 嫌い|きらい|dislike|naapasand|👎
@@ -618,7 +618,7 @@ export const N5_TOPICS = [
 嫌|いや|unpleasant / no|naapasand / nahi|🙅
 親切|しんせつ|kind|dayalu|🤗
 ` },
-  { id: 'n5-adverbs', title: 'Adverbs & useful words', hg: 'Kaam ke shabd', icon: '✨', list: `
+  { id: 'n5-adverbs', title: 'Adverbs & useful words', hg: 'Kaam ke shabd', list: `
 とても|とても|very|bahut|💯
 よく|よく|well / often|achhe se / aksar|👍
 あまり|あまり|not very (+ negative)|zyaada nahi|🤏
@@ -652,7 +652,7 @@ export const N5_TOPICS = [
 すみません|すみません|excuse me / sorry|maaf kijiye|🙇
 ごめんなさい|ごめんなさい|I’m sorry|sorry|🙇
 ` },
-  { id: 'n5-katakana', title: 'Katakana loanwords', hg: 'Angrezi se aaye shabd', icon: '🔤', list: `
+  { id: 'n5-katakana', title: 'Katakana loanwords', hg: 'Angrezi se aaye shabd', list: `
 アイスクリーム|アイスクリーム|ice cream|ice cream|🍦
 カレンダー|カレンダー|calendar|calendar|📅
 カード|カード|card|card|💳
@@ -677,7 +677,7 @@ export const N5_TOPICS = [
 グラム|グラム|gram|gram|⚖️
 ` },
   // Standard N5 words the app was missing (added 2026-10).
-  { id: 'n5-more', title: 'More everyday N5 words', hg: 'Aur roz ke shabd', icon: '➕', list: `
+  { id: 'n5-more', title: 'More everyday N5 words', hg: 'Aur roz ke shabd', list: `
 いかが|いかが|how (polite)|kaisa (aadar se)
 一緒|いっしょ|together|saath
 大勢|おおぜい|many people|bahut saare log|👥

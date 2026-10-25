@@ -2,7 +2,7 @@
 import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, IMG, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u2', n: 2, icon: '🏧', title: 'Is there an ATM around here?', jp: 'このへんに、ATMありますか。', ro: 'Kono hen ni, ATM arimasu ka.',
+  id: 'u2', n: 2, title: 'Is there an ATM around here?', jp: 'このへんに、ATMありますか。', ro: 'Kono hen ni, ATM arimasu ka.',
   topic: 'Asking for directions', topicJp: '場所を尋ねる',
   goals: ['Ask if a store or place you want to go to is in the nearby area', 'Ask for the location of a store or place you want to go to', 'Ask and understand simple directions'],
   sections: [

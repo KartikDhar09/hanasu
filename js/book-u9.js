@@ -2,7 +2,7 @@
 import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u9', n: 9, icon: '🗾', title: 'How do you like living in Japan?', jp: '日本の生活はどうですか。', ro: 'Nihon no seikatsu wa dō desu ka.',
+  id: 'u9', n: 9, title: 'How do you like living in Japan?', jp: '日本の生活はどうですか。', ro: 'Nihon no seikatsu wa dō desu ka.',
   topic: 'Talking about impressions', topicJp: '感想を言う',
   goals: ['Talk about your life in Japan', 'Talk about your impression of things that happened in the past'],
   sections: [

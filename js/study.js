@@ -77,8 +77,8 @@ export function initStudy(ctx) {
       <p class="muted sub">${esc(p.title)}</p>
       <div class="card left">
         <p>${esc(p.explain)}</p>
-        ${S().settings.hindi ? `<div class="compare"><b>🇮🇳 Hindi mein:</b> ${esc(p.hindi)}</div>` : ''}
-        ${p.tip ? `<div class="note">💡 ${esc(p.tip)}</div>` : ''}
+        ${S().settings.hindi ? `<div class="compare"><b>Hindi mein:</b> ${esc(p.hindi)}</div>` : ''}
+        ${p.tip ? `<div class="note">${icon('tip')} ${esc(p.tip)}</div>` : ''}
       </div>
       <h2 class="sec">Examples <small class="muted">tap to hear</small></h2>
       <ul class="phrases">${p.examples.map((e, i) => example(e, i, `pt:${p.id}:${i}`)).join('')}</ul>`);
@@ -94,7 +94,7 @@ export function initStudy(ctx) {
       <div class="groups">${GROUPS.map(g => `<div class="card left group g${g.id}">
         <b>${esc(g.name)}</b> <span class="muted" lang="ja">${g.jp}</span>
         <p>${esc(g.how)}</p>${hg(g.hg)}</div>`).join('')}</div>
-      <ul class="tips">${TIPS.map(t => `<li>💡 ${esc(t)}</li>`).join('')}</ul>
+      <ul class="tips">${TIPS.map(t => `<li>${icon('tip')} ${esc(t)}</li>`).join('')}</ul>
       ${GROUPS.map(g => `
         <h2 class="sec">${esc(g.name)}</h2>
         <div class="vlist">${VERBS.map((v, i) => v.group === g.id ? `<button class="vrow" data-act="verb" data-arg="${i}">
@@ -115,7 +115,7 @@ export function initStudy(ctx) {
       <div class="card left">
         <div><b>How to use:</b> <span lang="ja">${esc(v.use)}</span></div>
         <ul class="phrases">${example(v.ex, 0)}</ul>
-        <div class="note">💡 ${esc(g.how)}</div>
+        <div class="note">${icon('tip')} ${esc(g.how)}</div>
       </div>
       <h2 class="sec">All forms <small class="muted">tap to hear</small></h2>
       <div class="conj">${FORMS.map(f => `<button class="crow" data-act="say-text" data-arg="${esc(c[f.id][0])}">
@@ -133,16 +133,16 @@ export function initStudy(ctx) {
     ctx.clearSess(); st = null;
     render(`
       <div class="head">${back('study')}<h1>Kanji <span lang="ja">漢字</span></h1></div>
-      <details class="fold"><summary>💡 How kanji work</summary><div class="fold-body">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div></details>
+      <details class="fold"><summary>${icon('tip')} How kanji work</summary><div class="fold-body">${esc(KANJI_INTRO.en)}${hg(KANJI_INTRO.hg, 'hi intro-hg')}</div></details>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === klevel() ? 'on' : ''}" data-act="kanji-level" data-arg="${l}">${l.toUpperCase()} · ${KANJI.filter(k => k.level === l).length} kanji</button>`).join('')}</div>
       <div class="row">
-        <button class="btn primary" data-act="klearn" data-arg="">🃏 Flashcards</button>
+        <button class="btn primary" data-act="klearn" data-arg="">${icon('learn')} Flashcards</button>
       </div>
       ${ALL_KANJI_GROUPS.filter(g => g.level === klevel()).map(g => `
-        <h2 class="sec">${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
+        <h2 class="sec">${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
         <div class="kgrid">${g.kanji.map(k => `<button class="ktile" data-act="kanji-one" data-arg="${k[0]}">
           <span lang="ja">${k[0]}</span><small>${esc(k[3].split(' /')[0])}</small></button>`).join('')}</div>
-        <button class="btn small ghost" data-act="klearn" data-arg="${g.id}">🃏 Learn this group</button>`).join('')}`);
+        <button class="btn small ghost" data-act="klearn" data-arg="${g.id}">${icon('learn')} Learn this group</button>`).join('')}`);
   }
 
   function kanjiDetail(k, cls = '') {
@@ -168,7 +168,7 @@ export function initStudy(ctx) {
     render(`
       <div class="head">${back('kanji')}<h1>${esc(ALL_KANJI_GROUPS.find(g => g.id === k.group).title)}</h1><span class="pill">${k.level.toUpperCase()}</span></div>
       <div class="card">${kanjiDetail(k)}</div>
-      <button class="btn" data-act="stroke-open" data-arg="${k.ch}">✍️ Stroke order</button>
+      <button class="btn" data-act="stroke-open" data-arg="${k.ch}">${icon('strokes')} Stroke order</button>
       <div class="row">
         <button class="btn" data-act="kanji-one" data-arg="${list[i - 1]?.ch || ''}" ${i ? '' : 'disabled'}>‹ ${list[i - 1]?.ch || ''}</button>
         <button class="btn" data-act="kanji-one" data-arg="${list[i + 1]?.ch || ''}" ${list[i + 1] ? '' : 'disabled'}>${list[i + 1]?.ch || ''} ›</button>
@@ -221,7 +221,7 @@ export function initStudy(ctx) {
     onDone?.();
     st = null; ctx.clearSess();
     render(`<div class="done">
-      <div class="big-emoji">🌸</div><h1>${esc(title)}</h1>
+      <div class="big-emoji">${icon('finish')}</div><h1>${esc(title)}</h1>
       <p class="muted">よくできました！ Bahut badhiya!</p>
       <button class="btn primary big" data-act="${backTo}" data-arg="${esc(arg)}">Back</button>
     </div>`);
@@ -237,8 +237,8 @@ export function initStudy(ctx) {
     render(`
       <div class="head">${back('study')}<h1>Counters <span lang="ja" class="accent">助数詞</span></h1></div>
       <div class="card left"><p>${esc(COUNTER_INTRO.en)}</p>${hg(COUNTER_INTRO.hg)}
-        <div class="note">💡 From 11 on: じゅう + the 1–9 reading (十一本 じゅういっぽん, 十三本 じゅうさんぼん). Ask “how many” with 何 + counter (何本 なんぼん).</div></div>
-      ${COUNTER_GROUPS.map(g => `<h2 class="sec">${g.icon} ${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
+        <div class="note">${icon('tip')} From 11 on: じゅう + the 1–9 reading (十一本 じゅういっぽん, 十三本 じゅうさんぼん). Ask “how many” with 何 + counter (何本 なんぼん).</div></div>
+      ${COUNTER_GROUPS.map(g => `<h2 class="sec">${esc(g.title)}${S().settings.hindi ? ` <small class="muted" lang="hi-Latn">${esc(g.hg)}</small>` : ''}</h2>
         <div class="pgrid">${COUNTERS.filter(c => c.group === g.id).map(c => `<button class="pcard" data-act="counter" data-arg="${c.id}">
           <span class="pch" lang="ja">${c.c}</span>
           <span class="pt"><b>${c.pic} ${esc(c.title)}</b><small lang="ja">${c.kana} · ${c.level.toUpperCase()}</small></span>
@@ -256,7 +256,7 @@ export function initStudy(ctx) {
       <div class="card left">
         <p>${esc(c.use)}</p>${hg(c.useHg)}
         <div class="citems">${c.items.map(([pic, en]) => `<span class="pill">${pic} ${esc(en)}</span>`).join(' ')}</div>
-        <div class="row ask"><span>How many? </span><button class="btn small" data-act="say-text" data-arg="${c.ask[1]}"><span lang="ja">${c.ask[0]}</span>${c.ask[0] !== c.ask[1] ? ` <small lang="ja">${c.ask[1]}</small>` : ''} 🔊</button></div>
+        <div class="row ask"><span>How many? </span><button class="btn small" data-act="say-text" data-arg="${c.ask[1]}"><span lang="ja">${c.ask[0]}</span>${c.ask[0] !== c.ask[1] ? ` <small lang="ja">${c.ask[1]}</small>` : ''} ${icon('play')}</button></div>
       </div>
       <h2 class="sec">1 to 10 <small class="muted">tap to hear · <span class="irr-key">highlighted</span> = sound change</small></h2>
       <div class="ctable">${c.n.map((_, i) => cell(i)).join('')}</div>

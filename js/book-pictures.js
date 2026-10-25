@@ -2,7 +2,7 @@
 import { N, WP } from './book-kit.js';
 
 export default {
-  id: 'pictures', icon: '🍣', title: 'Pictures: colors & Japanese food', jp: '写真資料',
+  id: 'pictures', title: 'Pictures: colors & Japanese food', jp: '写真資料',
   sections: [
     { h: '色 Iro · Colors', blocks: [
       N('* = I-adjective'),

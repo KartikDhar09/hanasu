@@ -2,7 +2,7 @@
 import { P, IADJ, NADJ } from './book-kit.js';
 
 export default {
-  id: 'wb-adjectives', icon: '🎨', title: 'Wordbook: adjective conjugation list', jp: '形容詞活用表',
+  id: 'wb-adjectives', title: 'Wordbook: adjective conjugation list', jp: '形容詞活用表',
   sections: [
     { h: 'I-adjectives', blocks: [P('Each card: non-past affirmative · negative · past affirmative · negative (add です to each). Tap to hear all four.'), IADJ(`
 bright|あかるい

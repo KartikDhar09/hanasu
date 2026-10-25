@@ -2,7 +2,7 @@
 import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u8', n: 8, icon: '🗓️', title: 'I’m going to an art museum.', jp: '美術館に行きます。', ro: 'Bijutsukan ni ikimasu.',
+  id: 'u8', n: 8, title: 'I’m going to an art museum.', jp: '美術館に行きます。', ro: 'Bijutsukan ni ikimasu.',
   topic: 'Talking about plans and activities', topicJp: '予定や行動について話す',
   goals: ['Talk about plans and what you are about to do', 'Ask about things that have happened and places people have been to', 'Talk about interests and wants'],
   sections: [

@@ -10,7 +10,7 @@ export const KANJI_INTRO = {
 };
 
 export const KANJI_GROUPS = [
-  { id: 'num', title: 'Numbers & money', hg: 'Ginti aur paise', icon: '🔢', kanji: [
+  { id: 'num', title: 'Numbers & money', hg: 'Ginti aur paise', kanji: [
     ['一', 'イチ・イツ', 'ひと・ひと(つ)', 'one', 'ek', [['一つ', 'ひとつ', 'hitotsu', 'one (thing)', 'ek'], ['一月', 'いちがつ', 'ichigatsu', 'January', 'January']]],
     ['二', 'ニ', 'ふた・ふた(つ)', 'two', 'do', [['二つ', 'ふたつ', 'futatsu', 'two (things)', 'do'], ['二人', 'ふたり', 'futari', 'two people', 'do log']]],
     ['三', 'サン', 'み・み(つ)', 'three', 'teen', [['三つ', 'みっつ', 'mittsu', 'three (things)', 'teen'], ['三時', 'さんじ', 'sanji', 'three o’clock', 'teen baje']]],
@@ -26,7 +26,7 @@ export const KANJI_GROUPS = [
     ['万', 'マン', '', 'ten thousand', 'das hazaar', [['一万円', 'いちまんえん', 'ichiman en', '10,000 yen', 'das hazaar yen'], ['十万', 'じゅうまん', 'jūman', '100,000 (1 lakh!)', 'ek lakh']]],
     ['円', 'エン', 'まる', 'yen / circle', 'yen / gola', [['五百円', 'ごひゃくえん', 'gohyaku en', '500 yen', 'paanch sau yen'], ['円い', 'まるい', 'marui', 'round', 'gol']]],
   ] },
-  { id: 'time', title: 'Time & days', hg: 'Samay aur din', icon: '📅', kanji: [
+  { id: 'time', title: 'Time & days', hg: 'Samay aur din', kanji: [
     ['日', 'ニチ・ジツ', 'ひ・か', 'day / sun', 'din / suraj', [['毎日', 'まいにち', 'mainichi', 'every day', 'roz'], ['日曜日', 'にちようび', 'nichiyōbi', 'Sunday', 'Ravivaar']]],
     ['月', 'ゲツ・ガツ', 'つき', 'month / moon', 'mahina / chaand', [['月曜日', 'げつようび', 'getsuyōbi', 'Monday', 'Somvaar'], ['来月', 'らいげつ', 'raigetsu', 'next month', 'agla mahina']]],
     ['火', 'カ', 'ひ', 'fire', 'aag', [['火曜日', 'かようび', 'kayōbi', 'Tuesday', 'Mangalvaar'], ['火事', 'かじ', 'kaji', 'a fire', 'aag lagna']]],
@@ -46,7 +46,7 @@ export const KANJI_GROUPS = [
     ['週', 'シュウ', '', 'week', 'hafta', [['今週', 'こんしゅう', 'konshū', 'this week', 'is hafte'], ['週末', 'しゅうまつ', 'shūmatsu', 'weekend', 'weekend']]],
     ['何', 'カ', 'なに・なん', 'what', 'kya', [['何時', 'なんじ', 'nanji', 'what time', 'kitne baje'], ['何', 'なに', 'nani', 'what', 'kya']]],
   ] },
-  { id: 'people', title: 'People & work', hg: 'Log aur kaam', icon: '👥', kanji: [
+  { id: 'people', title: 'People & work', hg: 'Log aur kaam', kanji: [
     ['人', 'ジン・ニン', 'ひと', 'person', 'insaan / log', [['インド人', 'インドじん', 'Indojin', 'Indian (person)', 'Bharatiya'], ['三人', 'さんにん', 'sannin', 'three people', 'teen log']]],
     ['男', 'ダン・ナン', 'おとこ', 'man', 'aadmi', [['男の人', 'おとこのひと', 'otoko no hito', 'man', 'aadmi'], ['男性', 'だんせい', 'dansei', 'male', 'purush']]],
     ['女', 'ジョ', 'おんな', 'woman', 'aurat', [['女の人', 'おんなのひと', 'onna no hito', 'woman', 'aurat'], ['女性', 'じょせい', 'josei', 'female', 'mahila']]],
@@ -62,7 +62,7 @@ export const KANJI_GROUPS = [
     ['社', 'シャ', '', 'company / shrine', 'company', [['会社員', 'かいしゃいん', 'kaishain', 'office worker', 'naukri-pesha'], ['社長', 'しゃちょう', 'shachō', 'company president', 'company ke maalik / CEO']]],
     ['語', 'ゴ', '', 'language / word', 'bhasha / shabd', [['日本語', 'にほんご', 'nihongo', 'Japanese language', 'Japanese bhasha'], ['英語', 'えいご', 'eigo', 'English', 'English']]],
   ] },
-  { id: 'place', title: 'Places & directions', hg: 'Jagah aur dishaayein', icon: '🧭', kanji: [
+  { id: 'place', title: 'Places & directions', hg: 'Jagah aur dishaayein', kanji: [
     ['上', 'ジョウ', 'うえ・あ(がる)', 'up / above', 'upar', [['上', 'うえ', 'ue', 'above / on top', 'upar'], ['上手', 'じょうず', 'jōzu', 'good at', 'mahir / achha']]],
     ['下', 'カ・ゲ', 'した・さ(がる)', 'down / below', 'neeche', [['下', 'した', 'shita', 'below', 'neeche'], ['地下鉄', 'ちかてつ', 'chikatetsu', 'subway', 'metro']]],
     ['中', 'チュウ', 'なか', 'inside / middle', 'andar / beech', [['中', 'なか', 'naka', 'inside', 'andar'], ['勉強中', 'べんきょうちゅう', 'benkyō-chū', 'in the middle of studying', 'padhai chal rahi hai']]],
@@ -79,7 +79,7 @@ export const KANJI_GROUPS = [
     ['道', 'ドウ', 'みち', 'road / way', 'raasta', [['道', 'みち', 'michi', 'road', 'raasta'], ['北海道', 'ほっかいどう', 'Hokkaidō', 'Hokkaido', 'Hokkaido']]],
     ['口', 'コウ', 'くち', 'mouth / entrance', 'munh / gate', [['入口', 'いりぐち', 'iriguchi', 'entrance', 'andar jaane ka raasta'], ['出口', 'でぐち', 'deguchi', 'exit', 'bahar jaane ka raasta']]],
   ] },
-  { id: 'nature', title: 'Nature & things', hg: 'Prakriti aur cheezein', icon: '🌳', kanji: [
+  { id: 'nature', title: 'Nature & things', hg: 'Prakriti aur cheezein', kanji: [
     ['山', 'サン', 'やま', 'mountain', 'pahaad', [['山', 'やま', 'yama', 'mountain', 'pahaad'], ['富士山', 'ふじさん', 'Fujisan', 'Mt Fuji', 'Fuji parvat']]],
     ['川', 'セン', 'かわ', 'river', 'nadi', [['川', 'かわ', 'kawa', 'river', 'nadi'], ['天竜川', 'てんりゅうがわ', 'Tenryūgawa', 'Tenryu River (Shizuoka)', 'Tenryu nadi']]],
     ['天', 'テン', 'あめ', 'heaven / sky', 'aasmaan', [['天気', 'てんき', 'tenki', 'weather', 'mausam'], ['天ぷら', 'てんぷら', 'tenpura', 'tempura', 'tempura (pakode jaisa)']]],
@@ -93,7 +93,7 @@ export const KANJI_GROUPS = [
     ['目', 'モク', 'め', 'eye', 'aankh', [['目', 'め', 'me', 'eye', 'aankh'], ['一つ目', 'ひとつめ', 'hitotsume', 'the first one', 'pehla wala']]],
     ['耳', 'ジ', 'みみ', 'ear', 'kaan', [['耳', 'みみ', 'mimi', 'ear', 'kaan'], ['耳鼻科', 'じびか', 'jibika', 'ENT clinic', 'ENT clinic']]],
   ] },
-  { id: 'action', title: 'Action kanji', hg: 'Kaam waale kanji (verbs)', icon: '🏃', kanji: [
+  { id: 'action', title: 'Action kanji', hg: 'Kaam waale kanji (verbs)', kanji: [
     ['行', 'コウ・ギョウ', 'い(く)', 'go', 'jaana', [['行く', 'いく', 'iku', 'go', 'jaana'], ['銀行', 'ぎんこう', 'ginkō', 'bank', 'bank']]],
     ['来', 'ライ', 'く(る)・き・こ', 'come', 'aana', [['来る', 'くる', 'kuru', 'come', 'aana'], ['来週', 'らいしゅう', 'raishū', 'next week', 'agle hafte']]],
     ['食', 'ショク', 'た(べる)', 'eat', 'khaana', [['食べる', 'たべる', 'taberu', 'eat', 'khaana'], ['食事', 'しょくじ', 'shokuji', 'meal', 'bhojan']]],
@@ -110,7 +110,7 @@ export const KANJI_GROUPS = [
     ['入', 'ニュウ', 'はい(る)・い(れる)', 'enter / put in', 'andar jaana / daalna', [['入口', 'いりぐち', 'iriguchi', 'entrance', 'entrance'], ['入る', 'はいる', 'hairu', 'enter', 'andar jaana']]],
     ['立', 'リツ', 'た(つ)', 'stand', 'khada hona', [['立つ', 'たつ', 'tatsu', 'stand', 'khada hona'], ['国立', 'こくりつ', 'kokuritsu', 'national', 'raashtriya']]],
   ] },
-  { id: 'adj', title: 'Describing words', hg: 'Varnan waale kanji', icon: '✨', kanji: [
+  { id: 'adj', title: 'Describing words', hg: 'Varnan waale kanji', kanji: [
     ['大', 'ダイ・タイ', 'おお(きい)', 'big', 'bada', [['大きい', 'おおきい', 'ōkii', 'big', 'bada'], ['大丈夫', 'だいじょうぶ', 'daijōbu', 'OK / fine', 'theek hai']]],
     ['小', 'ショウ', 'ちい(さい)・こ', 'small', 'chhota', [['小さい', 'ちいさい', 'chiisai', 'small', 'chhota'], ['小学校', 'しょうがっこう', 'shōgakkō', 'primary school', 'primary school']]],
     ['長', 'チョウ', 'なが(い)', 'long / chief', 'lamba / pramukh', [['長い', 'ながい', 'nagai', 'long', 'lamba'], ['課長', 'かちょう', 'kachō', 'section manager', 'manager']]],
@@ -127,7 +127,7 @@ export const KANJI_GROUPS = [
 
 // ---- N4 kanji (same tuple format) ----
 export const KANJI_GROUPS_N4 = [
-  { id: 'n4-work', title: 'Work & study', hg: 'Kaam aur padhai', icon: '📝', kanji: [
+  { id: 'n4-work', title: 'Work & study', hg: 'Kaam aur padhai', kanji: [
     ['仕', 'シ・ジ', 'つか(える)', 'serve / do', 'seva / karna', [['仕事', 'しごと', 'shigoto', 'work / job', 'kaam'], ['仕方', 'しかた', 'shikata', 'way of doing', 'tareeka']]],
     ['事', 'ジ', 'こと', 'thing / matter', 'baat / cheez', [['仕事', 'しごと', 'shigoto', 'work', 'kaam'], ['事故', 'じこ', 'jiko', 'accident', 'durghatna']]],
     ['働', 'ドウ', 'はたら(く)', 'work', 'kaam karna', [['働く', 'はたらく', 'hataraku', 'to work', 'kaam karna'], ['労働', 'ろうどう', 'rōdō', 'labour', 'mehnat / mazdoori']]],
@@ -148,7 +148,7 @@ export const KANJI_GROUPS_N4 = [
     ['教', 'キョウ', 'おし(える)', 'teach', 'sikhaana', [['教える', 'おしえる', 'oshieru', 'to teach / tell', 'sikhaana / bataana'], ['教室', 'きょうしつ', 'kyōshitsu', 'classroom', 'classroom']]],
     ['習', 'シュウ', 'なら(う)', 'learn', 'seekhna', [['習う', 'ならう', 'narau', 'to learn (from someone)', 'seekhna'], ['練習', 'れんしゅう', 'renshū', 'practice', 'abhyaas']]],
   ] },
-  { id: 'n4-life', title: 'Home & seasons', hg: 'Ghar aur mausam', icon: '🏡', kanji: [
+  { id: 'n4-life', title: 'Home & seasons', hg: 'Ghar aur mausam', kanji: [
     ['家', 'カ・ケ', 'いえ・うち', 'house / family', 'ghar / parivaar', [['家', 'いえ', 'ie', 'house', 'ghar'], ['家族', 'かぞく', 'kazoku', 'family', 'parivaar']]],
     ['住', 'ジュウ', 'す(む)', 'live (reside)', 'rehna', [['住む', 'すむ', 'sumu', 'to live', 'rehna'], ['住所', 'じゅうしょ', 'jūsho', 'address', 'pata']]],
     ['所', 'ショ', 'ところ', 'place', 'jagah', [['住所', 'じゅうしょ', 'jūsho', 'address', 'pata'], ['台所', 'だいどころ', 'daidokoro', 'kitchen', 'rasoi']]],
@@ -169,7 +169,7 @@ export const KANJI_GROUPS_N4 = [
     ['秋', 'シュウ', 'あき', 'autumn', 'patjhad', [['秋', 'あき', 'aki', 'autumn', 'patjhad'], ['秋晴れ', 'あきばれ', 'akibare', 'clear autumn weather', 'patjhad ka saaf mausam']]],
     ['冬', 'トウ', 'ふゆ', 'winter', 'sardi', [['冬', 'ふゆ', 'fuyu', 'winter', 'sardi'], ['冬休み', 'ふゆやすみ', 'fuyuyasumi', 'winter holiday', 'sardi ki chhutti']]],
   ] },
-  { id: 'n4-move', title: 'Moving & thinking', hg: 'Chalna aur sochna', icon: '🚶', kanji: [
+  { id: 'n4-move', title: 'Moving & thinking', hg: 'Chalna aur sochna', kanji: [
     ['走', 'ソウ', 'はし(る)', 'run', 'daudna', [['走る', 'はしる', 'hashiru', 'to run', 'daudna'], ['走り出す', 'はしりだす', 'hashiridasu', 'start running', 'daudna shuru karna']]],
     ['歩', 'ホ', 'ある(く)', 'walk', 'chalna', [['歩く', 'あるく', 'aruku', 'to walk', 'paidal chalna'], ['散歩', 'さんぽ', 'sanpo', 'a walk', 'tehelna']]],
     ['動', 'ドウ', 'うご(く)', 'move', 'hilna', [['動く', 'うごく', 'ugoku', 'to move / work', 'chalna / hilna'], ['運動', 'うんどう', 'undō', 'exercise', 'kasrat']]],
@@ -184,7 +184,7 @@ export const KANJI_GROUPS_N4 = [
     ['考', 'コウ', 'かんが(える)', 'consider', 'vichaar karna', [['考える', 'かんがえる', 'kangaeru', 'to think about', 'sochna'], ['考え', 'かんがえ', 'kangae', 'idea / thought', 'vichaar']]],
     ['知', 'チ', 'し(る)', 'know', 'jaanna', [['知る', 'しる', 'shiru', 'to know', 'jaanna'], ['知らせ', 'しらせ', 'shirase', 'notice / news', 'soochna']]],
   ] },
-  { id: 'n4-world', title: 'Body, places & describing', hg: 'Sharir, jagah, varnan', icon: '🌍', kanji: [
+  { id: 'n4-world', title: 'Body, places & describing', hg: 'Sharir, jagah, varnan', kanji: [
     ['体', 'タイ', 'からだ', 'body', 'sharir', [['体', 'からだ', 'karada', 'body', 'sharir'], ['体重', 'たいじゅう', 'taijū', 'body weight', 'vazan']]],
     ['頭', 'トウ・ズ', 'あたま', 'head', 'sar', [['頭', 'あたま', 'atama', 'head', 'sar'], ['頭痛', 'ずつう', 'zutsū', 'headache', 'sar dard']]],
     ['顔', 'ガン', 'かお', 'face', 'chehra', [['顔', 'かお', 'kao', 'face', 'chehra'], ['笑顔', 'えがお', 'egao', 'smiling face', 'muskaan']]],
@@ -263,7 +263,7 @@ for (const g of N4_KANJI_MORE) {
     PICS[ch] = [pic, hint];
     return [ch, on, kun, en, hg, exs.split(';').map(e => { const [w, kana, wen, whg] = e.split(','); return [w, kana, toRomaji(kana), wen, whg]; })];
   });
-  (g.level === 'n5' ? KANJI_GROUPS : KANJI_GROUPS_N4).push({ id: g.id, title: g.title, hg: g.hg, icon: g.icon, kanji });
+  (g.level === 'n5' ? KANJI_GROUPS : KANJI_GROUPS_N4).push({ id: g.id, title: g.title, hg: g.hg, kanji });
 }
 
 const toItems = (groups, level) => groups.flatMap(g => g.kanji.map(k => ({

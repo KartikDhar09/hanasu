@@ -2,7 +2,7 @@
 import { H, P, N, TIP, W, L, T, LIST, TABLE, LINK } from './book-kit.js';
 
 export default {
-  id: 'grammar', icon: '📐', title: 'Grammar', jp: '文法',
+  id: 'grammar', title: 'Grammar', jp: '文法',
   sections: [
     { h: 'I Sentence Structure', blocks: [
       TIP('The book writes its grammar examples in romaji only; the Japanese lines here are added so every example can be played.'),

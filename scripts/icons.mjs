@@ -2,7 +2,9 @@
 // Lucide (lucide.dev, ISC licence, credited in Settings → Credits). Inline SVG instead of emoji because emoji look
 // different on every phone (and some older Androids show a box), ignore the colour theme, and several were hard to
 // read (🪜 for the JLPT path). The icons draw in the text colour, so they follow light/dark and the red active tab.
-// Emoji stay where they are content: vocab and food pictures, unit icons, 🎉 🏆.
+// Since v6.1 (the user's request, 2026-10-25) the interface has no emoji at all: buttons, headings, notes, done
+// screens and list rows use these icons or plain text. Emoji stay only where they ARE the content: word pictures,
+// kanji / grammar / counter picture hints, pronunciation pictures and the exam's picture answers.
 //
 // Regenerate (only after changing NAMES):
 //   npm pack lucide-static@0.460.0 && tar -xzf lucide-static-0.460.0.tgz && node scripts/icons.mjs package/icons
@@ -38,6 +40,33 @@ export const NAMES = {
   done: 'circle-check',            // board: done
   now: 'map-pin',                  // board: you are here
   left: 'hourglass',               // board: still to do
+  // v6.1: in place of the emoji that used to decorate buttons, notes and headings.
+  play: 'volume-2',                // 🔊 play a line
+  slow: 'snail',                   // 🐢 play slowly
+  tip: 'lightbulb',                // 💡 tips, notes, hints
+  casual: 'smile',                 // 😎 casual version
+  also: 'repeat',                  // 🔁 other ways to say it, try again
+  goal: 'target',                  // 🎯 level goal, pass marks
+  time: 'clock',                   // ⏱ time a level takes, paper clock
+  day: 'sun',                      // ☀️ a day at this level
+  mission: 'flag',                 // 🎯 missions with real people
+  mock: 'clipboard-check',         // 🏁 full mock test
+  finish: 'trophy',                // 🎉 🏆 🎓 finished / passed
+  warn: 'triangle-alert',          // ⚠️ section below the mark
+  pause: 'pause',
+  start: 'play',                   // ▶ start a round, "you are here"
+  random: 'dices',                 // 🎲 random example
+  shuffle: 'shuffle',              // 🔀 another topic
+  credits: 'heart',                // 🙏 credits tab
+  need: 'library',                 // 📚 what you need for a level
+  about: 'clipboard-list',         // 📋 about the exam, all patterns
+  help: 'circle-help',             // ❓ question types
+  translate: 'languages',          // 🔤 translation
+  transcript: 'scroll-text',       // 📜 transcript
+  stats: 'chart-column',           // 📊 results by type
+  quick: 'zap',                    // ⚡ quick mock
+  note: 'sticky-note',             // 📝 book notes
+  numbers: 'hash',                 // 🔢 stroke numbers
 };
 
 export function buildIcons(dir) {

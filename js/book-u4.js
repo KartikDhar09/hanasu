@@ -2,7 +2,7 @@
 import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, IMG, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u4', n: 4, icon: '🍱', title: 'Take out, please.', jp: '持ち帰りで。', ro: 'Mochikaeri de.',
+  id: 'u4', n: 4, title: 'Take out, please.', jp: '持ち帰りで。', ro: 'Mochikaeri de.',
   topic: 'Convenience stores and restaurants', topicJp: 'コンビニ・レストラン',
   goals: ['Make orders at restaurants', 'Request and ask about items on the menu', 'Communicate with people at convenience stores and restaurants'],
   sections: [

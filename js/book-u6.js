@@ -2,7 +2,7 @@
 import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, IMG, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u6', n: 6, icon: '🙏', title: 'Please wait a moment.', jp: 'ちょっと待ってください。', ro: 'Chotto matte kudasai.',
+  id: 'u6', n: 6, title: 'Please wait a moment.', jp: 'ちょっと待ってください。', ro: 'Chotto matte kudasai.',
   topic: 'Making requests', topicJp: '依頼する',
   goals: ['Use simple sentences to make requests', 'Invite someone to have something', 'Give simple directions to a destination in a taxi'],
   sections: [

@@ -2,7 +2,7 @@
 import { N, W, L } from './book-kit.js';
 
 export default {
-  id: 'musts', icon: '⭐', title: 'Must-know words and phrases', jp: '絶対に覚えておきたい表現',
+  id: 'musts', title: 'Must-know words and phrases', jp: '絶対に覚えておきたい表現',
   sections: [
     { h: 'Survival Phrases', blocks: [
       L(['すみません。*', 'Sumimasen. *', 'Sorry. / Excuse me. / Thank you.']),

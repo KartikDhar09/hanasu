@@ -51,19 +51,19 @@ export function initPath(ctx) {
     render(`
       <h1 class="page">${icon('path-' + p)} ${esc(P.title)}</h1>
       <div class="card left pnow">${next
-        ? `<span class="tag">Level ${cur + 1} of ${L.length} · ${d.size} complete</span><b>${esc(next.icon)} ${esc(next.title)}</b><p class="muted small">${esc(next.goal)}</p>
+        ? `<span class="tag">Level ${cur + 1} of ${L.length} · ${d.size} complete</span><b>${esc(next.title)}</b><p class="muted small">${esc(next.goal)}</p>
            <button class="btn primary big" data-act="path-level" data-arg="${p}.${next.id}">${d.size ? 'Continue' : 'Start level 1'}</button>`
-        : `<span class="tag">All ${L.length} levels complete</span><b>🎓 You’ve finished this path.</b><p class="muted small">${esc(L[L.length - 1].goal)}</p>
+        : `<span class="tag">All ${L.length} levels complete</span><b>${icon('finish')} You’ve finished this path.</b><p class="muted small">${esc(L[L.length - 1].goal)}</p>
            <p class="muted small">Keep it fresh: open any level and go over it again now and then.</p>`}
       </div>
-      <details class="fold"><summary>💡 How the levels work</summary><div class="fold-body">${esc(P.intro.en)}${hg(P.intro.hg, 'hi intro-hg')}</div></details>
+      <details class="fold"><summary>${icon('tip')} How the levels work</summary><div class="fold-body">${esc(P.intro.en)}${hg(P.intro.hg, 'hi intro-hg')}</div></details>
       <h2 class="sec">All levels</h2>
       <ol class="path levels">${L.map((l, i) => {
         const s = status(p, i);
         return `<li class="${s === 'done' ? 'done' : s === 'now' ? 'now' : ''}"><button data-act="path-level" data-arg="${p}.${l.id}">
-          <span class="pico" lang="ja">${s === 'done' ? '✓' : esc(l.icon)}</span>
+          <span class="pico">${s === 'done' ? icon('done') : i + 1}</span>
           <span class="ptext"><b>${i + 1} · ${esc(l.title)}</b><small>${esc(l.part)} · ${esc(l.time)}</small>
-            <small>${s === 'done' ? 'Complete' : s === 'now' ? '▶ You are here' : 'Not marked complete yet'}</small></span>
+            <small>${s === 'done' ? 'Complete' : s === 'now' ? 'You are here' : 'Not marked complete yet'}</small></span>
           <span class="count">›</span></button></li>`;
       }).join('')}</ol>
       ${d.size ? `<button class="btn small ghost preset" data-act="path-reset" data-arg="${p}">↺ Start again: clear every tick</button>` : ''}`);
@@ -76,7 +76,7 @@ export function initPath(ctx) {
     const sd = l.study || {};
     const sec = (title, how, body) => body ? `<h3 class="psub">${title}</h3>${how ? `<p class="muted small">${how}</p>` : ''}${body}` : '';
     const rows = items => items.length ? `<ul class="path prow">${items.join('')}</ul>` : '';
-    const row = (pic, title, small, t) => `<li><button ${target(t)}><span class="pico" lang="ja">${pic}</span>
+    const row = (pic, title, small, t) => `<li><button ${target(t)}><span class="pico">${pic}</span>
       <span class="ptext"><b>${title}</b>${small ? `<small lang="ja">${small}</small>` : ''}</span><span class="count">›</span></button></li>`;
     const chips = items => items.length ? `<div class="chips">${items.join('')}</div>` : '';
 
@@ -85,12 +85,12 @@ export function initPath(ctx) {
     const grammar = (sd.grammar || []).map(gid => GRAMMAR.find(g => g.id === gid))
       .map(g => `<button class="chip" ${target('gpoint:' + g.id)}><span lang="ja">${esc(g.pattern)}</span></button>`);
     const kanji = (sd.kanji || []).map(gid => ALL_KANJI_GROUPS.find(g => g.id === gid))
-      .map(g => row(esc(g.icon), `${esc(g.title)} · ${g.kanji.length}`, esc(g.kanji.map(k => k[0]).join(' ')), 'klearn:' + g.id));
+      .map(g => row(icon('study'), `${esc(g.title)} · ${g.kanji.length}`, esc(g.kanji.map(k => k[0]).join(' ')), 'klearn:' + g.id));
     const vocab = (sd.vocab || []).map(tid => VOCAB.find(t => t.id === tid))
-      .map(t => row(esc(t.icon), esc(t.title), `${t.words.length} words · flashcards`, 'vlearn:' + t.id));
+      .map(t => row(icon('vocab'), esc(t.title), `${t.words.length} words · flashcards`, 'vlearn:' + t.id));
     const units = (sd.units || []).map(uid => UNIT_INDEX.find(u => u.id === uid))
-      .map(u => row(esc(u.icon), esc(u.title), `${esc(u.jp)} · ${u.n} phrases`, '#unit/' + u.id));
-    const qa = (sd.qa || []).map(n => `<button class="chip" ${target('qa:' + n)}>${esc(QA[n].pic)} <span lang="ja">${esc(QA[n].q[0])}</span></button>`);
+      .map(u => row(icon('phrases'), esc(u.title), `${esc(u.jp)} · ${u.n} phrases`, '#unit/' + u.id));
+    const qa = (sd.qa || []).map(n => `<button class="chip" ${target('qa:' + n)}><span lang="ja">${esc(QA[n].q[0])}</span></button>`);
     const kit = parseKit(l.kit).map(k => {
       const furi = S().settings.kana ? furigana(k.jp, k.kana, esc) : null;
       return `<li class="ex" data-act="say-text" data-arg="${esc(k.jp)}"><div class="jp" lang="ja">${furi || esc(k.jp)}</div>
@@ -108,37 +108,37 @@ export function initPath(ctx) {
     ].join('');
     const missions = l.missions?.length ? `<h2 class="sec">Missions with real people</h2>
       <p class="muted small">The app can’t do these for you, and they matter most. Nothing is recorded.</p>
-      <ul class="tips">${l.missions.map(m => `<li>🎯 ${esc(m)}</li>`).join('')}</ul>` : '';
-    const drill = l.drill ? `<button class="btn big" data-act="path-drill" data-arg="${p}.${l.id}">⏱ 4/3/2 talking drill · ${l.drill.length} topics</button>` : '';
+      <ul class="tips">${l.missions.map(m => `<li>${icon('mission')} ${esc(m)}</li>`).join('')}</ul>` : '';
+    const drill = l.drill ? `<button class="btn big" data-act="path-drill" data-arg="${p}.${l.id}">${icon('time')} 4/3/2 talking drill · ${l.drill.length} topics</button>` : '';
 
     const nextTitle = P.levels[i + 1]?.title;
     render(`
       <div class="head">${back('path-home', p)}<h1>Level ${i + 1} <small class="muted">of ${P.levels.length}</small></h1><span class="pill">${esc(l.part)}</span></div>
-      <h2 class="ltitle"><span lang="ja">${esc(l.icon)}</span> ${esc(l.title)}</h2>
-      <p class="muted small">⏱ ${esc(l.time)}</p>
-      ${s === 'done' ? '<div class="note ok">✅ Complete. Review it any time.</div>' : ''}
-      <div class="card left goal"><b>🎯 By the end of this level you can</b><p>${esc(l.goal)}</p>${hg(l.goalHg)}</div>
+      <h2 class="ltitle">${esc(l.title)}</h2>
+      <p class="muted small">${icon('time')} ${esc(l.time)}</p>
+      ${s === 'done' ? `<div class="note ok">${icon('done')} Complete. Review it any time.</div>` : ''}
+      <div class="card left goal"><b>${icon('goal')} By the end of this level you can</b><p>${esc(l.goal)}</p>${hg(l.goalHg)}</div>
       <h2 class="sec">Do this, in order</h2>
-      <ol class="path steps">${l.steps.map(([icon, title, how, t], n) => t
-        ? `<li><button ${target(t)}><span class="pico" lang="ja">${esc(icon)}</span><span class="ptext"><b>${n + 1}. ${esc(title)}</b><small>${esc(how)}</small></span><span class="count">›</span></button></li>`
-        : `<li><div class="pstep"><span class="pico" lang="ja">${esc(icon)}</span><span class="ptext"><b>${n + 1}. ${esc(title)}</b><small>${esc(how)}</small></span></div></li>`).join('')}</ol>
+      <ol class="path steps">${l.steps.map(([title, how, t], n) => t
+        ? `<li><button ${target(t)}><span class="pico">${n + 1}</span><span class="ptext"><b>${esc(title)}</b><small>${esc(how)}</small></span><span class="count">›</span></button></li>`
+        : `<li><div class="pstep"><span class="pico">${n + 1}</span><span class="ptext"><b>${esc(title)}</b><small>${esc(how)}</small></span></div></li>`).join('')}</ol>
       ${content ? `<h2 class="sec">Everything in this level</h2>${content}` : ''}
       ${missions}${drill}
       <h2 class="sec">A day at this level</h2>
-      <ul class="tips">${l.daily.map(d => `<li>☀️ ${esc(d)}</li>`).join('')}</ul>
-      <div class="note">💡 ${esc(l.tip)}${hg(l.tipHg)}</div>
+      <ul class="tips">${l.daily.map(d => `<li>${icon('day')} ${esc(d)}</li>`).join('')}</ul>
+      <div class="note">${icon('tip')} ${esc(l.tip)}${hg(l.tipHg)}</div>
       ${l.mock ? `<h2 class="sec">Mock test</h2>
       <div class="card left ltest"><p>The full-length ${l.mock.toUpperCase()} mock test in the JLPT tab: three papers with their own clocks, scored like the real exam.</p>
-        <button class="btn primary big" data-act="ex-mock" data-arg="${l.mock}">🏁 Full ${l.mock.toUpperCase()} mock test</button></div>` : ''}
+        <button class="btn primary big" data-act="ex-mock" data-arg="${l.mock}">${icon('mock')} Full ${l.mock.toUpperCase()} mock test</button></div>` : ''}
       <h2 class="sec">Done with this level?</h2>
-      <div class="card left ltest"><p class="muted small">Mark it complete when you can do what the goal at the top says. It shows on the 👥 board${nextTitle ? `, and level ${i + 2} (${esc(nextTitle)}) is next` : ''}. You can undo it.</p>
+      <div class="card left ltest"><p class="muted small">Mark it complete when you can do what the goal at the top says. It shows on the board${nextTitle ? `, and level ${i + 2} (${esc(nextTitle)}) is next` : ''}. You can undo it.</p>
         ${completeButton(p, i)}</div>`);
   }
 
   // Lives on the account, so it needs a connection; the button says so instead of pretending it worked.
   const completeButton = (p, i) => ctx.done(p).has(i)
-    ? `<button class="btn big bk-done on" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.0">✅ Complete · tap to undo</button>`
-    : `<button class="btn primary big bk-done" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.1">✓ Mark level complete</button>`;
+    ? `<button class="btn big bk-done on" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.0">${icon('done')} Complete · tap to undo</button>`
+    : `<button class="btn primary big bk-done" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.1">${icon('done')} Mark level complete</button>`;
 
   async function markComplete(p, id, done) {
     const i = find(p, id), el = document.getElementById('lv-done');
@@ -172,11 +172,11 @@ export function initPath(ctx) {
       <div class="head">${back('path-level', `${st.p}.${st.id}`)}<h1>4/3/2 drill</h1></div>
       <p class="muted small">Tell the same story three times: 4 minutes, then 3, then 2. Don’t stop to fix mistakes: keep talking. Each round, say it faster and smoother.</p>
       <div class="card left"><span class="tag">Topic</span><b>${esc(title)}</b>${hg(thg)}<div class="note">Ideas: <span lang="ja">${esc(hints)}</span></div></div>
-      <div class="drill-rounds">${ROUNDS.map((r, n) => `<span class="pill ${n < st.round ? 'g2' : n === st.round ? 'g1' : ''}">${n < st.round ? '✓ ' : ''}${mmss(r)}</span>`).join('')}</div>
-      ${done ? `<div class="done"><div class="big-emoji">🎉</div><h1>Three rounds done</h1><p class="muted">Tomorrow, try a new topic. When the 2-minute round feels easy, you own that topic.</p></div>`
+      <div class="drill-rounds">${ROUNDS.map((r, n) => `<span class="pill ${n < st.round ? 'g2' : n === st.round ? 'g1' : ''}">${n < st.round ? icon('done') + ' ' : ''}${mmss(r)}</span>`).join('')}</div>
+      ${done ? `<div class="done"><div class="big-emoji">${icon('finish')}</div><h1>Three rounds done</h1><p class="muted">Tomorrow, try a new topic. When the 2-minute round feels easy, you own that topic.</p></div>`
         : `<div class="drill-clock" id="clock" role="timer" aria-live="off">${mmss(st.left)}</div>
-           <div class="row center"><button class="btn primary big" id="dgo" data-act="path-drill-go">${timer ? '⏸ Pause' : st.left < ROUNDS[st.round] ? '▶ Resume' : '▶ Start round ' + (st.round + 1)}</button></div>`}
-      <div class="row"><button class="btn small ghost" data-act="path-drill-topic">🔀 Another topic</button>${done ? '<button class="btn small" data-act="path-drill-again">↺ Same topic again</button>' : ''}</div>`);
+           <div class="row center"><button class="btn primary big" id="dgo" data-act="path-drill-go">${timer ? icon('pause') + ' Pause' : icon('start') + (st.left < ROUNDS[st.round] ? ' Resume' : ' Start round ' + (st.round + 1))}</button></div>`}
+      <div class="row"><button class="btn small ghost" data-act="path-drill-topic">${icon('shuffle')} Another topic</button>${done ? '<button class="btn small" data-act="path-drill-again">↺ Same topic again</button>' : ''}</div>`);
   }
 
   function drillGo() {

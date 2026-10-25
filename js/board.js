@@ -25,14 +25,14 @@ export function initBoard(ctx) {
   function eventText(e, max) {
     const path = PATH_NAMES[e.path] || '';
     switch (e.kind) {
-      case 'joined': return 'joined Hanasu 👋';
+      case 'joined': return 'joined Hanasu';
       case 'done': return `completed level ${e.i + 1} of the ${path}`;
       // Saved before v6.0, when a passed level test moved you up: still shown until they fall off the feed.
-      case 'level': return e.to === max[e.path] ? `finished the ${path} 🏆`
+      case 'level': return e.to === max[e.path] ? `finished the ${path}`
         : e.to - e.from === 1 ? `passed level ${e.to} of the ${path}` : `passed levels ${e.from + 1}–${e.to} of the ${path}`;
       case 'reset': return `started the ${path} again`;
-      case 'mock': return `passed the full ${String(e.lv).toUpperCase()} mock test 🎉`;
-      case 'book': { const b = BOOK_INDEX.find(x => x.id === e.page); return b ? `finished Book page: ${pageName(b)} 📕` : ''; }
+      case 'mock': return `passed the full ${String(e.lv).toUpperCase()} mock test`;
+      case 'book': { const b = BOOK_INDEX.find(x => x.id === e.page); return b ? `finished Book page: ${pageName(b)}` : ''; }
       default: return '';
     }
   }
@@ -53,19 +53,19 @@ export function initBoard(ctx) {
   const doneOf = (p, k) => new Set((p.done?.[k] || []).filter(i => i < PATH_SUMMARY[k].levels.length));
   function pathRow(p, k) {
     const { levels } = PATH_SUMMARY[k], d = doneOf(p, k), i = levels.findIndex((_, n) => !d.has(n));
-    return row('path-' + k, PATH_NAMES[k], d.size, levels.length, i >= 0 ? `Now: Level ${i + 1} · ${esc(levels[i][0])}` : 'Finished 🏆');
+    return row('path-' + k, PATH_NAMES[k], d.size, levels.length, i >= 0 ? `Now: Level ${i + 1} · ${esc(levels[i][0])}` : 'Finished');
   }
 
   // The Book: pages marked done; "Next" is the first page not done yet, in book order.
   function bookRow(p) {
     const done = BOOK_INDEX.filter(b => p.book.includes(b.id)).length, next = BOOK_INDEX.find(b => !p.book.includes(b.id));
-    return row('book', 'Book', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished 🏆');
+    return row('book', 'Book', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished');
   }
 
   // Each card folds: closed it is one line of numbers, so a bigger group still fits on a screen; open it shows the
   // three rows with bars instead. Every card starts closed, yours too (v5.15).
   function person(p) {
-    const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">✅ ${lv.toUpperCase()}</span>`).join(' ');
+    const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">${icon('done')} ${lv.toUpperCase()}</span>`).join(' ');
     const n = k => doneOf(p, k).size;
     const book = BOOK_INDEX.filter(b => p.book.includes(b.id)).length;
     const isOpen = opened.has(p.name);

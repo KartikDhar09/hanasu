@@ -2,7 +2,7 @@
 import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, SCENES } from './book-kit.js';
 
 export default {
-  id: 'u10', n: 10, icon: '😋', title: 'What does that taste like?', jp: 'それ、どんな味ですか。', ro: 'Sore, donna aji desu ka.',
+  id: 'u10', n: 10, title: 'What does that taste like?', jp: 'それ、どんな味ですか。', ro: 'Sore, donna aji desu ka.',
   topic: 'Eating', topicJp: '食事',
   goals: ['Understand and use taste words', 'Say what a food probably tastes like based on its appearance', 'Politely refuse foods you do not like / do not eat'],
   sections: [

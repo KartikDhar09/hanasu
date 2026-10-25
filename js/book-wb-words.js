@@ -2,7 +2,7 @@
 import { P, N, LINK, WL } from './book-kit.js';
 
 export default {
-  id: 'wb-words', icon: '📚', title: 'Wordbook: list of useful words', jp: 'お役立ち語彙集',
+  id: 'wb-words', title: 'Wordbook: list of useful words', jp: 'お役立ち語彙集',
   sections: [
     { h: '仕事 Shigoto · Jobs', blocks: [WL(`
 government worker|公務員|kōmuin

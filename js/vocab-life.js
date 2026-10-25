@@ -3,7 +3,7 @@
 // Words already in the N5 or N4 lists are skipped when merged (vocab-data.js), so each word is taught once.
 
 export const LIFE_TOPICS = [
-  { id: 'life-office', title: 'At the office', hg: 'Office mein', icon: '🏢', list: `
+  { id: 'life-office', title: 'At the office', hg: 'Office mein', list: `
 打ち合わせ|うちあわせ|meeting (informal, small)|choti meeting|🗣️
 会議室|かいぎしつ|meeting room|meeting room|🚪
 議事録|ぎじろく|meeting minutes|meeting ke notes|📝
@@ -57,7 +57,7 @@ export const LIFE_TOPICS = [
 付箋|ふせん|sticky note|sticky note|🗒️
 ファイル|ファイル|file / folder|file|📁
 ` },
-  { id: 'life-mail', title: 'Email, phone & keigo', hg: 'Email, phone aur keigo', icon: '📧', list: `
+  { id: 'life-mail', title: 'Email, phone & keigo', hg: 'Email, phone aur keigo', list: `
 件名|けんめい|subject (of an email)|email ka subject|📧
 宛先|あてさき|addressee / "To"|kisko bhejna hai
 添付|てんぷ|attachment|attachment|📎
@@ -80,7 +80,7 @@ export const LIFE_TOPICS = [
 着信|ちゃくしん|incoming call|aane wali call|📲
 留守番電話|るすばんでんわ|voicemail|voicemail|📼
 ` },
-  { id: 'life-hr', title: 'Jobs, pay & contracts', hg: 'Naukri, tankhwaah aur contract', icon: '💼', list: `
+  { id: 'life-hr', title: 'Jobs, pay & contracts', hg: 'Naukri, tankhwaah aur contract', list: `
 就職|しゅうしょく|getting a job|naukri lagna|💼
 転職|てんしょく|changing jobs|naukri badalna|🔁
 退職|たいしょく|retiring / quitting a job|naukri chhodna|👋
@@ -115,7 +115,7 @@ export const LIFE_TOPICS = [
 年金|ねんきん|pension|pension|👴
 雇用保険|こようほけん|employment insurance|berozgaari beema|🛡️
 ` },
-  { id: 'life-business', title: 'Business & projects', hg: 'Business aur projects', icon: '📊', list: `
+  { id: 'life-business', title: 'Business & projects', hg: 'Business aur projects', list: `
 売上|うりあげ|sales (revenue)|bikri|📈
 利益|りえき|profit|munaafa|💰
 赤字|あかじ|deficit / loss|ghaata|📉
@@ -155,7 +155,7 @@ export const LIFE_TOPICS = [
 導入|どうにゅう|introduction (of a system)|lagu karna
 資格|しかく|qualification / licence|yogyata / certificate|📜
 ` },
-  { id: 'life-it', title: 'Computers & internet', hg: 'Computer aur internet', icon: '💻', list: `
+  { id: 'life-it', title: 'Computers & internet', hg: 'Computer aur internet', list: `
 パソコン|パソコン|PC / computer|computer|💻
 ノートパソコン|ノートパソコン|laptop|laptop|💻
 画面|がめん|screen|screen|🖥️
@@ -187,7 +187,7 @@ export const LIFE_TOPICS = [
 ネット|ネット|internet|internet|🌐
 ダウンロード|ダウンロード|download|download|⬇️
 ` },
-  { id: 'life-papers', title: 'City hall & paperwork', hg: 'City office aur kaagzaat', icon: '🏛️', list: `
+  { id: 'life-papers', title: 'City hall & paperwork', hg: 'City office aur kaagzaat', list: `
 市役所|しやくしょ|city hall|city office|🏛️
 区役所|くやくしょ|ward office|ward office|🏛️
 窓口|まどぐち|service counter|counter|🪟
@@ -218,7 +218,7 @@ export const LIFE_TOPICS = [
 郵便番号|ゆうびんばんごう|postcode|pin code|📮
 番地|ばんち|house number (address)|makaan number|🏠
 ` },
-  { id: 'life-money', title: 'Money & banking', hg: 'Paisa aur bank', icon: '🏦', list: `
+  { id: 'life-money', title: 'Money & banking', hg: 'Paisa aur bank', list: `
 口座|こうざ|bank account|bank khaata|🏦
 口座番号|こうざばんごう|account number|account number|🔢
 暗証番号|あんしょうばんごう|PIN|PIN|🔢
@@ -245,7 +245,7 @@ export const LIFE_TOPICS = [
 家計簿|かけいぼ|household accounts book|ghar ka hisaab|📒
 公共料金|こうきょうりょうきん|utility bills|bijli-paani ke bill|🧾
 ` },
-  { id: 'life-home', title: 'Housing & utilities', hg: 'Ghar aur suvidhaayein', icon: '🏠', list: `
+  { id: 'life-home', title: 'Housing & utilities', hg: 'Ghar aur suvidhaayein', list: `
 家賃|やちん|rent|kiraaya|💴
 敷金|しききん|security deposit|security deposit|💴
 礼金|れいきん|key money (non-refundable gift)|key money (wapas nahi milta)|💴
@@ -280,7 +280,7 @@ export const LIFE_TOPICS = [
 隣の人|となりのひと|neighbour (next door)|padosi|🧑
 回覧板|かいらんばん|neighbourhood notice board (passed around)|mohalle ka notice board|📋
 ` },
-  { id: 'life-trash', title: 'Rubbish & chores', hg: 'Kooda aur ghar ke kaam', icon: '🧹', list: `
+  { id: 'life-trash', title: 'Rubbish & chores', hg: 'Kooda aur ghar ke kaam', list: `
 燃えるゴミ|もえるゴミ|burnable rubbish|jalne wala kooda|🔥
 燃えないゴミ|もえないゴミ|non-burnable rubbish|na jalne wala kooda|🗑️
 粗大ゴミ|そだいゴミ|bulky rubbish|bada kooda (furniture wagairah)|🛋️
@@ -301,7 +301,7 @@ export const LIFE_TOPICS = [
 片付け|かたづけ|tidying up|saaf-safaai|🧹
 皿洗い|さらあらい|washing dishes|bartan dhona|🍽️
 ` },
-  { id: 'life-shop', title: 'Shopping & konbini', hg: 'Shopping aur konbini', icon: '🛒', list: `
+  { id: 'life-shop', title: 'Shopping & konbini', hg: 'Shopping aur konbini', list: `
 コンビニ|コンビニ|convenience store|konbini (24 ghante ki dukaan)|🏪
 スーパー|スーパー|supermarket|supermarket|🛒
 ドラッグストア|ドラッグストア|drugstore|dawaai ki dukaan|💊
@@ -327,7 +327,7 @@ export const LIFE_TOPICS = [
 着払い|ちゃくばらい|cash on delivery|cash on delivery|💴
 送料|そうりょう|shipping fee|delivery charge|🚚
 ` },
-  { id: 'life-health', title: 'Health & clinic', hg: 'Sehat aur clinic', icon: '🏥', list: `
+  { id: 'life-health', title: 'Health & clinic', hg: 'Sehat aur clinic', list: `
 病院|びょういん|hospital|hospital|🏥
 クリニック|クリニック|clinic|clinic|🏥
 内科|ないか|internal medicine|physician|🩺
@@ -362,7 +362,7 @@ export const LIFE_TOPICS = [
 マスク|マスク|face mask|mask|😷
 お大事に|おだいじに|get well soon / take care|apna khayaal rakhna|💐
 ` },
-  { id: 'life-travel', title: 'Commuting & travel', hg: 'Aana-jaana aur safar', icon: '🚃', list: `
+  { id: 'life-travel', title: 'Commuting & travel', hg: 'Aana-jaana aur safar', list: `
 通勤|つうきん|commuting to work|office aana-jaana|🚃
 定期券|ていきけん|commuter pass|monthly pass|🎫
 改札|かいさつ|ticket gate|ticket gate|🚧
@@ -392,7 +392,7 @@ export const LIFE_TOPICS = [
 駐輪場|ちゅうりんじょう|bicycle parking|cycle stand|🚲
 渋滞|じゅうたい|traffic jam|traffic jam|🚗
 ` },
-  { id: 'life-food', title: 'Eating out & cooking', hg: 'Bahar khaana aur khaana banaana', icon: '🍳', list: `
+  { id: 'life-food', title: 'Eating out & cooking', hg: 'Bahar khaana aur khaana banaana', list: `
 定食|ていしょく|set meal|thali jaisa set meal|🍱
 食べ放題|たべほうだい|all-you-can-eat|jitna chaho utna khaao|🍖
 飲み放題|のみほうだい|all-you-can-drink|jitna chaho utna piyo|🍻
@@ -423,7 +423,7 @@ export const LIFE_TOPICS = [
 牛肉|ぎゅうにく|beef|gaay ka gosht|🐄
 鶏肉|とりにく|chicken (meat)|chicken|🐔
 ` },
-  { id: 'life-safety', title: 'Weather, disasters & safety', hg: 'Mausam, aapda aur suraksha', icon: '⚠️', list: `
+  { id: 'life-safety', title: 'Weather, disasters & safety', hg: 'Mausam, aapda aur suraksha', list: `
 地震|じしん|earthquake|bhookamp|🌏
 津波|つなみ|tsunami|tsunami|🌊
 台風|たいふう|typhoon|toofaan|🌀

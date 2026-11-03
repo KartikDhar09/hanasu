@@ -619,7 +619,8 @@ const LOADERS = {
   speaking: () => import('./speaking.js').then(m => m.initSpeaking({
     ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true), waysOf, waysSlot,
   })),
-  jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
+  // The hub shows where you are in the N5·N4 path, which lives inside the JLPT tab.
+  jlpt: () => import('./jlpt.js').then(m => m.initJlpt({ ...shared(), pathDone: () => new Set(S.path.jlpt || []) })),
   path: () => import('./path.js').then(m => m.initPath({
     ...shared(), run, canListen, record: recordAgainst,
     // A unit phrase as a speaking target: its casual, business and other ways are accepted too.
@@ -671,7 +672,8 @@ async function route() {
   const h = location.hash.slice(1);
   Object.values(mods).forEach(m => m.clear());
   const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|lessons|path\/\w+)/.exec(h)?.[1];
-  const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
+  // The N5·N4 path lives inside the JLPT tab since v6.2 (no tab of its own), so its screens light JLPT.
+  const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m === 'path/jlpt' ? 'jlpt' : m ? m.replace('/', '-') : 'phrases';
   const tabs = [...document.querySelectorAll('#tabs a')];
   // Search and the board are opened from the header, so no tab lights up; unknown links fall back to home.
   const on = h === 'search' || h === 'board' ? '' : tabs.some(a => a.dataset.tab === tab) ? tab : 'phrases';
@@ -747,7 +749,12 @@ async function syncProgress(extra = {}) {
     });
     if (!res.ok) return false;
     const { done, lessons } = await res.json();
+    const before = [...lessonsDone].sort().join();
     if (Array.isArray(lessons)) lessonsDone = new Set(lessons.filter(x => typeof x === 'string'));
+    // The launch sync can answer after a Lessons screen is already drawn without its ticks (opening the app straight
+    // on the contents showed none until you left and came back), so that screen is drawn again. Not after a tick made
+    // on the page itself: its button already shows it, and redrawing would close the open sections.
+    if (!extra.lessons && [...lessonsDone].sort().join() !== before && /^#lessons/.test(location.hash)) route();
     let changed = false;
     for (const p of PATH_IDS) {
       if (!Array.isArray(done?.[p])) continue;
@@ -756,8 +763,9 @@ async function syncProgress(extra = {}) {
     }
     if (!changed) return true;
     save();
-    // A path screen shows the ticks, so it is redrawn; nothing else on screen depends on them.
+    // Path screens show the ticks, and so does the JLPT hub (its N5·N4 path card), so those are redrawn.
     if (/^#path\//.test(location.hash)) rerender();
+    else if (location.hash === '#jlpt') route();
     return true;
   } catch (_) { return false; /* offline: try again next launch */ }
 }

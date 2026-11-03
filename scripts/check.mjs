@@ -894,7 +894,7 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
     for (const p of ['jlpt', 'talk']) used.add('path-' + p); // icon('path-' + p)
     for (const n of used) assert.ok(ICONS[n], `icon "${n}" is used but not in js/icons.js (add it to NAMES in scripts/icons.mjs)`);
     const inline = [...html.matchAll(/<svg class="ic" data-icon="([a-z-]+)" viewBox="0 0 24 24" aria-hidden="true" focusable="false">(.*?)<\/svg>/g)];
-    assert.equal(inline.length, 10, 'tab bar (7) + header (3)');
+    assert.equal(inline.length, 9, 'tab bar (6, the N5·N4 path moved into JLPT in v6.2) + header (3)');
     for (const [, n, body] of inline) assert.equal(body, ICONS[n], `index.html icon "${n}" differs from js/icons.js`);
     assert.match(icon('home'), /^<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path /);
     assert.ok(!/[<>"](?:script|on\w+=)/i.test(JSON.stringify(ICONS)), 'icons are plain shapes');

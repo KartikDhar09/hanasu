@@ -11,7 +11,7 @@ A PWA for learning to **speak** Japanese fast: N5 everyday conversation and offi
   (61 N5 + 72 N4), 1,299 words with search (703 N5 + 596 N4), 20 reading passages, 22 listening items, scored mock tests
 - Learn: new phrases introduced with audio, then English → Japanese recall with spaced repetition
 - Speak: the mic checks your pronunciation (Web Speech API, Chrome/Safari)
-- Paths (N5·N4 and Fluent): step-by-step levels. No quizzes or level tests since v6.0: you mark a level complete
+- Paths (N5·N4 and Fluent): step-by-step levels. The N5·N4 path opens from the JLPT tab (it has no tab of its own since v6.2). No quizzes or level tests since v6.0: you mark a level complete
   yourself, in any order, and can undo it. The full N5/N4 mock tests are the only tests left.
 - Role-play: the app speaks one side, you speak the other
 - Lessons tab (#lessons): third-party lesson material page by page (front pages, 12 units, grammar, word lists), every line voiced, listening exercises with scripts. Personal study copy, not covered by the licence (see NOTICE.md): keep the site private.

@@ -499,7 +499,9 @@ details.answers .phrases { margin-top: 8px; }
 .ptile small { color: var(--muted); font-size: .78rem; text-align: center; }
 
 /* ---------- Paths (level by level) ---------- */
-.pnow { display: grid; gap: 6px; }
+/* .card.left sets display: block, which would put the tag and the title on one line; the card stays a grid. */
+.card.left.pnow { display: grid; gap: 6px; }
+.card.left.pnow > * + * { margin-top: 0; }
 .pnow .tag { justify-self: start; margin: 0; }
 .pnow p { margin: 0 0 4px; }
 .levels li.now button { border-color: var(--accent); }

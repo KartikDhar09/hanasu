@@ -1,5 +1,5 @@
-// Book tab page: u10. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, SCENES } from './book-kit.js';
+// Lessons tab page: u10. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u10', n: 10, title: 'What does that taste like?', jp: 'それ、どんな味ですか。', ro: 'Sore, donna aji desu ka.',
@@ -17,7 +17,7 @@ export default {
         ['あまからい', 'amakarai', 'sweet and salty'], ['さっぱりした味', 'sapparishita aji', 'refreshing taste'], ['おもしろい味', 'omoshiroi aji', 'interesting taste'],
         ['おいしい', 'oishii', 'delicious / good'], ['おいしくない', 'oishikunai', 'not delicious / not good'], ['味があまりない', 'aji ga amari nai', 'doesn’t taste like much']),
       H('Practice B · At a restaurant'),
-      P('Put the words from Practice A in < > and practice having a conversation. → See Pictures (front of the book) for additional food words.'),
+      P('Put the words from Practice A in < > and practice having a conversation. → See Pictures (under Before you start) for additional food words.'),
       T(['クマール', 'それ、どんな味ですか。', 'Sore, donna aji desu ka.', 'What does that taste like?'],
         ['田中', '〈あまい〉ですよ。食べてみますか。', '<Amai> desu yo. Tabete mimasu ka.', 'It’s sweet. Would you like to try it?'],
         ['クマール', 'じゃ、食べてみます。／いいえ、いいです。', 'Ja, tabete mimasu. / Iie, ii desu.', 'I think I will. / No, that’s okay.']),

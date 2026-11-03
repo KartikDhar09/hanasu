@@ -1,5 +1,5 @@
-// Book tab page: musts. Loaded only when opened; see js/book-kit.js for the helpers.
-import { N, W, L } from './book-kit.js';
+// Lessons tab page: musts. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { N, W, L } from './lessons-kit.js';
 
 export default {
   id: 'musts', title: 'Must-know words and phrases', jp: '絶対に覚えておきたい表現',

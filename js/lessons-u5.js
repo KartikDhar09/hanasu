@@ -1,5 +1,5 @@
-// Book tab page: u5. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './book-kit.js';
+// Lessons tab page: u5. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u5', n: 5, title: 'Can I pay by credit card?', jp: 'カードでいいですか。', ro: 'Kādo de ii desu ka.',
@@ -31,7 +31,7 @@ export default {
       H('② 3. Entering a restaurant'),
       T(['店員', 'いらっしゃいませ。', 'Irasshaimase.', 'Welcome.'],
         ['ジョン', 'すみません、〈予約なし〉でいいですか。', 'Sumimasen, <yoyaku nashi> de ii desu ka.', 'Excuse me, is <coming without a reservation> alright?']),
-      TIP('The book leaves the blanks in ② open; the words above are one way to fill them.'),
+      TIP('The original leaves the blanks in ② open; the words above are one way to fill them.'),
       H('MEMO'),
       L(['いいですよ。', 'Ii desu yo.', 'That’s fine.'],
         ['こちらにご記入ください。', 'Kochira ni go-kinyū kudasai.', 'Please fill out (the form) here.'],

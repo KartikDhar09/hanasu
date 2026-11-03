@@ -1,5 +1,5 @@
-// Book tab page: u4. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, IMG, SCENES } from './book-kit.js';
+// Lessons tab page: u4. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, IMG, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u4', n: 4, title: 'Take out, please.', jp: '持ち帰りで。', ro: 'Mochikaeri de.',
@@ -53,7 +53,7 @@ export default {
       T(['ジョン', '〈今日のランチ〉、なんですか。', '<Kyō no ranchi>, nan desu ka.', 'What’s the lunch of the day?'],
         ['店員', '〈カレー〉です。', '<Karē> desu.', 'Curry and rice.']),
       H('Practice B-2'),
-      P('Look at the Pictures (front of the book) and ask questions about items on the menu using the template below.'),
+      P('Look at the Pictures (under Before you start) and ask questions about items on the menu using the template below.'),
       T(['ジョン', 'すみません。これ、なんですか。', 'Sumimasen. Kore, nan desu ka.', 'Excuse me. What is this?'],
         ['店員', '〈牛丼〉です。', '<Gyūdon> desu.', 'It’s gyu-don.'],
         ['ジョン', 'この〈赤い〉の、なんですか。', 'Kono <akai> no, nan desu ka.', 'What is this red stuff?'],

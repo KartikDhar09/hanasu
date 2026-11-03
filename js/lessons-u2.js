@@ -1,5 +1,5 @@
-// Book tab page: u2. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, IMG, SCENES } from './book-kit.js';
+// Lessons tab page: u2. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, IMG, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u2', n: 2, title: 'Is there an ATM around here?', jp: 'このへんに、ATMありますか。', ro: 'Kono hen ni, ATM arimasu ka.',

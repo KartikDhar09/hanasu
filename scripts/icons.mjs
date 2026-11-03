@@ -18,7 +18,7 @@ export const NAMES = {
   speak: 'mic',                    // Speak tab, Speak mode
   study: 'book-open',              // Study tab
   jlpt: 'graduation-cap',          // JLPT tab: the exam
-  book: 'book-marked',             // Book tab: the textbook
+  lessons: 'book-marked',          // Lessons tab
   board: 'users',                  // 👥 board (header)
   search: 'search',
   settings: 'settings',
@@ -65,7 +65,7 @@ export const NAMES = {
   transcript: 'scroll-text',       // 📜 transcript
   stats: 'chart-column',           // 📊 results by type
   quick: 'zap',                    // ⚡ quick mock
-  note: 'sticky-note',             // 📝 book notes
+  note: 'sticky-note',             // 📝 lesson notes
   numbers: 'hash',                 // 🔢 stroke numbers
 };
 

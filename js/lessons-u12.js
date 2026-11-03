@@ -1,5 +1,5 @@
-// Book tab page: u12. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, IMG, SCENES } from './book-kit.js';
+// Lessons tab page: u12. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, IMG, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u12', n: 12, title: 'Would you like to have a cup of tea?', jp: 'お茶を飲みませんか。', ro: 'Ocha o nomimasen ka.',
@@ -27,7 +27,7 @@ export default {
         ['ジョン', 'いいですね。どこに行きましょうか。', 'Ii desu ne. Doko ni ikimashō ka.', 'That sounds nice. Where should we go?'],
         ['鈴木', '［新宿］はどうですか。', '[Shinjuku] wa dō desu ka.', 'How does [Shinjuku] sound?'],
         ['ジョン', 'いいですね。そうしましょう。', 'Ii desu ne. Sō shimashō.', 'That sounds great. Let’s go there.']),
-      TIP('The book leaves [ ] blank for you to name a place; 新宿 is just an example.'),
+      TIP('The original leaves [ ] blank for you to name a place; 新宿 is just an example.'),
       H('②'),
       T(['鈴木', 'ジョンさん、〈明日〉一緒に〈映画を見〉ませんか。', 'Jon-san, <ashita> issho ni <eiga o mi> masen ka.', 'Jon-san, would you like to go see a movie tomorrow?'],
         ['ジョン', 'すみません、〈明日〉はちょっと……。', 'Sumimasen, <ashita> wa chotto…….', 'I’m sorry, tomorrow’s not good for me.'],
@@ -47,7 +47,7 @@ export default {
       P('Use the following words with the phrase “[verb-ta] koto ga arimasu ka.” Tap to hear the question.'),
       W(['温泉に行った', 'onsen ni itta', 'went to an onsen (hot spring)', '温泉に行ったことがありますか'], ['カラオケに行った', 'karaoke ni itta', 'went to karaoke', 'カラオケに行ったことがありますか'],
         ['スノーボードをした', 'sunōbōdo o shita', 'went snowboarding', 'スノーボードをしたことがありますか'], ['花見をした', 'hanami o shita', 'went flower-viewing', '花見をしたことがありますか'],
-        ['日本の花火を見た', 'Nihon no hanabi o mita', 'saw Japanese fireworks', '日本の花火を見たことがありますか'], ['歌舞伎を見た', 'kabuki o mita', 'saw kabuki → See Handy Wordbook', '歌舞伎を見たことがありますか'],
+        ['日本の花火を見た', 'Nihon no hanabi o mita', 'saw Japanese fireworks', '日本の花火を見たことがありますか'], ['歌舞伎を見た', 'kabuki o mita', 'saw kabuki → See Word list: useful words', '歌舞伎を見たことがありますか'],
         ['お好み焼きを食べた', 'okonomiyaki o tabeta', 'ate okonomiyaki', 'お好み焼きを食べたことがありますか'], ['焼酎を飲んだ', 'shōchū o nonda', 'drank shochu', '焼酎を飲んだことがありますか'],
         ['着物を着た', 'kimono o kita', 'wore a kimono', '着物を着たことがありますか']),
       H('Practice B'),
@@ -56,7 +56,7 @@ export default {
       T(['佐藤', 'ジョンさん、〈温泉に行った〉ことがありますか。', 'Jon-san, <onsen ni itta> koto ga arimasu ka.', 'John-san, have you ever been to an onsen hot spring?'],
         ['ジョン', 'はい、あります。', 'Hai, arimasu.', 'Yes, I have.'], ['佐藤', 'そうですか。どうでしたか。', 'Sō desuka. Dō deshita ka.', 'I see. How did you like it?'],
         ['ジョン', 'とても［よかったです］。', 'Totemo [yokatta desu].', 'It was really nice.']),
-      N('→ See Handy Wordbook, Adjective Conjugation List'),
+      N('→ See Word list: adjective conjugation list'),
       H('②'),
       T(['佐藤', 'ジョンさん、〈カラオケに行った〉ことがありますか。', 'Jon-san, <karaoke ni itta> koto ga arimasu ka.', 'John-san, have you ever been to karaoke?'],
         ['ジョン', 'いいえ、ありません。', 'Iie, arimasen.', 'No, I haven’t.'],

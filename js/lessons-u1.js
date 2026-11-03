@@ -1,5 +1,5 @@
-// Book tab page: u1. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, SCENES } from './book-kit.js';
+// Lessons tab page: u1. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u1', n: 1, title: 'I am John.', jp: '私はジョンです。', ro: 'Watashi wa Jon desu.',

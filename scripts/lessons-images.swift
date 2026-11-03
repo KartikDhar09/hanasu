@@ -1,7 +1,7 @@
-// Cuts pictures out of the Nihongo Fun & Easy PDF for the Book tab (personal study copy).
-//   swift scripts/book-images.swift render <pdf> <page> <out.png> [width]        whole page, for looking at
-//   swift scripts/book-images.swift boxes  <pdf> <page> [x y w h]                 picture boxes found on a page (fractions 0–1)
-//   swift scripts/book-images.swift crop   <pdf> <page> <x> <y> <w> <h> <out.jpg> [width] [quality] [gray]
+// Cuts pictures out of the source PDF for the Lessons tab (personal study copy).
+//   swift scripts/lessons-images.swift render <pdf> <page> <out.png> [width]        whole page, for looking at
+//   swift scripts/lessons-images.swift boxes  <pdf> <page> [x y w h]                 picture boxes found on a page (fractions 0–1)
+//   swift scripts/lessons-images.swift crop   <pdf> <page> <x> <y> <w> <h> <out.jpg> [width] [quality] [gray]
 //   (gray = 1 saves line drawings in greyscale: scan colour noise goes and the file gets much smaller)
 // Pages are the PDF's own page numbers (1 = cover). Boxes are fractions of the page, origin top-left.
 import Foundation

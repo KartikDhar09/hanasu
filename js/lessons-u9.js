@@ -1,5 +1,5 @@
-// Book tab page: u9. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, SCENES } from './book-kit.js';
+// Lessons tab page: u9. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u9', n: 9, title: 'How do you like living in Japan?', jp: '日本の生活はどうですか。', ro: 'Nihon no seikatsu wa dō desu ka.',
@@ -80,7 +80,7 @@ export default {
         ['カラオケ → 楽しかった', 'karaoke → tanoshikatta', 'karaoke → fun', 'カラオケは楽しかったです']),
       H('③ You'),
       L(['＿＿ました。', '___ mashita.', 'Say what you did.'], ['＿＿は＿＿です／でした。', '___ wa ___ desu / deshita.', 'Say what it was like.']),
-      N('→ See Handy Wordbook, Adjective Conjugation List'),
+      N('→ See Word list: adjective conjugation list'),
     ] },
     { h: 'Listening', blocks: [
       P('Listen to the conversation between the man and woman and choose the correct answer.'),

@@ -137,8 +137,8 @@ export function initPath(ctx) {
 
   // Lives on the account, so it needs a connection; the button says so instead of pretending it worked.
   const completeButton = (p, i) => ctx.done(p).has(i)
-    ? `<button class="btn big bk-done on" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.0">${icon('done')} Complete · tap to undo</button>`
-    : `<button class="btn primary big bk-done" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.1">${icon('done')} Mark level complete</button>`;
+    ? `<button class="btn big ls-done on" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.0">${icon('done')} Complete · tap to undo</button>`
+    : `<button class="btn primary big ls-done" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.1">${icon('done')} Mark level complete</button>`;
 
   async function markComplete(p, id, done) {
     const i = find(p, id), el = document.getElementById('lv-done');

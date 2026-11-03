@@ -1,5 +1,5 @@
-// Book tab page: u6. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, IMG, SCENES } from './book-kit.js';
+// Lessons tab page: u6. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, IMG, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u6', n: 6, title: 'Please wait a moment.', jp: 'ちょっと待ってください。', ro: 'Chotto matte kudasai.',
@@ -22,7 +22,7 @@ export default {
       LIST('1. You are at a restaurant. You are not ready to order but the waiter has already come to your table.',
         '2. The photocopy machine that you are using at a convenience store has a paper jam. Call one of the store clerks over.',
         '3. You see a watch in a display case that you would like to take a closer look at. Ask the store clerk for help.'),
-      TIP('Possible answers (not in the book): 1. ちょっと待ってください。 2. すみません、ちょっと来てください。 3. すみません、それを見せてください。'),
+      TIP('Possible answers (not in the original): 1. ちょっと待ってください。 2. すみません、ちょっと来てください。 3. すみません、それを見せてください。'),
       H('Practice B-2'),
       P('Put the words from Practice A-2 in < > and practice the conversation below.'),
       H('①'),

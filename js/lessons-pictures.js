@@ -1,5 +1,5 @@
-// Book tab page: pictures. Loaded only when opened; see js/book-kit.js for the helpers.
-import { N, WP } from './book-kit.js';
+// Lessons tab page: pictures. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { N, WP } from './lessons-kit.js';
 
 export default {
   id: 'pictures', title: 'Pictures: colors & Japanese food', jp: '写真資料',

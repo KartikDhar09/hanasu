@@ -60,9 +60,9 @@ export async function audioTexts() {
     add(n, item.q[0]);
     for (const [who, jp] of item.lines) add(who === 'm' ? m : who === 'f' ? w : n, jp);
   }
-  // Book tab: every line of the textbook, conversations in each speaker's voice.
-  const BK = await (await import('../js/book-data.js')).bookSpoken();
-  BK.n.forEach(t => add(n, t)); BK.m.forEach(t => add(m, t)); BK.f.forEach(t => add(w, t));
+  // Lessons tab: every line, conversations in each speaker's voice.
+  const LS = await (await import('../js/lessons-data.js')).lessonsSpoken();
+  LS.n.forEach(t => add(n, t)); LS.m.forEach(t => add(m, t)); LS.f.forEach(t => add(w, t));
   return { n: [...n].sort(), m: [...m].sort(), f: [...w].sort() };
 }
 

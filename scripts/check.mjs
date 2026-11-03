@@ -540,31 +540,31 @@ test('mock scoring matches JLPT pass rules', () => {
   assert.deepEqual([n4.total, n4.passed], [90, true]);
 });
 
-// ---------- Book tab (Nihongo Fun & Easy) ----------
+// ---------- Lessons tab ----------
 {
-  const BK = { ...(await import('../js/book-data.js')) };
-  BK.PAGES = await BK.allPages();
+  const LS = { ...(await import('../js/lessons-data.js')) };
+  LS.PAGES = await LS.allPages();
   {
-    const idx = await (await import('./book-index.mjs')).buildBookIndex();
-    if (readFileSync('js/book-index.js', 'utf8') !== idx) fail('js/book-index.js is out of date: run node scripts/book-index.mjs');
-    const files = readdirSync('js').filter(f => /^book-.+\.js$/.test(f) && !['book-data.js', 'book-kit.js', 'book-index.js', 'book-pics.js'].includes(f));
-    const listed = new Set(BK.BOOK_INDEX.map(p => `book-${p.id}.js`));
-    for (const f of files) if (!listed.has(f)) fail(`js/${f} is not in the Book contents (scripts/book-index.mjs ORDER)`);
+    const idx = await (await import('./lessons-index.mjs')).buildLessonsIndex();
+    if (readFileSync('js/lessons-index.js', 'utf8') !== idx) fail('js/lessons-index.js is out of date: run node scripts/lessons-index.mjs');
+    const files = readdirSync('js').filter(f => /^lessons-.+\.js$/.test(f) && !['lessons-data.js', 'lessons-kit.js', 'lessons-index.js', 'lessons-pics.js'].includes(f));
+    const listed = new Set(LS.LESSONS_INDEX.map(p => `lessons-${p.id}.js`));
+    for (const f of files) if (!listed.has(f)) fail(`js/${f} is not in the Lessons contents (scripts/lessons-index.mjs ORDER)`);
   }
-  test('listening answers match the book’s answer key (pp.186–191)', () => {
-    // Unit → answers to Q1–Q4, as numbered in the book (1–3).
+  test('listening answers match the original answer key (pp.186–191)', () => {
+    // Unit → answers to Q1–Q4, as numbered in the original (1–3).
     const KEY = { u1: [1, 3, 1, 3], u2: [1, 2, 1, 2], u3: [3, 2, 2, 1], u4: [3, 1, 1, 2], u5: [1, 3, 2, 2], u6: [1, 3, 1, 2],
       u7: [2, 2, 3, 2], u8: [3, 1, 1, 2], u9: [1, 2, 3, 1], u10: [3, 2, 3, 2], u11: [3, 1, 1, 2], u12: [2, 1, 2, 3] };
     for (const [id, want] of Object.entries(KEY)) {
-      const qs = BK.PAGES.find(p => p.id === id).sections.flatMap(s => s.blocks).filter(b => b.t === 'listen');
+      const qs = LS.PAGES.find(p => p.id === id).sections.flatMap(s => s.blocks).filter(b => b.t === 'listen');
       assert.deepEqual(qs.map(q => q.answer + 1), want, `${id} listening answers`);
     }
   });
   const JPC = /[ぁ-ゖァ-ヺ一-龯々]/;
-  test('book pages are well-formed', () => {
-    const ids = BK.PAGES.map(p => p.id);
+  test('lesson pages are well-formed', () => {
+    const ids = LS.PAGES.map(p => p.id);
     assert.equal(new Set(ids).size, ids.length, 'duplicate page ids');
-    for (const p of BK.PAGES) {
+    for (const p of LS.PAGES) {
       assert.ok(p.title && p.sections.length, `${p.id}: missing title or sections`);
       if (p.n) assert.ok(p.jp && p.ro && p.topic && p.goals.length >= 2, `unit ${p.n}: needs jp, romaji, topic and its goals`);
       for (const s of p.sections) for (const b of s.blocks) {
@@ -580,12 +580,12 @@ test('mock scoring matches JLPT pass rules', () => {
     }
   });
   {
-    const { PIC_SIZE } = await import('../js/book-pics.js');
-    const { picSizes } = await import('./book-images.mjs');
-    test('Book pictures exist, are sized and stay small', () => {
-      assert.equal(readFileSync('js/book-pics.js', 'utf8'), picSizes(), 'js/book-pics.js is out of date: run scripts/book-images.mjs');
-      const want = [...Object.values(BK.FOOD_PIC).map(f => `food/${f}`)];
-      for (const p of BK.PAGES) for (const s of p.sections) for (const b of s.blocks) {
+    const { PIC_SIZE } = await import('../js/lessons-pics.js');
+    const { picSizes } = await import('./lessons-images.mjs');
+    test('lesson pictures exist, are sized and stay small', () => {
+      assert.equal(readFileSync('js/lessons-pics.js', 'utf8'), picSizes(), 'js/lessons-pics.js is out of date: run scripts/lessons-images.mjs');
+      const want = [...Object.values(LS.FOOD_PIC).map(f => `food/${f}`)];
+      for (const p of LS.PAGES) for (const s of p.sections) for (const b of s.blocks) {
         if (b.t === 'img') want.push(b.file);
         if (b.t === 'scenes') b.items.forEach((_, i) => want.push(`${b.unit}/remember-${i + 1}`));
       }
@@ -593,18 +593,18 @@ test('mock scoring matches JLPT pass rules', () => {
       const missing = want.filter(f => f.startsWith('food/') && !PIC_SIZE[f]);
       assert.ok(!missing.length, `food pictures missing: ${missing.join(', ')}`);
       // Maps and menus are opened full size, so they may be bigger than the rest.
-      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/book/${f}.jpg`).size > (/(map|menu|seasons|weather|material)$/.test(f) ? 240 : 80) * 1024);
+      const big = Object.keys(PIC_SIZE).filter(f => statSync(`img/lessons/${f}.jpg`).size > (/(map|menu|seasons|weather|material)$/.test(f) ? 240 : 80) * 1024);
       assert.ok(!big.length, `pictures too big: ${big.join(', ')}`);
       const sw = readFileSync('sw.js', 'utf8');
       assert.ok(!/'\/img\//.test(sw.match(/const SHELL = \[([\s\S]*?)\];/)[1]), 'pictures must not be precached');
     });
   }
-  test('book speech text drops marks and skips blanks', () => {
-    assert.equal(BK.spoken('〈ジョン〉さん、(1)お国は？'), 'ジョンさん、お国は？');
-    assert.equal(BK.spoken('はい、＿＿と＿＿がいます。'), null);
-    assert.equal(BK.spoken('茶色／ブラウン'), '茶色、ブラウン');
-    assert.equal(BK.spoken('私も好きです。／私はあまり好きじゃありません。'), '私も好きです。私はあまり好きじゃありません。');
-    assert.equal(BK.spoken('(お*)仕事'), 'お仕事');
+  test('lesson speech text drops marks and skips blanks', () => {
+    assert.equal(LS.spoken('〈ジョン〉さん、(1)お国は？'), 'ジョンさん、お国は？');
+    assert.equal(LS.spoken('はい、＿＿と＿＿がいます。'), null);
+    assert.equal(LS.spoken('茶色／ブラウン'), '茶色、ブラウン');
+    assert.equal(LS.spoken('私も好きです。／私はあまり好きじゃありません。'), '私も好きです。私はあまり好きじゃありません。');
+    assert.equal(LS.spoken('(お*)仕事'), 'お仕事');
   });
 }
 
@@ -673,9 +673,9 @@ const PATHMOD = await import('../js/path.js');
 
 // v6.1 (the user's request, 2026-10-25): no emoji anywhere in the interface; buttons, notes and headings use the
 // Lucide icons in js/icons.js. Emoji are allowed only in content: word, kanji, grammar and counter pictures, the
-// pronunciation pairs, the exam data and the textbook's own pages.
+// pronunciation pairs, the exam data and the lesson pages.
 test('no emoji in the interface', () => {
-  const CONTENT = /^(vocab-|kanji-|grammar-n|counters-data|exam-(data|more|listen)|jlpt-data|speaking-data|book-(u\d+|wb-|grammar|kana|pictures|musts)|icons\.js)/;
+  const CONTENT = /^(vocab-|kanji-|grammar-n|counters-data|exam-(data|more|listen)|jlpt-data|speaking-data|lessons-(u\d+|wb-|grammar|kana|pictures|musts)|icons\.js)/;
   const EMOJI = /\p{Extended_Pictographic}/u;
   const files = [...readdirSync('js').filter(f => f.endsWith('.js') && !CONTENT.test(f)).map(f => 'js/' + f), 'index.html', 'login.html', 'css/app.css'];
   for (const f of files) read(f).split('\n').forEach((l, i) => {
@@ -848,15 +848,15 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
       const passes = r => r.headers.get('x-middleware-next') === '1';
       for (const p of ['/login.html', '/js/login.js', '/css/app.css', '/sw.js', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/robots.txt', '/api/auth'])
         assert.ok(passes(await req(p)), `${p} must be public`);
-      for (const p of ['/', '/index.html', '/js/app.js', '/js/book-u1.js', '/js/login.js.map', '/audio/silence.m4a', '/img/book/food/aburaage.jpg', '/strokes/065e5.json', '/login.html.bak', '/css/app.css/x'])
+      for (const p of ['/', '/index.html', '/js/app.js', '/js/lessons-u1.js', '/js/login.js.map', '/audio/silence.m4a', '/img/lessons/food/aburaage.jpg', '/strokes/065e5.json', '/login.html.bak', '/css/app.css/x'])
         assert.ok(!PUBLIC.test(p), `${p} must need a login`);
-      const page = await req('/js/book-u1.js?x=1', { accept: 'text/html' });
+      const page = await req('/js/lessons-u1.js?x=1', { accept: 'text/html' });
       assert.equal(page.status, 302);
-      assert.equal(page.headers.get('location'), '/login.html?next=%2Fjs%2Fbook-u1.js%3Fx%3D1');
+      assert.equal(page.headers.get('location'), '/login.html?next=%2Fjs%2Flessons-u1.js%3Fx%3D1');
       assert.equal((await req('/', { 'sec-fetch-mode': 'navigate' })).headers.get('location'), '/login.html');
       assert.equal((await req('/js/app.js')).status, 401, 'files get a bare 401, never the login page');
       const cookie = `${session.COOKIE}=${await session.sign('kartik', env)}`;
-      assert.ok(passes(await req('/js/book-u1.js', { cookie })), 'a logged-in user gets everything');
+      assert.ok(passes(await req('/js/lessons-u1.js', { cookie })), 'a logged-in user gets everything');
       assert.equal((await req('/js/app.js', { cookie: `${session.COOKIE}=forged.token` })).status, 401);
       delete process.env.SESSION_SECRET;
       assert.equal((await req('/js/app.js', { cookie })).status, 401, 'no SESSION_SECRET in Vercel = locked, not open');
@@ -866,7 +866,7 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
   test('login page: only safe redirects after logging in', () => {
     const src = read('js/login.js');
     const rule = new RegExp(src.match(/return \/(.+)\/\.test\(next\)/)[1]);
-    for (const ok of ['/', '/#book', '/js/x.js?a=1']) assert.ok(rule.test(ok), ok);
+    for (const ok of ['/', '/#lessons', '/js/x.js?a=1']) assert.ok(rule.test(ok), ok);
     for (const bad of ['//evil.com', '/\\evil.com', 'https://evil.com', 'javascript:alert(1)', '']) assert.ok(!rule.test(bad), bad);
   });
 
@@ -935,7 +935,7 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
     // Last seen was removed from the board: an old record's `active` is dropped, not kept or refreshed.
     assert.ok(!('active' in board.merge({ ...first.next, active: '2026-10-01T00:00:00Z' }, {}, now).next), 'no last-seen time is stored');
     // A record saved before v6.0 ({jlpt: 2}) becomes a list, and the old fields are dropped.
-    const old = board.merge({ jlpt: 2, talk: 0, mocks: {}, book: [] }, {}, now).next;
+    const old = board.merge({ jlpt: 2, talk: 0, mocks: {}, lessons: [] }, {}, now).next;
     assert.deepEqual(old.done, { jlpt: [0, 1], talk: [] }); assert.ok(!('jlpt' in old) && !('talk' in old));
     // After the first sync the device's list is never merged in: an old offline copy can't undo or redo anything.
     assert.deepEqual(board.merge(first.next, { path: { jlpt: [], talk: [5, 6, 7] } }, now).next.done, first.next.done);
@@ -956,24 +956,27 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
     assert.equal(mock.next.mocks.n5, now.toISOString());
     assert.deepEqual(board.merge(mock.next, { mock: 'n5' }, now).events, [], 'a mock counts once');
     assert.deepEqual(board.merge(null, { mock: 'n3', reset: 'evil' }, now).events.map(e => e.kind), ['joined'], 'unknown mock/path ignored');
-    const read = board.merge(first.next, { book: { page: 'u3', done: true } }, now);
-    assert.deepEqual(read.next.book, ['u3']);
-    assert.deepEqual(read.events, [{ kind: 'book', page: 'u3', at: now.toISOString() }]);
-    assert.deepEqual(board.merge(read.next, { book: { page: 'u3', done: true } }, now).events, [], 'a page counts once');
-    const undo = board.merge(read.next, { book: { page: 'u3', done: false } }, now);
-    assert.deepEqual([undo.next.book, undo.events], [[], []], 'un-ticking removes the page quietly');
-    for (const bad of ['U3', '../x', '', 'x'.repeat(25), 7, null]) assert.deepEqual(board.merge(null, { book: { page: bad, done: true } }, now).next.book, [], `ignores page ${JSON.stringify(bad)}`);
-    assert.equal(board.merge(first.next, { book: { page: 'u4', done: 'yes' } }, now).next.book.length, 0, 'done must be true or false');
+    const read = board.merge(first.next, { lessons: { page: 'u3', done: true } }, now);
+    assert.deepEqual(read.next.lessons, ['u3']);
+    assert.deepEqual(read.events, [{ kind: 'lessons', page: 'u3', at: now.toISOString() }]);
+    assert.deepEqual(board.merge(read.next, { lessons: { page: 'u3', done: true } }, now).events, [], 'a page counts once');
+    const undo = board.merge(read.next, { lessons: { page: 'u3', done: false } }, now);
+    assert.deepEqual([undo.next.lessons, undo.events], [[], []], 'un-ticking removes the page quietly');
+    for (const bad of ['U3', '../x', '', 'x'.repeat(25), 7, null]) assert.deepEqual(board.merge(null, { lessons: { page: bad, done: true } }, now).next.lessons, [], `ignores page ${JSON.stringify(bad)}`);
+    assert.equal(board.merge(first.next, { lessons: { page: 'u4', done: 'yes' } }, now).next.lessons.length, 0, 'done must be true or false');
+    // Saved or sent under the pre-v6.2 name: read as lessons, saved back under the new name only.
+    const legacy = board.merge({ done: { jlpt: [], talk: [] }, mocks: {}, book: ['u1'] }, { book: { page: 'u2', done: true } }, now);
+    assert.deepEqual([legacy.next.lessons, 'book' in legacy.next], [['u1', 'u2'], false], 'old records and old copies of the app carry over');
   });
 
   await atest('board API: logged-in only, sync, board view, feed', async () => {
     assert.equal((await call(null)).status, 401, 'no cookie, no board');
     const r1 = await call('kartik', { path: { jlpt: 3, talk: 1 } });
-    assert.deepEqual(await r1.json(), { done: { jlpt: [0, 1, 2], talk: [0] }, book: [] });
+    assert.deepEqual(await r1.json(), { done: { jlpt: [0, 1, 2], talk: [0] }, lessons: [], book: [] });
     await call('ravi', { path: { jlpt: [], talk: [] } });
     await call('ravi', { level: { path: 'jlpt', i: 4, done: true }, mock: 'n5' });
     const r2 = await call('kartik', { path: { jlpt: [], talk: [] } });
-    assert.deepEqual(await r2.json(), { done: { jlpt: [0, 1, 2], talk: [0] }, book: [] }, 'a second device takes the account’s levels');
+    assert.deepEqual(await r2.json(), { done: { jlpt: [0, 1, 2], talk: [0] }, lessons: [], book: [] }, 'a second device takes the account’s levels');
     const view = await (await call('ravi')).json();
     assert.deepEqual(view.max, board.MAX);
     const k = view.people.find(p => p.name === 'Kartik'), r = view.people.find(p => p.name === 'Ravi');
@@ -986,12 +989,15 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
     await call('ravi', { level: { path: 'jlpt', i: 4, done: false } });
     const unticked = await (await call('kartik')).json();
     assert.ok(!unticked.feed.some(e => e.kind === 'done'), 'an un-ticked level leaves the feed');
-    await call('ravi', { book: { page: 'u1', done: true } });
-    await call('ravi', { book: { page: 'u2', done: true } });
-    await call('ravi', { book: { page: 'u2', done: false } });
-    const books = await (await call('kartik')).json();
-    assert.deepEqual(books.people.find(p => p.name === 'Ravi').book, ['u1']);
-    assert.deepEqual(books.feed.filter(e => e.kind === 'book').map(e => e.page), ['u1'], 'an un-ticked page leaves the feed');
+    await call('ravi', { lessons: { page: 'u1', done: true } });
+    await call('ravi', { lessons: { page: 'u2', done: true } });
+    await call('ravi', { lessons: { page: 'u2', done: false } });
+    const pages = await (await call('kartik')).json();
+    assert.deepEqual(pages.people.find(p => p.name === 'Ravi').lessons, ['u1']);
+    assert.deepEqual(pages.feed.filter(e => e.kind === 'lessons').map(e => e.page), ['u1'], 'an un-ticked page leaves the feed');
+    // A feed event logged before v6.2 shows under the new name.
+    await db.saveProgress({}, 'ravi', await db.getProgress({}, 'ravi'), [{ who: 'ravi', kind: 'book', page: 'u1', at: new Date().toISOString() }]);
+    assert.equal((await (await call('kartik')).json()).feed[0].kind, 'lessons', 'old feed events are renamed');
     db.users.delete('ravi');
     const after = await (await call('kartik')).json();
     assert.deepEqual(after.people.map(p => p.name), ['Kartik'], 'a deleted account leaves the board');

@@ -119,11 +119,13 @@ h1.page { margin: 0; font-size: 1.5rem; }
 
 /* ---------- Bottom tabs ---------- */
 .tabs {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(7, 1fr);
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid;
+  /* One equal column per tab, however many there are: a fixed repeat(7) left an empty slot when the N5·N4 tab went (v6.2). */
+  grid-auto-flow: column; grid-auto-columns: 1fr;
   background: color-mix(in srgb, var(--bg) 97%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid var(--line); padding: 0 max(env(safe-area-inset-right), calc((100% - 40rem) / 2)) env(safe-area-inset-bottom) max(env(safe-area-inset-left), calc((100% - 40rem) / 2));
 }
-/* Labels follow the text size but never outgrow a seventh of the screen: with "Large" browser text on a 360px phone
+/* Labels follow the text size but never outgrow their share of the screen: with "Large" browser text on a 360px phone
    ".72rem" alone cut "Phrases" off. 3.4vw keeps the normal size everywhere else. */
 .tabs a { position: relative; display: grid; justify-items: center; gap: 1px; padding: 8px 0 6px; min-width: 0; white-space: nowrap; font-size: min(.72rem, 3.4vw); font-weight: 600; color: var(--muted); text-decoration: none; }
 .tabs a span { font-size: 1.25rem; line-height: 1.2; }

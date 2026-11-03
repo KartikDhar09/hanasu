@@ -31,3 +31,6 @@ A PWA for learning to **speak** Japanese fast: N5 everyday conversation and offi
 
 Run locally: `npm run dev` → http://localhost:8080. Test: `npm test`.
 Content lives in `js/data.js`. Bump `CACHE` in `sw.js` on each release.
+
+Licence: MIT ([LICENSE](LICENSE)), except the textbook content, the voice clips and the third-party data
+listed in [NOTICE.md](NOTICE.md).

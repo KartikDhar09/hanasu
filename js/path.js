@@ -49,7 +49,9 @@ export function initPath(ctx) {
     const P = PATHS[p], L = P.levels, d = ctx.done(p), cur = current(p);
     const next = L[cur];
     render(`
-      <h1 class="page">${icon('path-' + p)} ${esc(P.title)}</h1>
+      ${p === 'jlpt' // inside the JLPT tab since v6.2, so it leads back to the JLPT hub; the Fluent path is a tab of its own
+        ? `<div class="head">${back('jlpt')}<h1>${icon('path-' + p)} ${esc(P.title)}</h1></div>`
+        : `<h1 class="page">${icon('path-' + p)} ${esc(P.title)}</h1>`}
       <div class="card left pnow">${next
         ? `<span class="tag">Level ${cur + 1} of ${L.length} · ${d.size} complete</span><b>${esc(next.title)}</b><p class="muted small">${esc(next.goal)}</p>
            <button class="btn primary big" data-act="path-level" data-arg="${p}.${next.id}">${d.size ? 'Continue' : 'Start level 1'}</button>`
@@ -137,8 +139,8 @@ export function initPath(ctx) {
 
   // Lives on the account, so it needs a connection; the button says so instead of pretending it worked.
   const completeButton = (p, i) => ctx.done(p).has(i)
-    ? `<button class="btn big bk-done on" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.0">${icon('done')} Complete · tap to undo</button>`
-    : `<button class="btn primary big bk-done" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.1">${icon('done')} Mark level complete</button>`;
+    ? `<button class="btn big ls-done on" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.0">${icon('done')} Complete · tap to undo</button>`
+    : `<button class="btn primary big ls-done" id="lv-done" data-act="path-complete" data-arg="${p}.${PATHS[p].levels[i].id}.1">${icon('done')} Mark level complete</button>`;
 
   async function markComplete(p, id, done) {
     const i = find(p, id), el = document.getElementById('lv-done');

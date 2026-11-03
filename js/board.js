@@ -1,13 +1,13 @@
-// 👥 Progress board (#board): for each person, how far they are in the two paths and the Book (a bar each and
+// 👥 Progress board (#board): for each person, how far they are in the two paths and Lessons (a bar each and
 // what's next), passed mock tests, and a feed of what happened ("Ravi completed level 5 of the JLPT path"). Data comes from
 // /api/board; the app reports progress there (js/app.js syncProgress). Opened from the 👥 button in the header,
 // not a tab (seven tabs is the most that fit).
 //
 // Nothing per tab is tracked: the two paths split the whole course (js/path-summary.js), so the completed levels say
-// what is done in Study, JLPT, Phrases and Speak too. Only the Book has its own record: pages marked done.
+// what is done in Study, JLPT, Phrases and Speak too. Only Lessons has its own record: pages marked done.
 // Since v6.0 levels are marked complete by hand, in any order (no level tests), so a path is a set of levels.
 import { PATH_SUMMARY } from './path-summary.js';
-import { BOOK_INDEX } from './book-index.js';
+import { LESSONS_INDEX } from './lessons-index.js';
 import { icon } from './icons.js';
 
 const PATH_NAMES = { jlpt: 'JLPT path', talk: 'Fluent path' };
@@ -32,7 +32,7 @@ export function initBoard(ctx) {
         : e.to - e.from === 1 ? `passed level ${e.to} of the ${path}` : `passed levels ${e.from + 1}–${e.to} of the ${path}`;
       case 'reset': return `started the ${path} again`;
       case 'mock': return `passed the full ${String(e.lv).toUpperCase()} mock test`;
-      case 'book': { const b = BOOK_INDEX.find(x => x.id === e.page); return b ? `finished Book page: ${pageName(b)}` : ''; }
+      case 'lessons': { const b = LESSONS_INDEX.find(x => x.id === e.page); return b ? `finished Lessons page: ${pageName(b)}` : ''; }
       default: return '';
     }
   }
@@ -56,10 +56,10 @@ export function initBoard(ctx) {
     return row('path-' + k, PATH_NAMES[k], d.size, levels.length, i >= 0 ? `Now: Level ${i + 1} · ${esc(levels[i][0])}` : 'Finished');
   }
 
-  // The Book: pages marked done; "Next" is the first page not done yet, in book order.
-  function bookRow(p) {
-    const done = BOOK_INDEX.filter(b => p.book.includes(b.id)).length, next = BOOK_INDEX.find(b => !p.book.includes(b.id));
-    return row('book', 'Book', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished');
+  // Lessons: pages marked done; "Next" is the first page not done yet, in contents order.
+  function lessonsRow(p) {
+    const done = LESSONS_INDEX.filter(b => p.lessons.includes(b.id)).length, next = LESSONS_INDEX.find(b => !p.lessons.includes(b.id));
+    return row('lessons', 'Lessons', done, LESSONS_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished');
   }
 
   // Each card folds: closed it is one line of numbers, so a bigger group still fits on a screen; open it shows the
@@ -67,15 +67,15 @@ export function initBoard(ctx) {
   function person(p) {
     const mocks = ['n5', 'n4'].filter(lv => p.mocks[lv]).map(lv => `<span class="pill g2">${icon('done')} ${lv.toUpperCase()}</span>`).join(' ');
     const n = k => doneOf(p, k).size;
-    const book = BOOK_INDEX.filter(b => p.book.includes(b.id)).length;
+    const pages = LESSONS_INDEX.filter(b => p.lessons.includes(b.id)).length;
     const isOpen = opened.has(p.name);
     // The whole card is the tap target (not a <details>, whose summary line is the only clickable part). data-act
     // makes app.js give it tabindex + role=button, so Tab and Enter/Space work too; aria-expanded tells a screen
     // reader whether the rows are showing. It sits inside the <li> so the list keeps its list role.
     return `<li><div class="card left bperson${p.me ? ' me' : ''}${isOpen ? ' open' : ''}" data-act="board-card" data-arg="${esc(p.name)}" aria-expanded="${isOpen}">
       <div class="brow"><b class="bname">${esc(p.name)}${p.me ? ' <span class="muted">(you)</span>' : ''}</b></div>
-      <div class="bsum">${icon('path-jlpt')} ${n('jlpt')}/${PATH_SUMMARY.jlpt.levels.length} · ${icon('path-talk')} ${n('talk')}/${PATH_SUMMARY.talk.levels.length} · ${icon('book')} ${book}/${BOOK_INDEX.length}${mocks ? ` ${mocks}` : ''}</div>
-      <div class="bmore">${pathRow(p, 'jlpt')}${pathRow(p, 'talk')}${bookRow(p)}</div>
+      <div class="bsum">${icon('path-jlpt')} ${n('jlpt')}/${PATH_SUMMARY.jlpt.levels.length} · ${icon('path-talk')} ${n('talk')}/${PATH_SUMMARY.talk.levels.length} · ${icon('lessons')} ${pages}/${LESSONS_INDEX.length}${mocks ? ` ${mocks}` : ''}</div>
+      <div class="bmore">${pathRow(p, 'jlpt')}${pathRow(p, 'talk')}${lessonsRow(p)}</div>
     </div></li>`;
   }
 
@@ -85,7 +85,7 @@ export function initBoard(ctx) {
     if (!data) body = error ? `<p class="warn">${esc(error)}</p>` : '<p class="muted">Loading…</p>';
     else {
       // You first, then whoever is furthest along. Not by recent activity: last seen was removed (v5.12).
-      const score = p => doneOf(p, 'jlpt').size + doneOf(p, 'talk').size + p.book.length;
+      const score = p => doneOf(p, 'jlpt').size + doneOf(p, 'talk').size + p.lessons.length;
       const people = [...data.people].sort((a, b) => (b.me - a.me) || score(b) - score(a) || a.name.localeCompare(b.name));
       // Newest first, with no times: a time on someone's latest event would tell everyone when they were last on.
       const feed = data.feed.map(e => {

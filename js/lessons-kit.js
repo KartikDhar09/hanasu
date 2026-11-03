@@ -1,16 +1,9 @@
-// Book tab building blocks: speech text, voices, picture maps and the helpers every page file (js/book-*.js) uses.
-// Content: Nihongo Fun & Easy: Survival Japanese Conversation for Beginners (ASK Publishing), personal study copy.
+// Lessons tab building blocks: speech text, voices, picture maps and the helpers every page file (js/lessons-*.js) uses.
+// The pages are third-party material kept as a personal study copy; see NOTICE.md.
 //
 // Word or phrase: [japanese, romaji, english, spoken?]   (spoken = what the voice reads, when the written form doesn't read well)
 // Conversation line: [speaker, japanese, romaji, english]
 // In the Japanese, 〈 〉 marks a word to swap, (1) marks a slot in a dialogue, ＿＿ is a blank (not spoken).
-
-export const BOOK_INFO = {
-  title: 'Nihongo Fun & Easy',
-  sub: 'Survival Japanese Conversation for Beginners',
-  authors: 'Ogata Yukiko, Sumitani Kana, Hidari Yasuko, Watanabe Yukiko',
-  publisher: 'ASK Publishing',
-};
 
 import { toRomaji } from './conjugate.js';
 
@@ -36,7 +29,7 @@ export function spoken(jp) {
 export const sayOf = w => w[3] || spoken(w[0]);
 
 
-// Pictures cut from the book (img/book/, loaded lazily). Food photos by the word they show; colours as swatches.
+// Pictures cut from the source PDF (img/lessons/, loaded lazily). Food photos by the word they show; colours as swatches.
 export const FOOD_PIC = {
   すき焼き: 'sukiyaki', しゃぶしゃぶ: 'shabushabu', 焼肉: 'yakiniku', 焼き鳥: 'yakitori', 刺身: 'sashimi', 天ぷら: 'tempura', から揚げ: 'karaage',
   しょうが焼き: 'shogayaki', 鶏の照り焼き: 'teriyaki', 肉じゃが: 'nikujaga', おでん: 'oden', 親子丼: 'oyakodon', 牛丼: 'gyudon', かつ丼: 'katsudon',
@@ -59,8 +52,8 @@ export const COLOR = {
 export const K = (jp, ro, en) => ({ t: 'key', jp, ro, en });             // the unit's target phrase
 export const H = text => ({ t: 'h', text });                             // small heading (Practice A, MEMO…)
 export const P = text => ({ t: 'p', text });                             // instruction or paragraph
-export const N = text => ({ t: 'note', text });                          // the book's NOTE / footnotes
-export const TIP = text => ({ t: 'tip', text });                         // Hanasu's own note (not from the book)
+export const N = text => ({ t: 'note', text });                          // the original's NOTE / footnotes
+export const TIP = text => ({ t: 'tip', text });                         // Hanasu's own note (not from the original)
 export const W = (...items) => ({ t: 'words', items });                  // word cards
 export const L = (...items) => ({ t: 'lines', items });                  // phrase list (MEMO, useful expressions)
 export const T = (...lines) => ({ t: 'talk', lines });                   // conversation
@@ -71,12 +64,12 @@ export const CHECK = (...items) => ({ t: 'check', items });
 export const LIST = (...items) => ({ t: 'list', items });
 export const TABLE = (head, rows) => ({ t: 'table', head, rows });
 export const LINK = (href, text) => ({ t: 'link', href, text });
-export const WP = (...items) => ({ t: 'words', items, pics: true });       // word cards with the book's photo / colour
-export const IMG = (file, alt) => ({ t: 'img', file, alt });              // one picture from the book (map, menu)
+export const WP = (...items) => ({ t: 'words', items, pics: true });       // word cards with the original's photo / colour
+export const IMG = (file, alt) => ({ t: 'img', file, alt });              // one picture from the original (map, menu)
 export const SCENES = (unit, ...items) => ({ t: 'scenes', unit, items });  // "Do you remember?" pictures with their situation
 
 
-// Wordbook helpers: one word per line, fields separated by |.
+// Word list helpers: one word per line, fields separated by |.
 const lines = text => text.trim().split('\n').map(l => l.split('|'));
 // Kana with spaces between words: the Japanese drops the spaces, the romaji keeps them (たばこ を すいます → tabako o suimasu).
 const jpOf = k => k.replace(/ /g, '');

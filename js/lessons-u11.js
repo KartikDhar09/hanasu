@@ -1,5 +1,5 @@
-// Book tab page: u11. Loaded only when opened; see js/book-kit.js for the helpers.
-import { IMG, K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './book-kit.js';
+// Lessons tab page: u11. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { IMG, K, H, P, N, TIP, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u11', n: 11, title: 'It’s nice weather today, isn’t it?', jp: '今日はいい天気ですね。', ro: 'Kyō wa ii tenki desu ne.',
@@ -66,7 +66,7 @@ export default {
       T(['ジョン', 'じゃ、〈お大事に〉。', 'Ja, <o-daiji ni>.', '<Get well soon.>'], ['佐藤', 'ありがとう。', 'Arigatō.', 'Thank you.']),
       H('③ To a friend you will not see for a long time'),
       T(['ジョン', 'じゃ、〈お元気で〉。', 'Ja, <o-genki de>.', '<Take care of yourself.>'], ['友達', '〈ジョンさんも、お元気で〉。', '<Jon-san mo, o-genki de>.', '<You too, take care.>']),
-      TIP('The book leaves the blanks in ①–③ open; the words above are the ones that fit each situation.'),
+      TIP('The original leaves the blanks in ①–③ open; the words above are the ones that fit each situation.'),
       H('MEMO'),
       L(['おつかれさまでした。', 'Otsukaresama deshita.', 'Good work today. / Goodbye. [a greeting used in the workplace instead of “Goodbye.”]']),
     ] },

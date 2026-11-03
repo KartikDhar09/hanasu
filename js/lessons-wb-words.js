@@ -1,8 +1,8 @@
-// Book tab page: wb-words. Loaded only when opened; see js/book-kit.js for the helpers.
-import { P, N, LINK, WL } from './book-kit.js';
+// Lessons tab page: wb-words. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { P, N, LINK, WL } from './lessons-kit.js';
 
 export default {
-  id: 'wb-words', title: 'Wordbook: list of useful words', jp: 'お役立ち語彙集',
+  id: 'wb-words', title: 'Word list: list of useful words', jp: 'お役立ち語彙集',
   sections: [
     { h: '仕事 Shigoto · Jobs', blocks: [WL(`
 government worker|公務員|kōmuin
@@ -194,10 +194,10 @@ band-aid|ばんそうこう|bansōkō
 diarrhea medicine|下痢止め|geri-dome
 wet cloth (compress)|湿布|shippu
 insecticide|殺虫剤|sacchū-zai`)] },
-    { h: '色 Iro · Colors', blocks: [P('The colours are on the Pictures page.'), LINK('#book/pictures', 'Open Pictures: colors & Japanese food')] },
+    { h: '色 Iro · Colors', blocks: [P('The colours are on the Pictures page.'), LINK('#lessons/pictures', 'Open Pictures: colors & Japanese food')] },
     { h: '料理 Ryōri · Food', blocks: [
-      P('The book’s food list repeats every dish from the Pictures pages; those are on the Pictures page with photos. These are the dishes that are only in the list:'),
-      LINK('#book/pictures', 'Open Pictures: colors & Japanese food'),
+      P('The original food list repeats every dish from the Pictures pages; those are on the Pictures page with photos. These are the dishes that are only in the list:'),
+      LINK('#lessons/pictures', 'Open Pictures: colors & Japanese food'),
       WL(`
 Japanese food|日本料理|Nihon ryōri
 rice with hashed meat|ハヤシライス|hayashi raisu

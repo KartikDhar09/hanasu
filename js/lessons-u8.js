@@ -1,5 +1,5 @@
-// Book tab page: u8. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './book-kit.js';
+// Lessons tab page: u8. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u8', n: 8, title: 'I’m going to an art museum.', jp: '美術館に行きます。', ro: 'Bijutsukan ni ikimasu.',

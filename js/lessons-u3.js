@@ -1,5 +1,5 @@
-// Book tab page: u3. Loaded only when opened; see js/book-kit.js for the helpers.
-import { IMG, K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, SCENES } from './book-kit.js';
+// Lessons tab page: u3. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { IMG, K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, LIST, TABLE, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u3', n: 3, title: 'How much is this?', jp: 'これ、いくらですか。', ro: 'Kore, ikura desu ka.',

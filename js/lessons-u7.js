@@ -1,5 +1,5 @@
-// Book tab page: u7. Loaded only when opened; see js/book-kit.js for the helpers.
-import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, IMG, SCENES } from './book-kit.js';
+// Lessons tab page: u7. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { K, H, P, N, W, L, T, SUBS, LISTEN, ROLE, CHECK, TABLE, IMG, SCENES } from './lessons-kit.js';
 
 export default {
   id: 'u7', n: 7, title: 'Does this (train) go to Yokohama?', jp: 'これ、横浜に行きますか。', ro: 'Kore, Yokohama ni ikimasu ka.',

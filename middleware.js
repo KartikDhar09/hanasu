@@ -1,6 +1,6 @@
 // Login wall: Vercel runs this before every request (Routing Middleware, Edge runtime). Without a valid session
-// cookie, nothing of the app is served: page loads go to the login page, and files (scripts, book pages, audio,
-// pictures) get 401. So the book and everything else are visible only to people who have an account.
+// cookie, nothing of the app is served: page loads go to the login page, and files (scripts, lesson pages, audio,
+// pictures) get 401. So the lessons and everything else are visible only to people who have an account.
 import { userOf } from './api/_session.js';
 
 // What a logged-out visitor may load: the login page and what it needs, the icons and manifest (shown by the

@@ -1,8 +1,8 @@
-// Book tab page: wb-countries. Loaded only when opened; see js/book-kit.js for the helpers.
-import { WL } from './book-kit.js';
+// Lessons tab page: wb-countries. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { WL } from './lessons-kit.js';
 
 export default {
-  id: 'wb-countries', title: 'Wordbook: countries and regions', jp: '国・地域',
+  id: 'wb-countries', title: 'Word list: countries and regions', jp: '国・地域',
   sections: [
     { h: 'アフリカ Afurika · Africa', blocks: [WL(`
 Benin|ベナン|Benan

@@ -499,7 +499,9 @@ details.answers .phrases { margin-top: 8px; }
 .ptile small { color: var(--muted); font-size: .78rem; text-align: center; }
 
 /* ---------- Paths (level by level) ---------- */
-.pnow { display: grid; gap: 6px; }
+/* .card.left sets display: block, which would put the tag and the title on one line; the card stays a grid. */
+.card.left.pnow { display: grid; gap: 6px; }
+.card.left.pnow > * + * { margin-top: 0; }
 .pnow .tag { justify-self: start; margin: 0; }
 .pnow p { margin: 0 0 4px; }
 .levels li.now button { border-color: var(--accent); }
@@ -601,54 +603,54 @@ details.answers .phrases { margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-/* ---------- Book tab (textbook pages) ---------- */
-.bk-soon { opacity: .5; cursor: default; }
-.bk-sec { margin-top: 10px; }
-.bk-sec > summary small { font-weight: 500; }
-.bk-body { padding: 0 16px 16px; display: grid; gap: 10px; }
-.bk-body > .card { margin: 0; }
-.bk-h { margin: 8px 0 0; font-size: .95rem; }
-.bk-p { margin: 0; line-height: 1.5; }
-.bk-key { cursor: pointer; text-align: center; }
-.bk-key .jp { font-size: 1.35rem; }
-.bk-key .en { color: var(--muted); }
-.bk-words { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
-.bk-w { display: grid; gap: 2px; text-align: left; background: var(--surface-2); border: 0; border-radius: 10px; padding: 8px 10px; color: var(--ink); font: inherit; cursor: pointer; min-width: 0; }
-.bk-w b { font-size: 1.05rem; overflow-wrap: anywhere; }
-.bk-w .ro { font-size: .8rem; }
-.bk-w .en { font-size: .8rem; color: var(--muted); overflow-wrap: anywhere; }
-.bk-w:active { background: var(--line); }
-.bk-talk { display: grid; gap: 8px; }
-.bk-talk .bk-play { justify-self: start; }
-.bk-talk .who { display: block; font-size: .72rem; font-weight: 700; color: var(--muted); }
-.bk-subs { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; }
-.bk-n { font-size: 1.2rem; color: var(--accent); }
-.bk-list { margin: 0; padding-left: 20px; display: grid; gap: 4px; line-height: 1.45; }
-.bk-table { overflow-x: auto; }
-.bk-table table { border-collapse: collapse; width: 100%; font-size: .85rem; }
-.bk-table th, .bk-table td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
-.bk-table th { background: var(--surface-2); }
-.bk-check { display: grid; gap: 6px; }
-.bk-check label { display: flex; gap: 8px; align-items: baseline; }
-.bk-ab { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.bk-ab p { margin: 4px 0 0; }
-@media (max-width: 480px) { .bk-ab { grid-template-columns: 1fr; } }
-.bk-listen { display: grid; gap: 10px; }
-.bk-listen > * + * { margin-top: 0; }
-.bk-listen .choices { display: grid; gap: 8px; }
-.bk-listen .choice { min-height: 0; font-size: .95rem; }
-/* Book pictures */
-.bk-img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--surface-2); }
-.bk-words.pics { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-.bk-w.pic .bk-img { margin-bottom: 4px; }
-.bk-swatch { display: block; height: 44px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 4px; }
-.bk-pic { display: grid; gap: 4px; text-decoration: none; }
-.bk-pic .bk-img { background: #fff; }
-.bk-scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-.bk-scenes figure { margin: 0; display: grid; gap: 6px; }
-.bk-scenes .bk-img { background: #fff; border: 1px solid var(--line); }
-.bk-scenes figcaption { font-size: .88rem; line-height: 1.4; }
-.bk-pending { aspect-ratio: 4 / 3; display: grid; place-items: center; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; }
+/* ---------- Lessons tab ---------- */
+.ls-soon { opacity: .5; cursor: default; }
+.ls-sec { margin-top: 10px; }
+.ls-sec > summary small { font-weight: 500; }
+.ls-body { padding: 0 16px 16px; display: grid; gap: 10px; }
+.ls-body > .card { margin: 0; }
+.ls-h { margin: 8px 0 0; font-size: .95rem; }
+.ls-p { margin: 0; line-height: 1.5; }
+.ls-key { cursor: pointer; text-align: center; }
+.ls-key .jp { font-size: 1.35rem; }
+.ls-key .en { color: var(--muted); }
+.ls-words { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.ls-w { display: grid; gap: 2px; text-align: left; background: var(--surface-2); border: 0; border-radius: 10px; padding: 8px 10px; color: var(--ink); font: inherit; cursor: pointer; min-width: 0; }
+.ls-w b { font-size: 1.05rem; overflow-wrap: anywhere; }
+.ls-w .ro { font-size: .8rem; }
+.ls-w .en { font-size: .8rem; color: var(--muted); overflow-wrap: anywhere; }
+.ls-w:active { background: var(--line); }
+.ls-talk { display: grid; gap: 8px; }
+.ls-talk .ls-play { justify-self: start; }
+.ls-talk .who { display: block; font-size: .72rem; font-weight: 700; color: var(--muted); }
+.ls-subs { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; }
+.ls-n { font-size: 1.2rem; color: var(--accent); }
+.ls-list { margin: 0; padding-left: 20px; display: grid; gap: 4px; line-height: 1.45; }
+.ls-table { overflow-x: auto; }
+.ls-table table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+.ls-table th, .ls-table td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.ls-table th { background: var(--surface-2); }
+.ls-check { display: grid; gap: 6px; }
+.ls-check label { display: flex; gap: 8px; align-items: baseline; }
+.ls-ab { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ls-ab p { margin: 4px 0 0; }
+@media (max-width: 480px) { .ls-ab { grid-template-columns: 1fr; } }
+.ls-listen { display: grid; gap: 10px; }
+.ls-listen > * + * { margin-top: 0; }
+.ls-listen .choices { display: grid; gap: 8px; }
+.ls-listen .choice { min-height: 0; font-size: .95rem; }
+/* Lesson pictures */
+.ls-img { display: block; width: 100%; height: auto; border-radius: 8px; background: var(--surface-2); }
+.ls-words.pics { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.ls-w.pic .ls-img { margin-bottom: 4px; }
+.ls-swatch { display: block; height: 44px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 4px; }
+.ls-pic { display: grid; gap: 4px; text-decoration: none; }
+.ls-pic .ls-img { background: #fff; }
+.ls-scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.ls-scenes figure { margin: 0; display: grid; gap: 6px; }
+.ls-scenes .ls-img { background: #fff; border: 1px solid var(--line); }
+.ls-scenes figcaption { font-size: .88rem; line-height: 1.4; }
+.ls-pending { aspect-ratio: 4 / 3; display: grid; place-items: center; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; }
 
 /* ---------- Board (js/board.js) ---------- */
 .bpeople, .bfeed { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
@@ -657,9 +659,9 @@ details.answers .phrases { margin-top: 8px; }
 .brow { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .bname { font-size: 1.05rem; overflow-wrap: anywhere; }
 .bfeed li { padding: 10px 12px; background: var(--surface); border-radius: 12px; line-height: 1.4; overflow-wrap: anywhere; }
-/* Book: "Mark this page done" sits above Prev / Next; once done it turns green like a passed level. */
-.bk-done { margin-top: 16px; }
-.bk-done.on { color: var(--ok); border-color: var(--ok); }
+/* Lessons: "Mark this page done" sits above Prev / Next; once done it turns green like a passed level. */
+.ls-done { margin-top: 16px; }
+.ls-done.on { color: var(--ok); border-color: var(--ok); }
 /* Board card: name, then one short block per area (label + n / total, bar, what's next). */
 .barea { margin-top: 12px; display: grid; gap: 4px; }
 .bnow { font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }

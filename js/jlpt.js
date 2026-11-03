@@ -1,7 +1,6 @@
 // JLPT tab: exam overview, study path, kana charts, grammar points, vocabulary and exam-style reading/listening.
 // No quizzes since v6.0 (the user's choice, 2026-10-25): the full N5/N4 mock tests (exam.js) are the only tests.
 import { EXAMS, EXAM_TIPS, QUESTION_TYPES, GRAMMAR } from './jlpt-data.js';
-import { KANJI_N5, KANJI_N4 } from './kanji-data.js';
 import { VOCAB, WORDS } from './vocab-data.js';
 import { sayable } from './core.js';
 import { READING, LISTENING } from './exam-data.js';
@@ -11,6 +10,7 @@ import { prefetchClip } from './clips.js';
 
 import { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA, toKata, combos } from './kana-data.js';
 import { icon } from './icons.js';
+import { PATH_SUMMARY } from './path-summary.js';
 export { KANA_ROWS, DAKUTEN_ROWS, COMBO_ROWS, ALL_KANA };
 
 // Splits a sentence into pieces at particle boundaries, for the mock test's ★ word-order questions (exam.js).
@@ -43,52 +43,32 @@ export function initJlpt(ctx) {
   const plain = s => s.replace(/[[\]]/g, '');
   let st = null;
 
-  // ---- Study path: the order to work through each level ----
-  const examSteps = lv => [
-    ['Reading practice', 'Notes, emails and notices.', 'ex-reading'],
-    ['Listening practice', 'Conversations with picture answers.', 'ex-listening'],
-    ['Mock test', `Aim for ${EXAMS[lv].pass.total}+/180 with every section above the minimum.`, 'ex-mock'],
-  ];
-
-  function path(lv) {
-    if (lv === 'n5') return [
-      ['Hiragana & katakana', 'Read every kana out loud until none makes you stop.', 'kana'],
-      ['Everyday N5 phrases', 'Work through the Everyday N5 track.', 'home'],
-      ['Particles', 'Open each particle and say its examples aloud.', 'particles'],
-      ['Verbs & forms', 'Conjugation tables: say each form aloud.', 'verbs'],
-      ['N5 kanji', `All ${KANJI_N5.length} kanji with flashcards.`, 'kanji'],
-      ['N5 vocabulary', `${WORDS.filter(w => w.level === 'n5').length} picture words with flashcards.`, 'jlpt-vocab'],
-      ['N5 grammar points', `${GRAMMAR.filter(g => g.level === 'n5').length} patterns with examples to say aloud.`, 'jlpt-grammar'],
-      ...examSteps('n5'),
-    ];
-    return [
-      ['N5 first', 'N4 includes everything in N5.', 'jlpt-n5'],
-      ['Office & corporate phrases', 'Work through the Office and Corporate tracks.', 'home'],
-      ['N4 kanji', `${KANJI_N4.length} more kanji.`, 'kanji-n4'],
-      ['N4 vocabulary', `${WORDS.filter(w => w.level === 'n4').length} picture words for work and life.`, 'jlpt-vocab'],
-      ['N4 grammar points', `${GRAMMAR.filter(g => g.level === 'n4').length} patterns with examples to say aloud.`, 'jlpt-grammar'],
-      ...examSteps('n4'),
-    ];
+  // ---- The N5·N4 path: its levels (js/path-jlpt.js) open from here since v6.2, when it stopped being a tab ----
+  // Replaces the short per-level step list this hub had, so there is one path to follow, not two.
+  function pathCard() {
+    const L = PATH_SUMMARY.jlpt.levels, d = ctx.pathDone(), i = L.findIndex((_, n) => !d.has(n));
+    return `<div class="card left pnow">
+        <span class="tag">N5·N4 path · ${d.size} of ${L.length} complete</span>
+        <b>${i >= 0 ? `Level ${i + 1} · ${esc(L[i][0])}` : 'All levels complete'}</b>
+        ${ctx.bar(d.size, L.length)}
+        <p class="muted small">Level by level, from hiragana to the N5 and N4 exams.</p>
+        <button class="btn primary big" data-act="path-home" data-arg="jlpt">${d.size ? 'Continue the path' : 'Start the path'}</button>
+      </div>`;
   }
 
   // ================= Hub =================
   function hub() {
     ctx.clearSess(); st = null;
     const lv = level(), ex = EXAMS[lv];
-    const steps = path(lv);
     render(`
       <h1 class="page">JLPT <span lang="ja">日本語能力試験</span></h1>
+      ${pathCard()}
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="jlpt-level" data-arg="${l}">${EXAMS[l].title}</button>`).join('')}</div>
       <div class="card left">
         <b>${ex.title} · ${ex.level}</b>${hg(ex.hg)}
         <p>${esc(ex.can)}</p>${hg(ex.canHg)}
         <div class="note">${icon('need')} You need: ${esc(ex.need)}</div>
       </div>
-      <h2 class="sec">Your path to ${ex.title}</h2>
-      <ol class="path">${steps.map((s, n) => `<li><button data-act="${s[2]}" data-arg="${['jlpt-grammar', 'jlpt-vocab', 'ex-reading', 'ex-listening', 'ex-mock'].includes(s[2]) ? lv : ''}">
-          <span class="pico">${n + 1}</span>
-          <span class="ptext"><b>${esc(s[0])}</b><small>${esc(s[1])}</small></span>
-          <span class="count">›</span></button></li>`).join('')}</ol>
       <button class="btn primary big mock-btn" data-act="ex-mock" data-arg="${lv}">${icon('mock')} Take a ${ex.title} mock test</button>
       <h2 class="sec">Practise like the exam</h2>
       <div class="speak-grid">
@@ -259,7 +239,6 @@ export function initJlpt(ctx) {
 
   const actions = {
     jlpt: () => ctx.go('jlpt'),
-    'jlpt-n5': () => { lvl = 'n5'; hub(); window.scrollTo(0, 0); },
     'jlpt-level': l => { lvl = l === 'n4' ? 'n4' : 'n5'; hub(); },
     kana: () => ctx.go('jlpt/kana'),
     'kana-script': s => kana(s),

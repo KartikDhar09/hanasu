@@ -1,11 +1,11 @@
-// Book tab page: grammar. Loaded only when opened; see js/book-kit.js for the helpers.
-import { H, P, N, TIP, W, L, T, LIST, TABLE, LINK } from './book-kit.js';
+// Lessons tab page: grammar. Loaded only when opened; see js/lessons-kit.js for the helpers.
+import { H, P, N, TIP, W, L, T, LIST, TABLE, LINK } from './lessons-kit.js';
 
 export default {
   id: 'grammar', title: 'Grammar', jp: '文法',
   sections: [
     { h: 'I Sentence Structure', blocks: [
-      TIP('The book writes its grammar examples in romaji only; the Japanese lines here are added so every example can be played.'),
+      TIP('The original writes its grammar examples in romaji only; the Japanese lines here are added so every example can be played.'),
       H('1. Basic Sentence Patterns'),
       P('In broad terms, Japanese sentences can be divided into the following three patterns.'),
       L(['私は日本人です。', 'Watashi wa Nihon-jin desu.', 'I am a Japanese person. [Noun Phrase]'], ['メアリーさんは忙しいです。', 'Mearī-san wa isogashii desu.', 'Mary-san is busy. [Adjective Phrase]'],

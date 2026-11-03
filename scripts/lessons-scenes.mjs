@@ -1,4 +1,4 @@
-// Unit pictures for the Book tab: maps, menus and "Do you remember?" scenes. Read by scripts/book-images.mjs.
+// Unit pictures for the Lessons tab: maps, menus and "Do you remember?" scenes. Read by scripts/lessons-images.mjs.
 // Each entry: [file, pdfPage, x, y, w, h, width, gray]  (all line drawings, so greyscale)  (fractions of the page, origin top-left)
 const S = (unit, page, boxes) => boxes.map((b, i) => [`${unit}/remember-${i + 1}`, page, ...b, 480, true]);
 

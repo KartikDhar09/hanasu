@@ -87,7 +87,7 @@ function render(html) {
 // The line a speak button would say, so its clip can load while it's on screen.
 function lineFor(el) {
   const { act, arg, say, who } = el.dataset;
-  if (say) return [say, who || 'n']; // Book tab lines carry their own text and speaker's voice
+  if (say) return [say, who || 'n']; // Lessons tab lines carry their own text and speaker's voice
   if (act === 'say-text') return arg || '';
   const c = cardById(arg);
   if (!c) return '';
@@ -619,7 +619,8 @@ const LOADERS = {
   speaking: () => import('./speaking.js').then(m => m.initSpeaking({
     ...shared(), profile, canListen, fill: t => fill(t, profile()), record: recordAgainst, speakMode, speakSlow: t => speak(t, true), waysOf, waysSlot,
   })),
-  jlpt: () => import('./jlpt.js').then(m => m.initJlpt(shared())),
+  // The hub shows where you are in the N5·N4 path, which lives inside the JLPT tab.
+  jlpt: () => import('./jlpt.js').then(m => m.initJlpt({ ...shared(), pathDone: () => new Set(S.path.jlpt || []) })),
   path: () => import('./path.js').then(m => m.initPath({
     ...shared(), run, canListen, record: recordAgainst,
     // A unit phrase as a speaking target: its casual, business and other ways are accepted too.
@@ -628,7 +629,7 @@ const LOADERS = {
       return { jp: v.jp, kana: v.kana, ro: v.ro, en: v.en, casual: v.casual, alts: await waysOf(id) };
     },
     done: p => new Set(S.path[p] || []),
-    // Marks one level complete or not. Goes through the account first (like a Book page), so two devices can't
+    // Marks one level complete or not. Goes through the account first (like a lesson page), so two devices can't
     // disagree; true once the account has it, false offline (the button then says so and nothing changes).
     markLevel: (p, i, done) => PATH_IDS.includes(p) ? syncProgress({ level: { path: p, i, done } }) : Promise.resolve(false),
     resetPath: p => PATH_IDS.includes(p) ? syncProgress({ reset: p }) : Promise.resolve(false),
@@ -636,10 +637,10 @@ const LOADERS = {
   strokes: () => import('./strokes.js').then(m => m.initStrokes(shared())),
   search: () => import('./search.js').then(m => m.initSearch(shared())),
   board: () => import('./board.js').then(m => m.initBoard(shared())),
-  book: () => import('./book.js').then(m => m.initBook({
+  lessons: () => import('./lessons.js').then(m => m.initLessons({
     ...shared(), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
-    pageDone: id => bookDone.has(id),
-    markPage: (id, done) => syncProgress({ book: { page: id, done } }),
+    pageDone: id => lessonsDone.has(id),
+    markPage: (id, done) => syncProgress({ lessons: { page: id, done } }),
   })),
   exam: () => import('./exam.js').then(m => m.initExam({
     ...shared(), mockPassed: lv => syncProgress({ mock: lv }), sayAs: (text, who) => say(text, { rate: S.settings.rate, voice: S.settings.voice, who, pitch: { m: 0.75, f: 1.25 }[who] || 1 }), stop: stopSpeaking,
@@ -654,7 +655,7 @@ function loadSection(name) {
 const loadAll = () => loadPhrases().then(() => Promise.all(Object.keys(LOADERS).map(loadSection)));
 const moduleFor = h => /^speak/.test(h) ? 'speaking' : /^jlpt\/(reading|listening|mock)/.test(h) ? 'exam'
   : /^jlpt/.test(h) ? 'jlpt' : /^(study|particle|verb|grammar|kanji|counter)/.test(h) ? 'study' : /^write/.test(h) ? 'strokes'
-  : /^path\//.test(h) ? 'path' : /^book/.test(h) ? 'book' : h === 'search' ? 'search' : h === 'board' ? 'board' : null;
+  : /^path\//.test(h) ? 'path' : /^lessons/.test(h) ? 'lessons' : h === 'search' ? 'search' : h === 'board' ? 'board' : null;
 
 // Runs an action; one that belongs to a section not loaded yet loads the sections first.
 // Settings work without the phrase data; everything else waits for it (it's usually loaded already).
@@ -670,8 +671,9 @@ function go(h) { if (location.hash.slice(1) === h) route(); else location.hash =
 async function route() {
   const h = location.hash.slice(1);
   Object.values(mods).forEach(m => m.clear());
-  const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|book|path\/\w+)/.exec(h)?.[1];
-  const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m ? m.replace('/', '-') : 'phrases';
+  const m = /^(speak|study|particle|verb|counter|grammar|kanji|jlpt|write|lessons|path\/\w+)/.exec(h)?.[1];
+  // The N5·N4 path lives inside the JLPT tab since v6.2 (no tab of its own), so its screens light JLPT.
+  const tab = ['particle', 'verb', 'counter', 'grammar', 'kanji', 'write'].includes(m) ? 'study' : m === 'path/jlpt' ? 'jlpt' : m ? m.replace('/', '-') : 'phrases';
   const tabs = [...document.querySelectorAll('#tabs a')];
   // Search and the board are opened from the header, so no tab lights up; unknown links fall back to home.
   const on = h === 'search' || h === 'board' ? '' : tabs.some(a => a.dataset.tab === tab) ? tab : 'phrases';
@@ -733,21 +735,26 @@ fetch('/api/auth', { cache: 'no-store' }).then(async res => {
   } else if (res.status === 401) location.replace('/login.html?next=' + encodeURIComponent('/' + location.hash));
 }).catch(() => {});
 
-// 👥 Board: tells the account about one change (a level or Book page marked complete or not, a passed mock, a
+// 👥 Board: tells the account about one change (a level or lesson page marked complete or not, a passed mock, a
 // "start again"), or nothing at all on launch, and takes back the account's completed levels and pages. The account
 // is the source of truth (since v6.0): this device's list is only sent the first time an account syncs, so levels
 // reached before the board existed aren't lost, and it is never merged in later, so an old offline copy can't undo a
 // change made on another device. Offline it fails quietly (a mock passed offline is not reported).
 // Returns true when the server accepted it (the Mark complete buttons need to know).
-let bookDone = new Set(); // Book pages marked done, from the account; kept in memory only, never on the device
+let lessonsDone = new Set(); // Lesson pages marked done, from the account; kept in memory only, never on the device
 async function syncProgress(extra = {}) {
   try {
     const res = await fetch('/api/board', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: S.path, ...extra }),
     });
     if (!res.ok) return false;
-    const { done, book } = await res.json();
-    if (Array.isArray(book)) bookDone = new Set(book.filter(x => typeof x === 'string'));
+    const { done, lessons } = await res.json();
+    const before = [...lessonsDone].sort().join();
+    if (Array.isArray(lessons)) lessonsDone = new Set(lessons.filter(x => typeof x === 'string'));
+    // The launch sync can answer after a Lessons screen is already drawn without its ticks (opening the app straight
+    // on the contents showed none until you left and came back), so that screen is drawn again. Not after a tick made
+    // on the page itself: its button already shows it, and redrawing would close the open sections.
+    if (!extra.lessons && [...lessonsDone].sort().join() !== before && /^#lessons/.test(location.hash)) route();
     let changed = false;
     for (const p of PATH_IDS) {
       if (!Array.isArray(done?.[p])) continue;
@@ -756,14 +763,15 @@ async function syncProgress(extra = {}) {
     }
     if (!changed) return true;
     save();
-    // A path screen shows the ticks, so it is redrawn; nothing else on screen depends on them.
+    // Path screens show the ticks, and so does the JLPT hub (its N5·N4 path card), so those are redrawn.
     if (/^#path\//.test(location.hash)) rerender();
+    else if (location.hash === '#jlpt') route();
     return true;
   } catch (_) { return false; /* offline: try again next launch */ }
 }
 
 // Logging out also deletes the offline copy and the cached audio and pictures, so the next person to pick up this
-// phone can't open the app (or the book) from the cache without logging in.
+// phone can't open the app (or the lessons) from the cache without logging in.
 async function logout() {
   if (!confirm('Log out on this device? The offline copy is removed too; the app downloads again after you log in.')) return;
   await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"logout"}' }).catch(() => {});

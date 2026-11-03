@@ -38,9 +38,8 @@ export const DEPS = {
     "jlpt-data.js",
     "jlpt.js",
     "kana-data.js",
-    "kanji-data.js",
-    "kanji-n4.js",
     "kanji-readings.js",
+    "path-summary.js",
     "vocab-data.js",
     "vocab-life.js",
     "vocab-n4.js",
@@ -62,6 +61,7 @@ export const DEPS = {
     "kanji-data.js",
     "kanji-n4.js",
     "kanji-readings.js",
+    "path-summary.js",
     "vocab-data.js",
     "vocab-life.js",
     "vocab-n4.js",
@@ -110,17 +110,17 @@ export const DEPS = {
     "vocab-n4.js",
     "vocab-n5.js"
   ],
-  book: [
-    "book-data.js",
-    "book-index.js",
-    "book-kit.js",
-    "book-pics.js",
-    "book.js",
-    "conjugate.js"
+  lessons: [
+    "conjugate.js",
+    "lessons-data.js",
+    "lessons-index.js",
+    "lessons-kit.js",
+    "lessons-pics.js",
+    "lessons.js"
   ],
   board: [
     "board.js",
-    "book-index.js",
+    "lessons-index.js",
     "path-summary.js"
   ]
 };

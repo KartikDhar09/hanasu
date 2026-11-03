@@ -2,6 +2,7 @@
   "name": "hanasu",
   "version": "6.2.0",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "description": "PWA for speaking Japanese: N5 everyday conversation and office Japanese.",
   "scripts": {

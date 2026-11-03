@@ -32,7 +32,7 @@ export function initBoard(ctx) {
         : e.to - e.from === 1 ? `passed level ${e.to} of the ${path}` : `passed levels ${e.from + 1}–${e.to} of the ${path}`;
       case 'reset': return `started the ${path} again`;
       case 'mock': return `passed the full ${String(e.lv).toUpperCase()} mock test`;
-      case 'book': { const b = BOOK_INDEX.find(x => x.id === e.page); return b ? `finished Book page: ${pageName(b)}` : ''; }
+      case 'book': { const b = BOOK_INDEX.find(x => x.id === e.page); return b ? `finished Lessons page: ${pageName(b)}` : ''; }
       default: return '';
     }
   }
@@ -59,7 +59,7 @@ export function initBoard(ctx) {
   // The Book: pages marked done; "Next" is the first page not done yet, in book order.
   function bookRow(p) {
     const done = BOOK_INDEX.filter(b => p.book.includes(b.id)).length, next = BOOK_INDEX.find(b => !p.book.includes(b.id));
-    return row('book', 'Book', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished');
+    return row('book', 'Lessons', done, BOOK_INDEX.length, next ? `Next: ${esc(pageName(next))}` : 'Finished');
   }
 
   // Each card folds: closed it is one line of numbers, so a bigger group still fits on a screen; open it shows the

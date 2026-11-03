@@ -1,6 +1,6 @@
 // Book tab: the Nihongo Fun & Easy textbook, page by page. Every Japanese line plays on tap; conversations and
 // listening scripts can play in full, each speaker in their own voice.
-import { BOOK_INFO, BOOK_INDEX, loadPage, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
+import { BOOK_INDEX, loadPage, FOOD_PIC, COLOR, spoken, sayOf, voiceOf } from './book-data.js';
 import { PIC_SIZE } from './book-pics.js';
 import { icon } from './icons.js';
 
@@ -27,12 +27,7 @@ export function initBook(ctx) {
         <span class="ut"><b>${esc(p.n ? `Unit ${p.n} · ${p.title}` : p.title)}</b><small>${esc(sub)}</small></span>
       </button>`;
     render(`
-      <h1 class="page">Book <span lang="ja">教科書</span></h1>
-      <div class="card left">
-        <b>${esc(BOOK_INFO.title)}</b>
-        <div class="muted">${esc(BOOK_INFO.sub)} · ${esc(BOOK_INFO.publisher)}</div>
-        <p class="muted">Every page of the book, unit by unit. Tap any Japanese to hear it.</p>
-      </div>
+      <h1 class="page">Lessons <span lang="ja">教科書</span></h1>
       ${[['front', 'Before you start'], ['units', 'Units'], ['back', 'Grammar &amp; Handy Wordbook']].map(([g, h]) => `
         <h2 class="sec">${h}</h2>
         <div class="units">${BOOK_INDEX.filter(p => p.group === g).map(p => btn(p, p.n ? `${p.topic} · ${p.topicJp}` : p.jp)).join('')}</div>`).join('')}`);

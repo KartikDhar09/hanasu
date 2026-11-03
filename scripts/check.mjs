@@ -895,6 +895,9 @@ test('search finds things by Japanese, kana, romaji (with or without long-vowel 
     for (const n of used) assert.ok(ICONS[n], `icon "${n}" is used but not in js/icons.js (add it to NAMES in scripts/icons.mjs)`);
     const inline = [...html.matchAll(/<svg class="ic" data-icon="([a-z-]+)" viewBox="0 0 24 24" aria-hidden="true" focusable="false">(.*?)<\/svg>/g)];
     assert.equal(inline.length, 9, 'tab bar (6, the N5·N4 path moved into JLPT in v6.2) + header (3)');
+    // The tab bar sizes its columns from the tabs themselves; a fixed count goes stale when a tab is added or removed.
+    const tabsRule = read('css/app.css').match(/^\.tabs \{[^}]*\}/m)?.[0] || '';
+    assert.ok(/grid-auto-columns: 1fr/.test(tabsRule) && !/grid-template-columns/.test(tabsRule), '.tabs must use grid-auto-columns, not a fixed column count');
     for (const [, n, body] of inline) assert.equal(body, ICONS[n], `index.html icon "${n}" differs from js/icons.js`);
     assert.match(icon('home'), /^<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path /);
     assert.ok(!/[<>"](?:script|on\w+=)/i.test(JSON.stringify(ICONS)), 'icons are plain shapes');

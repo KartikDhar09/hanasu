@@ -65,14 +65,24 @@ export function initExam(ctx) {
     <details class="answers"><summary>${icon('reading')} Key words</summary><ul class="glossary">${r.words.map(w => `<li><b lang="ja">${esc(w[0])}</b> <span lang="ja">${esc(w[1])}</span> · ${esc(w[2])}</li>`).join('')}</ul></details>`;
 
   // ================= Reading =================
+  // The three reading tasks of the paper, in paper order. Lengths are told to the learner so a 450-character
+  // essay on exam day is not a surprise (before v6.4 the app had nothing longer than about 120 characters).
+  const READ_KINDS = [
+    ['short', 'Short texts', '短文', { n5: 'Notes and messages of about 80 characters.', n4: 'Notes, emails and notices of 100–200 characters.' }],
+    ['mid', 'Mid-length text', '中文', { n5: 'One text of about 250 characters with 2 questions. Aim for 6 minutes.', n4: 'One essay of about 450 characters with 3 questions. Aim for 10 minutes.' }],
+    ['info', 'Find the information', '情報検索', { n5: 'A notice or price list. Read the question first, then look only for what it asks. Aim for 4 minutes.', n4: 'A notice, timetable or list of about 400 characters. Read the question first, then look only for what it asks. Aim for 7 minutes.' }],
+  ];
   function readingList(lv) {
     ctx.clearSess(); st = null;
     render(`
       <div class="head">${back('jlpt')}<h1>${lv.toUpperCase()} reading 読解</h1></div>
       <div class="seg">${['n5', 'n4'].map(l => `<button class="${l === lv ? 'on' : ''}" data-act="ex-reading" data-arg="${l}">${l.toUpperCase()}</button>`).join('')}</div>
-      <p class="muted">Real-life notes, emails and notices, like the exam. Read the Japanese first. Use the key words if you get stuck, and the translation only at the end.</p>
-      <div class="pgrid">${READING.filter(r => r.level === lv).map(r => `<button class="pcard" data-act="ex-passage" data-arg="${r.id}">
-        <span class="pch">${icon('reading')}</span><span class="pt"><b>${esc(r.title)}</b><small>${r.qs.length} questions</small></span></button>`).join('')}</div>`);
+      <p class="muted">The paper has three kinds of text, and the long ones are where time runs out, so practise all three. Read the Japanese first. Use the key words if you get stuck, and the translation only at the end.</p>
+      ${READ_KINDS.map(([kind, en, jp, about]) => `
+        <h2 class="sec">${en} <span lang="ja">${jp}</span></h2>
+        <p class="muted small">${about[lv]}</p>
+        <div class="pgrid">${READING.filter(r => r.level === lv && (r.kind || 'short') === kind).map(r => `<button class="pcard" data-act="ex-passage" data-arg="${r.id}">
+          <span class="pch">${icon('reading')}</span><span class="pt"><b>${esc(r.title)}</b><small>${r.qs.length} questions</small></span></button>`).join('')}</div>`).join('')}`);
   }
 
   function passage(id) {
@@ -247,17 +257,26 @@ export function initExam(ctx) {
       }
       return out;
     },
-    read(lv, n) {
-      // Short and mid-length passages first, then one notice to find information in, like the exam.
+    // Paper order: short texts, then one mid-length text, then one notice to search. `used` is only passed by
+    // the full mock; the quick mock gets short texts alone, since a 450-character essay would eat its few minutes.
+    read(lv, n, words, used) {
+      const full = !!used;
       const pool = shuffle(READING.filter(r => r.level === lv));
-      const notice = pool.find(r => NOTICE.test(r.title));
-      const list = [];
-      let count = notice ? notice.qs.length : 0;
-      for (const r of pool.filter(r => !NOTICE.test(r.title))) { if (count >= n) break; list.push(r); count += r.qs.length; }
-      if (notice) list.push(notice);
-      return list.flatMap(r => r.qs.map((q, qi) => ({ section: 'reading', type: 'read', passage: r,
+      const mid = full ? pool.find(r => r.kind === 'mid') : null;
+      const info = pool.find(r => full ? r.kind === 'info' : !r.kind && NOTICE.test(r.title));
+      // The real notice carries one question at N5 and two at N4.
+      const tail = [mid && [mid, mid.qs], info && [info, info.qs.slice(0, full && lv === 'n5' ? 1 : 2)]].filter(Boolean);
+      // Short texts fill what is left; the last one is cut to fit, so the long texts at the end are never trimmed.
+      let left = n - tail.reduce((k, [, qs]) => k + qs.length, 0);
+      const head = [];
+      for (const r of pool.filter(r => !r.kind && r !== info)) {
+        if (left <= 0) break;
+        const qs = r.qs.slice(0, left);
+        head.push([r, qs]); left -= qs.length;
+      }
+      return [...head, ...tail].flatMap(([r, qs]) => qs.map((q, qi) => ({ section: 'reading', type: 'read', passage: r,
         prompt: `${qi ? '<span class="tag alt">Same passage</span> ' : ''}<b lang="ja">${esc(q.q)}</b>`,
-        options: q.options, right: q.options[q.answer], review: q.q, en: q.en }))).slice(0, n);
+        options: q.options, right: q.options[q.answer], review: q.q, en: q.en })));
     },
   };
   // Listening parts, by the kinds written in exam-data.js.

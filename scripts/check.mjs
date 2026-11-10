@@ -193,6 +193,37 @@ for (const r of E.READING) {
   if (!r.text || !r.en || !r.words.length || !r.qs.length) fail(`reading ${r.id}: incomplete`);
   for (const q of r.qs) if (!(q.answer >= 0 && q.answer < q.options.length) || new Set(q.options).size !== q.options.length) fail(`reading ${r.id}: bad question ${q.q}`);
 }
+// Real-length reading (js/exam-long.js). The whole point of these texts is their length and level, so both are
+// pinned: a text edited down, or one using kanji the level has not taught, would quietly stop preparing the learner.
+{
+  const KD = await import('../js/kanji-data.js');
+  const chOf = k => k.ch || k[0]; // N5 groups hold objects, N4 groups the one-line array form
+  const taught = { n5: new Set(KD.KANJI_GROUPS.flatMap(g => g.kanji.map(chOf))) };
+  taught.n4 = new Set([...taught.n5, ...KD.KANJI_GROUPS_N4.flatMap(g => g.kanji.map(chOf))]);
+  if (taught.n5.size < 100 || taught.n4.size < 280) fail('reading check: the taught-kanji lists did not load');
+  // Characters without spaces: [min, max] around the real paper's 250 / 450 (mid) and 250 / 400 (notice).
+  const LEN = { n5: { mid: [220, 320], info: [180, 300] }, n4: { mid: [380, 520], info: [330, 460] } };
+  const NQ = { n5: { mid: 2, info: 2 }, n4: { mid: 3, info: 2 } };
+  const long = E.READING.filter(r => r.kind);
+  for (const r of long) {
+    const where = `reading ${r.id}`;
+    if (!LEN[r.level]?.[r.kind]) { fail(`${where}: kind must be mid or info`); continue; }
+    const n = r.text.replace(/\s/g, '').length, [min, max] = LEN[r.level][r.kind];
+    if (n < min || n > max) fail(`${where}: ${n} characters, the real ${r.kind} text is ${min}–${max}`);
+    if (r.qs.length !== NQ[r.level][r.kind]) fail(`${where}: needs ${NQ[r.level][r.kind]} questions`);
+    for (const q of r.qs) if (q.options.length !== 4 || !q.en) fail(`${where}: every question needs 4 options and an English line`);
+    const glossed = r.words.map(w => w[0]).join('');
+    const above = [...new Set([...(r.text + r.qs.map(q => q.q + q.options.join('')).join(''))].filter(c => /[一-龯]/.test(c) && !taught[r.level].has(c) && !glossed.includes(c)))];
+    if (above.length) fail(`${where}: kanji above ${r.level.toUpperCase()} must be in kana or in the key words: ${above.join('')}`);
+    for (const w of r.words) if (w.length !== 3 || !/^[ぁ-ゖァ-ヺー〜 ]+$/.test(w[1])) fail(`${where}: key word ${w[0]} needs a kana reading and a meaning`);
+    // The N5 paper puts a space between phrases; without them a kana-heavy text is far harder than the exam.
+    if (r.level === 'n5' && r.kind === 'mid' && (r.text.match(/ /g) || []).length < 30) fail(`${where}: N5 texts are written with spaces between phrases`);
+  }
+  for (const lv of ['n5', 'n4']) for (const kind of ['mid', 'info']) {
+    // Four of each means the same long text comes round in a mock about once in four, not every time.
+    if (long.filter(r => r.level === lv && r.kind === kind).length < 4) fail(`${lv}: needs 4+ ${kind} reading texts`);
+  }
+}
 for (const l of E.LISTENING) {
   if (!l.lines.length || !(l.answer >= 0 && l.answer < l.options.length)) fail(`listening ${l.id}: bad item`);
   for (const [who] of l.lines) if (!['m', 'f', 'n'].includes(who)) fail(`listening ${l.id}: speaker must be m/f/n`);

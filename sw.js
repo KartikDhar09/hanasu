@@ -2,7 +2,7 @@
 // (stale-while-revalidate). A release ships a new CACHE name, which installs alongside and waits: the app asks
 // "New version · Restart" (js/app.js), and Restart tells it to take over; otherwise it takes over once the app
 // is fully closed. Everything is same-origin, including the font. Bump CACHE on each release.
-const CACHE = 'hanasu-v6.2.1';
+const CACHE = 'hanasu-v6.3';
 // Voice clips live in their own cache that app releases don't clear: cache-first, since a clip never changes
 // unless the voices are re-recorded (then bump AUDIO). Capped so it can't grow without limit.
 const AUDIO = 'hanasu-audio-v3';
@@ -11,7 +11,7 @@ const AUDIO_MAX = 2000;
 // v2 since v6.2: the folder moved to /img/lessons/, so the old copies under the previous path are dropped.
 const IMAGES = 'hanasu-img-v2';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/units-index.js', '/js/module-deps.js', '/js/core.js', '/js/data.js', '/js/corp-more.js', '/js/speech.js', '/js/clips.js', '/js/study.js', '/js/speaking.js', '/js/speaking-data.js', '/js/jlpt.js', '/js/jlpt-data.js', '/js/vocab-data.js', '/js/vocab-n5.js', '/js/vocab-n4.js', '/js/vocab-life.js', '/js/grammar-n5.js', '/js/grammar-n4.js', '/js/kanji-n4.js', '/js/exam.js', '/js/exam-data.js', '/js/exam-more.js', '/js/exam-listen.js', '/js/exam-types.js', '/js/conjugate.js', '/js/strokes.js', '/js/ways.js', '/js/ways-n5.js', '/js/ways-office.js', '/js/ways-corp.js', '/js/ways-qa.js', '/js/ways-particles.js', '/js/ways-grammar-n5.js', '/js/ways-grammar-n4.js', '/js/furigana.js', '/js/kanji-readings.js',
-  '/js/particles-data.js', '/js/counters-data.js', '/js/verbs-data.js', '/js/kanji-data.js', '/js/path.js', '/js/kana-data.js', '/js/search.js', '/js/path-jlpt.js', '/js/path-talk.js', '/js/lessons.js', '/js/lessons-data.js', '/js/lessons-kit.js', '/js/lessons-index.js', '/js/lessons-pics.js',
+  '/js/particles-data.js', '/js/counters-data.js', '/js/verbs-data.js', '/js/kanji-data.js', '/js/path.js', '/js/kana-data.js', '/js/search.js', '/js/path-jlpt.js', '/js/path-talk.js', '/js/lessons.js', '/js/lesson-test.js', '/js/lessons-data.js', '/js/lessons-kit.js', '/js/lessons-index.js', '/js/lessons-pics.js',
   '/js/lessons-kana.js', '/js/lessons-pictures.js', '/js/lessons-musts.js', '/js/lessons-u1.js', '/js/lessons-u2.js', '/js/lessons-u3.js', '/js/lessons-u4.js', '/js/lessons-u5.js', '/js/lessons-u6.js', '/js/lessons-u7.js', '/js/lessons-u8.js', '/js/lessons-u9.js', '/js/lessons-u10.js', '/js/lessons-u11.js', '/js/lessons-u12.js', '/js/lessons-grammar.js', '/js/lessons-wb-verbs.js', '/js/lessons-wb-adjectives.js', '/js/lessons-wb-countries.js', '/js/lessons-wb-words.js', '/js/login.js', '/js/board.js', '/js/path-summary.js', '/js/icons.js',
   '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-180.png'];
 

@@ -112,6 +112,7 @@ export const DEPS = {
   ],
   lessons: [
     "conjugate.js",
+    "lesson-test.js",
     "lessons-data.js",
     "lessons-index.js",
     "lessons-kit.js",

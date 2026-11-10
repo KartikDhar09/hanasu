@@ -560,6 +560,45 @@ test('mock scoring matches JLPT pass rules', () => {
       assert.deepEqual(qs.map(q => q.answer + 1), want, `${id} listening answers`);
     }
   });
+  // The end-of-page check (js/lesson-test.js) builds its questions from the page, so a page edit can silently
+  // break it; this runs the generator over every page, many times, with a repeatable random source.
+  await atest('lesson tests: every page but kana gets 15 sound multiple-choice questions', async () => {
+    const { lessonPool, makeTest, TEST_LEN, MIN_POOL } = await import('../js/lesson-test.js');
+    let seed = 1;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const key = en => en.toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+    for (const p of LS.PAGES) {
+      const pool = lessonPool(p);
+      if (p.id === 'kana') { assert.deepEqual(makeTest(pool, TEST_LEN, rnd), [], 'the kana page has nothing to test'); continue; }
+      assert.ok(pool.length >= TEST_LEN, `${p.id}: only ${pool.length} usable lines, too few for a full test`);
+      for (const x of pool) {
+        assert.ok(/[ぁ-ゖァ-ヺ一-龯々]/.test(x.jp) && !/[〈〉<>*＊＿〜～…]|\(\d\)/.test(x.jp), `${p.id}: textbook marks left in “${x.jp}”`);
+        assert.ok(x.en && x.en.length <= 70 && !/[ぁ-ゖァ-ヺ一-龯]|→|\*/.test(x.en), `${p.id}: bad meaning for ${x.jp}: “${x.en}”`);
+        assert.ok(!/[<>*]/.test(x.ro), `${p.id}: marks left in romaji “${x.ro}”`);
+      }
+      for (let run = 0; run < 40; run++) {
+        const qs = makeTest(pool, TEST_LEN, rnd);
+        assert.equal(qs.length, TEST_LEN, `${p.id}: test length`);
+        assert.equal(new Set(qs.map(q => q.item.jp)).size, TEST_LEN, `${p.id}: a line is asked twice in one test`);
+        for (const q of qs) {
+          assert.ok(q.options.length === 4 && q.options[q.right] === q.item, `${p.id}: ${q.item.jp} needs 4 options with the answer among them`);
+          // Two options that read the same in either language would both be right.
+          assert.equal(new Set(q.options.map(o => o.jp)).size, 4, `${p.id}: repeated Japanese option for ${q.item.jp}`);
+          assert.equal(new Set(q.options.map(o => key(o.en))).size, 4, `${p.id}: same-meaning options for ${q.item.jp}: ${q.options.map(o => o.en).join(' | ')}`);
+        }
+        assert.ok(qs.some(q => q.dir === 'jp') && qs.some(q => q.dir === 'en'), `${p.id}: both directions are asked`);
+      }
+    }
+    assert.deepEqual(makeTest(lessonPool(LS.PAGES.find(p => p.id === 'u1')).slice(0, MIN_POOL - 1)), [], 'too few lines: no test');
+  });
+  test('lesson tests keep no result: nothing stored, nothing sent', () => {
+    const gen = read('js/lesson-test.js'), ui = read('js/lessons.js');
+    assert.ok(!/localStorage|sessionStorage|indexedDB|fetch\(|document|window/.test(gen), 'js/lesson-test.js stays pure');
+    // markPage is the only thing lessons.js may send to the account; the test screens must not call it.
+    const screens = ui.slice(ui.indexOf('async function test('), ui.indexOf('// A picture on a lesson page'));
+    assert.ok(screens.length > 500 && !/markPage|syncProgress|fetch\(|Storage/.test(screens), 'the test screens report nothing');
+    assert.match(ui, /data-act="ls-test"[\s\S]{0,200}\$\{doneButton\(id\)\}/, 'the test is offered beside, not instead of, “Mark this page done”');
+  });
   const JPC = /[ぁ-ゖァ-ヺ一-龯々]/;
   test('lesson pages are well-formed', () => {
     const ids = LS.PAGES.map(p => p.id);
@@ -687,7 +726,9 @@ test('no emoji in the interface', () => {
   assert.ok(J.EXAM_TIPS.every(t => t.length === 2 && !EMOJI.test(t[0])), 'exam tips have no emoji marker');
 });
 
-test('no tests are left but the full mocks: no quiz screens or level tests in the app', () => {
+// v6.3 brought back one check on purpose: the optional, unsaved "Test yourself" at the end of a Lessons page
+// (data-act ls-test, tested above). Everything listed here stays gone.
+test('no tests are left but the full mocks and the lesson check: no quiz screens or level tests in the app', () => {
   const gone = /data-act="(quiz|gquiz|order|kana-quiz|vocab-quiz|pquiz|vquiz|kquiz|cquiz|sound-test|path-test|path-speak)"/;
   for (const f of readdirSync('js').filter(f => f.endsWith('.js'))) assert.ok(!gone.test(read('js/' + f)), `js/${f} still offers a quiz or test`);
   const exam = read('js/exam.js');

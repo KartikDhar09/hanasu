@@ -663,6 +663,12 @@ details.answers .phrases { margin-top: 8px; }
 .bfeed li { padding: 10px 12px; background: var(--surface); border-radius: 12px; line-height: 1.4; overflow-wrap: anywhere; }
 /* Lessons: "Mark this page done" sits above Prev / Next; once done it turns green like a passed level. */
 .ls-done { margin-top: 16px; }
+/* "Test yourself" sits just above it: the two belong together (check, then tick), so the gap between them is small. */
+.ls-test { margin-top: 16px; }
+.ls-test + .ls-done { margin-top: 10px; }
+/* Missed lines on the result screen are for reading, not tapping: no pressed state. */
+.ls-missed li { cursor: default; padding-right: 14px; }
+.ls-missed li:active { background: var(--surface); }
 .ls-done.on { color: var(--ok); border-color: var(--ok); }
 /* Board card: name, then one short block per area (label + n / total, bar, what's next). */
 .barea { margin-top: 12px; display: grid; gap: 4px; }

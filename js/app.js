@@ -754,7 +754,8 @@ async function syncProgress(extra = {}) {
     // The launch sync can answer after a Lessons screen is already drawn without its ticks (opening the app straight
     // on the contents showed none until you left and came back), so that screen is drawn again. Not after a tick made
     // on the page itself: its button already shows it, and redrawing would close the open sections.
-    if (!extra.lessons && [...lessonsDone].sort().join() !== before && /^#lessons/.test(location.hash)) route();
+    // Not during a lesson test: it shows no ticks, and redrawing the route would throw away the answers so far.
+    if (!extra.lessons && [...lessonsDone].sort().join() !== before && /^#lessons/.test(location.hash) && !/\/test$/.test(location.hash)) route();
     let changed = false;
     for (const p of PATH_IDS) {
       if (!Array.isArray(done?.[p])) continue;
